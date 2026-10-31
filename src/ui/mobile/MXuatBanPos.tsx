@@ -18,6 +18,9 @@ import {
   ptttCua,
   soFabi,
   theoDon,
+  POS_OK_MAU,
+  POS_LOI_MAU,
+  MON_POS,
   type XPos,
 } from '../../modules/ban-hang/ChungTuBanHang'
 import { useDaXoa } from '../generic/daXoa'
@@ -25,8 +28,8 @@ import { MDsChungTuChuan, MDsDongPhieu, HangTabsBanHang, layMaKh } from './MDsCh
 import { quayLaiMobile } from './quayLai'
 import { MBaoCaoTheoDoi } from './MBaoCaoTheoDoi'
 
-type KhoaLoc = 'cn' | 'kh' | 'kenh' | 'pttt' | 'hang' | 'tonKho'
-const LOC_TRONG: Record<KhoaLoc, string> = { cn: '', kh: '', kenh: '', pttt: '', hang: '', tonKho: '' }
+type KhoaLoc = 'cn' | 'kh' | 'kenh' | 'pttt' | 'hang' | 'tonKho' | 'trangThai' | 'monBan' | 'nguyenNhan'
+const LOC_TRONG: Record<KhoaLoc, string> = { cn: '', kh: '', kenh: '', pttt: '', hang: '', tonKho: '', trangThai: '', monBan: '', nguyenNhan: '' }
 
 export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
   const { s, toast } = useSession()
@@ -103,17 +106,96 @@ export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
 
   // Lựa chọn từng ô; khách hàng, kênh lấy từ chính các chứng từ như web (T116)
   const tuDs = (ds: string[]) => [...new Set(ds.filter(Boolean))].map(v => ({ k: v, ten: v }))
+
+  const rowsPosOk = useMemo(() => {
+    return POS_OK_MAU.map(([soCt, soHd, ngay, cn, maMon, sl, pttt], i) => {
+      const infoMon = MON_POS[maMon] ?? [maMon, 'Cốc', 0]
+      const dt = (infoMon[2] || 0) * sl
+      const tong = Math.round(dt * 1.08)
+      return {
+        id: `pos_ok_${i + 1}`,
+        soCt,
+        soFabi: soHd,
+        so: soHd,
+        ngay,
+        gio: ngay.split(' ')[1] || '',
+        cn,
+        maMon,
+        tenMon: infoMon[0],
+        dvt: infoMon[1],
+        sl,
+        pttt,
+        dt,
+        tong,
+        tien: tong,
+      }
+    })
+  }, [])
+
+  const rowsPosLoi = useMemo(() => {
+    const LY_MAP: Record<string, string> = {
+      hang: 'Món chưa có trong danh mục',
+      pttt: 'PTTT chưa map tài khoản',
+      kho: 'Chưa chọn kho xuất',
+      khoa: 'Kỳ đã khoá sổ',
+    }
+    return POS_LOI_MAU.map(([soHd, ngay, cn, maMon, sl, pttt, lyDo, chiTiet], i) => {
+      const infoMon = MON_POS[maMon] ?? [maMon, 'Cốc', 0]
+      const dt = (infoMon[2] || 0) * sl
+      const tong = Math.round(dt * 1.08)
+      const lyDoTieuDe = LY_MAP[lyDo] ?? 'Lỗi đồng bộ'
+      return {
+        id: `pos_loi_${i + 1}`,
+        soFabi: soHd,
+        so: soHd,
+        ngay,
+        gio: ngay.split(' ')[1] || '',
+        cn,
+        maMon,
+        tenMon: infoMon[0],
+        dvt: infoMon[1],
+        sl,
+        pttt,
+        tong,
+        tien: tong,
+        lyDo,
+        lyDoTieuDe,
+        lyDoChiTiet: chiTiet,
+      }
+    })
+  }, [])
+
+  const dsMonBan = useMemo(() => {
+    const set = new Set<string>()
+    rowsPosOk.forEach(m => set.add(m.tenMon))
+    rowsPosLoi.forEach(m => set.add(m.tenMon))
+    return Array.from(set).map(ten => ({ k: ten, ten }))
+  }, [rowsPosOk, rowsPosLoi])
+
+  const dsNguyenNhan = useMemo(() => {
+    const map = new Map<string, string>()
+    rowsPosLoi.forEach(m => {
+      if (!map.has(m.lyDoTieuDe)) map.set(m.lyDoTieuDe, m.lyDoTieuDe)
+    })
+    return Array.from(map.entries()).map(([k, ten]) => ({ k, ten }))
+  }, [rowsPosLoi])
+
   const oLoc = useMemo(() => {
     const o: { k: KhoaLoc; nhan: string; tieuDe: string; tatCa: string; ds: { k: string; ten: string }[]; tim?: boolean }[] = [
+      { k: 'trangThai', nhan: 'Trạng thái', tieuDe: 'Chọn trạng thái', tatCa: 'Tất cả trạng thái', ds: [{ k: 'da-db', ten: 'Đã đồng bộ' }, { k: 'chua-db', ten: 'Chưa đồng bộ' }] },
+      { k: 'monBan', nhan: 'Món bán', tieuDe: 'Chọn món bán', tatCa: 'Tất cả món bán', ds: dsMonBan, tim: true },
       { k: 'kh', nhan: 'Khách hàng', tieuDe: 'Chọn khách hàng', tatCa: 'Tất cả khách hàng', ds: tuDs(rows.map(r => String(r.doiTuong ?? ''))) },
       { k: 'kenh', nhan: 'Kênh', tieuDe: 'Chọn kênh bán hàng', tatCa: 'Tất cả kênh', ds: tuDs(rows.map(r => String(r.kenh ?? ''))) },
       { k: 'pttt', nhan: 'Thanh toán', tieuDe: 'Chọn phương thức thanh toán', tatCa: 'Tất cả phương thức', ds: PTTT.map(([, t]) => ({ k: t, ten: t })) },
       { k: 'hang', nhan: 'Hàng hoá', tieuDe: 'Chọn hàng hoá', tatCa: 'Tất cả hàng hoá', ds: HANG.map(h => ({ k: h.ma, ten: `${h.ma} - ${h.ten}` })), tim: true },
       { k: 'tonKho', nhan: 'Tồn kho', tieuDe: 'Theo dõi tồn kho', tatCa: 'Tất cả', ds: [{ k: 'co', ten: 'Có theo dõi tồn kho' }, { k: 'khong', ten: 'Không theo dõi tồn kho' }] },
     ]
+    if (loc.trangThai === 'chua-db') {
+      o.splice(2, 0, { k: 'nguyenNhan', nhan: 'Nguyên nhân', tieuDe: 'Chọn nguyên nhân lỗi', tatCa: 'Tất cả nguyên nhân', ds: dsNguyenNhan })
+    }
     if (!cnChon) o.unshift({ k: 'cn', nhan: 'Kho/CN', tieuDe: 'Chọn cửa hàng', tatCa: 'Tất cả cửa hàng', ds: CUA_HANG.map(c => ({ k: c.id, ten: c.ten })) })
     return o
-  }, [rows, cnChon])
+  }, [rows, cnChon, dsMonBan, dsNguyenNhan, loc.trangThai])
   const oDangMo = oLoc.find(o => o.k === moChon)
   // Chip ghi ngắn: hàng hoá chỉ hiện mã
   const tenChip = (o: (typeof oLoc)[number]) => !loc[o.k] ? 'Tất cả' : o.k === 'hang' ? loc.hang : o.ds.find(d => d.k === loc[o.k])?.ten ?? 'Tất cả'
@@ -127,6 +209,9 @@ export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
     const arr: ReactNode[] = []
     arr.push(<span key="kn" className="m-chip-xem">{chuoiKhoangNgay}</span>)
     arr.push(<span key="cn" className="m-chip-xem">{cnChon ? nhanCn : `Kho/CN: ${loc.cn ? CUA_HANG.find(c => c.id === loc.cn)?.ten ?? 'Tất cả' : 'Tất cả'}`}</span>)
+    if (loc.trangThai) arr.push(<span key="trangThai" className="m-chip-xem">Trạng thái: {loc.trangThai === 'da-db' ? 'Đã đồng bộ' : 'Chưa đồng bộ'}</span>)
+    if (loc.monBan) arr.push(<span key="monBan" className="m-chip-xem">Món: {loc.monBan}</span>)
+    if (loc.nguyenNhan) arr.push(<span key="nguyenNhan" className="m-chip-xem">Lỗi: {loc.nguyenNhan}</span>)
     if (loc.kh) arr.push(<span key="kh" className="m-chip-xem">Khách: {loc.kh}</span>)
     if (loc.kenh) arr.push(<span key="kenh" className="m-chip-xem">Kênh: {loc.kenh}</span>)
     if (loc.pttt) arr.push(<span key="pttt" className="m-chip-xem">Thanh toán: {loc.pttt}</span>)
@@ -207,9 +292,90 @@ export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
         cn: r.cn,
         doiTuong: maKh,
         dongPhu: `${maKh} · ${r.so}`,   // ngày đã ở đầu thẻ ngày (T653)
+        laDongMon: false,
       }))
     })
   }, [list, loc.hang, loc.tonKho])
+
+  const listPosDaDb = useMemo(() => {
+    if (loc.trangThai !== 'da-db') return []
+    const q = fold(tim.trim())
+    return rowsPosOk.filter(r => {
+      const d = docNgay(r.ngay.split(' ')[0])
+      if (!trongKhoang(d, thoiGian)) return false
+      if (cnChon && r.cn !== cnChon.ten) return false
+      if (loc.cn) {
+        const cnTenChon = CUA_HANG.find(c => c.id === loc.cn)?.ten
+        if (cnTenChon && r.cn !== cnTenChon) return false
+      }
+      if (loc.pttt && r.pttt !== loc.pttt) return false
+      if (loc.monBan && r.tenMon !== loc.monBan) return false
+      if (q && !fold(`${r.soFabi} ${r.soCt} ${r.tenMon} ${r.maMon} ${r.cn}`).includes(q)) return false
+      return true
+    }).map((r, i) => ({
+      id: `pos_ok_${i}_${r.soFabi}_${r.maMon}`,
+      so: r.soFabi,
+      soFabi: r.soFabi,
+      ngay: r.ngay,
+      gio: r.gio,
+      cn: r.cn,
+      tenMon: r.tenMon,
+      maMon: r.maMon,
+      dvt: r.dvt,
+      sl: r.sl,
+      pttt: r.pttt,
+      tien: r.tong,
+      tong: r.tong,
+      dienGiai: '',
+      doiTuong: '',
+      laDongMon: true,
+      laLoi: false,
+    }))
+  }, [loc.trangThai, rowsPosOk, loc.cn, loc.pttt, loc.monBan, thoiGian, cnChon, tim])
+
+  const listPosChuaDb = useMemo(() => {
+    if (loc.trangThai !== 'chua-db') return []
+    const q = fold(tim.trim())
+    return rowsPosLoi.filter(r => {
+      const d = docNgay(r.ngay.split(' ')[0])
+      if (!trongKhoang(d, thoiGian)) return false
+      if (cnChon && r.cn !== cnChon.ten) return false
+      if (loc.cn) {
+        const cnTenChon = CUA_HANG.find(c => c.id === loc.cn)?.ten
+        if (cnTenChon && r.cn !== cnTenChon) return false
+      }
+      if (loc.pttt && r.pttt !== loc.pttt) return false
+      if (loc.monBan && r.tenMon !== loc.monBan) return false
+      if (loc.nguyenNhan && r.lyDoTieuDe !== loc.nguyenNhan) return false
+      if (q && !fold(`${r.soFabi} ${r.tenMon} ${r.maMon} ${r.cn} ${r.lyDoTieuDe}`).includes(q)) return false
+      return true
+    }).map((r, i) => ({
+      id: `pos_loi_${i}_${r.id}`,
+      so: r.soFabi,
+      soFabi: r.soFabi,
+      ngay: r.ngay,
+      gio: r.gio,
+      cn: r.cn,
+      tenMon: r.tenMon,
+      maMon: r.maMon,
+      dvt: r.dvt,
+      sl: r.sl,
+      pttt: r.pttt,
+      tien: r.tong,
+      tong: r.tong,
+      lyDo: `${r.lyDoTieuDe} · ${r.lyDoChiTiet}`,
+      dienGiai: '',
+      doiTuong: '',
+      laDongMon: true,
+      laLoi: true,
+    }))
+  }, [loc.trangThai, rowsPosLoi, loc.cn, loc.pttt, loc.monBan, loc.nguyenNhan, thoiGian, cnChon, tim])
+
+  const rowsHienThi = useMemo(() => {
+    if (loc.trangThai === 'da-db') return listPosDaDb
+    if (loc.trangThai === 'chua-db') return listPosChuaDb
+    return listDong
+  }, [loc.trangThai, listPosDaDb, listPosChuaDb, listDong])
 
   return (
     <>
@@ -225,8 +391,24 @@ export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
         chipsLoc={chipsLoc}
         chuoiKhoangNgay={chuoiKhoangNgay}
         hienTien={true}
-        rows={listDong}
+        rows={rowsHienThi}
         renderDong={(r, i) => {
+          if (r.laDongMon) {
+            return (
+              <MDsDongPhieu
+                key={r.id ?? i}
+                so={r.soFabi}
+                tieuDe={<span>{r.tenMon} <span className="m-ma">{r.maMon}</span></span>}
+                soLuong={r.sl}
+                dvt={r.dvt}
+                dongPhu={`${r.soFabi} · ${r.cn} · ${r.gio}`}
+                tien={Number(r.tong ?? 0)}
+                hienTien={true}
+                lyDo={r.lyDo}
+                onClick={() => {}}
+              />
+            )
+          }
           return (
             <MDsDongPhieu
               key={r.id ?? i}
@@ -241,7 +423,7 @@ export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
             />
           )
         }}
-        thongBaoTrong="Không có đơn xuất bán POS"
+        thongBaoTrong={loc.trangThai === 'chua-db' ? 'Không có dòng món lỗi chưa đồng bộ' : 'Không có đơn xuất bán POS'}
       />
 
       {/* Sheet bộ lọc nâng cao */}
@@ -320,7 +502,7 @@ export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
           tieuDe={oDangMo.tieuDe}
           ds={[{ k: '', ten: oDangMo.tatCa }, ...oDangMo.ds]}
           chon={loc[oDangMo.k]}
-          onChon={v => setLoc(l => ({ ...l, [oDangMo.k]: v }))}
+          onChon={v => setLoc(l => ({ ...l, [oDangMo.k]: v, ...(oDangMo.k === 'trangThai' && v !== 'chua-db' ? { nguyenNhan: '' } : {}) }))}
           tim={oDangMo.tim}
         />
       )}

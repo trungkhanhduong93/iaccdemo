@@ -14,6 +14,7 @@ import { ttTienTheoTra } from '../generic/daXoa'
 import { boO, nhomCua, theoLoai, TT_TIEN } from '../generic/nhom'
 import { ChungTuForm, lyMacDinh } from '../generic/ChungTuForm'
 import { useDongChungTu } from '../generic/VoucherScreen'
+import { phieuThuChiFabi, type PhieuChoFabi } from '../../modules/tien/dong-bo-fabi'
 import { useDsPhieuDcn } from '../../modules/kho/BangDieuChuyen'
 import { useDsPhieuSx } from '../../modules/kho/BangSanXuat'
 import { MChon } from './MChon'
@@ -219,10 +220,41 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
     [chipsGoc],
   )
 
+  // Dữ liệu FABi cho màn tiền (T697)
+  const phieuFabi = useMemo(() => phieuThuChiFabi(s), [s])
+  const dsFabiChuaDb = useMemo(() => {
+    const listRaw = [...phieuFabi.cho, ...phieuFabi.khoa]
+    if (!cnChon) return listRaw
+    return listRaw.filter(p => p.cn === cnChon.ten)
+  }, [phieuFabi, cnChon])
+
+  const chipsTien = useMemo(() => {
+    const demChuaGhi = truocTT.filter(r => khopChipTT('nhap', r.tt, ghi)).length
+    const demDaGhi = truocTT.filter(r => khopChipTT('ghi', r.tt, ghi)).length
+    const demChuaDb = dsFabiChuaDb.length
+
+    if (ghi) {
+      return [
+        { k: 'all', ten: 'Tất cả', dem: truocTT.length },
+        { k: 'nhap', ten: 'Chưa ghi sổ', dem: demChuaGhi },
+        { k: 'ghi', ten: 'Đã ghi sổ', dem: demDaGhi },
+        { k: 'chua-db', ten: 'Chưa đồng bộ', dem: demChuaDb },
+      ]
+    }
+    return [
+      { k: 'all', ten: 'Tất cả', dem: truocTT.length },
+      { k: 'ghi', ten: 'Đã ghi sổ', dem: demDaGhi },
+      { k: 'chua-db', ten: 'Chưa đồng bộ', dem: demChuaDb },
+    ]
+  }, [truocTT, ghi, dsFabiChuaDb.length])
+
   // Danh sách cuối cùng sau chip trạng thái
   const list = useMemo(() => {
+    if (mod.key === 'tien' && chipTT === 'chua-db') {
+      return dsFabiChuaDb as Row[]
+    }
     return truocTT.filter(r => khopChipTT(chipTT, r.tt, ghi))
-  }, [truocTT, chipTT, ghi])
+  }, [truocTT, chipTT, ghi, mod.key, dsFabiChuaDb])
 
   const tongTien = useMemo(() => list.reduce((a, r) => a + (Number(r.tong) || 0), 0), [list])
 
@@ -851,7 +883,7 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
           return text.includes(q.toLowerCase())
         }}
         timPlaceholder="Số chứng từ, đối tượng, diễn giải..."
-        chips={ghi ? chips : []}
+        chips={mod.key === 'tien' ? chipsTien : (ghi ? chips : [])}
         chipChon={chipTT}
         onChipChon={setChipTT}
         onMoLoc={() => setLocMo(true)}
@@ -861,7 +893,11 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
         nhanThem={cfg.them ?? '+ Thêm mới'}
         hangTabs={hangTabs}
         tomTat={
-          coCaHaiChieu ? (
+          mod.key === 'tien' && chipTT === 'chua-db' ? (
+            <span>
+              {list.length} phiếu chưa đồng bộ · {money(dsFabiChuaDb.reduce((a, r) => a + (Number(r.tien) || 0), 0))} đ
+            </span>
+          ) : coCaHaiChieu ? (
             <span>
               {list.length} chứng từ · Thu {rutGonSo(tongThu)} / Chi {rutGonSo(tongChi)}
             </span>
@@ -872,6 +908,36 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
           )
         }
         the={(r, i) => {
+          if (mod.key === 'tien' && chipTT === 'chua-db') {
+            const pFabi = r as PhieuChoFabi
+            return (
+              <div
+                key={pFabi.ma ?? i}
+                className="m-the-ct"
+                role="button"
+                tabIndex={0}
+              >
+                <div className="m-the-ct-hang1">
+                  <span className="m-the-ct-so">{pFabi.ma}</span>
+                  <span className={`chip ${pFabi.kieu === 'thu' ? 'thu' : 'chi'}`}>
+                    {pFabi.kieu === 'thu' ? 'Thu' : 'Chi'}
+                  </span>
+                </div>
+                <div className="m-the-ct-hang2">
+                  <span className="m-the-ct-dt">{pFabi.dienGiai} · {pFabi.cn}</span>
+                </div>
+                <div className="m-the-ct-vach" />
+                <div className="m-the-ct-hang3">
+                  <span className="m-the-ct-ngay-hang">{pFabi.ngay}</span>
+                  <span className="m-the-ct-tien">{money(pFabi.tien)} đ</span>
+                </div>
+                <div className="m-dong-ly" style={{ marginTop: 6, paddingTop: 4, borderTop: '1px dashed var(--line)' }}>
+                  {pFabi.lyDo === 'map' ? 'PTTT chưa map quỹ' : 'Kỳ đã khoá sổ'}
+                  {pFabi.chiTiet ? ` · ${pFabi.chiTiet}` : ''}
+                </div>
+              </div>
+            )
+          }
           const ttInfo = TT_CT[r.tt] ?? ['dim', r.tt]
           const anTien = Boolean(cfg.kiemKe || cfg.dieuChuyen === 'ck' || sc.code === '5.1.10' || sc.code === '5.1.4.3')
           const tienHienThi = anTien ? null : `${money(Math.abs(r.tong ?? 0))} đ`
@@ -955,7 +1021,7 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
         dsLyDo={dsLyDo.length > 0 ? dsLyDo : undefined}
         dsLoaiPhieu={cfg.loai && !cfg.dieuChinh ? cfg.loai.map(l => ({ k: l.k, ten: l.ten })) : undefined}
         dsChiNhanh={dsChiNhanh}
-        dsTrangThai={ghi && chips.length > 0 ? chips : undefined}
+        dsTrangThai={mod.key === 'tien' ? chipsTien : (ghi && chips.length > 0 ? chips : undefined)}
       />
 
       {/* Tấm trượt chọn loại phiếu khi thêm mới */}

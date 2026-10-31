@@ -33,6 +33,7 @@ import { BangKiemKe } from './BangKiemKe'
 import { BangSua } from './BangSua'
 import { ChungTuForm, HachToan, LichSu, VoucherDetail, lyDoKhongXoaTheCuaPhieu, lyMacDinh, xoaTheCuaPhieu } from './ChungTuForm'
 import { HopInChungTu, type PhieuIn } from '../bao-cao/InChungTu'
+import { phieuThuChiFabi } from '../../modules/tien/dong-bo-fabi'
 
 /** Ngày tạo, người tạo (T132): phiếu lưu trong phiên có sẵn; phiếu mẫu đồng bộ từ phần mềm khác do Hệ thống tạo lúc đồng bộ,
  *  phiếu mẫu nhập tay do một nhân viên tạo, vài phút sau giờ chứng từ */
@@ -338,8 +339,10 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
     return (k: string) => { if (!m.has(k)) m.set(k, typeof rows.find(r => r[k] !== undefined && r[k] !== '' && r[k] !== null)?.[k] === 'number'); return m.get(k)! }
   }, [rows])
   const kieuCot = (k: string): KieuLoc =>
-    k === 'ngay' ? 'ngay' : COT_CHON.has(k) ? 'chon' : k === 'tong' || k === 'thue' || k === 'giamThue' || k === 'daTra' || k === 'conNo' || cotSo(k) ? 'so' : 'chon'
+    k === 'ngay' ? 'ngay' : COT_CHON.has(k) || k === 'kieu' || k === 'nguyenNhan' ? 'chon' : k === 'tong' || k === 'thue' || k === 'giamThue' || k === 'daTra' || k === 'conNo' || k === 'tien' || cotSo(k) ? 'so' : 'chon'
   const chuCot = (k: string, r: Row): string => {
+    if (k === 'nguyenNhan') return r.lyDo === 'map' ? 'PTTT chưa map quỹ' : 'Kỳ đã khoá sổ'
+    if (k === 'kieu') return r.kieu === 'thu' ? 'Thu' : 'Chi'
     if (k === 'nguon') return (NGUON[r.nguon] ?? NGUON.tay)[1]
     if (k === 'tt') return ghi ? (TT_CT[r.tt]?.[1] ?? 'Chưa ghi') : 'Đã ghi sổ'
     if ((k === 'ttTien' || k === 'ttHd') && (nhom === 'mua' || nhom === 'ban')) {
@@ -429,8 +432,69 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
   })
   // Điều chỉnh kho: tab con lọc theo loại sau các bộ lọc khác, số trên tab đếm theo danh sách đang lọc (T126)
   const truocTT = cfg.dieuChinh ? truocLoai.filter(r => r.loai === tabLoai) : nhomChon ? truocLoai.filter(r => nhomChon.loai.includes(r.loai)) : truocLoai
-  const chips = dsChipTT(truocTT, ghi)
-  const list = truocTT.filter(r => khopChipTT(chipTT, r.tt, ghi))
+  const isTien = mod.key === 'tien'
+  const { cho: choFabi, khoa: khoaFabi } = useMemo(() => isTien ? phieuThuChiFabi(s) : { cho: [], khoa: [] }, [isTien, s])
+  const phieuChuaDb = useMemo(() => [...choFabi, ...khoaFabi], [choFabi, khoaFabi])
+
+  const chipsGoc = dsChipTT(truocTT, ghi)
+  const chips = useMemo(() => {
+    if (!isTien) return chipsGoc
+    const dem = (k: string) => truocTT.filter(r => khopChipTT(k, r.tt, ghi)).length
+    const soChuaDb = phieuChuaDb.length
+    if (!ghi) {
+      return [
+        { k: 'all', ten: 'Tất cả', mau: 'var(--blue)', so: truocTT.length },
+        { k: 'ghi', ten: 'Đã ghi sổ', mau: 'var(--green)', so: truocTT.length },
+        { k: 'chua-db', ten: 'Chưa đồng bộ', mau: 'var(--red)', so: soChuaDb },
+      ]
+    }
+    return [
+      { k: 'all', ten: 'Tất cả', mau: 'var(--blue)', so: truocTT.length },
+      { k: 'nhap', ten: 'Chưa ghi sổ', mau: 'var(--amber)', so: dem('nhap') },
+      { k: 'ghi', ten: 'Đã ghi sổ', mau: 'var(--green)', so: dem('ghi') },
+      { k: 'chua-db', ten: 'Chưa đồng bộ', mau: 'var(--red)', so: soChuaDb },
+    ]
+  }, [isTien, chipsGoc, truocTT, ghi, phieuChuaDb.length])
+
+  const rowsChuaDb: Row[] = useMemo(() => {
+    if (!isTien) return []
+    return phieuChuaDb.map((p, idx) => ({
+      id: `tc-cho-${p.ma || idx}`,
+      ma: p.ma,
+      so: p.ma,
+      ngay: `${p.ngay} ${p.gio}`,
+      cn: p.cn,
+      kieu: p.kieu,
+      pttt: p.pttt,
+      dienGiai: p.dienGiai,
+      tien: p.tien,
+      tong: p.tien,
+      lyDo: p.lyDo,
+      chiTiet: p.chiTiet,
+      tt: 'chua-db',
+    }))
+  }, [isTien, phieuChuaDb])
+
+  const listChuaDb = useMemo(() => {
+    if (!isTien || chipTT !== 'chua-db') return []
+    return rowsChuaDb.filter(r => {
+      for (const [k, g] of Object.entries(locCot)) {
+        if (dangLoc(g)) {
+          const val = k === 'nguyenNhan' ? (r.lyDo === 'map' ? 'PTTT chưa map quỹ' : 'Kỳ đã khoá sổ')
+                    : k === 'kieu' ? (r.kieu === 'thu' ? 'Thu' : 'Chi')
+                    : chuCot(k, r)
+          const numVal = typeof r[k] === 'number' ? r[k] : undefined
+          const dateVal = k === 'ngay' ? docNgay(String(r.ngay).split(' ')[0]) : undefined
+          if (!khopLoc(kieuCot(k), g, val, numVal, dateVal)) return false
+        }
+      }
+      return true
+    })
+  }, [isTien, chipTT, rowsChuaDb, locCot])
+
+  const laChuaDb = isTien && chipTT === 'chua-db'
+  const listGoc = truocTT.filter(r => khopChipTT(chipTT, r.tt, ghi))
+  const list = laChuaDb ? listChuaDb : listGoc
   const selectedRows = useMemo(() => list.filter(r => selectedIds.has(r.id)), [list, selectedIds])
 
   const tong = list.reduce((a, r) => a + r.tong, 0)
@@ -569,6 +633,67 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
     return Object.fromEntries(cot.colsDu.map(c => [c.k, c.t || c.k]))
   }, [cot.colsDu])
 
+  // Cột cho danh sách Chưa đồng bộ FABi (T697)
+  const colsChuaDb: Col[] = useMemo(() => [
+    cotChon(listChuaDb, selectedIds, setSelectedIds),
+    { k: 'ma', t: 'Mã phiếu FABi', cls: 'code', w: 140, dinh: 'trai' },
+    {
+      k: 'ngay',
+      t: 'Ngày phiếu',
+      w: 136,
+      dinh: 'trai',
+      r: (r: Row) => <span className="ds-time" title={String(r.ngay)}>{r.ngay}</span>,
+    },
+    { k: 'cn', t: 'Cửa hàng', w: 150 },
+    {
+      k: 'kieu',
+      t: 'Loại',
+      w: 90,
+      r: (r: Row) => (
+        <span className={`chip ${r.kieu === 'thu' ? 'thu' : 'chi'}`}>
+          {r.kieu === 'thu' ? 'Thu' : 'Chi'}
+        </span>
+      ),
+    },
+    { k: 'pttt', t: 'PTTT', w: 130 },
+    { k: 'dienGiai', t: 'Diễn giải', w: 220 },
+    { k: 'tien', t: 'Số tiền', num: true, w: 120, r: (r: Row) => money(Number(r.tien)) },
+    {
+      k: 'nguyenNhan',
+      t: 'Nguyên nhân',
+      w: 260,
+      r: (r: Row) => {
+        const tenLy = r.lyDo === 'map' ? 'PTTT chưa map quỹ' : 'Kỳ đã khoá sổ'
+        const chiTiet = r.chiTiet ? `· ${r.chiTiet}` : ''
+        return (
+          <span className="ds-ly-wrap" title={r.chiTiet ? `${tenLy} · ${r.chiTiet}` : tenLy}>
+            <span className="ly-1">{tenLy}</span> <span className="ly-2">{chiTiet}</span>
+          </span>
+        )
+      },
+    },
+    {
+      k: 'xuLy',
+      t: 'Xử lý',
+      w: 110,
+      r: (r: Row) => {
+        if (r.lyDo === 'map') {
+          return (
+            <Link to="/app/danh-muc/1-12" className="ds-link-xl" onClick={e => e.stopPropagation()}>
+              Map quỹ
+            </Link>
+          )
+        }
+        const to = s.goi === 'S' ? '/app/he-thong/khoa-so' : '/app/tong-hop/10-1-6'
+        return (
+          <Link to={to} className="ds-link-xl" onClick={e => e.stopPropagation()}>
+            Mở khoá sổ
+          </Link>
+        )
+      },
+    },
+  ], [listChuaDb, selectedIds, s.goi])
+
   const activeRow = list.find(r => r.id === activeId) ?? list[0]
 
   const displayRows = useMemo(() => {
@@ -674,42 +799,69 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
                   ))}
                 </div>
               )}
-              {ghi && !cfg.dieuChinh && (
-                <ChipTrangThai ds={chips} chon={chipTT} onChon={k => { setChipTT(k); setTrang(1) }} />
+              {((ghi || isTien) && !cfg.dieuChinh) && (
+                <ChipTrangThai ds={chips} chon={chipTT} onChon={k => { setChipTT(k); setSelectedIds(new Set()); setTrang(1) }} />
               )}
               {/* Excel, Tuỳ chỉnh cột, Thao tác hàng loạt nằm dưới nút Thêm mới (T510) */}
               <div className="ds-toolbar-phai ds-cong-cu-h2">
-                <NutExcel
-                  label={<IconFigmaSheet />}
-                  onNhap={() => toast('Nhập chứng từ từ file Excel')}
-                  onXuat={() => toast(`Đã xuất ${list.length} chứng từ ra Excel`)}
-                />
-                <NutTuyChinhCot
-                  icon={<IconFigmaSliders />}
-                  cols={cot.colsDu}
-                  an={cot.an}
-                  coDinh={COT_CO_DINH}
-                  macDinh={cot.macDinh}
-                  dongBang={cot.dongBang}
-                  gom={{ duoc: dsCotGomNhom, ds: nhomCols, dat: setNhomCols }}
-                  onLuu={cot.luu}
-                  onDoRongTuDong={cot.datDoRongTuDong}
-                />
-                <NutHangLoat
-                  selectedRows={selectedRows}
-                  ghi={ghi}
-                  onBoChon={() => setSelectedIds(new Set())}
-                  onXoa={ids => {
-                    xoaPhieu(`${mod.key}/${sc.slug}`, ids.map(id => ({ id, so: String(rows.find(r => String(r.id) === id)?.so ?? '') })), s.ten)
-                    xoaTheCuaPhieu(ids.map(id => rows.find(r => String(r.id) === id)), s.ten)
-                    if (cfg.kiemKe) xoaPhieu(MAN_DC, ids.flatMap(id => dsDcCon(rows.find(r => String(r.id) === id)).map(c => ({ id: c.id, so: c.so }))), s.ten)
-                  }}
-                  open={moHangLoat}
-                  onOpenChange={setMoHangLoat}
-                  onIn={() => setPhieuIn(selectedRows.map(phieuCua))}
-                  khongXoa={cfg.dieuChinh}
-                  khoaXoa={mod.key === 'tien' ? { la: r => r.nguon === 'FABi' || Boolean(lyDoKhongXoaTheCuaPhieu(r)), ly: 'đồng bộ từ FABi hoặc có thẻ chi phí thuộc kỳ đã khoá sổ' } : undefined}
-                />
+                {laChuaDb ? (
+                  <>
+                    <button
+                      type="button"
+                      className="btn"
+                      disabled={selectedIds.size === 0}
+                      onClick={() => {
+                        toast(`Đang đồng bộ lại ${selectedIds.size} phiếu`)
+                        setSelectedIds(new Set())
+                      }}
+                    >
+                      <Icon n="refresh" className="ic sm" />Đồng bộ lại{selectedIds.size ? ` ${selectedIds.size} phiếu` : ''}
+                    </button>
+                    <button
+                      type="button"
+                      className="nut-vuong"
+                      title="Xuất Excel danh sách chứng từ chưa đồng bộ"
+                      aria-label="Xuất Excel"
+                      onClick={() => toast(`Đã xuất ${list.length} phiếu chưa đồng bộ ra Excel`)}
+                    >
+                      <IconFigmaSheet />
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <NutExcel
+                      label={<IconFigmaSheet />}
+                      onNhap={() => toast('Nhập chứng từ từ file Excel')}
+                      onXuat={() => toast(`Đã xuất ${list.length} chứng từ ra Excel`)}
+                    />
+                    <NutTuyChinhCot
+                      icon={<IconFigmaSliders />}
+                      cols={cot.colsDu}
+                      an={cot.an}
+                      coDinh={COT_CO_DINH}
+                      macDinh={cot.macDinh}
+                      dongBang={cot.dongBang}
+                      gom={{ duoc: dsCotGomNhom, ds: nhomCols, dat: setNhomCols }}
+                      onLuu={cot.luu}
+                      onDoRongTuDong={cot.datDoRongTuDong}
+                    />
+                    <NutHangLoat
+                      selectedRows={selectedRows}
+                      ghi={ghi}
+                      onBoChon={() => setSelectedIds(new Set())}
+                      onXoa={ids => {
+                        xoaPhieu(`${mod.key}/${sc.slug}`, ids.map(id => ({ id, so: String(rows.find(r => String(r.id) === id)?.so ?? '') })), s.ten)
+                        xoaTheCuaPhieu(ids.map(id => rows.find(r => String(r.id) === id)), s.ten)
+                        if (cfg.kiemKe) xoaPhieu(MAN_DC, ids.flatMap(id => dsDcCon(rows.find(r => String(r.id) === id)).map(c => ({ id: c.id, so: c.so }))), s.ten)
+                      }}
+                      open={moHangLoat}
+                      onOpenChange={setMoHangLoat}
+                      onIn={() => setPhieuIn(selectedRows.map(phieuCua))}
+                      khongXoa={cfg.dieuChinh}
+                      khoaXoa={mod.key === 'tien' ? { la: r => r.nguon === 'FABi' || Boolean(lyDoKhongXoaTheCuaPhieu(r)), ly: 'đồng bộ từ FABi hoặc có thẻ chi phí thuộc kỳ đã khoá sổ' } : undefined}
+                    />
+                  </>
+                )}
               </div>
             </div>
 
@@ -717,13 +869,13 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
           {list.length ? (
             <>
               <Table
-                cols={cot.colsHien}
-                rows={displayRows}
+                cols={laChuaDb ? colsChuaDb : cot.colsHien}
+                rows={laChuaDb ? pagedRows : displayRows}
                 motDong
                 keDoc
-                doRong={cot.doRong}
+                doRong={laChuaDb ? undefined : cot.doRong}
                 onToggleGroup={handleToggleGroup}
-                loc={{ gt: locCot, dat: (k, g) => { setLocCot(x => ({ ...x, [k]: g })); setTrang(1) }, bo: new Set(['chk', 'stt', 'action']),
+                loc={{ gt: locCot, dat: (k, g) => { setLocCot(x => ({ ...x, [k]: g })); setTrang(1) }, bo: new Set(['chk', 'stt', 'action', 'xuLy']),
                   kieu: c => kieuCot(c.k), layLuaChon }}
                 onRow={r => setActiveId(r.id)}
                 rowCls={r => [
@@ -731,14 +883,14 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
                   r.tt === 'nhap' && ghi ? 'chua-ghi' : '',
                   r.tt === 'loi' && ghi ? 'bad' : '',
                 ].filter(Boolean).join(' ')}
-                sum={{
+                sum={laChuaDb ? { ma: `Tổng (${list.length} dòng)`, tien: list.reduce((a, r) => a + Number(r.tien), 0) } : {
                   stt: String(nhomCols.length > 0 ? list.length : pagedRows.length),   // cột # hẹp, chỉ ghi số dòng (T505)
                   ...congCot(nhomCols.length > 0 ? list : pagedRows),
                 }}
               />
               <PhanTrang
                 tong={list.length}
-                tongCong={congCot(list)}
+                tongCong={laChuaDb ? { tien: list.reduce((a, r) => a + Number(r.tien), 0) } : congCot(list)}
                 trang={trangHienTai}
                 coTrang={coTrang}
                 onTrang={setTrang}

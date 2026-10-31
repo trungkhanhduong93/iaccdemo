@@ -123,9 +123,10 @@ export interface MDsDongPhieuProps {
   tien?: number
   hienTien?: boolean
   onClick: () => void
-  tieuDe?: string
+  tieuDe?: ReactNode
   soLuong?: number
   dvt?: string
+  lyDo?: string
 }
 
 export function MDsDongPhieu({
@@ -138,6 +139,7 @@ export function MDsDongPhieu({
   tieuDe,
   soLuong: slProp,
   dvt,
+  lyDo,
 }: MDsDongPhieuProps) {
   const coSl = slProp !== undefined
   return (
@@ -152,6 +154,7 @@ export function MDsDongPhieu({
           {soDongHang > 0 && <span className="m-mh-dong-hh">{soDongHang} hàng hoá</span>}
         </div>
         {dongPhu && <span className="m-mh-dong-ncc" title={dongPhu}>{dongPhu}</span>}
+        {lyDo && <div className="m-dong-ly">{lyDo}</div>}
       </div>
       {coSl ? (
         <div className="m-the-hang-phai">

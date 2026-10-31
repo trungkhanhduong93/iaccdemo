@@ -18,6 +18,8 @@ export interface KetQuaDongBo {
   mon: string[]
   lamLai: boolean
   tichPhu?: boolean
+  loaiThu?: boolean
+  loaiChi?: boolean
 }
 
 export interface HopDongBoProps {
@@ -27,6 +29,7 @@ export interface HopDongBoProps {
   ds: MucDongBo[]
   coMon?: boolean
   dsMon?: string[]
+  coLoaiPhieu?: boolean   // Thu chi: thêm mục chọn Loại phiếu (T697)
   nhanLamLai: string
   nutChinh: string
   nutDangChay?: string
@@ -45,6 +48,7 @@ export function HopDongBo({
   ds,
   coMon = false,
   dsMon = [],
+  coLoaiPhieu = false,
   nhanLamLai,
   nutChinh,
   nutDangChay,
@@ -67,6 +71,8 @@ export function HopDongBo({
   const [lamLai, setLamLai] = useState(lamLaiMacDinh)
   const [tichPhuVal, setTichPhuVal] = useState(tichPhu?.macDinh ?? false)
   const [dangChay, setDangChay] = useState(false)
+  const [loaiThu, setLoaiThu] = useState(true)
+  const [loaiChi, setLoaiChi] = useState(true)
 
   const timRef = useRef<HTMLInputElement>(null)
   const monAnchorRef = useRef<HTMLDivElement>(null)
@@ -133,7 +139,7 @@ export function HopDongBo({
   }, [dsMon, timMon])
 
   const handleDongBo = () => {
-    if (chon.length === 0 || dangChay) return
+    if (chon.length === 0 || dangChay || (coLoaiPhieu && !loaiThu && !loaiChi)) return
     setDangChay(true)
     timerRef.current = window.setTimeout(() => {
       setDangChay(false)
@@ -144,6 +150,8 @@ export function HopDongBo({
         mon,
         lamLai,
         tichPhu: Boolean(tichPhuVal),
+        loaiThu,
+        loaiChi,
       })
     }, 900)
   }
@@ -192,7 +200,40 @@ export function HopDongBo({
             <ChonKhoangNgay value={khoangNgay} onChange={setKhoangNgay} />
           </div>
 
+          {coLoaiPhieu && (
+            <div className="hdb-muc">
+              <div className="hdb-nhan">Loại phiếu</div>
+              <div className="hdb-chon-loai">
+                <label className={`hdb-the-loai${loaiThu ? ' on' : ''}`}>
+                  <input
+                    type="checkbox"
+                    checked={loaiThu}
+                    disabled={dangChay}
+                    onChange={e => setLoaiThu(e.target.checked)}
+                  />
+                  <div className="hdb-the-loai-tt">
+                    <b>Phiếu thu</b>
+                    <small>Thu tiền mặt, thu ngân hàng</small>
+                  </div>
+                </label>
+                <label className={`hdb-the-loai${loaiChi ? ' on' : ''}`}>
+                  <input
+                    type="checkbox"
+                    checked={loaiChi}
+                    disabled={dangChay}
+                    onChange={e => setLoaiChi(e.target.checked)}
+                  />
+                  <div className="hdb-the-loai-tt">
+                    <b>Phiếu chi</b>
+                    <small>Chi tiền mặt, chi ngân hàng</small>
+                  </div>
+                </label>
+              </div>
+            </div>
+          )}
+
           <div className="hdb-muc">
+
             <div className="hdb-nhan">{nhanDs}</div>
             <div className="hdb-ds-khoi">
               <div className="hdb-tim-o">
@@ -272,6 +313,8 @@ export function HopDongBo({
 
           {coMon && (
             <div className="hdb-muc">
+
+
               <div className="hdb-nhan">Món bán</div>
               <div
                 ref={monAnchorRef}
@@ -435,7 +478,7 @@ export function HopDongBo({
             <button
               type="button"
               className="btn pri"
-              disabled={chon.length === 0 || dangChay}
+              disabled={chon.length === 0 || dangChay || (coLoaiPhieu && !loaiThu && !loaiChi)}
               onClick={handleDongBo}
             >
               {dangChay && <Icon n="refresh" className="ic sm hdb-spin" />}

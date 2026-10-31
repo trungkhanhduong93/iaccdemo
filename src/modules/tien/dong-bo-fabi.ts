@@ -6,6 +6,7 @@ import type { Row } from '../types'
 import type { Session } from '../../app/session'
 import { CUA_HANG, daKhoaSo } from '../../data/mock'
 import { DS_PTTT, DS_QUY_TIEN_112 } from '../danh-muc/data'
+import { soFabi } from '../ban-hang/ChungTuBanHang'
 
 type SDongBo = Pick<Session, 'donVi' | 'dongBoThuChi' | 'mapPttt'>
 
@@ -63,7 +64,7 @@ const MAU: [string, string, string, 'thu' | 'chi', string, string, number][] = [
 ]
 
 /** Phiếu FABi chưa vào sổ: lyDo 'map' là PTTT chưa map quỹ, 'khoa' là ngày thuộc kỳ đã khoá sổ (T691) */
-export interface PhieuChoFabi { cn: string; pttt: string; dienGiai: string; tien: number; ngay: string; gio: string; kieu: 'thu' | 'chi'; lyDo: 'map' | 'khoa' }
+export interface PhieuChoFabi { ma: string; cn: string; pttt: string; dienGiai: string; tien: number; ngay: string; gio: string; kieu: 'thu' | 'chi'; lyDo: 'map' | 'khoa'; chiTiet?: string }
 
 /** Quỹ theo mã: quỹ mẫu ở Danh mục Quỹ tiền; quỹ thêm mới trong phiên chưa có ở danh sách mẫu thì coi là ngân hàng nếu mã bắt đầu NH */
 const quyTheoMa = (ma: string) => DS_QUY_TIEN_112.find(q => q.ma === ma) ?? { ma, ten: ma, loai: ma.startsWith('NH') ? 'Ngân hàng' : 'Tiền mặt' }
@@ -78,8 +79,10 @@ export function phieuThuChiFabi(s: SDongBo) {
     const maQuy = map[khoaMap(cn, pttt)]
     const tenCn = CUA_HANG.find(c => c.id === cn)?.ten ?? cn
     const tenPt = DS_PTTT.find(x => x.ma === pttt)?.ten ?? pttt
-    if (daKhoaSo(ngay, cn)) { khoa.push({ cn: tenCn, pttt: tenPt, dienGiai: dg, tien, ngay, gio, kieu, lyDo: 'khoa' }); return }
-    if (!maQuy) { cho.push({ cn: tenCn, pttt: tenPt, dienGiai: dg, tien, ngay, gio, kieu, lyDo: 'map' }); return }
+    const ma = soFabi(`fabi-tc-${i + 1}`)
+    const ngan = tenCn.replace(/^Phố Mây /, '')
+    if (daKhoaSo(ngay, cn)) { const [, m, y] = ngay.split('/'); khoa.push({ ma, cn: tenCn, pttt: tenPt, dienGiai: dg, tien, ngay, gio, kieu, lyDo: 'khoa', chiTiet: `Tháng ${m}/${y} của ${ngan} đã khoá sổ` }); return }
+    if (!maQuy) { cho.push({ ma, cn: tenCn, pttt: tenPt, dienGiai: dg, tien, ngay, gio, kieu, lyDo: 'map', chiTiet: `${tenPt} của ${ngan} chưa gán quỹ` }); return }
     const quy = quyTheoMa(maQuy)
     const nh = quy.loai === 'Ngân hàng'
     const loai = kieu === 'thu' ? (nh ? 'bc' : 'thu') : (nh ? 'unc' : 'chi')

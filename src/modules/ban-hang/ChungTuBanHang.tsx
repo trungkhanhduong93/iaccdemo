@@ -17,11 +17,12 @@ import { Select } from '../../ui/Dropdown'
 import { PhanTrang } from '../../ui/PhanTrang'
 import { useDaXoa } from '../../ui/generic/daXoa'
 import { ChonKhoangNgay, docNgay, thangMacDinh, trongKhoang, type KhoangNgay } from '../../ui/ChonNgay'
-import { NutExcel } from '../../ui/CongCuDs'
-import { IconFigmaSearch } from '../../ui/IconFigma'
+import { NutDongBo, NutExcel } from '../../ui/CongCuDs'
+import { HopDongBo } from '../../ui/HopDongBo'
+import { IconFigmaSearch, IconFigmaSheet } from '../../ui/IconFigma'
 import { dangLoc, dsGiaTri, khopLoc, type GiaTriLoc, type KieuLoc, type LocCot } from '../../ui/LocCot'
 import {
-  BoLoc, NutTuyChinhCot, useCauHinhLoc, useCotDs, useLocNhap, type OLocDef,
+  BoLoc, ChipTrangThai, cotChon, NutTuyChinhCot, useCauHinhLoc, useCotDs, useLocNhap, type Chip, type OLocDef,
 } from '../../ui/LocNangCao'
 import { HopInChungTu, type PhieuIn } from '../../ui/bao-cao/InChungTu'
 import { TT_CT, tomTatTenHang } from '../../ui/generic/gen'
@@ -233,6 +234,42 @@ export const PTTT: [keyof NgayPOS, string][] = [
 ]
 export const ptttCua = (x: NgayPOS) => PTTT.filter(([k]) => Number(x[k]) > 0).map(([, t]) => t)
 
+// Dữ liệu mẫu đồng bộ POS (T697 theo bản mẫu artifact 5)
+export const MON_POS: Record<string, [string, string, number]> = {
+  'CF-SD': ['Cà phê sữa đá', 'Ly', 29000], 'TD-CS': ['Trà đào cam sả', 'Ly', 45000], 'TS-TC': ['Trà sữa trân châu', 'Ly', 42000],
+  'NC-CAM': ['Nước cam ép', 'Ly', 39000], 'BM-TN': ['Bánh mì thịt nướng', 'Ổ', 35000], 'PH-BO': ['Phở bò tái', 'Tô', 65000],
+  'CM-GA': ['Cơm gà xối mỡ', 'Đĩa', 59000], 'BF-01': ['Bánh flan caramel', 'Cái', 25000], 'TDCS-L': ['Trà đào cam sả size L', 'Ly', 55000],
+}
+const VAT_POS = 0.08
+const dtMonPos = (ma: string, sl: number) => (MON_POS[ma]?.[2] ?? 0) * sl
+
+export const POS_OK_MAU: [string, string, string, string, string, number, string][] = [
+  ['XBPOS261007-001', 'FBA4Z9K2LQ7M', '07/10/2026 07:12', 'Phố Mây Lê Lợi', 'CF-SD', 2, 'Tiền mặt'],
+  ['XBPOS261007-001', 'FBA4Z9K2LQ7M', '07/10/2026 07:12', 'Phố Mây Lê Lợi', 'BM-TN', 2, 'Tiền mặt'],
+  ['XBPOS261007-002', 'FBX7D1R8NW3C', '07/10/2026 07:38', 'Phố Mây Thảo Điền', 'PH-BO', 1, 'Chuyển khoản'],
+  ['XBPOS261007-002', 'FBX7D1R8NW3C', '07/10/2026 07:38', 'Phố Mây Thảo Điền', 'NC-CAM', 1, 'Chuyển khoản'],
+  ['XBPOS261007-003', 'FBQ3H6T1BV9K', '07/10/2026 08:05', 'Phố Mây Nguyễn Trãi', 'TS-TC', 3, 'Thẻ'],
+  ['XBPOS261007-003', 'FBQ3H6T1BV9K', '07/10/2026 08:05', 'Phố Mây Nguyễn Trãi', 'TD-CS', 2, 'Thẻ'],
+  ['XBPOS261007-004', 'FBL8M2W5CZ4J', '07/10/2026 08:41', 'Phố Mây Lê Lợi', 'CM-GA', 2, 'Chuyển khoản'],
+  ['XBPOS261007-005', 'FBF1N9Q7XR6D', '07/10/2026 09:17', 'Phố Mây Thảo Điền', 'PH-BO', 4, 'Tiền mặt'],
+  ['XBPOS261007-005', 'FBF1N9Q7XR6D', '07/10/2026 09:17', 'Phố Mây Thảo Điền', 'CF-SD', 4, 'Tiền mặt'],
+  ['XBPOS261007-006', 'FBV6C3K8TM2P', '07/10/2026 10:02', 'Phố Mây Nguyễn Trãi', 'BF-01', 3, 'Tiền mặt'],
+  ['XBPOS261007-007', 'FBJ2T7X4HQ8W', '07/10/2026 11:26', 'Phố Mây Lê Lợi', 'CM-GA', 6, 'Thẻ'],
+  ['XBPOS261007-007', 'FBJ2T7X4HQ8W', '07/10/2026 11:26', 'Phố Mây Lê Lợi', 'NC-CAM', 6, 'Thẻ'],
+  ['XBPOS261007-008', 'FBS9W5L1DK3N', '07/10/2026 11:58', 'Phố Mây Thảo Điền', 'TS-TC', 5, 'Chuyển khoản'],
+  ['XBPOS261007-009', 'FBR4B8M6ZC1T', '07/10/2026 12:20', 'Phố Mây Lê Lợi', 'PH-BO', 3, 'Tiền mặt'],
+]
+
+export const POS_LOI_MAU: [string, string, string, string, number, string, 'hang' | 'pttt' | 'kho' | 'khoa', string][] = [
+  ['FBH3Q8N5TW1Z', '07/10/2026 09:44', 'Phố Mây Lê Lợi', 'TDCS-L', 4, 'Chuyển khoản', 'hang', 'Mã TDCS-L chưa có ở Danh mục hàng hoá'],
+  ['FBW6D2K9XM4R', '07/10/2026 10:31', 'Phố Mây Thảo Điền', 'BF-01', 6, 'Tiền mặt', 'hang', 'Mã BF-01 chưa khai ở danh mục của Thảo Điền'],
+  ['FBT9L4C7QH2V', '07/10/2026 11:12', 'Phố Mây Nguyễn Trãi', 'CM-GA', 3, 'Ví MoMo', 'pttt', 'Ví MoMo của Nguyễn Trãi chưa gán tài khoản nhận tiền'],
+  ['FBT9L4C7QH2V', '07/10/2026 11:12', 'Phố Mây Nguyễn Trãi', 'TS-TC', 3, 'Ví MoMo', 'pttt', 'Ví MoMo của Nguyễn Trãi chưa gán tài khoản nhận tiền'],
+  ['FBK1R5X8VN6J', '07/10/2026 13:02', 'Phố Mây Thảo Điền', 'TD-CS', 2, 'Tiền mặt', 'kho', 'Cửa hàng chưa chọn kho xuất cho món pha chế'],
+  ['FBB7M3W1ZQ9C', '30/09/2026 22:48', 'Phố Mây Lê Lợi', 'PH-BO', 5, 'Thẻ', 'khoa', 'Tháng 09/2026 của Lê Lợi đã khoá sổ'],
+  ['FBB7M3W1ZQ9C', '30/09/2026 22:48', 'Phố Mây Lê Lợi', 'CF-SD', 3, 'Thẻ', 'khoa', 'Tháng 09/2026 của Lê Lợi đã khoá sổ'],
+]
+
 function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
   const { s, toast } = useSession()
   const tyLe = gtgtTyLe(s)
@@ -241,6 +278,9 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
   const loc0 = useLocNhap(locMacDinh)
   const { nhap, dat, ap } = loc0
   const [locCot, setLocCot] = useState<Record<string, GiaTriLoc>>({})
+  const [chipTab, setChipTab] = useState<'all' | 'da-db' | 'chua-db'>('all')
+  const [moHopDongBo, setMoHopDongBo] = useState(false)
+  const [selectedLoiIds, setSelectedLoiIds] = useState<Set<string>>(new Set())
   const [trang, setTrang] = useState(1)
   const [coTrang, setCoTrang] = useState(20)
   const kieu = kieuGhiSoDv(s)
@@ -254,9 +294,18 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
     return (k: string) => { if (!m.has(k)) m.set(k, typeof rows.find(r => r[k] !== undefined && r[k] !== '' && r[k] !== null)?.[k] === 'number'); return m.get(k)! }
   }, [rows])
   const kieuCot = (k: string): KieuLoc =>
-    k === 'ngay' ? 'ngay' : COT_CHON.has(k) ? 'chon' : k === 'tien' || k === 'thue' || k === 'tong' || cotSo(k) ? 'so' : 'chon'   // cột chữ lọc kiểu chọn (T466)
+    k === 'ngay' ? 'ngay' : COT_CHON.has(k) || k === 'nguyenNhan' || k === 'pttt' || k === 'dvt' ? 'chon' : k === 'tien' || k === 'thue' || k === 'tong' || k === 'sl' || k === 'dt' || cotSo(k) ? 'so' : 'chon'
   const chuCot = (k: string, r: Row): string => {
     if (k === 'tt') return tenTT(r)
+    if (k === 'nguyenNhan') {
+      const LY_TEN: Record<string, string> = {
+        hang: 'Món chưa có trong danh mục',
+        pttt: 'PTTT chưa map tài khoản',
+        kho: 'Chưa chọn kho xuất',
+        khoa: 'Kỳ đã khoá sổ',
+      }
+      return LY_TEN[String(r.lyDo)] ?? String(r.lyDo ?? '')
+    }
     const v = r[k]
     return typeof v === 'number' ? `${money(v)} ${v}` : String(v ?? '')
   }
@@ -306,20 +355,206 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
     }
     return true
   })
+  // Dữ liệu Đã đồng bộ và Chưa đồng bộ theo món (T697)
+  const rowsPosOk = useMemo((): Row[] => POS_OK_MAU.map(([soCt, soHd, ngay, cn, maMon, sl, pttt], i) => {
+    const dt = dtMonPos(maMon, sl)
+    const thue = Math.round(dt * VAT_POS)
+    const tong = dt + thue
+    const infoMon = MON_POS[maMon] ?? [maMon, '', 0]
+    return {
+      id: `pos-ok-${i + 1}`,
+      so: soCt,
+      soFabi: soHd,
+      ngay,
+      cn,
+      maMon,
+      tenMon: infoMon[0],
+      dvt: infoMon[1],
+      sl,
+      pttt,
+      dt,
+      thue,
+      tong,
+      tien: dt,
+    }
+  }), [])
+
+  const rowsPosLoi = useMemo((): Row[] => POS_LOI_MAU.map(([soHd, ngay, cn, maMon, sl, pttt, lyDo, chiTiet], i) => {
+    const dt = dtMonPos(maMon, sl)
+    const tong = Math.round(dt * (1 + VAT_POS))
+    const infoMon = MON_POS[maMon] ?? [maMon, '', 0]
+    return {
+      id: `pos-loi-${i + 1}`,
+      soFabi: soHd,
+      so: soHd,
+      ngay,
+      cn,
+      maMon,
+      tenMon: infoMon[0],
+      dvt: infoMon[1],
+      sl,
+      pttt,
+      tong,
+      tien: tong,
+      lyDo,
+      chiTiet,
+    }
+  }), [])
+
+  const listPosOk = useMemo(() => {
+    return rowsPosOk.filter(r => {
+      for (const [k, g] of Object.entries(locCot)) {
+        if (dangLoc(g)) {
+          const val = k === 'tenMon' ? `${r.tenMon} ${r.maMon}` : chuCot(k, r)
+          const numVal = typeof r[k] === 'number' ? r[k] : undefined
+          const dateVal = k === 'ngay' ? docNgay(String(r.ngay).split(' ')[0]) : undefined
+          if (!khopLoc(kieuCot(k), g, val, numVal, dateVal)) return false
+        }
+      }
+      return true
+    })
+  }, [rowsPosOk, locCot])
+
+  const listPosLoi = useMemo(() => {
+    return rowsPosLoi.filter(r => {
+      for (const [k, g] of Object.entries(locCot)) {
+        if (dangLoc(g)) {
+          const LY_TEN: Record<string, string> = {
+            hang: 'Món chưa có trong danh mục',
+            pttt: 'PTTT chưa map tài khoản',
+            kho: 'Chưa chọn kho xuất',
+            khoa: 'Kỳ đã khoá sổ',
+          }
+          const val = k === 'nguyenNhan' ? (LY_TEN[String(r.lyDo)] ?? String(r.lyDo))
+                    : k === 'tenMon' ? `${r.tenMon} ${r.maMon}`
+                    : chuCot(k, r)
+          const numVal = typeof r[k] === 'number' ? r[k] : undefined
+          const dateVal = k === 'ngay' ? docNgay(String(r.ngay).split(' ')[0]) : undefined
+          if (!khopLoc(kieuCot(k), g, val, numVal, dateVal)) return false
+        }
+      }
+      return true
+    })
+  }, [rowsPosLoi, locCot])
+
   // Bỏ chip trạng thái ghi sổ: dải đối soát đơn POS thay cho phần lọc này (T118)
   const list = truocTT
-  const [activeId, setActiveId] = useState<string>(() => list[0]?.id ?? '')
+  const hienThiList = chipTab === 'da-db' ? listPosOk : chipTab === 'chua-db' ? listPosLoi : list
+  const [activeId, setActiveId] = useState<string>(() => hienThiList[0]?.id ?? '')
 
   // Phân trang
-  const soTrang = Math.max(1, Math.ceil(list.length / coTrang))
+  const soTrang = Math.max(1, Math.ceil(hienThiList.length / coTrang))
   const trangHienTai = Math.min(trang, soTrang)
   const pagedRows = useMemo(() => {
     const batDau = (trangHienTai - 1) * coTrang
-    return list.slice(batDau, batDau + coTrang).map((r, i): Row => ({ ...r, stt: batDau + i + 1 }))
-  }, [list, trangHienTai, coTrang])
+    return hienThiList.slice(batDau, batDau + coTrang).map((r, i): Row => ({ ...r, stt: batDau + i + 1 }))
+  }, [hienThiList, trangHienTai, coTrang])
 
-  const sum = (k: string) => pagedRows.reduce((a, r) => a + r[k], 0)
-  const tongDs = (k: string) => list.reduce((a, r) => a + (r as Row)[k], 0)
+  const sum = (k: string) => pagedRows.reduce((a, r) => a + Number(r[k] || 0), 0)
+  const tongDs = (k: string) => hienThiList.reduce((a, r) => a + Number((r as Row)[k] || 0), 0)
+
+  const colsPosOk: Col[] = [
+    {
+      k: 'so',
+      t: 'Số chứng từ',
+      cls: 'code',
+      w: 150,
+      dinh: 'trai',
+      r: r => (
+        <button
+          type="button"
+          className="ds-link-so"
+          title={String(r.so ?? '')}
+          onClick={e => {
+            e.stopPropagation()
+            nav(`${path}/${r.id}`)
+          }}
+        >
+          {r.so}
+        </button>
+      ),
+    },
+    { k: 'soFabi', t: 'Hoá đơn FABi', cls: 'code', w: 130 },
+    { k: 'ngay', t: 'Ngày bán', w: 136 },
+    { k: 'cn', t: 'Cửa hàng', w: 150 },
+    {
+      k: 'tenMon',
+      t: 'Tên món',
+      w: 220,
+      r: r => (
+        <span className="ds-mon-cell">
+          <b>{r.tenMon}</b>
+          <small className="muted code">{r.maMon}</small>
+        </span>
+      ),
+    },
+    { k: 'dvt', t: 'ĐVT', w: 70 },
+    { k: 'sl', t: 'Số lượng bán', num: true, w: 120, r: r => money(Number(r.sl)) },
+    { k: 'pttt', t: 'PTTT', w: 120 },
+    { k: 'dt', t: 'Doanh thu', num: true, w: 130, r: r => money(Number(r.dt)) },
+    { k: 'thue', t: 'Thuế GTGT', num: true, w: 120, r: r => money(Number(r.thue)) },
+    { k: 'tong', t: 'Tổng tiền', num: true, w: 130, dinh: 'phai', r: r => <b>{money(Number(r.tong))}</b> },
+  ]
+
+  const colsPosLoi: Col[] = [
+    cotChon(listPosLoi, selectedLoiIds, setSelectedLoiIds),
+    { k: 'soFabi', t: 'Hoá đơn FABi', cls: 'code', w: 130, dinh: 'trai' },
+    { k: 'ngay', t: 'Ngày bán', w: 136, dinh: 'trai' },
+    { k: 'cn', t: 'Cửa hàng', w: 150 },
+    {
+      k: 'tenMon',
+      t: 'Tên món',
+      w: 220,
+      r: r => (
+        <span className="ds-mon-cell">
+          <b>{r.tenMon}</b>
+          <small className="muted code">{r.maMon}</small>
+        </span>
+      ),
+    },
+    { k: 'dvt', t: 'ĐVT', w: 70 },
+    { k: 'sl', t: 'Số lượng bán', num: true, w: 120, r: r => money(Number(r.sl)) },
+    { k: 'pttt', t: 'PTTT', w: 120 },
+    { k: 'tong', t: 'Tổng tiền', num: true, w: 130, r: r => money(Number(r.tong)) },
+    {
+      k: 'nguyenNhan',
+      t: 'Nguyên nhân',
+      w: 280,
+      r: (r: Row) => {
+        const LY_TEN: Record<string, string> = {
+          hang: 'Món chưa có trong danh mục',
+          pttt: 'PTTT chưa map tài khoản',
+          kho: 'Chưa chọn kho xuất',
+          khoa: 'Kỳ đã khoá sổ',
+        }
+        const tenLy = LY_TEN[String(r.lyDo)] ?? String(r.lyDo)
+        const chiTiet = r.chiTiet ? `· ${r.chiTiet}` : ''
+        return (
+          <span className="ds-ly-wrap" title={r.chiTiet ? `${tenLy} · ${r.chiTiet}` : tenLy}>
+            <span className="ly-1">{tenLy}</span> <span className="ly-2">{chiTiet}</span>
+          </span>
+        )
+      },
+    },
+    {
+      k: 'xuLy',
+      t: 'Xử lý',
+      w: 120,
+      r: (r: Row) => {
+        if (r.lyDo === 'hang') return <Link to="/app/danh-muc/1-2" className="ds-link-xl" onClick={e => e.stopPropagation()}>Thêm hàng hoá</Link>
+        if (r.lyDo === 'pttt') return <Link to="/app/danh-muc/1-12" className="ds-link-xl" onClick={e => e.stopPropagation()}>Map tài khoản</Link>
+        if (r.lyDo === 'kho') return <Link to="/app/danh-muc/1-8" className="ds-link-xl" onClick={e => e.stopPropagation()}>Chọn kho</Link>
+        const to = s.goi === 'S' ? '/app/he-thong/khoa-so' : '/app/tong-hop/10-1-6'
+        return <Link to={to} className="ds-link-xl" onClick={e => e.stopPropagation()}>Mở khoá sổ</Link>
+      },
+    },
+  ]
+
+  const chips: Chip[] = [
+    { k: 'all', ten: 'Tất cả', mau: 'var(--blue)', so: list.length },
+    { k: 'da-db', ten: 'Đã đồng bộ', mau: 'var(--green)', so: rowsPosOk.length },
+    { k: 'chua-db', ten: 'Chưa đồng bộ', mau: 'var(--red)', so: rowsPosLoi.length },
+  ]
   const cols: Col[] = [
     { k: 'stt', t: 'STT', w: 46, c: true, dinh: 'trai' },
     { k: 'ngay', t: 'Ngày', w: 100, dinh: 'trai' },
@@ -393,43 +628,100 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
             />
           </div>
           <div className="ds-hang-trang-thai">
+            <ChipTrangThai
+              ds={chips}
+              chon={chipTab}
+              onChon={k => {
+                setChipTab(k as 'all' | 'da-db' | 'chua-db')
+                setSelectedLoiIds(new Set())
+                setTrang(1)
+              }}
+            />
             <div className="ds-toolbar-phai ds-cong-cu-h2">
-              <NutExcel
-                onNhap={() => toast('Nhập chứng từ bán hàng từ file Excel')}
-                onXuat={() => toast(`Đã xuất ${list.length} chứng từ ra Excel`)}
-              />
-              <NutTuyChinhCot
-                cols={cot.colsDu}
-                an={cot.an}
-                coDinh={COT_CO_DINH}
-                macDinh={cot.macDinh}
-                dongBang={cot.dongBang}
-                onLuu={cot.luu}
-                onDoRongTuDong={cot.datDoRongTuDong}
-              />
+              {chipTab === 'chua-db' ? (
+                <>
+                  <button
+                    type="button"
+                    className="btn"
+                    disabled={selectedLoiIds.size === 0}
+                    onClick={() => {
+                      toast(`Đang đồng bộ lại ${selectedLoiIds.size} dòng món`)
+                      setSelectedLoiIds(new Set())
+                    }}
+                  >
+                    <Icon n="refresh" className="ic sm" />Đồng bộ lại{selectedLoiIds.size ? ` ${selectedLoiIds.size} dòng món` : ''}
+                  </button>
+                  <button
+                    type="button"
+                    className="nut-vuong"
+                    title="Xuất Excel danh sách chứng từ chưa đồng bộ"
+                    aria-label="Xuất Excel"
+                    onClick={() => toast(`Đã xuất ${listPosLoi.length} dòng món chưa đồng bộ ra Excel, kèm cột Nguyên nhân`)}
+                  >
+                    <IconFigmaSheet />
+                  </button>
+                </>
+              ) : (
+                <>
+                  <NutDongBo ten="máy POS" onDongBo={() => setMoHopDongBo(true)} />
+                  <NutExcel
+                    onNhap={() => toast('Nhập chứng từ bán hàng từ file Excel')}
+                    onXuat={() => toast(`Đã xuất ${hienThiList.length} chứng từ ra Excel`)}
+                  />
+                  {chipTab === 'all' && (
+                    <NutTuyChinhCot
+                      cols={cot.colsDu}
+                      an={cot.an}
+                      coDinh={COT_CO_DINH}
+                      macDinh={cot.macDinh}
+                      dongBang={cot.dongBang}
+                      onLuu={cot.luu}
+                      onDoRongTuDong={cot.datDoRongTuDong}
+                    />
+                  )}
+                </>
+              )}
             </div>
           </div>
-          {list.length ? (
+          {hienThiList.length ? (
             <>
               <Table
-                cols={cot.colsHien}
+                cols={chipTab === 'da-db' ? colsPosOk : chipTab === 'chua-db' ? colsPosLoi : cot.colsHien}
                 rows={pagedRows}
                 motDong
                 keDoc
-                doRong={cot.doRong}
-                loc={{ gt: locCot, dat: (k, g) => { setLocCot(x => ({ ...x, [k]: g })); setTrang(1) }, bo: new Set(['stt']),
+                doRong={chipTab !== 'all' ? undefined : cot.doRong}
+                loc={{ gt: locCot, dat: (k, g) => { setLocCot(x => ({ ...x, [k]: g })); setTrang(1) }, bo: new Set(['stt', 'chk', 'action', 'xuLy']),
                   kieu: c => kieuCot(c.k), layLuaChon }}
                 onRow={r => setActiveId(r.id)}
-                onDbl={r => nav(`${path}/${r.id}`)}
+                onDbl={r => { if (chipTab === 'all') nav(`${path}/${r.id}`) }}
                 rowCls={r => [
                   r.id === activeId ? 'dang-chon' : '',
-                  r.tt === 'nhap' && ghi ? 'chua-ghi' : '',
+                  chipTab === 'all' && r.tt === 'nhap' && ghi ? 'chua-ghi' : '',
                 ].filter(Boolean).join(' ')}
-                sum={{ ngay: 'Tổng trang', tien: sum('tien'), thue: sum('thue'), giamThue: sum('giamThue'), tong: sum('tong') }}
+                sum={chipTab === 'da-db' ? {
+                  so: `Tổng (${listPosOk.length} dòng)`,
+                  sl: listPosOk.reduce((a, r) => a + Number(r.sl || 0), 0),
+                  dt: listPosOk.reduce((a, r) => a + Number(r.dt || 0), 0),
+                  thue: listPosOk.reduce((a, r) => a + Number(r.thue || 0), 0),
+                  tong: listPosOk.reduce((a, r) => a + Number(r.tong || 0), 0),
+                } : chipTab === 'chua-db' ? {
+                  soFabi: `Tổng (${listPosLoi.length} dòng)`,
+                  sl: listPosLoi.reduce((a, r) => a + Number(r.sl || 0), 0),
+                  tong: listPosLoi.reduce((a, r) => a + Number(r.tong || 0), 0),
+                } : { ngay: 'Tổng trang', tien: sum('tien'), thue: sum('thue'), giamThue: sum('giamThue'), tong: sum('tong') }}
               />
               <PhanTrang
-                tong={list.length}
-                tongCong={{ tien: tongDs('tien'), thue: tongDs('thue'), giamThue: tongDs('giamThue'), tong: tongDs('tong') }}
+                tong={hienThiList.length}
+                tongCong={chipTab === 'da-db' ? {
+                  sl: listPosOk.reduce((a, r) => a + Number(r.sl || 0), 0),
+                  dt: listPosOk.reduce((a, r) => a + Number(r.dt || 0), 0),
+                  thue: listPosOk.reduce((a, r) => a + Number(r.thue || 0), 0),
+                  tong: listPosOk.reduce((a, r) => a + Number(r.tong || 0), 0),
+                } : chipTab === 'chua-db' ? {
+                  sl: listPosLoi.reduce((a, r) => a + Number(r.sl || 0), 0),
+                  tong: listPosLoi.reduce((a, r) => a + Number(r.tong || 0), 0),
+                } : { tien: tongDs('tien'), thue: tongDs('thue'), giamThue: tongDs('giamThue'), tong: tongDs('tong') }}
                 trang={trangHienTai}
                 coTrang={coTrang}
                 onTrang={setTrang}
@@ -453,6 +745,25 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
         </section>
 
       </div>
+      {moHopDongBo && (
+        <HopDongBo
+          tieuDe="Đồng bộ dữ liệu bán hàng từ máy POS"
+          phu="Chọn khoảng thời gian và cửa hàng cần lấy lại hoá đơn FABi về sổ kế toán."
+          nhanDs="Cửa hàng đồng bộ"
+          ds={CUA_HANG.map(c => ({ ma: c.id, ten: c.ten, phu: `Mã POS ${c.id}` }))}
+          chonSan={CUA_HANG.map(c => c.id)}
+          coMon
+          dsMon={Object.values(MON_POS).map(m => m[0])}
+          nhanLamLai="Đồng bộ lại hoá đơn đã có"
+          ghiChuLamLai="Lấy lại hoá đơn đã vào sổ trong kỳ, không nhân đôi"
+          nutChinh="Đồng bộ ngay"
+          onDong={() => setMoHopDongBo(false)}
+          onDongBo={({ tu, den, chon, lamLai }) => {
+            setMoHopDongBo(false)
+            toast(`Đang đồng bộ hoá đơn bán hàng ${chon.length} cửa hàng, ${dmy(tu)} đến ${dmy(den)}${lamLai ? ', lấy lại cả chứng từ đã có' : ''}`)
+          }}
+        />
+      )}
     </div>
   )
 }
