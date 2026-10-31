@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 31/10/2026
+- T705: Ô chọn mã hàng ở phiếu nhập, xuất khác, phiếu mua và các phiếu dòng nguyên vật liệu chia 2 tab. Tab Thực đơn hiện mọi mặt hàng từ FABi, kể cả món không theo dõi tồn kho, không có nút thêm mới. Tab NVL hiện nguyên vật liệu có theo dõi tồn kho, mở sẵn khi chưa chọn hàng. Có cả trên điện thoại.
 - T704: Hộp Thông tin kê khai thuế: hộ kinh doanh chọn được đủ nhóm 1 tới 4; doanh nghiệp chọn riêng thuế GTGT (trực tiếp, khấu trừ) và thuế TNDN (theo doanh thu, theo lợi nhuận). Gói Standard chọn phần chưa kê khai được thì báo gói Plus, Pro mới đáp ứng. Hộp gọn hơn, ô mã số thuế và tên đơn vị chung một hàng. Hệ thống, Thông tin đơn vị chọn được như trên; đơn vị chưa khai thì để trống phần Thông tin kê khai. Nút Thiết lập thông tin ở Kê khai thuế mở Thông tin đơn vị.
 - T703: Hướng dẫn nhanh màn Thu chi và Xuất bán POS trên máy tính tự mở hộp Đồng bộ, chỉ từng mục trong hộp. Sau đó tự bấm chip Chưa đồng bộ, giải thích cột mã FABi, Nguyên nhân, Xử lý và các cột còn lại. Hết hướng dẫn thì hộp đóng, chip về như cũ.
 - T702: Thẻ chi phí phân bổ, form thêm mới không còn 2 cột Đã PB tới hiện tại, Còn lại hiện tại. Xem, sửa thẻ đã có vẫn hiện.

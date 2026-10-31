@@ -12,6 +12,8 @@ import { ngayDauNam, useSession } from '../app/session'
 import type { Row } from '../modules/types'
 
 export interface MucDm { v: string; t: string; dvt?: string }   // dvt: đơn vị tính của hàng vừa thêm tại form, để ô cha điền luôn (T419)
+/** Một tab trong hộp chọn (T705), vd Thực đơn, NVL. dm: khoá danh mục lấy thêm mục vừa thêm tại form; khongThem: tab không cho thêm mới (hàng đồng bộ từ FABi) */
+export interface TabDm { k: string; t: string; ds: (string | MucDm)[]; dm?: string; khongThem?: boolean; macDinh?: boolean }
 
 const daThem = new Map<string, MucDm[]>()
 const nghe = new Set<() => void>()
@@ -31,7 +33,7 @@ export function useMucDaThem(dm: string): MucDm[] {
   return daThem.get(dm) ?? []
 }
 
-export function ChonDanhMuc({ dm, nhan, value, onChange, ds, className = 'inp', style, coMa, chiMa, trong, khongThem, gon }: {
+export function ChonDanhMuc({ dm, nhan, value, onChange, ds, className = 'inp', style, coMa, chiMa, trong, khongThem: khongThemGoc, gon, tabs }: {
   dm: string                         // khoá danh mục, vd ncc, kh, nhanVien, kho, hang
   nhan: string                       // tên danh mục hiện trên nút thêm mới, vd "nhà cung cấp"
   value: string
@@ -44,10 +46,19 @@ export function ChonDanhMuc({ dm, nhan, value, onChange, ds, className = 'inp', 
   chiMa?: boolean                    // ô đã chọn chỉ hiện mã, danh sách vẫn hiện mã - tên; dùng ở cột Mã hàng vì tên đã có cột riêng (T124)
   khongThem?: boolean                // không cho thêm mới tại form, vd quỹ tiền chỉ khai ở danh mục Quỹ tiền
   gon?: boolean                      // thêm hàng hoá bằng hộp nhỏ 4 ô Mã, Tên, ĐVT, Loại hàng hoá, vd phiếu mua hàng, kiểm kê (T388)
+  tabs?: TabDm[]                     // chia danh sách thành tab, thay cho ds (T705)
 }) {
   const them = useMucDaThem(dm)
-  const tatCa: MucDm[] = [...ds.map(x => typeof x === 'string' ? { v: x, t: x } : x), ...them]
-  const cur = tatCa.find(x => x.v === value)
+  const doiMuc = (x: string | MucDm): MucDm => typeof x === 'string' ? { v: x, t: x } : x
+  const dsTab = (t: TabDm): MucDm[] => {
+    const goc = t.ds.map(doiMuc)
+    return [...goc, ...(t.dm ? (daThem.get(t.dm) ?? []).filter(m => !goc.some(g => g.v === m.v)) : [])]
+  }
+  const tabCo = tabs?.findIndex(t => dsTab(t).some(x => x.v === value)) ?? -1
+  const [tab, setTab] = useState(0)
+  const tatCa: MucDm[] = tabs ? (tabs[tab] ? dsTab(tabs[tab]) : []) : [...ds.map(doiMuc), ...them]
+  const khongThem = khongThemGoc || Boolean(tabs?.[tab]?.khongThem)
+  const cur = tabs ? tabs.flatMap(dsTab).find(x => x.v === value) : tatCa.find(x => x.v === value)
   const [mo, setMo] = useState(false)
   const [tim, setTim] = useState('')
   const [hop, setHop] = useState(false)
@@ -61,6 +72,7 @@ export function ChonDanhMuc({ dm, nhan, value, onChange, ds, className = 'inp', 
     if (mo) {
       setTim('')
       setDangTai(false)
+      if (tabs) setTab(tabCo >= 0 ? tabCo : Math.max(0, tabs.findIndex(t => t.macDinh)))   // mở ở tab của mục đang chọn
       setTimeout(() => oTim.current?.focus(), 0)
     }
   }, [mo])
@@ -108,13 +120,21 @@ export function ChonDanhMuc({ dm, nhan, value, onChange, ds, className = 'inp', 
             </svg>
           </button>
         </div>
+        {tabs && (
+          <div className="seg dm-tabs" role="tablist">
+            {tabs.map((t, i) => (
+              <button key={t.k} type="button" role="tab" aria-selected={i === tab} className={i === tab ? 'on' : ''}
+                onClick={() => { setTab(i); setTimeout(() => oTim.current?.focus(), 0) }}>{t.t}</button>
+            ))}
+          </div>
+        )}
         {dangTai ? (
           <div className="dm-dang-tai">Đang tải dữ liệu</div>
         ) : (
           <>
             <div className="dm-tim">
               <Icon n="search" className="ic sm" />
-              <input ref={oTim} value={tim} placeholder={`Tìm ${nhan}`} onChange={e => setTim(chiMa ? e.target.value.toUpperCase() : e.target.value)}
+              <input ref={oTim} value={tim} placeholder={tabs ? 'Tìm mã, tên hàng' : `Tìm ${nhan}`} onChange={e => setTim(chiMa ? e.target.value.toUpperCase() : e.target.value)}
                 onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); if (loc[0]) chon(loc[0].v); else if (tim.trim() && !khongThem) { setMo(false); setHop(true) } } }} />
             </div>
             <div className="dm-ds">

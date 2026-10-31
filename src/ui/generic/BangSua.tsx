@@ -4,7 +4,7 @@ import { createPortal } from 'react-dom'
 import type { VoucherCfg } from '../../modules/types'
 import { CONG_VIEC, HANG, KHACH, KHO, KHOAN_MUC, NCC, NHAN_VIEN, NVL } from '../../data/mock'
 import { Select } from '../Dropdown'
-import { ChonDanhMuc, useMucDaThem } from '../ChonDanhMuc'
+import { ChonDanhMuc, useMucDaThem, type TabDm } from '../ChonDanhMuc'
 import { Icon } from '../Icon'
 import { money } from '../format'
 import { OLoc, dangLoc, dsGiaTri, khopLoc, type GiaTriLoc, type KieuLoc, type LocCot } from '../LocCot'
@@ -135,6 +135,12 @@ export function BangSua({
   const dtDong = tienDong && cfg.doiTuong !== 'none' && hien('dt')   // phiếu chuyển quỹ không có đối tượng
   const lyDong = tienDong && Boolean(lyDo) && hien('ly')
   const danhMucHang = cfg.dong === 'nvl' ? NVL : HANG
+  // Phiếu dòng NVL chọn được cả hàng thực đơn từ FABi (T705), nên tra mã ở cả hai danh mục
+  const dsTraHang: { ma: string; ten: string; dvt: string; gia: number; ts: number }[] = cfg.dong === 'nvl' ? [...NVL, ...HANG] : HANG
+  const tabHang: TabDm[] | undefined = cfg.dong === 'nvl' ? [
+    { k: 'td', t: 'Thực đơn', ds: HANG.map(x => ({ v: x.ma, t: `${x.ma} - ${x.ten}` })), khongThem: true },
+    { k: 'nvl', t: 'NVL', ds: NVL.map(x => ({ v: x.ma, t: `${x.ma} - ${x.ten}` })), dm: 'nvl', macDinh: true },
+  ] : undefined
   // Hàng hoá thêm mới ngay tại form (T65): đơn vị tính tạm "cái", giá 0, sửa trên dòng
   const dmHang = cfg.dong === 'nvl' ? 'nvl' : 'hang'
   const hangThem = useMucDaThem(dmHang)
@@ -174,7 +180,7 @@ export function BangSua({
   }
 
   function chonMaHang(idx: number, ma: string, muc?: { v: string; t: string; dvt?: string }) {
-    const item = danhMucHang.find(x => x.ma === ma)
+    const item = dsTraHang.find(x => x.ma === ma)
     if (!item) {
       const moi = muc ?? hangThem.find(x => x.v === ma)
       capNhat(idx, moi ? { ma, ten: moi.t.split(' - ').slice(1).join(' - '), dvt: moi.dvt || dong[idx]?.dvt || 'cái' } : { ma })   // hàng vừa thêm tại form lấy ĐVT đã chọn trong hộp thêm (T419)
@@ -461,7 +467,7 @@ export function BangSua({
                 {maCot && (
                   <td>
                     <ChonDanhMuc dm={dmHang} nhan={cfg.dong === 'nvl' ? 'nguyên vật liệu' : 'hàng hoá'} coMa chiMa className="inp sm" trong="Chọn" value={d.ma} gon={themGon}
-                      onChange={(v, muc) => chonMaHang(i, v, muc)} ds={danhMucHang.map(x => ({ v: x.ma, t: `${x.ma} - ${x.ten}` }))} />
+                      onChange={(v, muc) => chonMaHang(i, v, muc)} ds={danhMucHang.map(x => ({ v: x.ma, t: `${x.ma} - ${x.ten}` }))} tabs={tabHang} />
                   </td>
                 )}
                 <td>
@@ -483,7 +489,7 @@ export function BangSua({
                     {!d.ma ? (
                       <Select className="inp sm" disabled value="" ds={[{ v: '', t: '—' }]} aria-label="Đơn vị tính" />
                     ) : (() => {
-                      const hangTim = danhMucHang.find(h => h.ma === d.ma) ?? hangThem.find(m => m.v === d.ma)
+                      const hangTim = dsTraHang.find(h => h.ma === d.ma) ?? hangThem.find(m => m.v === d.ma)
                       const dvtChinh = (hangTim && 'dvt' in hangTim && hangTim.dvt) ? hangTim.dvt : (d.dvt || '')
                       const tenHang = d.ten || (hangTim && 'ten' in hangTim ? hangTim.ten : '')
                       const dsQd = quyDoiTuDanhMuc(tenHang, dvtChinh).map(q => q.dv)

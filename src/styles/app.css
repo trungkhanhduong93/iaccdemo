@@ -43718,3 +43718,9 @@ a.hdn-chip:hover { border-color: var(--blue); color: var(--blue); }
 .ktf-gon .ktf-nhom { gap: 6px; }
 .ktf-gon .form-grid { gap: 8px 14px; }
 .ktf-gon .ktf-pop-nut { bottom: -18px; margin: 14px -22px -18px; padding: 10px 22px; }
+
+/* ── Ô chọn mã hàng chia tab Thực đơn, NVL (T705) ── */
+.pop-dm .seg.dm-tabs { display: flex; margin: 0 8px 6px; }
+.pop-dm .seg.dm-tabs button { flex: 1; padding: 5px 9px; }
+.seg.m-lp-tab-hang { display: flex; margin: 0 16px 8px; padding: 3px; }
+.seg.m-lp-tab-hang button { flex: 1; padding: 7px 10px; font-size: 14px; }

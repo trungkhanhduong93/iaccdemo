@@ -840,14 +840,19 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
     }))
     return [...base, ...added]
   }, [cfg.dong, addedHang])
+  // Phiếu dòng NVL: sheet chọn hàng chia 2 tab như web (T705). Thực đơn là mọi mặt hàng từ FABi, NVL là hàng nguồn khác có theo dõi tồn kho
+  const coTabHang = cfg.dong === 'nvl'
+  const [tabHang, setTabHang] = useState<'td' | 'nvl'>('nvl')
+  const dsThucDon = useMemo(() => HANG.map(({ ma, ten, nhom, dvt, gia, ts }) => ({ ma, ten, nhom, dvt, gia, ts })), [])
+  const dsHangTab = coTabHang && tabHang === 'td' ? dsThucDon : danhMucHang
 
   const dsNhomHang = useMemo(() => {
     const set = new Set<string>()
-    danhMucHang.forEach(h => {
+    dsHangTab.forEach(h => {
       if (h.nhom) set.add(h.nhom)
     })
     return ['Tất cả', ...Array.from(set)]
-  }, [danhMucHang])
+  }, [dsHangTab])
 
   // Đối tượng
   const nhanDoiTuong = laTien
@@ -1481,7 +1486,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
 
   // Danh sách hàng hiển thị trong sheet chọn hàng
   const dsHangHienThi = useMemo(() => {
-    let list = danhMucHang
+    let list = dsHangTab
     if (nhomHangChon && nhomHangChon !== 'Tất cả') {
       list = list.filter(h => h.nhom === nhomHangChon)
     }
@@ -1490,7 +1495,15 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
       list = list.filter(h => fold(h.ten).includes(q) || fold(h.ma).includes(q))
     }
     return list
-  }, [danhMucHang, nhomHangChon, timHang])
+  }, [dsHangTab, nhomHangChon, timHang])
+  const tabHangThanh = coTabHang && (
+    <div className="seg m-lp-tab-hang" role="tablist">
+      {([['td', 'Thực đơn'], ['nvl', 'NVL']] as const).map(([k, t]) => (
+        <button key={k} type="button" role="tab" aria-selected={tabHang === k} className={tabHang === k ? 'on' : ''}
+          onClick={() => { setTabHang(k); setNhomHangChon('Tất cả') }}>{t}</button>
+      ))}
+    </div>
+  )
 
   const tatCaDaChon = dsHangHienThi.length > 0 && dsHangHienThi.every(h => dsDong.some(d => d.ma === h.ma))
 
@@ -3094,6 +3107,8 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
               </button>
             </div>
 
+            {tabHangThanh}
+
             {/* Hàng 1: nhóm hàng + tìm kiếm */}
             <div style={{ display: 'flex', gap: 8, padding: '0 16px 8px' }}>
               <span
@@ -3124,7 +3139,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
 
             {/* Hàng 2: Toolbar thêm mới + reload + Chọn tất cả */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '6px 14px 6px 10px', borderBottom: '1px solid #eeeeee' }}>
-              <button
+              {!(coTabHang && tabHang === 'td') && <button
                 type="button"
                 className="m-t601-btn-ib"
                 aria-label="Thêm hàng hoá mới"
@@ -3137,7 +3152,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                   <circle cx="12" cy="12" r="9" />
                   <path d="M12 8v8M8 12h8" />
                 </svg>
-              </button>
+              </button>}
               <button
                 type="button"
                 className="m-t601-btn-ib"
@@ -3259,7 +3274,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                 }}
                 onClick={() => {
                   if (hangDaChonMoi.size > 0) {
-                    const itemsThem = danhMucHang.filter(h => hangDaChonMoi.has(h.ma))
+                    const itemsThem = [...danhMucHang, ...(coTabHang ? dsThucDon : [])].filter(h => hangDaChonMoi.has(h.ma))
                     const cacDongMoi: DongM[] = itemsThem.map(h => {
                       const gia = h.gia || 0
                       const sl = 1
@@ -3324,6 +3339,8 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
               </button>
             </div>
 
+            {tabHangThanh}
+
             <div className="m-lp-loc-hang">
               <button
                 type="button"
@@ -3360,7 +3377,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
 
             <MThanhThem
               nhan="Thêm hàng hoá"
-              onThem={() => {
+              onThem={coTabHang && tabHang === 'td' ? undefined : () => {
                 setMoChonHang(false)
                 setMoThemDm('hang')
               }}

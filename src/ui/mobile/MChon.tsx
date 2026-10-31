@@ -22,14 +22,14 @@ export interface MChonProps {
 }
 
 /** Hàng biểu tượng Thêm mới, Tải lại của sheet chọn danh mục, như ô chọn danh mục trên web (T538, T539) */
-export const MThanhThem: FC<{ nhan: string, onThem: () => void, onTaiLai: () => void }> = ({ nhan, onThem, onTaiLai }) => (
+export const MThanhThem: FC<{ nhan: string, onThem?: () => void, onTaiLai: () => void }> = ({ nhan, onThem, onTaiLai }) => (   // không có onThem thì ẩn nút thêm, vd tab Thực đơn đồng bộ từ FABi (T705)
   <div className="m-tc-dt-thanh m-tam-thanh">
-    <button type="button" className="m-tc-dt-btn-ic" aria-label={nhan} title={nhan} onClick={onThem}>
+    {onThem && <button type="button" className="m-tc-dt-btn-ic" aria-label={nhan} title={nhan} onClick={onThem}>
       <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
         <circle cx="8" cy="8" r="6" />
         <path d="M8 5.2v5.6M5.2 8h5.6" />
       </svg>
-    </button>
+    </button>}
     <button type="button" className="m-tc-dt-btn-ic" aria-label="Tải lại danh sách" title="Tải lại danh sách" onClick={onTaiLai}>
       <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
         <path d="M13.3 7.5A5.5 5.5 0 1 1 11.7 3.6L13.5 5.5" />
