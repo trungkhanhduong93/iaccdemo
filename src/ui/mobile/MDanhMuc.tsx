@@ -15,6 +15,9 @@ import { GoiYLapPhieu } from '../generic/GoiYLapPhieu'
 import { MChon } from './MChon'
 import type { KieuMTrong } from './MTrong'
 
+// Tích lưu dạng 1, true hoặc '1' (Là chi phí, Chi phí phân bổ nhiều kỳ, T700)
+const laCo = (v: unknown) => v === 1 || v === true || v === '1'
+
 export const MDanhMuc: FC<ScreenProps> = ({ sc }) => {
   const { s, set, toast } = useSession()
   const nav = useNavigate()
@@ -77,9 +80,10 @@ export const MDanhMuc: FC<ScreenProps> = ({ sc }) => {
       )
       const _k = r._k ?? k
       const tt = ttGhiDe[_k] !== undefined ? ttGhiDe[_k] : r._tt
-      const chiPhi = chiPhiGhiDe[_k] !== undefined ? chiPhiGhiDe[_k] : r.chiPhi
-      // giá trị lưu trong phiên như web (vd quỹ: PTTT từ FABi, số dư ban đầu gói Standard, T138)
-      return { ...(cfg.phien ? cfg.phien.gan(r, s) : r), _k, _tt: tt, chiPhi }
+      // giá trị lưu trong phiên như web (vd quỹ: PTTT từ FABi, số dư ban đầu gói Standard, T138; lý do: Là chi phí, Chi phí phân bổ nhiều kỳ, T700)
+      const g = cfg.phien ? cfg.phien.gan(r, s) : r
+      const chiPhi = chiPhiGhiDe[_k] !== undefined ? chiPhiGhiDe[_k] : g.chiPhi
+      return { ...g, _k, _tt: tt, chiPhi }
     })
   }, [allGoc, ttGhiDe, chiPhiGhiDe, cols0, cfg.phien, s])
 
@@ -379,9 +383,11 @@ export const MDanhMuc: FC<ScreenProps> = ({ sc }) => {
                 </div>
               </div>
               <div className="m-the-dm-v2-dong-phu m-the-dm-phu">
-                {laHangHoa
+                {laLyDo
+                  ? [`Nguồn: ${r.nguon === 'FABi' ? 'FABi' : 'Thủ công'}`,   // T708
+                      r.dung === 'Chi tiền' && (laCo(r.phanBo) ? 'Chi phí phân bổ nhiều kỳ' : laCo(r.chiPhi) ? 'Là chi phí' : '')].filter(Boolean).join(' · ')   // T700
+                  : laHangHoa
                   ? `Đơn vị tính chính: ${r.dvt || 'Cái'}`
-                  : laLyDo ? `Nguồn: ${r.nguon === 'FABi' ? 'FABi' : 'Thủ công'}`   // T708
                   : (r.nhom ? `Nhóm: ${r.nhom}` : r.dvt ? `ĐVT: ${r.dvt}` : (r.mst ? `MST: ${r.mst}` : ''))}
               </div>
             </div>
@@ -684,7 +690,15 @@ export const MDanhMuc: FC<ScreenProps> = ({ sc }) => {
                   <div className="m-xp-dong-tt">
                     <span className="m-xp-nhan">Là chi phí:</span>
                     <span className="m-xp-tri dam">
-                      {xemLyDo.chiPhi ? 'Có' : 'Không'}
+                      {laCo(xemLyDo.chiPhi) ? 'Có' : 'Không'}
+                    </span>
+                  </div>
+                )}
+                {xemLyDo.dung === 'Chi tiền' && (
+                  <div className="m-xp-dong-tt">
+                    <span className="m-xp-nhan">Chi phí phân bổ nhiều kỳ:</span>
+                    <span className="m-xp-tri dam">
+                      {laCo(xemLyDo.phanBo) ? 'Có' : 'Không'}
                     </span>
                   </div>
                 )}

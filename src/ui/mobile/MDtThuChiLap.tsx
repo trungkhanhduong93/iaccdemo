@@ -7,7 +7,7 @@ import { duongDan } from '../../app/registry'
 import { cuaHangHienTai, useSession } from '../../app/session'
 import { docSoTien, money } from '../format'
 import { goSoVN, docSoVN } from '../OSoGo'
-import { CUA_HANG, HOM_NAY, KHACH, LY_CHI_PHI, LY_DO, NCC, NHAN_VIEN, TK_NGAN_HANG, MA_LY_CHO_PHAN_BO } from '../../data/mock'
+import { CUA_HANG, HOM_NAY, KHACH, LY_DO, NCC, NHAN_VIEN, TK_NGAN_HANG } from '../../data/mock'
 import { layChiNhanhNho } from '../ChonCuaHangTruoc'
 import { soKeTiep, suaPhieu, themPhieu, ghiNhatKy } from '../generic/daXoa'
 import { MAN_THU_CHI, QUY_TIEN, TEN_CT_TT, TIEN_TO_CT_TT } from '../generic/ChungTuForm'
@@ -19,7 +19,7 @@ import { MChon } from './MChon'
 import { soDuQuy } from './MThanhToanNgay'
 import { Icon } from '../Icon'
 import { MThanhCong, type DongTomTat } from './MThanhCong'
-import { addCatalogRow, getAllCatalogRows, getDmMeta, sinhMaKeTiep, useAddedCatalogRows } from '../generic/danhMucStore'
+import { addCatalogRow, getAllCatalogRows, getDmMeta, laLyChiPhi, laLyPhanBo, sinhMaKeTiep, useAddedCatalogRows } from '../generic/danhMucStore'
 import { LichDon } from '../ChonNgay'
 import { xongViecHuongDan } from '../../modules/home/HuongDan'
 
@@ -484,8 +484,8 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
       setDaLuu(true)
       return
     }
-    // Phiếu chi lý do Chi phí chờ phân bổ: báo rồi mở tạo thẻ chi phí phân bổ, như MLapPhieu (T419, T633)
-    const laLyChoPb = isChi && [lyDo, dsDong[0]?.ly].some(l => l === 'Chi phí chờ phân bổ' || l === MA_LY_CHO_PHAN_BO)
+    // Phiếu chi lý do tích Chi phí phân bổ nhiều kỳ: báo rồi mở tạo thẻ chi phí phân bổ, như MLapPhieu (T419, T633, T700)
+    const laLyChoPb = isChi && [lyDo, ...dsDong.map(d => d.ly)].some(l => laLyPhanBo(l, s))
     if (dangSua && row) {
       suaPhieu(manKey, targetId, duLieuPhieu)
       ghiNhatKy(manKey, targetId, soCt, s.ten, `Sửa chứng từ ${soCt}`)
@@ -552,7 +552,7 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
   ]
 
   // Phiếu chi có lý do thuộc nhóm Chi phí mới cần tháng ghi nhận chi phí; phiếu thu, phiếu chi khác thì ẩn
-  const laChiPhi = isChi && LY_CHI_PHI.includes(lyDo)
+  const laChiPhi = isChi && laLyChiPhi(lyDo, s)
 
   // Lý do thu, chi lấy từ danh mục Lý do nghiệp vụ, gồm cả lý do vừa thêm trong phiên (như web)
   const dsLyDoOptions = useMemo(() => {
@@ -1691,7 +1691,7 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
               <h3 className="m-tam-tieu" style={{ fontSize: 16 }}>Tạo thẻ chi phí phân bổ</h3>
             </div>
             <div className="m-lp-hop-nd" style={{ padding: '14px 16px', fontSize: 14, color: 'var(--ink)' }}>
-              <b>{hoiThe.soCt}</b> có khoản Chi phí chờ phân bổ. Phần mềm mở màn Tạo thẻ chi phí phân bổ, điền sẵn tên, số tiền, ngày, chứng từ gốc từ phiếu. Bạn vẫn sửa lại được.
+              <b>{hoiThe.soCt}</b> có khoản chi phí phân bổ nhiều kỳ. Phần mềm mở màn Tạo thẻ chi phí phân bổ, điền sẵn tên, số tiền, ngày, chứng từ gốc từ phiếu. Bạn vẫn sửa lại được.
             </div>
             <div className="m-tam-day" style={{ padding: '10px 16px' }}>
               <button

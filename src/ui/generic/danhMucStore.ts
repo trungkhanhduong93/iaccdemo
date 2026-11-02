@@ -80,12 +80,21 @@ export function useAddedCatalogRows(dm: string): Row[] {
   return daThemRows.get(chieuKhoa(dm)) ?? []
 }
 
+function tichLyChi(ten: string | undefined, s: Pick<Session, 'donVi' | 'lyDoGhiDe'>, k: 'chiPhi' | 'phanBo'): boolean {
+  if (!ten) return false
+  const r = getAllCatalogRows('1.16').find(x => (x.ten === ten || x.ma === ten) && x.dung === 'Chi tiền')
+  const v = r ? ganLyDo(r, s)[k] : undefined
+  return v === 1 || v === true || v === '1'
+}
+
 /** Lý do chi (theo tên) có tích Chi phí phân bổ nhiều kỳ, kể cả lý do thêm, sửa trong phiên: phiếu chi lý do này gợi ý tạo thẻ chi phí (T700) */
 export function laLyPhanBo(ten: string | undefined, s: Pick<Session, 'donVi' | 'lyDoGhiDe'>): boolean {
-  if (!ten) return false
-  const r = getAllCatalogRows('1.16').find(x => x.ten === ten && x.dung === 'Chi tiền')
-  const v = r ? ganLyDo(r, s).phanBo : undefined
-  return v === 1 || v === true || v === '1'
+  return tichLyChi(ten, s, 'phanBo')
+}
+
+/** Lý do chi có tích Là chi phí, kể cả tích sửa trong phiên: phiếu hiện nhãn Chi phí, tháng ghi nhận chi phí (T700) */
+export function laLyChiPhi(ten: string | undefined, s: Pick<Session, 'donVi' | 'lyDoGhiDe'>): boolean {
+  return tichLyChi(ten, s, 'chiPhi')
 }
 
 /** Thêm một dòng mới vào danh mục trong phiên */

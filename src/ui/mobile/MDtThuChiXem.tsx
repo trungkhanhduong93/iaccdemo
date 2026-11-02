@@ -10,7 +10,8 @@ import { useDongChungTu } from '../generic/VoucherScreen'
 import { HopXacNhan } from '../LocNangCao'
 import type { Dong } from '../generic/gen'
 import { tinhButToan } from './butToan'
-import { CUA_HANG, LY_CHI_PHI } from '../../data/mock'
+import { CUA_HANG } from '../../data/mock'
+import { laLyChiPhi } from '../generic/danhMucStore'
 
 export interface MDtThuChiXemProps extends ScreenProps {
   row: Row
@@ -231,7 +232,7 @@ export const MDtThuChiXem: FC<MDtThuChiXemProps> = ({
                     <span className="nhan">{isChi ? 'Lý do chi' : 'Lý do thu'}</span>
                     <span className="tri ly-do-wrap">
                       <span>{triLyDo}</span>
-                      {isChi && LY_CHI_PHI.includes(triLyDo) && <span className="m-tc-badge-nhom-cp">Chi phí</span>}
+                      {isChi && laLyChiPhi(triLyDo, s) && <span className="m-tc-badge-nhom-cp">Chi phí</span>}
                     </span>
                   </div>
                   <div className="m-tc-vach-ngang" />

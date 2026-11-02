@@ -23,7 +23,7 @@ import { MChon, MThanhThem } from './MChon'
 import { MTrong } from './MTrong'
 import { MLapPhieuKho } from './MLapPhieuKho'
 import { MFormDm } from './MFormDm'
-import { addCatalogRow, getAllCatalogRows, getDmMeta, sinhMaKeTiep, useAddedCatalogRows } from '../generic/danhMucStore'
+import { addCatalogRow, getAllCatalogRows, getDmMeta, laLyPhanBo, sinhMaKeTiep, useAddedCatalogRows } from '../generic/danhMucStore'
 import { TAI_KHOAN } from '../../modules/danh-muc/data'
 import { tinhButToan } from './butToan'
 import { quyDoiTuDanhMuc } from '../../modules/danh-muc/QuyDoiDvt'
@@ -1869,11 +1869,8 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
       return
     }
 
-    // Phiếu chi có lý do Chi phí chờ phân bổ: báo rồi mở tạo thẻ chi phí phân bổ (Mục 4 spec; T419: thông báo, không hỏi)
-    const laLyChoPb = laTien && (
-      (dsDong[0]?.ly === TEN_LY_CHO_PHAN_BO) ||
-      (dsDong[0]?.ly === MA_LY_CHO_PHAN_BO)
-    )
+    // Phiếu chi có lý do tích Chi phí phân bổ nhiều kỳ: báo rồi mở tạo thẻ chi phí phân bổ (Mục 4 spec; T419: thông báo, không hỏi; T700)
+    const laLyChoPb = laTien && dsDong.some(d => laLyPhanBo(d.ly, s))
 
     if (laLyChoPb) {
       setHoiThe({ soCt, idMoi: idLuu })
@@ -1995,10 +1992,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
     ? `Sửa ${row?.so ?? ''}`.trim()
     : (nhom === 'chi' ? 'Lập phiếu chi' : nhom === 'thu' ? 'Lập phiếu thu' : nhom === 'cq' ? 'Lập phiếu chuyển quỹ' : `Lập ${tenLoai.toLowerCase()}`)
 
-  const laLyChoPb = laTien && (
-    (dsDong[0]?.ly === TEN_LY_CHO_PHAN_BO) ||
-    (dsDong[0]?.ly === MA_LY_CHO_PHAN_BO)
-  )
+  const laLyChoPb = laTien && dsDong.some(d => laLyPhanBo(d.ly, s))
 
   return (
     <div ref={formRef} className="m-pb-man">
@@ -3474,7 +3468,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
               <h3 className="m-tam-tieu" style={{ fontSize: 16 }}>Tạo thẻ chi phí phân bổ</h3>
             </div>
             <div className="m-lp-hop-nd" style={{ padding: '14px 16px', fontSize: 14, color: 'var(--ink)' }}>
-              <b>{hoiThe.soCt}</b> có khoản Chi phí chờ phân bổ. Phần mềm mở màn Tạo thẻ chi phí phân bổ, điền sẵn tên, số tiền, ngày, chứng từ gốc từ phiếu. Bạn vẫn sửa lại được.
+              <b>{hoiThe.soCt}</b> có khoản chi phí phân bổ nhiều kỳ. Phần mềm mở màn Tạo thẻ chi phí phân bổ, điền sẵn tên, số tiền, ngày, chứng từ gốc từ phiếu. Bạn vẫn sửa lại được.
             </div>
             <div className="m-tam-day" style={{ padding: '10px 16px' }}>
               <button

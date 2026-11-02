@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 02/11/2026
+- T700: Điện thoại theo tích Chi phí phân bổ nhiều kỳ như máy tính. Danh mục Lý do nghiệp vụ hiện tích ở dòng phụ và màn chi tiết. Phiếu chi lý do có tích này lưu xong mở tạo thẻ chi phí phân bổ. Nhãn Chi phí, ô Tháng ghi nhận chi phí ở phiếu chi (máy tính, điện thoại) theo tích Là chi phí đã sửa trong danh mục.
 - T708: Danh mục Lý do nghiệp vụ có thêm thông tin Nguồn ở danh sách và form chi tiết, trên cả máy tính và điện thoại: lý do có sẵn là FABi, lý do tự thêm là Thủ công. Lý do FABi không xoá được, chỉ sửa được Là chi phí, Chi phí phân bổ nhiều kỳ, Nhóm lý do. Lý do thủ công sửa, xoá được.
 - T138: Điện thoại, màn mở từ FABi gộp 2 trang giới thiệu thành 1, gọn vừa một màn: bỏ câu mô tả dưới tiêu đề, bỏ ảnh app, hàng cam kết còn Miễn phí, Dữ liệu an toàn.
 - T706: Thu chi trở lại cách đồng bộ FABi cũ: bên phải thanh tab có nhãn cam báo số phiếu thu chi chưa đồng bộ và nút Đồng bộ. Bấm nhãn mở hộp liệt kê phiếu, có cột Mã phiếu FABi, Lý do, Nguyên nhân kèm link Map quỹ, Mở khoá sổ. Bỏ chip Chưa đồng bộ ở Thu chi trên máy tính và điện thoại. Hướng dẫn nhanh Thu chi sửa theo. Xuất bán POS giữ nguyên.

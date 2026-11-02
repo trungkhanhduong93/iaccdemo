@@ -8,8 +8,8 @@ import { giamThueHkd } from '../../modules/ban-hang/giam-thue'
 import { kieuGhiSo, type Goi, kieuGhiSoDv } from '../../app/plan'
 import { CHE_DO, type CheDo } from '../../app/che-do'
 import { tkTheoCheDo } from '../../modules/tong-hop/so-cai'
-import { CUA_HANG, KHACH, KHO, LY_CAN_DOI_TUONG, LY_CHI_PHI, LY_DO, NCC, NHAN_VIEN, TK_NGAN_HANG, daKhoaSo, khoaSoDenCua } from '../../data/mock'
-import { laLyPhanBo } from './danhMucStore'
+import { CUA_HANG, KHACH, KHO, LY_CAN_DOI_TUONG, LY_DO, NCC, NHAN_VIEN, TK_NGAN_HANG, daKhoaSo, khoaSoDenCua } from '../../data/mock'
+import { laLyChiPhi, laLyPhanBo } from './danhMucStore'
 import { DS_PTTT } from '../../modules/danh-muc/data'
 import { HopXacNhan } from '../LocNangCao'
 import { bayGio, ctTtCon, dsDcCon, dsTtCon, ghiNhatKy, laDaXoa, soDaTra, soKeTiep, suaPhieu, themPhieu, ttThamChieu, ttTienTheoTra, useNhatKy, xoaPhieu, type CtTt, type PhieuTt } from './daXoa'
@@ -1052,13 +1052,13 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
                   {/* Lý do chi được tích Là chi phí (danh mục Lý do nghiệp vụ) thì hiện nhãn Chi phí cạnh tên ô (T246) */}
                   <label>{oLy.nhan}</label>
                   {/* Lý do được tích Là chi phí: nhãn Chi phí nằm cuối ô lý do (T246, T419) */}
-                  <div className={`ly-o${LY_CHI_PHI.includes(lyDo) ? ' co-cp' : ''}${dangSua ? ' sua' : ''}`}>
+                  <div className={`ly-o${laLyChiPhi(lyDo, s) ? ' co-cp' : ''}${dangSua ? ' sua' : ''}`}>
                     {dangSua ? (
                       <ChonDanhMuc dm={`ly:${oLy.nhan}`} nhan={oLy.nhan.toLowerCase()} value={lyDo} onChange={chonLyDo} ds={oLy.ds!} />
                     ) : (
                       <input className="inp" readOnly value={lyDo} />
                     )}
-                    {LY_CHI_PHI.includes(lyDo) && <span className="chip ok ly-cp" title="Lý do nghiệp vụ được tích Là chi phí: khoản chi tính vào Chi phí trong tháng">Chi phí</span>}
+                    {laLyChiPhi(lyDo, s) && <span className="chip ok ly-cp" title="Lý do nghiệp vụ được tích Là chi phí: khoản chi tính vào Chi phí trong tháng">Chi phí</span>}
                   </div>
                   {/* T419: phiếu mới có khoản chờ phân bổ thì nhắc trước, lưu xong sẽ mở màn tạo thẻ */}
                   {dangSua && (moi || !theCuaPhieu(row).length) && dsDong.some(d => laLyPhanBo(d.ly ?? lyDo, s)) && (
@@ -1175,7 +1175,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
                 )}
               </div>
               {/* T419: chỉ hiện khi phiếu có lý do được tích Là chi phí */}
-              {coThangLl && dsDong.some(d => LY_CHI_PHI.includes(d.ly ?? lyDo)) && (
+              {coThangLl && dsDong.some(d => laLyChiPhi(d.ly ?? lyDo, s)) && (
                 <div className="f">
                   <label>Tháng ghi nhận chi phí</label>
                   {dangSua ? (
