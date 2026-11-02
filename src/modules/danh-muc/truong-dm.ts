@@ -109,6 +109,7 @@ export interface CauHinhDM {
   toanMan?: { icon: string }                         // mở toàn màn hình như form chứng từ, khối lưới thành tab cạnh tab Lịch sử
   haiCot?: boolean                                   // lưới ô nhập luôn 2 cột như form iFaster (T154)
   chiSua?: string[]                                  // mở dòng có sẵn chỉ sửa được các ô này, ô khác khoá (T334)
+  chiSuaKhi?: (v: Record<string, any>) => boolean    // chiSua chỉ áp cho dòng thoả điều kiện, vd lý do nguồn FABi (T708); thiếu thì áp mọi dòng có sẵn
   // Nhiều kiểu thêm mới trên cùng màn, mỗi kiểu một nút; kiểu lưu ở form._kieu, mở thẳng bằng ?moi=<k>
   // Menu Tiện ích ở chân form toàn màn khi xem (T297): xoá dòng, sao chép thành dòng mới; hàm trả false thì ẩn mục
   tienIch?: { xoa?: (v: Record<string, any>) => boolean; chanXoa?: (v: Record<string, any>) => string | null; saoChep?: (v: Record<string, any>) => Record<string, any> | null }
@@ -701,7 +702,10 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
 
   // 1.16 Lý do (chưa có bảng DM_ trong schema, chờ đối chiếu)
   '1.16': {
-    chiSua: ['chiPhi', 'phanBo', 'nhomCp'],   // tạm thời lý do có sẵn không sửa, chỉ tích Là chi phí (T334), Chi phí phân bổ nhiều kỳ (T700) và chọn lại nhóm lý do (T473)
+    chiSua: ['chiPhi', 'phanBo', 'nhomCp'],   // lý do có sẵn không sửa, chỉ tích Là chi phí (T334), Chi phí phân bổ nhiều kỳ (T700) và chọn lại nhóm lý do (T473)
+    chiSuaKhi: v => v.nguon === 'FABi',      // chỉ lý do nguồn FABi bị khoá; lý do thủ công sửa được hết (T708)
+    moi: () => ({ nguon: 'Thủ công' }),
+    tienIch: { xoa: v => Boolean(v._sua) && v.nguon !== 'FABi' },   // lý do FABi không xoá, lý do thủ công xoá được (T708)
     khoi: [
       {
         ten: 'Thông tin chung',
@@ -711,6 +715,8 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
           // cùng chữ với danh sách lý do (LY_DO); gói Free chỉ lý do thu, chi (T144)
           { k: 'dung', nhan: 'Dùng cho nghiệp vụ', kieu: 'chon', ds: ['Thu tiền', 'Chi tiền'], batBuoc: true, goi: ['S'] },
           { k: 'dung', nhan: 'Dùng cho nghiệp vụ', kieu: 'chon', ds: ['Thu tiền', 'Chi tiền', 'Nhập kho', 'Xuất kho'], batBuoc: true, goi: ['PL', 'PR'] },
+          // Nguồn tự ghi, không sửa: FABi khi đồng bộ, Thủ công khi thêm trên IACC (T708)
+          { k: 'nguon', nhan: 'Nguồn', kieu: 'chu', chiDoc: true },
           // Lý do chi tiền là chi phí thì báo cáo chi phí lấy lên (T231)
           { k: 'chiPhi', nhan: 'Là chi phí', kieu: 'tich', caHang: true, hien: v => v.dung === 'Chi tiền' },
           // Chi phí phân bổ nhiều kỳ: phiếu chi lý do này gợi ý tạo thẻ chi phí; chỉ chọn một trong hai tích với Là chi phí, bỏ cả hai được (T700)

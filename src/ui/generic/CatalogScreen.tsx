@@ -37,7 +37,7 @@ import { TEN_DVT } from '../../modules/danh-muc/data'
 import { GoiYLapPhieu } from './GoiYLapPhieu'
 import { HOM_NAY } from '../../data/mock'
 import { dmy } from '../format'
-import { addCatalogRow, useAddedCatalogRows, sinhMaKeTiep } from './danhMucStore'
+import { addCatalogRow, suaCatalogRow, useAddedCatalogRows, sinhMaKeTiep } from './danhMucStore'
 import { suaPhieu, useDaXoa, xoaPhieu } from './daXoa'
 
 export function CatalogScreen({ sc }: ScreenProps) {
@@ -587,6 +587,7 @@ export function CatalogScreen({ sc }: ScreenProps) {
           chiXem={Boolean(edit.ma || edit.ten) && Boolean(cfg.chiXem?.includes(s.goi))}
           onDong={dongForm}
           onXoa={val => {
+            suaCatalogRow(catKey, val.ma, null)   // dòng thêm trong phiên thì bỏ hẳn khỏi kho (T708)
             setDaXoaDm(x => new Set(x).add(khoaXoa(val))); xoaPhieu(`dm/${sc.slug}`, [{ id: khoaXoa(val), so: String(val.soThe ?? val.ma ?? '') }], s.ten); setEdit(null); toast(`Đã xoá ${val.soThe ?? val.ma ?? ''}`)
             if (veGoc) { const g = veGoc; setVeGoc(null); nav(`${g}?sua=1`) }
           }}
@@ -594,7 +595,7 @@ export function CatalogScreen({ sc }: ScreenProps) {
           onLuu={(val, themTiep) => {
             if (val && !val._sua) {
               addCatalogRow(catKey, val)
-            }
+            } else if (val) suaCatalogRow(catKey, edit.ma, val)   // sửa dòng đã thêm trong phiên, vd lý do thủ công (T708)
             if (val && val._tt !== undefined) {
               const k = khoaDong(val)
               if (k) setTtGhiDe(prev => ({ ...prev, [k]: Number(val._tt) }))
@@ -939,7 +940,7 @@ export function CatalogPanel({
   // Một khối của panel: ô nhập theo lưới, hoặc lưới tự tính (kh.bang)
   // Dòng có sẵn chỉ sửa được các ô trong chiSua, ô khác khoá (vd Lý do nghiệp vụ chỉ tích Là chi phí, T334)
   const khoaO = (tr: { k: string }, el: React.ReactNode) =>
-    dangSua && cauHinh?.chiSua && !cauHinh.chiSua.includes(tr.k) ? <fieldset key={tr.k} className="pn-fs" disabled>{el}</fieldset> : el
+    dangSua && cauHinh?.chiSua && (cauHinh.chiSuaKhi?.(formVal) ?? true) && !cauHinh.chiSua.includes(tr.k) ? <fieldset key={tr.k} className="pn-fs" disabled>{el}</fieldset> : el
   const veKhoi = (kh: KhoiDM) => {
     const truongHien = kh.truong.filter(hienO)
     if (!kh.bang && !kh.ve && truongHien.length === 0) return null
@@ -1243,13 +1244,21 @@ export function CatalogPanel({
                 <button type="button" className="btn" onClick={onDong}>Đóng</button>
               </> : <>
                 {nutPhu}
-                {nutPhu && <span className="grow" />}
+                {/* Xoá ở panel cạnh (T708): danh mục cho xoá dòng này, vd lý do nghiệp vụ thủ công */}
+                {dangSua && cauHinh?.tienIch?.xoa?.(formVal) && <button type="button" className="btn" onClick={thuXoa}><Icon n="trash" className="ic sm" />Xoá</button>}
+                {(nutPhu || (dangSua && cauHinh?.tienIch?.xoa?.(formVal))) && <span className="grow" />}
                 <button type="button" className="btn" onClick={onDong}>Huỷ</button>
                 {!anNutThemTiep && <button type="button" className="btn" onClick={() => handleLuu(true)}>Lưu và thêm</button>}
                 <button type="button" className="btn pri" onClick={() => handleLuu(false)}>Lưu</button>
               </>}
             </div>
           </aside>
+          {hoiXoa && (
+            <HopXacNhan tieuDe={`Xoá ${tenNganHien}`} nut="Xoá" nutHuy="Không"
+              onDong={() => setHoiXoa(false)} onDongY={() => { setHoiXoa(false); onXoa?.(formVal) }}>
+              Bạn có chắc chắn muốn xoá {tenNganHien} <b>{edit.ma}</b> không?
+            </HopXacNhan>
+          )}
         </>
       )}
 

@@ -381,6 +381,7 @@ export const MDanhMuc: FC<ScreenProps> = ({ sc }) => {
               <div className="m-the-dm-v2-dong-phu m-the-dm-phu">
                 {laHangHoa
                   ? `Đơn vị tính chính: ${r.dvt || 'Cái'}`
+                  : laLyDo ? `Nguồn: ${r.nguon === 'FABi' ? 'FABi' : 'Thủ công'}`   // T708
                   : (r.nhom ? `Nhóm: ${r.nhom}` : r.dvt ? `ĐVT: ${r.dvt}` : (r.mst ? `MST: ${r.mst}` : ''))}
               </div>
             </div>
@@ -674,6 +675,10 @@ export const MDanhMuc: FC<ScreenProps> = ({ sc }) => {
                 <div className="m-xp-dong-tt">
                   <span className="m-xp-nhan">Dùng cho:</span>
                   <span className="m-xp-tri">{xemLyDo.dung}</span>
+                </div>
+                <div className="m-xp-dong-tt">
+                  <span className="m-xp-nhan">Nguồn:</span>
+                  <span className="m-xp-tri">{xemLyDo.nguon === 'FABi' ? 'FABi' : 'Thủ công'}</span>
                 </div>
                 {xemLyDo.dung === 'Chi tiền' && (
                   <div className="m-xp-dong-tt">

@@ -288,7 +288,8 @@ export const LY_DO = [
   ['XK02', 'Xuất dùng nội bộ', 'Xuất kho'],
   ['NK01', 'Nhập hàng khách trả lại', 'Nhập kho'],
 // phanBo: lý do Chi phí phân bổ nhiều kỳ, loại trừ với Là chi phí; phiếu chi lý do này gợi ý tạo thẻ chi phí (T700)
-].map(([ma, ten, dung]) => ({ ma, ten, dung, chiPhi: LY_LA_CHI_PHI.includes(ma), phanBo: ma === MA_LY_CHO_PHAN_BO, nhomCp: LY_LA_CHI_PHI.includes(ma) ? nhomLyTuDong(ten) : '' }))
+// nguon: lý do có sẵn đồng bộ từ FABi, không xoá, chỉ sửa các ô tích; lý do người dùng thêm là Thủ công (T708)
+].map(([ma, ten, dung]) => ({ ma, ten, dung, nguon: 'FABi', chiPhi: LY_LA_CHI_PHI.includes(ma), phanBo: ma === MA_LY_CHO_PHAN_BO, nhomCp: LY_LA_CHI_PHI.includes(ma) ? nhomLyTuDong(ten) : '' }))
 /** Tên lý do thu, chi bắt buộc chọn đối tượng: Thu nợ, Đi vay, Thanh toán công nợ nhà cung cấp, Cho vay; lý do khác để trống được (T330) */
 export const LY_CAN_DOI_TUONG = LY_DO.filter(x => ['THU02', 'THU10', 'CHI02', 'CHI34'].includes(x.ma)).map(x => x.ten)
 /** Tên lý do chi tiền được tích là chi phí: báo cáo chi phí (Sổ chi phí, Chi phí trong tháng) chỉ lấy các lý do này (T231) */

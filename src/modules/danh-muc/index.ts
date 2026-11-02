@@ -301,6 +301,8 @@ const danhMuc: ModuleDef = {
       ].map(([ma, ten, lct, loc, no, co, tien]) => ({ ma, ten, lct, loc, no: tkTheoCheDo(no, cd).so, co: tkTheoCheDo(co, cd).so, tien })) } },
     '1.16': { catalog: { them: 'Thêm lý do nghiệp vụ', locGoi: (goi, r) => goi !== 'S' || r.dung === 'Thu tiền' || r.dung === 'Chi tiền',   // gói Standard chỉ lý do thu, chi (T144)
       nhomLoc: 'dung', nhanLoc: 'Dùng cho', cols: [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Lý do nghiệp vụ' }, { k: 'dung', t: 'Dùng cho' },
+        // Nguồn: lý do có sẵn từ FABi, lý do người dùng thêm là Thủ công (T708)
+        { k: 'nguon', t: 'Nguồn', w: 100, r: r => r.nguon === 'FABi' ? 'FABi' : 'Thủ công' },
         // Là chi phí: chỉ lý do chi tiền có ô này (T231)
         { k: 'chiPhi', t: 'Là chi phí', c: true, w: 100, r: r => r.dung !== 'Chi tiền' ? '' : createElement('input', { type: 'checkbox', className: 'o-tich-xem', checked: Boolean(r.chiPhi), readOnly: true, tabIndex: -1, 'aria-label': 'Là chi phí' }) },
         // Chi phí phân bổ nhiều kỳ: loại trừ với Là chi phí, phiếu chi lý do này gợi ý tạo thẻ chi phí (T700)

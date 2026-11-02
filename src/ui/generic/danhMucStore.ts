@@ -96,6 +96,15 @@ export function addCatalogRow(dm: string, row: Row) {
   emitChange()
 }
 
+/** Sửa, xoá dòng đã thêm trong phiên theo mã, vd lý do nghiệp vụ thủ công (T708); dòng có sẵn không đổi */
+export function suaCatalogRow(dm: string, ma: unknown, row: Row | null) {
+  const normKey = chieuKhoa(dm)
+  const cur = daThemRows.get(normKey) ?? []
+  if (ma === undefined || ma === '' || !cur.some(r => r.ma === ma)) return
+  daThemRows.set(normKey, row ? cur.map(r => r.ma === ma ? { ...r, ...row } : r) : cur.filter(r => r.ma !== ma))
+  emitChange()
+}
+
 /** Tự sinh mã kế tiếp nếu ô Mã để trống (T347) */
 export function sinhMaKeTiep(dm: string, formVal: Row, allRows: Row[]): string {
   const normKey = chieuKhoa(dm)
