@@ -1011,3 +1011,5 @@ Trum chốt 31/10/2026 (T703).
 - Thu chi lấy lại tiện ích của T691, bỏ chip Chưa đồng bộ (PhuongXT, Trum đồng ý 02/11/2026, T706). Tour Thu chi 14 bước: nút Đồng bộ bên phải thanh tab, các mục hộp Đồng bộ, nhãn phiếu chưa đồng bộ, tự bấm nhãn mở hộp Xem lý do. Xuất bán POS giữ chip.
 - Bỏ qua hoặc Xong: tour đóng hộp, chip về như lúc bấm Hướng dẫn.
 - Điện thoại bỏ các bước này (bước có `web: true`), vì đồng bộ chỉ làm trên máy tính.
+
+## QD92. Quy định chữ số và dấu phân cách theo đơn vị (đang soạn)
