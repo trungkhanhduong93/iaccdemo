@@ -689,7 +689,7 @@ export function OnboardFabi() {
                         {viecTai.map(([moc, t, m], i) => {
                           const tt = tai >= moc ? 'xong' : tai >= (i ? viecTai[i - 1][0] : 0) || (nhanh && tai >= MOC_DANH_MUC) ? 'dang' : 'cho'
                           const tiep = nhanh && tai >= MOC_DANH_MUC && tt === 'dang'   // chứng từ đổ về tiếp ở Trang chủ (T687)
-                          return <li key={t} className={tt}>{tt === 'xong' ? <Icon n="check" className="ic sm" /> : <i />}<span><b>{t}</b>{m && <small>{m}</small>}{tiep && <small className="ktf-tai-tiep">Đổ về tiếp, xem tiến độ ở Trang chủ</small>}</span></li>
+                          return <li key={t} className={tt}>{tt === 'xong' ? <Icon n="check" className="ic sm" /> : <i />}<span><b>{t}</b>{m && <small>{m}</small>}{tiep && <small className="ktf-tai-tiep">Đang tiếp tục đồng bộ. Xem tiến độ tại Trang chủ.</small>}</span></li>
                         })}
                       </ul>
                     </>

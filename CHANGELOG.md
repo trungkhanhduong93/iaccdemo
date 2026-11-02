@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 02/11/2026
+- T138: Màn đang thiết lập sổ sách từ FABi (máy tính, điện thoại), dòng cam dưới Doanh thu bán hàng và Thu chi tiền đổi thành "Đang tiếp tục đồng bộ. Xem tiến độ tại Trang chủ."
 - T138: Khi chọn cách tính thuế gói đang dùng chưa kê khai được (bước Thông tin kê khai thuế và Hệ thống, Thông tin đơn vị), cảnh báo đổi thành "Tính năng kê khai thuế chưa hỗ trợ cho cách tính thuế này tại gói Accounting Standard. Vui lòng nâng cấp lên Accounting Plus để trải nghiệm." Doanh nghiệp gợi ý thêm Accounting Pro. Ô Hộ kinh doanh bỏ "Chế độ kế toán TT152". Thông tin đơn vị bỏ cảnh báo khi đổi loại hình. Màn mở từ FABi bỏ "chỉ với 1 chạm" (máy tính) và hàng Miễn phí, Dữ liệu an toàn (điện thoại).
 - T711: Danh mục cửa hàng, hộp Chi tiết cửa hàng cho chọn lại công ty của cửa hàng, trên cả máy tính và điện thoại. Chọn công ty khác thì hiện cảnh báo toàn bộ số liệu của cửa hàng (chứng từ, sổ sách, số dư, báo cáo) sẽ chuyển sang công ty mới, bấm Chuyển sang công ty mới mới đổi.
 - T710: Cấu hình kế toán có thêm mục Quy định chữ số và dấu phân cách, chọn Việt Nam (1.234.567,89) hoặc Quốc tế (1,234,567.89). Bấm Lưu thì số trên chứng từ, danh sách, báo cáo và cách gõ số ở các ô nhập đổi theo kiểu đã chọn, trên cả máy tính và điện thoại.
