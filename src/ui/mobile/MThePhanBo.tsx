@@ -163,9 +163,9 @@ function lichSuMau(t: TheMobile): DongLichSu[] {
   const kyDau = Math.min(...t.dong.map(d => thangCua(String(d.ngayPb ?? t.ngayPb ?? t.ngay))))
   if (kyDau && kyDau < kyNay()) {
     const c = new Date(Math.floor(kyDau / 100), kyDau % 100, 0)
-    ds.push({ luc: `${String(c.getDate()).padStart(2, '0')}/${String(c.getMonth() + 1).padStart(2, '0')}/${c.getFullYear()} 17:00`, ai: 'Hệ thống', tenViec: `Phân bổ kỳ ${tenThang(kyDau)}`, loai: 'ghi_so', ghiChu: `Hạch toán chi phí phân bổ tháng ${tenThang(kyDau)}.` })
+    ds.push({ luc: `${String(c.getDate()).padStart(2, '0')}/${String(c.getMonth() + 1).padStart(2, '0')}/${c.getFullYear()} 17:00`, ai: 'Hệ thống', tenViec: `Phân bổ kỳ ${tenThang(kyDau)}`, loai: 'ghi_so', noiDung: `Hạch toán chi phí phân bổ tháng ${tenThang(kyDau)}.` })
   }
-  ds.push({ luc: `${t.ngay} 08:30`, ai: 'Trần Thu Hà', tenViec: laDau(t) ? 'Nhập thẻ dư đầu kỳ' : 'Ghi tăng thẻ', loai: 'tao', ghiChu: t.soCt ? `Tạo từ chứng từ ${t.soCt}.` : 'Nhập số dư đầu kỳ.' })
+  ds.push({ luc: `${t.ngay} 08:30`, ai: 'Trần Thu Hà', tenViec: laDau(t) ? 'Nhập thẻ dư đầu kỳ' : 'Ghi tăng thẻ', loai: 'tao', noiDung: t.soCt ? `Tạo từ chứng từ ${t.soCt}.` : 'Nhập số dư đầu kỳ.' })
   return ds
 }
 

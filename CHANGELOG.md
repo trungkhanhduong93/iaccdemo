@@ -2,6 +2,9 @@
 
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
+## 03/11/2026
+- T715: Tab Lịch sử của phiếu trên máy tính và điện thoại theo bản E. Bỏ cột lọc bên trái, chỉ còn một dòng tóm tắt số thao tác, số người, lần sửa gần nhất. Mỗi thao tác là một thẻ ghi Thao tác, Người làm, Thời điểm, Nội dung. Lần sửa có bảng Trước và Sau (máy tính 3 cột, điện thoại mỗi chỗ sửa một khối), dòng bị xoá có nhãn đỏ, đổi tổng tiền thì hiện số chênh, cuối thẻ có khối Lý do sửa.
+
 ## 02/11/2026
 - T714: Tab Lịch sử của phiếu và danh mục trên máy tính vẽ lại giống app. Bên trái là tổng số thao tác, lần sửa gần nhất và hai nhóm lọc: theo thao tác (Tạo, Sửa, Lưu hoặc Ghi sổ, Xoá) và theo người làm. Bên phải là dòng thời gian theo ngày, lần sửa hiện giá trị cũ gạch ngang và giá trị mới.
 - T713: Nhật ký thao tác trên web có hàng lọc ngay dưới hàng tiêu đề, lọc được cả 9 cột. Cột ngày chọn khoảng ngày, cột Chức vụ, Thao tác, Tên chứng từ, Cửa hàng chọn từ danh sách, các cột còn lại gõ chữ. Hàng lọc lọc tiếp trên kết quả sau khi bấm Lọc.

@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T715 | Lịch sử phiếu theo bản E, web và app: bỏ cột trái và bộ lọc của T714, mỗi thao tác ghi Thao tác, Người làm, Thời điểm, Nội dung đầy đủ; sửa, xoá, huỷ có bảng Trước/Sau nổi bật và khối Lý do; dữ liệu mẫu điền đủ. Hộp bắt nhập lý do làm việc riêng sau | Trum | 03/11/2026 | [nhật ký](../nhat-ky/2026-11-03-trum-lich-su-ban-e.md) |
 | T714 | Lịch sử phiếu web (form chứng từ, form danh mục) theo phương án B: thanh lọc dọc trái (tổng thao tác, sửa gần nhất, lọc Thao tác, Người thao tác), dòng thời gian nhóm theo ngày, lần sửa hiện cũ gạch ngang và mới; khung dưới 720px thanh lọc lên trên. Dữ liệu dùng chung với app qua `useDongLichSu` | Trum | 02/11/2026 | [nhật ký](../nhat-ky/2026-11-02-trum-lich-su-phieu-web.md) |
 | T713 | Nhật ký thao tác web: hàng lọc theo cột dưới hàng tiêu đề, đủ 9 cột (ngày giờ, ngày chứng từ lọc kiểu ngày; chức vụ, thao tác, tên chứng từ, cửa hàng chọn giá trị; tài khoản, số chứng từ, thiết bị gõ chữ), lọc thêm trên kết quả sau khi bấm Lọc | Trum | 02/11/2026 | [nhật ký](../nhat-ky/2026-11-02-trum-loc-cot-nhat-ky.md) |
 | T712 | Gói Standard ẩn Gói thuê bao ở tab Hệ thống (web, điện thoại), menu tài khoản, menu thanh bên; vẫn mở từ nút Nâng cấp, nhãn gói. Tab Nhật ký thao tác xuống cuối; Cấu hình kế toán đổi nhãn Định dạng số thành Tiêu chuẩn định dạng số | PhuongXT | 02/11/2026 | [nhật ký](../nhat-ky/2026-11-02-phuongxt-an-goi-thue-bao-standard.md) |
