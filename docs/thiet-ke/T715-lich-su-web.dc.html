@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>Nhật ký chi tiết từng thao tác</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>body{margin:0}button{font-family:inherit}</style>
+</helmet>
+<div style="width: 1280px; min-height: 1000px; box-sizing: border-box; font-family: 'Be Vietnam Pro', -apple-system, 'Segoe UI', Roboto, sans-serif; color: #1f2225; background: #ffffff; display: flex; flex-direction: column">
+
+  <nav aria-label="Các phần của phiếu" style="display: flex; align-items: center; gap: 4px; padding: 0 12px; border-bottom: 1px solid #e5e7eb">
+    <span style="padding: 11px 10px; font-size: 13.5px; color: #6b7280">Phiếu nhập</span>
+    <span style="padding: 11px 10px; font-size: 13.5px; color: #0560a6; font-weight: 600; border-bottom: 2px solid #0560a6">Lịch sử</span>
+    <button type="button" aria-label="Bộ lọc lịch sử" style="width: 30px; height: 30px; border: 0; border-radius: 8px; background: transparent; color: #6b7280; display: flex; align-items: center; justify-content: center; cursor: pointer">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h18l-7 8v6l-4-2v-4z"></path></svg>
+    </button>
+  </nav>
+
+  <div style="padding: 16px 24px 28px; display: flex; flex-direction: column; gap: 6px; max-width: 940px; box-sizing: border-box">
+    <p style="margin: 0 0 6px 52px; font-size: 13px; color: #6b7280">3 thao tác, 2 người · sửa gần nhất 07/10 09:58</p>
+
+    <h3 style="margin: 4px 0 8px 52px; font-size: 12.5px; font-weight: 600; color: #6b7280">07/10/2026</h3>
+
+    <!-- 1. Lưu chứng từ -->
+    <div style="display: flex; gap: 12px; align-items: stretch">
+      <div style="width: 40px; flex: none; display: flex; flex-direction: column; align-items: center">
+        <span style="width: 30px; height: 30px; border-radius: 50%; background: #e3f4ea; color: #138a52; display: flex; align-items: center; justify-content: center; margin-top: 12px; flex: none">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Lưu"><path d="M5 12l5 5L20 7"></path></svg>
+        </span>
+        <span style="flex: 1; width: 2px; background: #e5e7eb; margin-top: 4px"></span>
+      </div>
+      <article style="flex: 1; min-width: 0; border: 1px solid #e5e7eb; border-radius: 10px; padding: 14px 18px; margin-bottom: 12px; display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: 7px 14px; font-size: 13.5px; line-height: 1.55">
+        <span style="color: #6b7280">Thao tác</span><b style="font-weight: 700">Lưu chứng từ</b>
+        <span style="color: #6b7280">Người làm</span><span>Lê Quốc Bảo</span>
+        <span style="color: #6b7280">Thời điểm</span><span style="font-variant-numeric: tabular-nums">07/10/2026 10:05</span>
+        <span style="color: #6b7280">Nội dung</span>
+        <span style="color: #363636">Lưu phiếu mua hàng MH2610-0022 của Công ty Điện lực Sài Gòn, hoá đơn 0027159 ký hiệu 1C26TMM. Nhập Kho bếp Nguyễn Trãi 12 dòng hàng, tổng tiền 4.778.550 đ. Phiếu chưa thanh toán, ghi công nợ phải trả nhà cung cấp 4.778.550 đ.</span>
+      </article>
+    </div>
+
+    <!-- 2. Sửa chứng từ: khung Trước | Sau + Lý do -->
+    <div style="display: flex; gap: 12px; align-items: stretch">
+      <div style="width: 40px; flex: none; display: flex; flex-direction: column; align-items: center">
+        <span style="width: 30px; height: 30px; border-radius: 50%; background: #e6eff7; color: #0560a6; display: flex; align-items: center; justify-content: center; margin-top: 12px; flex: none">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Sửa"><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"></path></svg>
+        </span>
+      </div>
+      <article style="flex: 1; min-width: 0; border: 1px solid #e5e7eb; border-radius: 10px; padding: 14px 18px; margin-bottom: 12px; display: flex; flex-direction: column; gap: 12px; font-size: 13.5px; line-height: 1.55">
+        <div style="display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: 7px 14px">
+          <span style="color: #6b7280">Thao tác</span><b style="font-weight: 700">Sửa chứng từ</b>
+          <span style="color: #6b7280">Người làm</span><span>Lê Quốc Bảo</span>
+          <span style="color: #6b7280">Thời điểm</span><span style="font-variant-numeric: tabular-nums">07/10/2026 09:58</span>
+          <span style="color: #6b7280">Nội dung</span>
+          <span style="color: #363636">Sửa 3 chỗ trên phiếu MH2610-0022: diễn giải, số lượng 1 dòng hàng và xoá 1 dòng hàng. Tổng tiền tăng 30.000 đ.</span>
+        </div>
+
+        <!-- Trước | Sau -->
+        <div style="border: 1px solid #e5e7eb; border-radius: 10px; overflow: hidden">
+          <div style="display: grid; grid-template-columns: 150px minmax(0, 1fr) minmax(0, 1fr); font-size: 12.5px; font-weight: 600">
+            <span style="padding: 9px 14px; background: #f4f7fa; color: #6b7280">Chỗ sửa</span>
+            <span style="padding: 9px 14px; background: #fcebea; color: #c2362b">Trước khi sửa</span>
+            <span style="padding: 9px 14px; background: #e3f4ea; color: #138a52">Sau khi sửa</span>
+          </div>
+          <div style="display: grid; grid-template-columns: 150px minmax(0, 1fr) minmax(0, 1fr); border-top: 1px solid #eeeeee">
+            <span style="padding: 10px 14px; color: #6b7280">Diễn giải</span>
+            <span style="padding: 10px 14px; background: #fef7f6; color: #6b7280"><s>Chi mua rau</s></span>
+            <span style="padding: 10px 14px; background: #f6fbf8; font-weight: 600">Chi mua rau củ bếp Q1</span>
+          </div>
+          <div style="display: grid; grid-template-columns: 150px minmax(0, 1fr) minmax(0, 1fr); border-top: 1px solid #eeeeee">
+            <span style="padding: 10px 14px; color: #6b7280">Dòng 3: Rau cải ngọt, số lượng</span>
+            <span style="padding: 10px 14px; background: #fef7f6; color: #6b7280; font-variant-numeric: tabular-nums"><s>10 kg × 20.000 = 200.000 đ</s></span>
+            <span style="padding: 10px 14px; background: #f6fbf8; font-weight: 600; font-variant-numeric: tabular-nums">14 kg × 20.000 = 280.000 đ</span>
+          </div>
+          <div style="display: grid; grid-template-columns: 150px minmax(0, 1fr) minmax(0, 1fr); border-top: 1px solid #eeeeee">
+            <span style="padding: 10px 14px; color: #6b7280">Dòng 7: Hành tây</span>
+            <span style="padding: 10px 14px; background: #fef7f6; color: #6b7280; font-variant-numeric: tabular-nums"><s>2 kg × 25.000 = 50.000 đ</s></span>
+            <span style="padding: 10px 14px; background: #f6fbf8"><span style="font-size: 12px; font-weight: 600; color: #c2362b; background: #fcebea; border-radius: 4px; padding: 2px 8px">Đã xoá dòng</span></span>
+          </div>
+          <div style="display: grid; grid-template-columns: 150px minmax(0, 1fr) minmax(0, 1fr); border-top: 1px solid #e5e7eb; font-weight: 600">
+            <span style="padding: 10px 14px; color: #363636">Tổng tiền</span>
+            <span style="padding: 10px 14px; background: #fef7f6; color: #6b7280; font-variant-numeric: tabular-nums"><s>4.748.550 đ</s></span>
+            <span style="padding: 10px 14px; background: #f6fbf8; font-variant-numeric: tabular-nums">4.778.550 đ <span style="font-size: 12px; color: #138a52; font-weight: 600">+30.000 đ</span></span>
+          </div>
+        </div>
+
+        <!-- Lý do -->
+        <div style="display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: 14px; background: #fcf1de; border-radius: 8px; padding: 10px 14px">
+          <span style="color: #a86a0c; font-weight: 600">Lý do sửa</span>
+          <span style="color: #1f2225">Nhà cung cấp giao thêm 4 kg rau cải ngọt, hết hành tây nên không giao. Cập nhật theo hoá đơn 0027159.</span>
+        </div>
+      </article>
+    </div>
+
+    <h3 style="margin: 8px 0 8px 52px; font-size: 12.5px; font-weight: 600; color: #6b7280">06/10/2026</h3>
+
+    <!-- 3. Tạo chứng từ -->
+    <div style="display: flex; gap: 12px; align-items: stretch">
+      <div style="width: 40px; flex: none; display: flex; flex-direction: column; align-items: center">
+        <span style="width: 30px; height: 30px; border-radius: 50%; background: #fff5ea; color: #d0650a; display: flex; align-items: center; justify-content: center; margin-top: 12px; flex: none">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Tạo"><path d="M21 12a9 9 0 0 1-15.5 6.2L3 16"></path><path d="M3 12a9 9 0 0 1 15.5-6.2L21 8"></path><path d="M21 3v5h-5"></path><path d="M3 21v-5h5"></path></svg>
+        </span>
+      </div>
+      <article style="flex: 1; min-width: 0; border: 1px solid #e5e7eb; border-radius: 10px; padding: 14px 18px; display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: 7px 14px; font-size: 13.5px; line-height: 1.55">
+        <span style="color: #6b7280">Thao tác</span><b style="font-weight: 700">Tạo chứng từ</b>
+        <span style="color: #6b7280">Người làm</span><span>Đồng bộ tự động</span>
+        <span style="color: #6b7280">Thời điểm</span><span style="font-variant-numeric: tabular-nums">06/10/2026 23:30</span>
+        <span style="color: #6b7280">Nội dung</span>
+        <span style="color: #363636">Tạo từ dữ liệu đồng bộ FABi, phiếu nhập hàng của cửa hàng Phố Mây Nguyễn Trãi ngày 06/10/2026. Nhà cung cấp Công ty Điện lực Sài Gòn, 13 dòng hàng, tổng tiền 4.748.550 đ.</span>
+      </article>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":1000}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>
