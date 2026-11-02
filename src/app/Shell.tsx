@@ -24,6 +24,7 @@ export function Shell() {
   const loc = useLocation()
   const nav = useNavigate()
   const [palette, setPalette] = useState(false)
+  const [moMoi, setMoMoi] = useState(false)
 
   // T418: Chặn tạo mới chứng từ/phiếu khi đang ở Tất cả cửa hàng
   const [dichDen, setDichDen] = useState<string | null>(null)
@@ -81,7 +82,7 @@ export function Shell() {
 
   return (
     <div className={`shell${s.thuGon ? ' gon' : ''}`}>
-      <Sidebar mod={mod} onSearch={() => setPalette(true)} />
+      <Sidebar mod={mod} onSearch={() => setPalette(true)} onXemMoi={() => setMoMoi(true)} />
       <Topbar />
       <ModuleTabs mod={mod} />
       <main className="main"><Outlet /></main>
@@ -93,11 +94,12 @@ export function Shell() {
         onDong={handleDongChon}
         onChon={handleChonCuaHang}
       />
+      {moMoi && <HopCoGiMoi onDong={() => setMoMoi(false)} />}
     </div>
   )
 }
 
-function Sidebar({ mod, onSearch }: { mod: ModuleDef; onSearch: () => void }) {
+function Sidebar({ mod, onSearch, onXemMoi }: { mod: ModuleDef; onSearch: () => void; onXemMoi: () => void }) {
   const { s, set } = useSession()
   const loc = useLocation()
   const sbRef = useRef<HTMLElement>(null)
@@ -195,6 +197,17 @@ function Sidebar({ mod, onSearch }: { mod: ModuleDef; onSearch: () => void }) {
 
   return (
     <nav ref={sbRef} className="sidebar" aria-label="Phân hệ">
+      <div className="sb-toggle-strip">
+        <button
+          type="button"
+          className="sb-toggle-btn"
+          onClick={() => set({ thuGon: !s.thuGon })}
+          title={s.thuGon ? 'Mở rộng sidebar' : 'Thu gọn sidebar'}
+          aria-label={s.thuGon ? 'Mở rộng sidebar' : 'Thu gọn sidebar'}
+        >
+          <FigmaChevThuGonIcon size={12} className={`sb-chev-ic${s.thuGon ? ' rev' : ''}`} />
+        </button>
+      </div>
       {/* Bấm logo về trang chủ; bấm nhãn gói mới mở Gói thuê bao (T309) */}
       <Link to={s.role === 'owner' || s.goi === 'S' ? '/app/trang-chu/tong-quan' : '/app/trang-chu/ban-lam-viec'} className="sb-brand" title="Về trang chủ">
         <span className="sb-brand-wrap">
@@ -251,9 +264,13 @@ function Sidebar({ mod, onSearch }: { mod: ModuleDef; onSearch: () => void }) {
           )
         })}
       </div>
-      <div className="sb-foot">
-        <button onClick={() => set({ thuGon: !s.thuGon })} title={s.thuGon ? 'Mở rộng sidebar' : 'Thu gọn sidebar'}>
-          <FigmaChevThuGonIcon size={18} className={`sb-chev-ic${s.thuGon ? ' rev' : ''}`} /><span>Thu gọn</span>
+      <div className="sb-foot" title={__PHIEN_BAN__}>
+        <button
+          type="button"
+          className="sb-phien-ban"
+          onClick={onXemMoi}
+        >
+          <span>{__PHIEN_BAN__}</span>
         </button>
       </div>
       {coMenuPhu && hovered && (
@@ -277,3 +294,48 @@ function Sidebar({ mod, onSearch }: { mod: ModuleDef; onSearch: () => void }) {
   )
 }
 
+function HopCoGiMoi({ onDong }: { onDong: () => void }) {
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.stopPropagation()
+        onDong()
+      }
+    }
+    window.addEventListener('keydown', onKey, true)
+    return () => window.removeEventListener('keydown', onKey, true)
+  }, [onDong])
+
+  return (
+    <div
+      className="overlay sb-pop-nen"
+      onClick={e => {
+        if (e.target === e.currentTarget) onDong()
+      }}
+      role="dialog"
+      aria-modal="true"
+      aria-label="Có gì mới"
+    >
+      <div className="card sb-hop-moi">
+        <div className="sb-hop-dau">
+          <b>Có gì mới</b>
+          <button type="button" className="icon-btn sm" onClick={onDong} aria-label="Đóng" title="Đóng">
+            <Icon n="x" className="ic sm" />
+          </button>
+        </div>
+        <div className="sb-hop-than">
+          {__THAY_DOI_MOI__.map(m => (
+            <div key={m.ngay} className="sb-moi-ngay">
+              <div className="sb-moi-ngay-tieu-de">{m.ngay}</div>
+              <ul className="sb-moi-ds">
+                {m.dong.map((d, i) => (
+                  <li key={i}>{d}</li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
