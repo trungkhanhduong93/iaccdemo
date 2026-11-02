@@ -12,6 +12,7 @@ import { Dropdown, MenuItem } from '../ui/Dropdown'
 import { laTuTrangChu } from './tuTrangChu'
 import { baoCaoCuaPhanHe } from '../modules/bao-cao/cuaPhanHe'
 import { NutHuongDan, coHuongDanNhanh } from '../ui/HuongDanNhanh'
+import { DongBoThuChiFabi } from '../modules/tien/DongBoThuChiFabi'
 
 const KHAC = 110  // chỗ cho nút "Khác" kèm số tab bên trong
 
@@ -104,6 +105,7 @@ export function ModuleTabs({ mod }: { mod: ModuleDef }) {
         )}
         {bc && tab(bc)}
       </div>
+      {mod.key === 'tien' && <DongBoThuChiFabi />}   {/* đồng bộ thu chi FABi cho cả phân hệ, không riêng tab nào (T691) */}
       <NutHuongDan mod={mod} />   {/* nút la bàn Hướng dẫn nhanh cuối thanh tab (T673) */}
       <div className="mtabs-phai" id="mtabs-phai" />
       <div className="mtabs-meas" ref={meas} aria-hidden>

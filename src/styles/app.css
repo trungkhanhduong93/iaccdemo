@@ -43627,7 +43627,7 @@ a.hdn-chip:hover { border-color: var(--blue); color: var(--blue); }
 .dbtc-trang { display: inline-flex; align-items: center; gap: 4px; color: var(--amber); font-size: 12.5px; font-variant-numeric: tabular-nums; }
 .dbtc-trang.xong { color: var(--muted); }
 .dbtc-trang.xong .ic { color: var(--green); }
-.dbtc-hop { width: min(860px, calc(100vw - 32px)); }
+.dbtc-hop { width: min(1040px, calc(100vw - 32px)); }
 .dbtc-than { display: flex; flex-direction: column; gap: 18px; padding: 0 16px 16px; overflow: auto; }
 .dbtc-bang { width: 100%; border-collapse: collapse; font-size: 13px; }
 .dbtc-bang th { padding: 6px 8px; border-bottom: 1px solid var(--line); color: var(--muted); font-weight: 500; text-align: left; white-space: nowrap; }
@@ -43636,7 +43636,7 @@ a.hdn-chip:hover { border-color: var(--blue); color: var(--blue); }
 .dbtc-ly { color: var(--amber); white-space: nowrap; }
 .dbtc-ly a { margin-left: 4px; font-size: 12px; }
 @media (max-width: 640px) {
-  .dbtc-bang th:nth-child(4), .dbtc-bang td:nth-child(4) { display: none; }
+  .dbtc-bang th:nth-child(5), .dbtc-bang td:nth-child(5) { display: none; }
 }
 
 /* ── Hộp Thông tin kê khai ở màn Kê khai thuế, mở từ nhãn Bổ sung MST ── */
@@ -43724,3 +43724,5 @@ a.hdn-chip:hover { border-color: var(--blue); color: var(--blue); }
 .pop-dm .seg.dm-tabs button { flex: 1; padding: 5px 9px; }
 .seg.m-lp-tab-hang { display: flex; margin: 0 16px 8px; padding: 3px; }
 .seg.m-lp-tab-hang button { flex: 1; padding: 7px 10px; font-size: 14px; }
+/* ── Hộp Xem lý do thu chi FABi thêm cột Mã phiếu FABi, Lý do (T706) ── */
+.dbtc-bang td.code { white-space: nowrap; font-variant-numeric: tabular-nums; }
