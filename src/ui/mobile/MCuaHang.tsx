@@ -1,7 +1,7 @@
 import { useMemo, useState, type FC } from 'react'
 import { useNavigate } from 'react-router-dom'
 import type { Row, ScreenProps } from '../../modules/types'
-import { donViHienTai, useSession, type CnThem, type Session } from '../../app/session'
+import { congTyCn, dsDonVi, useSession, type CnThem, type Session } from '../../app/session'
 import { CUA_HANG, DON_VI } from '../../data/mock'
 import { MThemCuaHangFabi } from './MThemCuaHangFabi'
 import { MDanhSach } from './MDanhSach'
@@ -18,7 +18,8 @@ export const MCuaHang: FC<ScreenProps> = () => {
   const [moThem, setMoThem] = useState(false)
   const [xem, setXem] = useState<Row | null>(null)
   const [doiNvl, setDoiNvl] = useState<{ cn: string; ten: string; cach: CachNvl } | null>(null)
-  const dv = donViHienTai(s)
+  const [doiCty, setDoiCty] = useState<{ cn: string; ten: string; cty: string } | null>(null)   // chọn lại công ty, chờ xác nhận như web (T711)
+  const dv = congTyCn(s, String(xem?.id ?? ''))   // công ty của cửa hàng đang xem chi tiết (T711)
 
   const them = s.cnThem?.[s.donVi] ?? []
   const coSan = DON_VI.some(d => d.id === s.donVi)
@@ -142,9 +143,19 @@ export const MCuaHang: FC<ScreenProps> = () => {
                   <span className="m-xp-nhan">Tên cửa hàng:</span>
                   <span className="m-xp-tri dam">{xem.ten}</span>
                 </div>
-                <div className="m-xp-dong-tt">
+                <div className="m-xp-dong-tt m-cn-dong-nvl">
                   <span className="m-xp-nhan">Công ty:</span>
-                  <span className="m-xp-tri">{dv.ten}</span>
+                  <span className="m-xp-tri">
+                    <Select
+                      className="inp dmcn-nvl"
+                      value={dv.id}
+                      ds={dsDonVi(s).map(d => ({ v: d.id, t: d.ten }))}
+                      aria-label={`Công ty của ${xem.ten}`}
+                      onChange={e => {
+                        if (e.target.value !== dv.id) setDoiCty({ cn: String(xem.id), ten: String(xem.ten), cty: e.target.value })
+                      }}
+                    />
+                  </span>
                 </div>
                 <div className="m-xp-dong-tt">
                   <span className="m-xp-nhan">Địa chỉ:</span>
@@ -237,6 +248,26 @@ export const MCuaHang: FC<ScreenProps> = () => {
           {doiNvl.cach === 'tay' ? ' Nhập giá thành món ở màn Chi phí NVL, món chưa có giá thành tính bằng 0.' : ''}
         </HopXacNhan>
       )}
+
+      {doiCty && (() => {
+        const cu = congTyCn(s, doiCty.cn)
+        const moi = dsDonVi(s).find(d => d.id === doiCty.cty) ?? cu
+        return (
+          <HopXacNhan
+            tieuDe="Chọn lại công ty của cửa hàng"
+            nut="Chuyển sang công ty mới"
+            onDong={() => setDoiCty(null)}
+            onDongY={() => {
+              set({ cnCongTy: { ...s.cnCongTy, [s.donVi]: { ...s.cnCongTy?.[s.donVi], [doiCty.cn]: doiCty.cty } } })
+              setDoiCty(null)
+              toast(`Đã chuyển ${doiCty.ten} sang ${moi.ten}`)
+            }}
+          >
+            Toàn bộ số liệu của cửa hàng {doiCty.ten} (chứng từ, sổ sách, số dư, báo cáo) sẽ chuyển từ {cu.ten} sang {moi.ten}.
+            Sau khi chuyển, {cu.ten} không còn số liệu của cửa hàng này. Bạn có chắc muốn chuyển?
+          </HopXacNhan>
+        )
+      })()}
     </>
   )
 }

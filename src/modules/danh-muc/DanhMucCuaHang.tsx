@@ -5,7 +5,7 @@ import { createPortal } from 'react-dom'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import type { Col, Row, ScreenProps } from '../types'
 import { tenMan } from '../../app/registry'
-import { donViHienTai, ngayDauNam, useSession, type CnThem, type Session } from '../../app/session'
+import { congTyCn, donViHienTai, dsDonVi, ngayDauNam, useSession, type CnThem, type Session } from '../../app/session'
 import { CUA_HANG, DON_VI } from '../../data/mock'
 import { Icon } from '../../ui/Icon'
 import { Note, PageHead } from '../../ui/Page'
@@ -32,6 +32,7 @@ export function DanhMucCuaHang({ sc, mod }: ScreenProps) {
   const [mo, setMo] = useState(q.get('them') === '1')
   const [doiNvl, setDoiNvl] = useState<{ cn: string; ten: string; cach: CachNvl } | null>(null)   // Bàn làm việc mở thẳng hộp thêm (?them=1)
   const [xem, setXem] = useState<Row | null>(null)   // hộp chi tiết cửa hàng (T285)
+  const [doiCty, setDoiCty] = useState<{ cn: string; ten: string; cty: string } | null>(null)   // chọn lại công ty, chờ xác nhận (T711)
   const dv = donViHienTai(s)   // cửa hàng thuộc công ty của đơn vị đang mở (T285)
   const them = s.cnThem?.[s.donVi] ?? []
   // đơn vị mẫu có sẵn cửa hàng mẫu; đơn vị mới tạo từ FABi chỉ có cửa hàng đã lên sổ
@@ -51,8 +52,8 @@ export function DanhMucCuaHang({ sc, mod }: ScreenProps) {
     { k: 'ten', t: 'Tên cửa hàng', w: 220, r: r => <>
       <button type="button" className="ds-link-so" title="Xem chi tiết cửa hàng" onClick={e => { e.stopPropagation(); setXem(r) }}>{r.ten}</button>
       {r.moi && <span className="chip info" style={{ marginLeft: 8 }}>Mới lên sổ</span>}</> },
-    // Công ty của cửa hàng: tên, MST của đơn vị đang mở (T285)
-    { k: 'cty', t: 'Công ty', w: 300, r: () => <span className="dmcn-cty"><span>{dv.ten}</span>{dv.mst && <small>MST {dv.mst}</small>}</span> },
+    // Công ty của cửa hàng: tên, MST của đơn vị đang mở (T285), hoặc công ty chọn lại ở hộp chi tiết (T711)
+    { k: 'cty', t: 'Công ty', w: 300, r: (r: Row) => { const c = congTyCn(s, String(r.id)); return <span className="dmcn-cty"><span>{c.ten}</span>{c.mst && <small>MST {c.mst}</small>}</span> } },
     { k: 'kv', t: 'Khu vực', cls: 'dim' },
     { k: 'kho', t: 'Kho', cls: 'dim', r: r => <>{r.kho}{standard && <span className="chip" style={{ marginLeft: 8 }}>Mặc định</span>}</> },
     { k: 'nguon', t: 'Nguồn', cls: 'dim' },
@@ -192,7 +193,21 @@ export function DanhMucCuaHang({ sc, mod }: ScreenProps) {
           onTrang={setTrang} onCoTrang={ct => { setCoTrang(ct); setTrang(1) }} />
       </section>
       {mo && <HopThemCuaHang onDong={() => setMo(false)} onLenSo={lenSo} />}
-      {xem && <HopChiTietCn r={xem} onDong={() => setXem(null)} onDoiNvl={(cn, ten, cach) => setDoiNvl({ cn, ten, cach })} />}
+      {xem && <HopChiTietCn r={xem} onDong={() => setXem(null)} onDoiNvl={(cn, ten, cach) => setDoiNvl({ cn, ten, cach })} onDoiCty={(cn, ten, cty) => setDoiCty({ cn, ten, cty })} />}
+      {doiCty && (() => {
+        const cu = congTyCn(s, doiCty.cn)
+        const moi = dsDonVi(s).find(d => d.id === doiCty.cty) ?? cu
+        return (
+          <HopXacNhan tieuDe="Chọn lại công ty của cửa hàng" nut="Chuyển sang công ty mới" onDong={() => setDoiCty(null)} onDongY={() => {
+            set({ cnCongTy: { ...s.cnCongTy, [s.donVi]: { ...s.cnCongTy?.[s.donVi], [doiCty.cn]: doiCty.cty } } })
+            setDoiCty(null)
+            toast(`Đã chuyển ${doiCty.ten} sang ${moi.ten}`)
+          }}>
+            Toàn bộ số liệu của cửa hàng {doiCty.ten} (chứng từ, sổ sách, số dư, báo cáo) sẽ chuyển từ {cu.ten} sang {moi.ten}.
+            Sau khi chuyển, {cu.ten} không còn số liệu của cửa hàng này. Bạn có chắc muốn chuyển?
+          </HopXacNhan>
+        )
+      })()}
       {doiNvl && (
         <HopXacNhan tieuDe="Đổi cách tính chi phí NVL" nut="Đồng ý" onDong={() => setDoiNvl(null)} onDongY={() => {
           set(datCachNvl(s, doiNvl.cn, doiNvl.cach))
@@ -209,19 +224,23 @@ export function DanhMucCuaHang({ sc, mod }: ScreenProps) {
 }
 
 /** Hộp chi tiết một cửa hàng, gồm công ty (tên, MST) của đơn vị đang mở (T285).
- *  Cách tính chi phí NVL, đồng bộ thu chi FABi sửa ngay trong hộp như cột của bảng; đổi cách tính NVL vẫn qua hộp xác nhận (T321) */
-function HopChiTietCn({ r, onDong, onDoiNvl }: { r: Row; onDong: () => void; onDoiNvl: (cn: string, ten: string, cach: CachNvl) => void }) {
+ *  Cách tính chi phí NVL, đồng bộ thu chi FABi sửa ngay trong hộp như cột của bảng; đổi cách tính NVL vẫn qua hộp xác nhận (T321).
+ *  Công ty chọn lại được; chọn công ty khác thì hỏi xác nhận vì số liệu cả cửa hàng chuyển theo (T711) */
+function HopChiTietCn({ r, onDong, onDoiNvl, onDoiCty }: { r: Row; onDong: () => void; onDoiNvl: (cn: string, ten: string, cach: CachNvl) => void; onDoiCty: (cn: string, ten: string, cty: string) => void }) {
   const { s, set, toast } = useSession()
-  const dv = donViHienTai(s)
   useDongEsc(onDong)
   const id = String(r.id)
+  const dv = congTyCn(s, id)
   const cachHt = cachNvlHienTai(s, id)
   const bat = batDongBoThuChi(s, id)
   const dong: [string, React.ReactNode][] = [
     ['Mã', <span className="code">{r.ma}</span>],
     ['POS ID', <span className="code">{r.posId}</span>],
     ['Tên cửa hàng', r.ten],
-    ['Công ty', dv.ten],
+    ['Công ty', (
+      <Select className="inp dmcn-nvl" value={dv.id} ds={dsDonVi(s).map(d => ({ v: d.id, t: d.ten }))} aria-label={`Công ty của ${r.ten}`}
+        onChange={e => { if (e.target.value !== dv.id) onDoiCty(id, String(r.ten), e.target.value) }} />
+    )],
     ['Mã số thuế', dv.mst ? <span className="code">{dv.mst}</span> : '—'],
     ['Khu vực', r.kv],
     ['Kho', r.kho],

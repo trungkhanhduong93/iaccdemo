@@ -43,6 +43,7 @@ export interface Session {
   dungThu?: Record<string, string>   // ngày bắt đầu dùng thử (dd/mm/yyyy) của đơn vị mới tạo từ FABi, thêm đơn vị (T158)
   ttDv?: Record<string, TtDonVi>   // thông tin kê khai từng đơn vị (T145)
   cnThem?: Record<string, CnThem[]>   // cửa hàng lên sổ thêm từ cửa hàng FABi theo từng đơn vị (T142)
+  cnCongTy?: Record<string, Record<string, string>>   // công ty chọn lại cho cửa hàng ở Danh mục cửa hàng theo đơn vị; khoá mã cửa hàng, giá trị mã đơn vị; chưa đặt là đơn vị đang mở (T711)
   cachNvl?: Record<string, Record<string, LichCachNvl[]>>   // cách tính chi phí NVL gói Free theo đơn vị, cửa hàng; mỗi lần đổi áp dụng từ kỳ đầu chưa khoá sổ (T232)
   giaThanhTay?: Record<string, Record<string, number>>   // giá thành món nhập tay theo đơn vị; khoá cửa hàng-yyyymm-mã món (T232)
   dongBoThuChi?: Record<string, Record<string, boolean>>   // tự động đồng bộ phiếu thu, chi lập trên FABi theo đơn vị, từng cửa hàng (mã cửa hàng); chưa đặt là bật (T264)
@@ -176,6 +177,11 @@ export function dungThuDv(s: Pick<Session, 'dungThu' | 'donVi' | 'goi'>): { con:
   return { con, den: dmy(den) }
 }
 export const donViHienTai = (s: Session) => dsDonVi(s).find(d => d.id === s.donVi) ?? DON_VI[0]
+/** Công ty của cửa hàng: công ty đã chọn lại ở Danh mục cửa hàng, chưa chọn là đơn vị đang mở (T711) */
+export const congTyCn = (s: Session, cn: string) => {
+  const ma = s.cnCongTy?.[s.donVi]?.[cn]
+  return (ma && dsDonVi(s).find(d => d.id === ma)) || donViHienTai(s)
+}
 export const cheDoHienTai = (s: Session) => CHE_DO[s.cheDo]
 /** Nhãn Bổ sung MST: gói có màn Kê khai thuế mở hộp Thông tin kê khai ở màn đó, gói khác mở Thông tin đơn vị */
 export const denBoMst = (goi: Goi) => goi === 'S' || goi === 'PL' ? '/app/thue/to-khai?thongtin=1' : '/app/he-thong/thong-tin'
