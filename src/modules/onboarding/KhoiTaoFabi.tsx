@@ -19,7 +19,7 @@ const GIA_TRI: [string, string, string, string][] = [
   ['percent', 'Kê khai thuế và sổ sách', 'Tự động tính thuế GTGT và TNCN, TNDN theo % doanh thu. Hỗ trợ lập tờ khai thuế và theo dõi sổ sách báo cáo theo quy định.', 'Tự tính thuế, lập tờ khai'],
 ]
 const CAM_KET = ['Không phát sinh chi phí', 'Không yêu cầu thẻ thanh toán', 'Dữ liệu an toàn tuyệt đối']
-const CAM_KET_DT = ['Miễn phí', 'Không cần thẻ', 'Dữ liệu an toàn']   // điện thoại: một hàng trên nút kết nối
+const CAM_KET_DT = ['Miễn phí', 'Dữ liệu an toàn']   // điện thoại: một hàng trên nút kết nối
 const KET_NOI = 'ket-noi'   // tham số đường dẫn vào thẳng phần mềm
 
 export function KhoiTaoFabi() {
@@ -32,10 +32,7 @@ export function KhoiTaoFabi() {
     return MAC_DINH
   })
   const [veFabi, setVeFabi] = useState(false)   // bấm Để sau: quay lại FABi, tiến độ vẫn lưu
-  // Điện thoại chia 2 trang, chữ gọn: tiêu đề, ảnh; 4 dòng giá trị, cam kết, nút kết nối. Vuốt hoặc bấm chấm để chuyển (PhuongXT 29/10, gộp 3 trang còn 2 ngày 30/10/2026)
-  const [trang, setTrang] = useState(0)
-  const [vuotTu, setVuotTu] = useState<number | null>(null)
-  const xem = (t: number) => !laMobile || trang === t
+  // Điện thoại một trang, chữ gọn: tiêu đề, 4 dòng giá trị, cam kết, nút kết nối ghim đáy; bỏ câu mô tả, bỏ ảnh (gộp 2 trang thành 1, PhuongXT 02/11/2026)
   const chon = CUA_HANG.map(c => c.id)   // bỏ bước chọn cửa hàng dùng thử: kết nối mọi cửa hàng FABi, sửa ở bước Cửa hàng của popup
   const vaoApp = () => {
     // đơn vị mới từ FABi, không đụng 3 đơn vị mẫu: tên theo FABi, chưa có mã số thuế, địa chỉ (FABi không có)
@@ -78,21 +75,18 @@ export function KhoiTaoFabi() {
 
         {!veFabi && n.b === -1 && (
           // Nội dung theo khung PhuongXT gửi 28/10/2026: đọc lướt 10 giây là bấm kết nối
-          <div className="card ktf-gt ktf-b1"
-            onTouchStart={e => setVuotTu(e.touches[0].clientX)}
-            onTouchEnd={e => { if (vuotTu === null) return; const dx = e.changedTouches[0].clientX - vuotTu; if (Math.abs(dx) > 50) setTrang(t => Math.max(0, Math.min(1, t + (dx < 0 ? 1 : -1)))); setVuotTu(null) }}>
-            {xem(0) && <div className="ktf-b1-hero">
+          <div className="card ktf-gt ktf-b1">
+            <div className="ktf-b1-hero">
               <div className="ktf-b1-chu">
                 <span className="ktf-b1-huy"><Icon n="shield" className="ic sm" />{laMobile ? 'Miễn phí trọn đời cho khách FABi' : 'Gói Standard: Miễn phí trọn đời cho khách hàng FABi POS'}</span>
                 <h1>{laMobile ? 'Kế toán tự động cho quán của bạn' : 'Kế toán tự động dành riêng cho quán của bạn'}</h1>
-                <p>{laMobile ? 'Doanh thu FABi tự lên sổ. Không cần ghi tay.' : 'Gạt bỏ sổ tay thu chi. Tự động đồng bộ doanh thu bán hàng từ FABi POS chỉ với 1 chạm.'}</p>
+                {!laMobile && <p>Gạt bỏ sổ tay thu chi. Tự động đồng bộ doanh thu bán hàng từ FABi POS chỉ với 1 chạm.</p>}
               </div>
-              <div className="ktf-anh ktf-b1-anh">
-                <img src={`${import.meta.env.BASE_URL}${laMobile ? 'trang-chu-app.jpg' : 'trang-chu-standard.jpg'}`} alt="Trang chủ iPOS Accounting gói Standard" />
-              </div>
-            </div>}
-            {laMobile && trang === 1 && <h2 className="ktf-h ktf-b1-tieu">Quán bạn được gì</h2>}
-            {xem(1) && <div className="ktf-b1-the">
+              {!laMobile && <div className="ktf-anh ktf-b1-anh">
+                <img src={`${import.meta.env.BASE_URL}trang-chu-standard.jpg`} alt="Trang chủ iPOS Accounting gói Standard" />
+              </div>}
+            </div>
+            <div className="ktf-b1-the">
               {GIA_TRI.map(([ic, t, m, ngan]) => (
                 <div key={t}>
                   <span className="ktf-chao-ic"><Icon n={ic} className="ic" /></span>
@@ -100,27 +94,19 @@ export function KhoiTaoFabi() {
                   {!laMobile && <p>{m}</p>}
                 </div>
               ))}
-            </div>}
-            {laMobile && trang === 1 && (
+            </div>
+            {laMobile && (
               <div className="ktf-b1-cam">
                 {CAM_KET_DT.map(t => <span key={t}><Icon n="check" className="ic sm" />{t}</span>)}
               </div>
             )}
-            {laMobile && (
-              <div className="ktf-b1-cham" role="tablist" aria-label="Trang giới thiệu">
-                {[0, 1].map(t => <button key={t} role="tab" aria-selected={trang === t} aria-label={`Trang ${t + 1}`} className={trang === t ? 'on' : ''} onClick={() => setTrang(t)} />)}
-              </div>
-            )}
             <div className="ktf-b1-cta">
               <div className="ktf-gt-nut">   {/* điện thoại: ghim đáy (T668) */}
-                {laMobile && trang > 0 && <button className="btn ktf-lui lg" aria-label="Quay lại trang trước" onClick={() => setTrang(trang - 1)}><Icon n="chevl" className="ic sm" />Quay lại</button>}
-                {laMobile && trang < 1
-                  ? <button className="btn pri lg" onClick={() => setTrang(trang + 1)}>Tiếp<Icon n="arrow" className="ic sm" /></button>
-                  : <button className="btn pri lg" onClick={dungThu}>Bắt đầu kết nối dữ liệu<Icon n="arrow" className="ic sm" /></button>}
+                <button className="btn pri lg" onClick={dungThu}>Bắt đầu kết nối dữ liệu<Icon n="arrow" className="ic sm" /></button>
               </div>
               {!laMobile && <small className="muted">{CAM_KET.join(' · ')}</small>}
             </div>
-            {(!laMobile || trang === 1) && <p className="ktf-b1-goi"><Icon n="sparkle" className="ic sm" />Dễ dàng nâng cấp lên giải pháp kế toán chuyên nghiệp cho hộ kinh doanh (gói iPOS Accounting Plus) và doanh nghiệp (gói iPOS Accounting Pro), đáp ứng chuẩn mực quy định của Bộ Tài chính, bất kỳ lúc nào.</p>}
+            <p className="ktf-b1-goi"><Icon n="sparkle" className="ic sm" />Dễ dàng nâng cấp lên giải pháp kế toán chuyên nghiệp cho hộ kinh doanh (gói iPOS Accounting Plus) và doanh nghiệp (gói iPOS Accounting Pro), đáp ứng chuẩn mực quy định của Bộ Tài chính, bất kỳ lúc nào.</p>
           </div>
         )}
       </div>

@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 02/11/2026
+- T138: Điện thoại, màn mở từ FABi gộp 2 trang giới thiệu thành 1, gọn vừa một màn: bỏ câu mô tả dưới tiêu đề, bỏ ảnh app, hàng cam kết còn Miễn phí, Dữ liệu an toàn.
 - T706: Thu chi trở lại cách đồng bộ FABi cũ: bên phải thanh tab có nhãn cam báo số phiếu thu chi chưa đồng bộ và nút Đồng bộ. Bấm nhãn mở hộp liệt kê phiếu, có cột Mã phiếu FABi, Lý do, Nguyên nhân kèm link Map quỹ, Mở khoá sổ. Bỏ chip Chưa đồng bộ ở Thu chi trên máy tính và điện thoại. Hướng dẫn nhanh Thu chi sửa theo. Xuất bán POS giữ nguyên.
 
 ## 31/10/2026
