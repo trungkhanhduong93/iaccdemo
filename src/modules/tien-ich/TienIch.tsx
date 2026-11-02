@@ -1,5 +1,5 @@
 // Tiện ích có màn riêng: đồng bộ dữ liệu, hoá đơn đầu vào, duyệt chứng từ, cảnh báo, nhật ký thao tác
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import type { Col, ScreenProps } from '../types'
 import { tenMan } from '../../app/registry'
@@ -10,10 +10,11 @@ import { Card, Kpi, Note, PageHead } from '../../ui/Page'
 import { St, Table } from '../../ui/Table'
 import { between, dmy, fold, k, pad, pick, rng } from '../../ui/format'
 import { Select } from '../../ui/Dropdown'
-import { useNhatKyDayDu, THAO_TAC_GOI, locNKMacDinh, khopLocNK, luaChonNK, dongTu, doiTuongTT, vietTat } from '../he-thong/nhatKyMau'
+import { useNhatKyDayDu, THAO_TAC_GOI, locNKMacDinh, khopLocNK, luaChonNK, dongTu, doiTuongTT, vietTat, type DongNK } from '../he-thong/nhatKyMau'
 import { ChonKhoangNgay, ONgay, docNgay } from '../../ui/ChonNgay'
 import { HopDongBo } from '../../ui/HopDongBo'
 import { BoLoc, useCauHinhLoc, useLocNhap, type OLocDef } from '../../ui/LocNangCao'
+import { OLoc, dangLoc, dsGiaTri, khopLoc, type GiaTriLoc, type KieuLoc, type LocCot } from '../../ui/LocCot'
 
 const dsKho = CUA_HANG.flatMap(c =>
   c.kho.map(ten => {
@@ -216,6 +217,36 @@ export function CanhBao({ sc, mod }: ScreenProps) {
   )
 }
 
+function tachNgay(s?: string): Date | undefined {
+  if (!s) return undefined
+  const m = s.match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/)
+  if (!m) return undefined
+  const d = new Date(+m[3], +m[2] - 1, +m[1])
+  return isNaN(d.getTime()) ? undefined : d
+}
+
+interface CotLocNK {
+  k: string
+  t: string
+  kieu: KieuLoc
+  w: number
+  borderRight?: number
+  lay: (d: DongNK) => string
+  ngay?: (d: DongNK) => Date | undefined
+}
+
+const COT_LOC_NK: CotLocNK[] = [
+  { k: 'luc', t: 'Ngày giờ thao tác', kieu: 'ngay', w: 164, lay: d => `${d.luc}:${d.giay}`, ngay: d => tachNgay(d.luc) },
+  { k: 'ai', t: 'Tài khoản', kieu: 'chu', w: 150, lay: d => d.ai ?? '' },
+  { k: 'vaiTro', t: 'Chức vụ', kieu: 'chon', w: 136, lay: d => d.vaiTro ?? '' },
+  { k: 'tt', t: 'Thao tác', kieu: 'chon', w: 110, lay: d => d.tt ?? '' },
+  { k: 'loai', t: 'Tên chứng từ', kieu: 'chon', w: 160, lay: d => d.loai ?? '' },
+  { k: 'so', t: 'Số chứng từ', kieu: 'chu', w: 136, lay: d => d.so ?? '' },
+  { k: 'ngay', t: 'Ngày chứng từ', kieu: 'ngay', w: 120, lay: d => d.ngay ?? '', ngay: d => tachNgay(d.ngay) },
+  { k: 'ch', t: 'Cửa hàng', kieu: 'chon', w: 170, lay: d => d.ch ?? '' },
+  { k: 'tb', t: 'Thiết bị', kieu: 'chu', w: 248, borderRight: 0, lay: d => d.tb ?? '' },
+]
+
 export function NhatKyThaoTac({ sc, mod }: ScreenProps) {
   const { s } = useSession()
   const tatCa = useNhatKyDayDu(s.goi)
@@ -224,6 +255,7 @@ export function NhatKyThaoTac({ sc, mod }: ScreenProps) {
   const [daLoc, setDaLoc] = useState(false)
   const [chonMa, setChonMa] = useState<string | null>(null)
   const [tim, setTim] = useState('')
+  const [gtLocCot, setGtLocCot] = useState<Record<string, GiaTriLoc>>({})
 
   const loc = useLocNhap(locNKMacDinh)
   const { nhap, dat } = loc
@@ -231,17 +263,45 @@ export function NhatKyThaoTac({ sc, mod }: ScreenProps) {
   const dsThaoTac = THAO_TAC_GOI[s.goi] ?? THAO_TAC_GOI.S
   const luaChon = useMemo(() => luaChonNK(tatCa), [tatCa])
 
+  const locCot: LocCot = useMemo(
+    () => ({
+      gt: gtLocCot,
+      dat: (k, g) => setGtLocCot(t => ({ ...t, [k]: g })),
+      kieu: c => COT_LOC_NK.find(x => x.k === c.k)?.kieu ?? 'chu',
+      layLuaChon: k => {
+        const col = COT_LOC_NK.find(x => x.k === k)
+        return col ? dsGiaTri(tatCa, col.lay) : []
+      },
+    }),
+    [gtLocCot, tatCa],
+  )
+
   const dsHienThi = useMemo(() => {
     if (!daLoc) return []
     const q = fold(tim.trim())
-    return tatCa.filter(d => khopLocNK(d, loc.ap) && (!q || [d.so, d.ai, d.tk].some(x => fold(x).includes(q))))
-  }, [tatCa, daLoc, loc.ap, tim])
+    return tatCa.filter(
+      d =>
+        khopLocNK(d, loc.ap) &&
+        (!q || [d.so, d.ai, d.tk].some(x => fold(x).includes(q))) &&
+        COT_LOC_NK.every(c => {
+          const g = gtLocCot[c.k]
+          return !dangLoc(g) || khopLoc(c.kieu, g, c.lay(d), undefined, c.ngay?.(d))
+        }),
+    )
+  }, [tatCa, daLoc, loc.ap, tim, gtLocCot])
 
   // Không tự chọn dòng đầu; bấm Lọc lại thì đóng panel
   const dongChon = useMemo(() => {
     if (!chonMa) return null
     return dsHienThi.find(d => d.ma === chonMa) ?? null
   }, [dsHienThi, chonMa])
+
+  // Bỏ chọn dòng đang mở khung chi tiết nếu dòng đó bị lọc mất (T713)
+  useEffect(() => {
+    if (chonMa && !dsHienThi.some(d => d.ma === chonMa)) {
+      setChonMa(null)
+    }
+  }, [chonMa, dsHienThi])
 
   const onLoc = () => {
     setDaLoc(true)
@@ -350,6 +410,13 @@ export function NhatKyThaoTac({ sc, mod }: ScreenProps) {
                   <th style={{ width: 120 }}>Ngày chứng từ</th>
                   <th style={{ width: 170 }}>Cửa hàng</th>
                   <th style={{ width: 248, borderRight: 0 }}>Thiết bị</th>
+                </tr>
+                <tr className="loc-hang">
+                  {COT_LOC_NK.map(c => (
+                    <th key={c.k} style={{ width: c.w, ...(c.borderRight !== undefined ? { borderRight: c.borderRight } : {}) }}>
+                      <OLoc c={{ k: c.k, t: c.t }} loc={locCot} />
+                    </th>
+                  ))}
                 </tr>
               </thead>
               <tbody>

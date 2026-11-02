@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T713 | Nhật ký thao tác web: hàng lọc theo cột dưới hàng tiêu đề, đủ 9 cột (ngày giờ, ngày chứng từ lọc kiểu ngày; chức vụ, thao tác, tên chứng từ, cửa hàng chọn giá trị; tài khoản, số chứng từ, thiết bị gõ chữ), lọc thêm trên kết quả sau khi bấm Lọc | Trum | 02/11/2026 | [nhật ký](../nhat-ky/2026-11-02-trum-loc-cot-nhat-ky.md) |
 | T712 | Gói Standard ẩn Gói thuê bao ở tab Hệ thống (web, điện thoại), menu tài khoản, menu thanh bên; vẫn mở từ nút Nâng cấp, nhãn gói. Tab Nhật ký thao tác xuống cuối; Cấu hình kế toán đổi nhãn Định dạng số thành Tiêu chuẩn định dạng số | PhuongXT | 02/11/2026 | [nhật ký](../nhat-ky/2026-11-02-phuongxt-an-goi-thue-bao-standard.md) |
 | T711 | Danh mục cửa hàng (web, điện thoại): hộp chi tiết chọn lại được công ty của cửa hàng; chọn công ty khác thì cảnh báo số liệu toàn bộ cửa hàng chuyển sang công ty mới | PhuongXT | 02/11/2026 | [nhật ký](../nhat-ky/2026-11-02-phuongxt-chon-lai-cong-ty-cua-hang.md) |
 | T710 | Cấu hình kế toán thêm Quy định chữ số và dấu phân cách: Việt Nam (1.234.567,89) hoặc Quốc tế (1,234,567.89), theo đơn vị; số trên chứng từ, danh sách, báo cáo và ô nhập số hiện, gõ theo kiểu đã chọn, cả web và điện thoại | PhuongXT | 02/11/2026 | [nhật ký](../nhat-ky/2026-11-02-phuongxt-kieu-chu-so.md) |
