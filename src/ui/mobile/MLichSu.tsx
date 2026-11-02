@@ -10,7 +10,7 @@ export interface MLichSuProps {
   mau?: DongLichSu[]
 }
 
-type LoaiThaoTac = 'tao' | 'ghi_so' | 'xoa' | 'sua'
+export type LoaiThaoTac = 'tao' | 'ghi_so' | 'xoa' | 'sua'
 
 export interface TruongDoi {
   ten: string
@@ -74,7 +74,7 @@ function dinhDangNgay(ngayStr: string): string {
   return ngayStr
 }
 
-export const MLichSu: FC<MLichSuProps> = ({ goi, man, id, mau }) => {
+export function useDongLichSu(goi: Goi, man: string, id: string, mau?: DongLichSu[]): DongLichSu[] {
   const phien = useNhatKy(man, id)
 
   const dsMau: DongLichSu[] = mau ? mau : id.startsWith('moi-')
@@ -120,7 +120,68 @@ export const MLichSu: FC<MLichSuProps> = ({ goi, man, id, mau }) => {
     }
   })
 
-  const tatCa: DongLichSu[] = [...dsPhien, ...dsMau]
+  return [...dsPhien, ...dsMau]
+}
+
+export function nhomTheoNgay(items: DongLichSu[]): { ngay: string; nhan: string; items: DongLichSu[] }[] {
+  const nhomNgay: { ngay: string; nhan: string; items: DongLichSu[] }[] = []
+  for (const item of items) {
+    const [ngayPart] = item.luc.split(' ')
+    let g = nhomNgay.find(x => x.ngay === ngayPart)
+    if (!g) {
+      g = { ngay: ngayPart, nhan: dinhDangNgay(ngayPart), items: [] }
+      nhomNgay.push(g)
+    }
+    g.items.push(item)
+  }
+  return nhomNgay
+}
+
+export function vietTatTen(ten: string): string {
+  const tu = ten.trim().split(/\s+/).filter(Boolean)
+  if (tu.length === 0) return ''
+  if (tu.length === 1) return tu[0].slice(0, 2).toUpperCase()
+  return (tu[0][0] + tu[tu.length - 1][0]).toUpperCase()
+}
+
+export function IconLoai({ loai, className }: { loai: LoaiThaoTac | 'dong_bo'; className?: string }) {
+  if (loai === 'tao' || loai === 'dong_bo') {
+    return (
+      <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className={className}>
+        <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+        <path d="M3 3v5h5" />
+        <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" />
+        <path d="M16 16h5v5" />
+      </svg>
+    )
+  }
+  if (loai === 'sua') {
+    return (
+      <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className={className}>
+        <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
+      </svg>
+    )
+  }
+  if (loai === 'ghi_so') {
+    return (
+      <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className={className}>
+        <polyline points="20 6 9 17 4 12" />
+      </svg>
+    )
+  }
+  if (loai === 'xoa') {
+    return (
+      <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className={className}>
+        <polyline points="3 6 5 6 21 6" />
+        <path d="M19,6v14a2,2,0,0,1-2,2H7a2,2,0,0,1-2-2V6m3,0V4a2,2,0,0,1,2-2h4a2,2,0,0,1,2,2v2" />
+      </svg>
+    )
+  }
+  return null
+}
+
+export const MLichSu: FC<MLichSuProps> = ({ goi, man, id, mau }) => {
+  const tatCa = useDongLichSu(goi, man, id, mau)
 
   if (tatCa.length === 0) {
     return (
@@ -139,17 +200,7 @@ export const MLichSu: FC<MLichSuProps> = ({ goi, man, id, mau }) => {
     ? suaMoiNhat.luc.replace(/\/(\d{4})\s/, ' ')
     : null
 
-  // Nhóm theo ngày (dd/mm/yyyy)
-  const nhomNgay: { ngay: string; nhan: string; items: DongLichSu[] }[] = []
-  for (const item of tatCa) {
-    const [ngayPart] = item.luc.split(' ')
-    let g = nhomNgay.find(x => x.ngay === ngayPart)
-    if (!g) {
-      g = { ngay: ngayPart, nhan: dinhDangNgay(ngayPart), items: [] }
-      nhomNgay.push(g)
-    }
-    g.items.push(item)
-  }
+  const nhomNgay = nhomTheoNgay(tatCa)
 
   return (
     <div className="m-ls-khung">
@@ -177,30 +228,7 @@ export const MLichSu: FC<MLichSuProps> = ({ goi, man, id, mau }) => {
                 <div key={`${item.luc}-${item.ai}-${idx}`} className="m-ls-hang">
                   <div className="m-ls-cot-trai">
                     <div className={`m-ls-vong-tron ${item.loai}`}>
-                      {item.loai === 'tao' && (
-                        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                          <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
-                          <path d="M3 3v5h5" />
-                          <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" />
-                          <path d="M16 16h5v5" />
-                        </svg>
-                      )}
-                      {item.loai === 'sua' && (
-                        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                          <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
-                        </svg>
-                      )}
-                      {item.loai === 'ghi_so' && (
-                        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                          <polyline points="20 6 9 17 4 12" />
-                        </svg>
-                      )}
-                      {item.loai === 'xoa' && (
-                        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                          <polyline points="3 6 5 6 21 6" />
-                          <path d="M19,6v14a2,2,0,0,1-2,2H7a2,2,0,0,1-2-2V6m3,0V4a2,2,0,0,1,2-2h4a2,2,0,0,1,2,2v2" />
-                        </svg>
-                      )}
+                      <IconLoai loai={item.loai} />
                     </div>
                     {!laHangCuoi && <div className="m-ls-vach" />}
                   </div>

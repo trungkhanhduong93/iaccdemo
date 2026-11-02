@@ -37,6 +37,7 @@ import { ApDauBang } from './ApDauBang'
 import { HopInChungTu, type PhieuIn } from '../bao-cao/InChungTu'
 import { createPortal } from 'react-dom'
 import { theMauTheoGoc, theMauTheoSo } from '../../modules/ccdc'
+import { useDongLichSu, nhomTheoNgay, IconLoai, vietTatTen } from '../mobile/MLichSu'
 import { lyDoKhongXoaThe } from '../../modules/ccdc/the-phan-bo'
 import { xongViecHuongDan } from '../../modules/home/HuongDan'
 
@@ -1629,24 +1630,156 @@ export function HachToan({
   )
 }
 
-/** Nhật ký từng phiếu ghi nhận ở mọi gói, kể cả Free: thêm mới, sửa, xoá trong phiên ở trên, lịch sử mẫu ở dưới (T51).
- *  Màn Nhật ký thao tác chung (X2) vẫn theo gói */
+/** Nhật ký từng phiếu ghi nhận ở mọi gói, kể cả Free: thanh lọc dọc bên trái + dòng thời gian bên phải (T714) */
 export function LichSu({ goi, moi, man, id }: { goi: Goi; moi: boolean; man: string; id: string }) {
-  const phien = useNhatKy(man, id)
+  const tatCa = useDongLichSu(goi, man, id)
+  const [locLoai, setLocLoai] = useState<string>('tat')
+  const [locNguoi, setLocNguoi] = useState<string>('tat')
+
   if (moi) return <div className="empty"><b>Chứng từ chưa lưu</b></div>
+
+  const suaMoiNhat = tatCa.find(x => x.loai === 'sua')
+  const thoiGianSua = suaMoiNhat ? suaMoiNhat.luc.replace(/\/(\d{4})\s/, ' ') : null
+
+  const nhanGhiSo = kieuGhiSo(goi) === 'khong' ? 'Lưu' : 'Ghi sổ'
+  const dsLoai: { id: string; nhan: string; loaiCham: string; so: number }[] = [
+    { id: 'tat', nhan: 'Tất cả', loaiCham: 'tat', so: tatCa.length },
+    { id: 'tao', nhan: 'Tạo', loaiCham: 'tao', so: tatCa.filter(x => x.loai === 'tao').length },
+    { id: 'sua', nhan: 'Sửa', loaiCham: 'sua', so: tatCa.filter(x => x.loai === 'sua').length },
+    { id: 'ghi_so', nhan: nhanGhiSo, loaiCham: 'ghi_so', so: tatCa.filter(x => x.loai === 'ghi_so').length },
+  ]
+  const soXoa = tatCa.filter(x => x.loai === 'xoa').length
+  if (soXoa > 0) {
+    dsLoai.push({ id: 'xoa', nhan: 'Xoá', loaiCham: 'xoa', so: soXoa })
+  }
+
+  const dsNguoiDung = Array.from(new Set(tatCa.map(x => x.ai)))
+  const dsNguoi = [
+    { id: 'tat', nhan: 'Mọi người', so: tatCa.length },
+    ...dsNguoiDung.map(ai => ({
+      id: ai,
+      nhan: ai,
+      so: tatCa.filter(x => x.ai === ai).length,
+    })),
+  ]
+
+  const hien = tatCa.filter(e => {
+    const hopLoai = locLoai === 'tat' || e.loai === locLoai
+    const hopNguoi = locNguoi === 'tat' || e.ai === locNguoi
+    return hopLoai && hopNguoi
+  })
+
+  const nhom = nhomTheoNgay(hien)
+
   return (
-    <Table
-      cols={[{ k: 'luc', t: 'Thời điểm', w: 140 }, { k: 'ai', t: 'Người làm' }, { k: 'viec', t: 'Thao tác' }]}
-      rows={[
-        ...phien,
-        // Phiếu thêm trong phiên chỉ có nhật ký thật; phiếu có sẵn kèm lịch sử mẫu
-        ...(id.startsWith('moi-') ? [] : [
-        { luc: '07/10/2026 10:05', ai: 'Lê Quốc Bảo', viec: kieuGhiSo(goi) === 'khong' ? 'Lưu chứng từ' : 'Ghi sổ' },
-        { luc: '07/10/2026 09:58', ai: 'Lê Quốc Bảo', viec: 'Sửa diễn giải' },
-        { luc: '06/10/2026 23:30', ai: 'Đồng bộ tự động', viec: 'Tạo chứng từ từ dữ liệu đồng bộ' },
-        ]),
-      ]}
-    />
+    <div className="ls-b">
+      {/* Thanh lọc dọc bên trái */}
+      <aside className="ls-b-loc" aria-label="Lọc lịch sử">
+        <div className="ls-b-loc-tong">
+          <span className="ls-b-loc-so">
+            {tatCa.length} <span className="ls-b-loc-so-nhan">thao tác</span>
+          </span>
+          {thoiGianSua && <span className="ls-b-loc-sua">Sửa gần nhất {thoiGianSua}</span>}
+          <span className="ls-b-loc-tom-tat-hep">
+            {tatCa.length} thao tác{thoiGianSua ? `. Sửa gần nhất ${thoiGianSua}` : ''}
+          </span>
+        </div>
+
+        {/* Nhóm Thao tác */}
+        <div className="ls-b-nhom">
+          <span className="ls-b-nhom-tieu-de">THAO TÁC</span>
+          {dsLoai.map(c => {
+            const chon = locLoai === c.id
+            return (
+              <button
+                key={c.id}
+                type="button"
+                className="ls-b-loc-btn"
+                aria-pressed={chon}
+                onClick={() => setLocLoai(c.id)}
+              >
+                <span className={`ls-b-cham ls-b-cham-${c.loaiCham}`} />
+                <span className="ls-b-loc-nhan">{c.nhan}</span>
+                <span className="ls-b-loc-so-dem">{c.so}</span>
+              </button>
+            )
+          })}
+        </div>
+
+        {/* Nhóm Người thao tác */}
+        <div className="ls-b-nhom">
+          <span className="ls-b-nhom-tieu-de">NGƯỜI THAO TÁC</span>
+          {dsNguoi.map(c => {
+            const chon = locNguoi === c.id
+            return (
+              <button
+                key={c.id}
+                type="button"
+                className="ls-b-loc-btn ls-b-loc-btn-nguoi"
+                aria-pressed={chon}
+                onClick={() => setLocNguoi(c.id)}
+              >
+                <span className="ls-b-avatar">
+                  {c.id === 'tat' ? (
+                    '··'
+                  ) : c.id === 'Đồng bộ tự động' ? (
+                    <IconLoai loai="dong_bo" />
+                  ) : (
+                    vietTatTen(c.id)
+                  )}
+                </span>
+                <span className="ls-b-loc-nhan">{c.nhan}</span>
+                <span className="ls-b-loc-so-dem">{c.so}</span>
+              </button>
+            )
+          })}
+        </div>
+      </aside>
+
+      {/* Dòng thời gian bên phải */}
+      <div className="ls-b-dong">
+        {tatCa.length === 0 ? (
+          <p className="ls-b-trong">Chưa có thao tác nào.</p>
+        ) : hien.length === 0 ? (
+          <p className="ls-b-trong">Không có thao tác nào khớp bộ lọc.</p>
+        ) : (
+          nhom.map(g => (
+            <div key={g.ngay} className="ls-b-ngay-nhom">
+              <h3 className="ls-b-ngay">{g.ngay}</h3>
+              {g.items.map((e, idx) => {
+                const laHangCuoi = idx === g.items.length - 1
+                const [, gioPart = ''] = e.luc.split(' ')
+                return (
+                  <div key={`${e.luc}-${e.ai}-${idx}`} className="ls-b-hang">
+                    <span className="ls-b-gio">{gioPart}</span>
+                    <div className="ls-b-cot-moc">
+                      <span className={`ls-b-moc ls-b-moc-${e.loai}`}>
+                        <IconLoai loai={e.loai} />
+                      </span>
+                      {!laHangCuoi && <span className="ls-b-duong" />}
+                    </div>
+                    <article className="ls-b-the">
+                      <div className="ls-b-the-dau">
+                        <b className="ls-b-ten">{e.tenViec}</b>
+                        <span className="ls-b-ai">{e.ai}</span>
+                      </div>
+                      {e.ghiChu && <p className="ls-b-mo-ta">{e.ghiChu}</p>}
+                      {e.doi && e.doi.length > 0 && e.doi.map((d, dIdx) => (
+                        <div key={dIdx} className="ls-b-doi">
+                          <span className="ls-b-doi-truong">{d.ten}</span>
+                          {d.cu !== undefined && d.cu !== '' && <s className="ls-b-doi-cu">{d.cu}</s>}
+                          {d.moi !== undefined && d.moi !== '' && <b className="ls-b-doi-moi">{d.moi}</b>}
+                        </div>
+                      ))}
+                    </article>
+                  </div>
+                )
+              })}
+            </div>
+          ))
+        )}
+      </div>
+    </div>
   )
 }
 

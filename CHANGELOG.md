@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 02/11/2026
+- T714: Tab Lịch sử của phiếu và danh mục trên máy tính vẽ lại giống app. Bên trái là tổng số thao tác, lần sửa gần nhất và hai nhóm lọc: theo thao tác (Tạo, Sửa, Lưu hoặc Ghi sổ, Xoá) và theo người làm. Bên phải là dòng thời gian theo ngày, lần sửa hiện giá trị cũ gạch ngang và giá trị mới.
 - T713: Nhật ký thao tác trên web có hàng lọc ngay dưới hàng tiêu đề, lọc được cả 9 cột. Cột ngày chọn khoảng ngày, cột Chức vụ, Thao tác, Tên chứng từ, Cửa hàng chọn từ danh sách, các cột còn lại gõ chữ. Hàng lọc lọc tiếp trên kết quả sau khi bấm Lọc.
 - T712: Gói Standard không còn mục Gói thuê bao ở thanh tab Hệ thống, menu tài khoản và menu thanh bên, trên cả máy tính và điện thoại. Vẫn mở được từ nút Nâng cấp, So sánh gói và nhãn gói cạnh logo. Tab Nhật ký thao tác chuyển xuống cuối. Cấu hình kế toán đổi nhãn Định dạng số thành Tiêu chuẩn định dạng số.
 - T138: Thêm đơn vị kế toán, popup đổi tiêu đề thành "Khai báo đơn vị". Chọn Hộ kinh doanh thì chọn tiếp Nhóm doanh thu và Phương pháp thuế TNCN; chọn Doanh nghiệp thì chọn Phương pháp thuế GTGT và TNDN, như Hệ thống, Thông tin đơn vị. Cách tính thuế gói đang dùng chưa kê khai được thì hiện cảnh báo nâng cấp. Lựa chọn tự điền sẵn khi mở Kê khai thuế. Cả máy tính và điện thoại.
