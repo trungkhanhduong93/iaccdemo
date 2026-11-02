@@ -238,6 +238,8 @@ export function nhomLyTuDong(ten: string): string {
 }
 /** Mã lý do Chi phí chờ phân bổ: phiếu chi lý do này sinh thẻ chi phí phân bổ; sơ đồ Chi phí phân bổ mở phiếu chi với ?ly=mã này */
 export const MA_LY_CHO_PHAN_BO = 'CHI35'
+/** Lý do mặc định tích Chi phí phân bổ nhiều kỳ: Chi phí chờ phân bổ, Chi tiền thuê nhà; loại trừ với Là chi phí (T700) */
+const LY_PHAN_BO = [MA_LY_CHO_PHAN_BO, 'CHI14']
 export const LY_DO = [
   ['THU01', 'Khách hàng đặt cọc', 'Thu tiền'],
   ['THU02', 'Thu Nợ', 'Thu tiền'],
@@ -289,7 +291,10 @@ export const LY_DO = [
   ['NK01', 'Nhập hàng khách trả lại', 'Nhập kho'],
 // phanBo: lý do Chi phí phân bổ nhiều kỳ, loại trừ với Là chi phí; phiếu chi lý do này gợi ý tạo thẻ chi phí (T700)
 // nguon: lý do có sẵn đồng bộ từ FABi, không xoá, chỉ sửa các ô tích; lý do người dùng thêm là Thủ công (T708)
-].map(([ma, ten, dung]) => ({ ma, ten, dung, nguon: 'FABi', chiPhi: LY_LA_CHI_PHI.includes(ma), phanBo: ma === MA_LY_CHO_PHAN_BO, nhomCp: LY_LA_CHI_PHI.includes(ma) ? nhomLyTuDong(ten) : '' }))
+].map(([ma, ten, dung]) => {
+  const phanBo = LY_PHAN_BO.includes(ma), chiPhi = !phanBo && LY_LA_CHI_PHI.includes(ma)
+  return { ma, ten, dung, nguon: 'FABi', chiPhi, phanBo, nhomCp: chiPhi ? nhomLyTuDong(ten) : '' }
+})
 /** Tên lý do thu, chi bắt buộc chọn đối tượng: Thu nợ, Đi vay, Thanh toán công nợ nhà cung cấp, Cho vay; lý do khác để trống được (T330) */
 export const LY_CAN_DOI_TUONG = LY_DO.filter(x => ['THU02', 'THU10', 'CHI02', 'CHI34'].includes(x.ma)).map(x => x.ten)
 /** Tên lý do chi tiền được tích là chi phí: báo cáo chi phí (Sổ chi phí, Chi phí trong tháng) chỉ lấy các lý do này (T231) */
