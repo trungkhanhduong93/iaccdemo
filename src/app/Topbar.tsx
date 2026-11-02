@@ -107,7 +107,7 @@ export function Topbar({ onSearch }: { onSearch?: () => void }) {
           </div>
           <div className="mi-user-goi"><span className="chip">{ROLE[s.role]}</span><Pk g={s.goi} /><span className="muted">{dv.viettat} · {cheDoHienTai(s).ngan}</span></div>
           <MenuSep />
-          <MenuItem icon="layers" to="/app/he-thong/goi-thue-bao">Gói thuê bao</MenuItem>
+          {s.goi !== 'S' && <MenuItem icon="layers" to="/app/he-thong/goi-thue-bao">Gói thuê bao</MenuItem>}   {/* gói Standard ẩn Gói thuê bao */}
           <MenuItem icon="swap" to="/chon-don-vi">Đổi đơn vị kế toán</MenuItem>
           {s.goi !== 'S' && <MenuItem icon="users" to="/app/he-thong/nguoi-dung">Người dùng</MenuItem>}   {/* gói Standard mới không có Người dùng (T472) */}
           <MenuItem icon="cog" to="/app/he-thong/cau-hinh">Cấu hình kế toán</MenuItem>

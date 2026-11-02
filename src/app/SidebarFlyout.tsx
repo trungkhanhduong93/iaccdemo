@@ -412,7 +412,7 @@ export function SidebarFlyout({
         const slug = parts[1]
         const { sc } = timMan(modK, slug)
         if (sc) {
-          if (!hienMan(sc, s.goi, s.cheDo, s)) return null
+          if (sc.anTab?.includes(s.goi) || !hienMan(sc, s.goi, s.cheDo, s)) return null
           const khoa = !moDuoc(sc, s.goi)
           const ma = maKhoa(sc)
           return { ...it, khoa, ma }

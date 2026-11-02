@@ -27,7 +27,7 @@ export function MKhac() {
   const modHt = MODULES.find(m => m.key === 'he-thong')
 
   const dsDm = modDm ? tabCua(modDm).filter(sc => hienMan(sc, s.goi, s.cheDo, s) && (!anNgoaiGoi(s.goi) || moDuoc(sc, s.goi))) : []
-  const dsHt = modHt ? tabCua(modHt).filter(sc => hienMan(sc, s.goi, s.cheDo, s) && (!anNgoaiGoi(s.goi) || moDuoc(sc, s.goi))) : []
+  const dsHt = modHt ? tabCua(modHt).filter(sc => !sc.anTab?.includes(s.goi) && hienMan(sc, s.goi, s.cheDo, s) && (!anNgoaiGoi(s.goi) || moDuoc(sc, s.goi))) : []
 
   const coKhoaSoDuPhong = !dsHt.some(sc => sc.slug === 'khoa-so')
   const tongSoDm = dsDm.length

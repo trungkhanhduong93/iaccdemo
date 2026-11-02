@@ -11,13 +11,14 @@ const heThong: ModuleDef = {
     // Gói Free ẩn Người dùng, Vai trò và phân quyền (T472)
     { slug: 'nguoi-dung', ten: 'Người dùng', nhom: 'Quản trị', goi: ['PL', 'PR'], kind: 'custom', comp: NguoiDung },
     { slug: 'phan-quyen', ten: 'Vai trò và phân quyền', nhom: 'Quản trị', goi: ['PL', 'PR'], kind: 'custom', comp: PhanQuyen },
-    { slug: 'nhat-ky', ten: 'Nhật ký thao tác', nhom: 'Quản trị', can: ['X2'], kind: 'custom', comp: NhatKyThaoTac },
     { slug: 'thong-tin', ten: 'Thông tin đơn vị', nhom: 'Cài đặt', kind: 'custom', comp: ThongTinDonVi },
     { slug: 'cau-hinh', ten: 'Cấu hình kế toán', nhom: 'Cài đặt', kind: 'custom', comp: CauHinh },
     // Gói Free: Khoá sổ là tab riêng trong Hệ thống, gói khác dùng Khoá sổ 10.1.6 ở Tổng hợp (T315)
     { slug: 'khoa-so', ten: 'Khoá sổ', nhom: 'Cài đặt', goi: ['S'], kind: 'custom', comp: KhoaSoStandard },
-    // Gói thuê bao xuống tab cuối (T472)
-    { slug: 'goi-thue-bao', ten: 'Gói thuê bao', nhom: 'Thuê bao', kind: 'custom', comp: GoiThueBao },
+    // Gói thuê bao xuống tab cuối (T472); gói Standard ẩn tab, vẫn mở từ nút Nâng cấp, nhãn gói
+    { slug: 'goi-thue-bao', ten: 'Gói thuê bao', nhom: 'Thuê bao', anTab: ['S'], kind: 'custom', comp: GoiThueBao },
+    // Nhật ký thao tác xuống tab cuối cùng
+    { slug: 'nhat-ky', ten: 'Nhật ký thao tác', nhom: 'Quản trị', can: ['X2'], kind: 'custom', comp: NhatKyThaoTac },
   ],
 }
 export default heThong

@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 02/11/2026
+- T712: Gói Standard không còn mục Gói thuê bao ở thanh tab Hệ thống, menu tài khoản và menu thanh bên, trên cả máy tính và điện thoại. Vẫn mở được từ nút Nâng cấp, So sánh gói và nhãn gói cạnh logo. Tab Nhật ký thao tác chuyển xuống cuối. Cấu hình kế toán đổi nhãn Định dạng số thành Tiêu chuẩn định dạng số.
 - T138: Thêm đơn vị kế toán, popup đổi tiêu đề thành "Khai báo đơn vị". Chọn Hộ kinh doanh thì chọn tiếp Nhóm doanh thu và Phương pháp thuế TNCN; chọn Doanh nghiệp thì chọn Phương pháp thuế GTGT và TNDN, như Hệ thống, Thông tin đơn vị. Cách tính thuế gói đang dùng chưa kê khai được thì hiện cảnh báo nâng cấp. Lựa chọn tự điền sẵn khi mở Kê khai thuế. Cả máy tính và điện thoại.
 - T138: Thêm đơn vị kế toán, popup Kết nối dữ liệu FABi chia 2 bước trên cả máy tính và điện thoại. Bước 1 chọn Hộ kinh doanh hay Doanh nghiệp, điền mã số thuế, tên, địa chỉ (có Tra cứu) và tích cửa hàng. Bước 2 chọn ngày bắt đầu làm việc, xem tiền về quỹ nào, dữ liệu sẽ đồng bộ, bấm Đồng bộ dữ liệu ngay. Thông tin đã khai tự điền sẵn khi mở Kê khai thuế.
 - T138: Màn đang thiết lập sổ sách từ FABi (máy tính, điện thoại), dòng cam dưới Doanh thu bán hàng và Thu chi tiền đổi thành "Đang tiếp tục đồng bộ. Xem tiến độ tại Trang chủ."

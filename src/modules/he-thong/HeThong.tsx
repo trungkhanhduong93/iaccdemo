@@ -368,8 +368,8 @@ export function CauHinh({ sc }: ScreenProps) {
       <div className="grid g2" style={{ alignItems: 'start' }}>
         <Card title="Quy định chữ số và dấu phân cách">
           <div className="form-grid ch-so" data-hd="kieuSo">
-            <div className="f c2"><label>Định dạng số</label>
-              <Select className="inp" value={kieu} aria-label="Định dạng số" onChange={e => setKieu(e.target.value as KieuSo)}
+            <div className="f c2"><label>Tiêu chuẩn định dạng số</label>
+              <Select className="inp" value={kieu} aria-label="Tiêu chuẩn định dạng số" onChange={e => setKieu(e.target.value as KieuSo)}
                 ds={(['vn', 'qt'] as const).map(v => ({ v, t: KIEU_SO[v].ten }))} /></div>
             <div className="f"><label>Ngăn hàng nghìn</label><input className="inp" readOnly value={ks.ngan} /></div>
             <div className="f"><label>Ngăn phần thập phân</label><input className="inp" readOnly value={ks.thap} /></div>

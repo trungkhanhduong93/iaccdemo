@@ -20,7 +20,7 @@ export function ModuleTabs({ mod }: { mod: ModuleDef }) {
   const { s } = useSession()
   const loc = useLocation()
   const [thamSo] = useSearchParams()
-  const tabs = useMemo(() => tabCua(mod).filter(sc => !sc.tabCha && hienMan(sc, s.goi, s.cheDo, s)), [mod, s.goi, s.cheDo, s.ppGtgt, s.ppTndn])
+  const tabs = useMemo(() => tabCua(mod).filter(sc => !sc.tabCha && !sc.anTab?.includes(s.goi) && hienMan(sc, s.goi, s.cheDo, s)), [mod, s.goi, s.cheDo, s.ppGtgt, s.ppTndn])
   // Màn chia nhóm loại phiếu (Thu chi: Tiền mặt, Ngân hàng, Chuyển quỹ, T386) thành mỗi nhóm một tab, cùng màn, khác ?nhom=
   const tachNhom = (ds: ScreenDef[]) => ds.flatMap(sc => sc.voucher?.nhomLoai?.map(n => ({ ...sc, slug: `${sc.slug}?nhom=${n.k}`, ngan: n.ten, ten: n.ten })) ?? [sc])
   const giua = tachNhom(tabs.filter(t => t.kind !== 'baocao'))

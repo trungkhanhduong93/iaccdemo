@@ -122,6 +122,7 @@ export interface ScreenDef {
   code?: string            // mã tính năng trong Excel; quyết định khoá theo gói
   can?: string[]           // màn không có trong Excel: cần một trong các mã này
   goi?: Goi[]              // màn không có trong Excel chỉ có ở các gói này, gói khác ẩn hẳn (vd Số dư ban đầu ở Thu chi gói Free, T141)
+  anTab?: Goi[]            // các gói này không hiện tab của màn, đường dẫn vẫn mở được (vd Gói thuê bao gói Standard)
   cheDo?: CheDo[]          // màn chỉ áp dụng cho các thông tư này (T147)
   ten?: string
   ngan?: string            // nhãn ngắn trên thanh tab
