@@ -267,7 +267,7 @@ export function useThemDonVi() {
     const dvMoi: DonVi = { id: 'moi', ten: 'Đơn vị mới', viettat: 'DV', mst: '', goi: 'S', diaChi: '', diem: 0, nguoiDaiDien: '' }
     set({ goi: 'S', cheDo: 'TT152', donVi: dvMoi.id, dvMoi, khoiTao: true, cuaHang: 'all', dungThu: { ...s.dungThu, [dvMoi.id]: batDauDungThu() } })
     const moi = dsCuaHang('them', s).map(c => c.id)
-    moKhoiTao({ ...MAC_DINH, kieu: 'them', b: 0, mo: true, tenDv: '', chon: moi, truoc })
+    moKhoiTao({ ...MAC_DINH, kieu: 'them', b: 0, mo: true, nhom: 1, ppHkd: 'doanhThu', tenDv: '', chon: moi, truoc })
     nav('/app')
   }
 }
@@ -316,7 +316,8 @@ export function OnboardFabi() {
     // trụ sở chính mặc định là cửa hàng đầu tiên, bấm Chính ở dòng khác để đổi (PhuongXT 30/10/2026)
     // Thêm đơn vị kế toán đã khai loại hình, MST, địa chỉ ở bước 1 thì điền sẵn
     const tt = s.ttDv?.[s.donVi]
-    setN({ ...MAC_DINH, thue: true, b: 0, mo: true, nhom: 1, ppHkd: 'doanhThu', loai: tt?.loai ?? MAC_DINH.loai, mst: tt?.mst ?? '', diaChi: tt?.diaChi ?? '', tenDv: s.dvMoi?.ten ?? TEN_FABI, chon: cn, cnChinh: cn[0] ?? '', ngayDauNam: s.ngayDauNam?.[s.donVi] ?? DAU_NAM })
+    setN({ ...MAC_DINH, thue: true, b: 0, mo: true, nhom: tt?.nhom ?? 1, ppHkd: tt?.ppHkd ?? 'doanhThu', loai: tt?.loai ?? MAC_DINH.loai,
+      ...(tt?.loai === 'dn' ? { gtgt: s.ppGtgt, tndn: s.ppTndn } : {}), mst: tt?.mst ?? '', diaChi: tt?.diaChi ?? '', tenDv: s.dvMoi?.ten ?? TEN_FABI, chon: cn, cnChinh: cn[0] ?? '', ngayDauNam: s.ngayDauNam?.[s.donVi] ?? DAU_NAM })
   }, [loc.pathname, s.donVi])   // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
@@ -381,7 +382,9 @@ export function OnboardFabi() {
       const khai = haiBuoc ? { ten: n.tenDv.trim(), viettat: vietTat(n.tenDv) || 'DV', mst: n.mst.trim(), diaChi: n.diaChi.trim() } : {}
       set({ khoiTao: true, choKeKhai: { ...s.choKeKhai, [s.donVi]: true }, huongDan: { ...s.huongDan, [s.donVi]: n.kieu === 'them' },
         dongBoFabi: { ...s.dongBoFabi, [s.donVi]: { bd: Date.now(), ct: soCtDaTao, tc: soTcDaTao } },   // chứng từ đổ về tiếp ở Trang chủ (T687)
-        ...(haiBuoc ? { cheDo: cheDoMoi(n.loai, s.goi), ttDv: { ...s.ttDv, [s.donVi]: { ...s.ttDv?.[s.donVi], loai: n.loai, ten: n.tenDv.trim(), mst: n.mst.trim(), diaChi: n.diaChi.trim() } } } : {}),
+        ...(haiBuoc ? { cheDo: cheDoMoi(n.loai, s.goi), ttDv: { ...s.ttDv, [s.donVi]: { ...s.ttDv?.[s.donVi], loai: n.loai, nhom: n.nhom, ppHkd: NHOM_HKD[n.nhom - 1].pp ?? n.ppHkd, ten: n.tenDv.trim(), mst: n.mst.trim(), diaChi: n.diaChi.trim() } },
+          // doanh nghiệp: gói Standard chỉ sổ % doanh thu nên giữ tyLe, như popup kê khai thuế
+          ...(n.loai === 'dn' ? { ppGtgt: s.goi === 'S' ? 'tyLe' : n.gtgt ?? 'tyLe', ppTndn: s.goi === 'S' ? 'tyLe' : n.tndn ?? 'tyLe' } as const : {}) } : {}),
         ...(s.dvMoi && s.donVi === s.dvMoi.id ? { cnThem: { ...s.cnThem, [s.donVi]: cnChon.map(c => ({ id: c.id, ten: c.ten, khuVuc: c.khuVuc ?? '', tuNgay: n.ngayLam, banDau: true })) }, dvMoi: { ...s.dvMoi, ...khai, diem: cnChon.length } } : {}),
         ngayDauNam: { ...s.ngayDauNam, [s.donVi]: DAU_NAM }, namTaiChinh: { ...s.namTaiChinh, [s.donVi]: HOM_NAY.getFullYear() } })
       try { localStorage.removeItem(KEY) } catch { /* bỏ qua */ }
@@ -439,9 +442,9 @@ export function OnboardFabi() {
   // 3 bước khởi tạo bắt buộc: popup không đóng được, xong mới dùng phần mềm (T158)
   return (
     <div className="ktf-pop-nen">
-      <div className={`ktf-pop${n.thue ? ' ktf-gon' : ''}`} role="dialog" aria-label={n.thue ? 'Thông tin kê khai thuế' : 'Khởi tạo dữ liệu'}>
+      <div className={`ktf-pop${n.thue ? ' ktf-gon' : ''}`} role="dialog" aria-label={n.thue ? 'Thông tin kê khai thuế' : haiBuoc ? 'Khai báo đơn vị' : 'Khởi tạo dữ liệu'}>
         <div className="row ktf-pop-dau">
-          <h2 className="ktf-h">{n.thue ? 'Thông tin kê khai thuế' : nhanh ? 'Kết nối dữ liệu FABi' : 'Khởi tạo dữ liệu'}</h2>
+          <h2 className="ktf-h">{n.thue ? 'Thông tin kê khai thuế' : haiBuoc ? 'Khai báo đơn vị' : nhanh ? 'Kết nối dữ liệu FABi' : 'Khởi tạo dữ liệu'}</h2>
           <span className="grow" />
           {dt && <span className="chip info ktf-dt"><Icon n="clock" className="ic sm" />Dùng thử {SO_NGAY_DUNG_THU} ngày · đến {dt.den}</span>}
           {n.b < XONG && !nhanh && <span className="muted ktf-luu">{n.thue ? 'Khai một lần để lập tờ khai thuế' : `Hoàn tất ${BUOC.length} bước để bắt đầu dùng phần mềm`}</span>}
@@ -461,6 +464,28 @@ export function OnboardFabi() {
                           </button>
                         ))}
                       </div>
+                      {/* chọn loại hình xong chọn luôn nhóm hộ kinh doanh hoặc phương pháp thuế doanh nghiệp, như Thông tin đơn vị (PhuongXT 02/11/2026) */}
+                      <div className="form-grid ktf-pp">
+                        {n.loai === 'hkd' ? (<>
+                          <div className="f c2"><label>Nhóm doanh thu</label>
+                            <Select className="inp" value={String(n.nhom)} aria-label="Nhóm doanh thu" onChange={e => doiLoai({ nhom: Number(e.target.value) })}
+                              ds={NHOM_HKD.map(x => ({ v: String(x.nhom), t: `Nhóm ${x.nhom} (${x.ten})` }))} /></div>
+                          <div className="f c2"><label>Phương pháp thuế TNCN</label>
+                            <Select className="inp" value={NHOM_HKD[n.nhom - 1].pp ?? n.ppHkd} disabled={NHOM_HKD[n.nhom - 1].pp !== null} aria-label="Phương pháp thuế TNCN"
+                              onChange={e => doiLoai({ ppHkd: e.target.value as PpHkd })}
+                              ds={(NHOM_HKD[n.nhom - 1].pp ? [NHOM_HKD[n.nhom - 1].pp!] : (['doanhThu', 'loiNhuan'] as const)).map(v => ({ v, t: v === 'doanhThu' ? 'Theo doanh thu' : 'Theo lợi nhuận tính thuế' }))} /></div>
+                        </>) : (<>
+                          <div className="f c2"><label>Phương pháp thuế GTGT</label>
+                            <Select className="inp" value={n.gtgt ?? 'tyLe'} aria-label="Phương pháp thuế GTGT" onChange={e => sua({ gtgt: e.target.value as PpGtgt })}
+                              ds={[{ v: 'tyLe', t: 'Theo phương pháp trực tiếp (% doanh thu)' }, { v: 'khauTru', t: 'Theo phương pháp khấu trừ' }]} /></div>
+                          <div className="f c2"><label>Phương pháp thuế TNDN</label>
+                            <Select className="inp" value={n.tndn ?? 'tyLe'} aria-label="Phương pháp thuế TNDN" onChange={e => sua({ tndn: e.target.value as PpTndn })}
+                              ds={[{ v: 'tyLe', t: 'Theo doanh thu' }, { v: 'thuNhap', t: 'Theo lợi nhuận tính thuế' }]} /></div>
+                        </>)}
+                      </div>
+                      {ngoaiGoi.length > 0 && (
+                        <Note kind="warn" icon="alert">Tính năng kê khai thuế chưa hỗ trợ cho cách tính thuế này tại gói Accounting {GOI[s.goi].ten}. Vui lòng nâng cấp lên {GOIS.filter(g => GOIS.indexOf(g) > GOIS.indexOf(s.goi) && (n.loai === 'dn' || keKhaiDuoc(g, n.loai, n.nhom, 'loiNhuan'))).map(g => `Accounting ${GOI[g].ten}`).join(' hoặc ')} để trải nghiệm.</Note>
+                      )}
 
                       <h3 className="ktf-h3">Thông tin {n.loai === 'hkd' ? 'hộ kinh doanh' : 'công ty'}</h3>
                       <div className="form-grid">

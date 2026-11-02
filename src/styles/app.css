@@ -43905,3 +43905,6 @@ a.hdn-chip:hover { border-color: var(--blue); color: var(--blue); }
 .sb-moi-ds li {
   color: var(--body);
 }
+
+/* ── Khai báo đơn vị: nhóm HKD, phương pháp thuế dưới loại hình (T138) ── */
+.ktf-pp { margin-top: 14px; }
