@@ -1,7 +1,7 @@
 // Báo cáo bán hàng theo món và báo cáo doanh thu theo ngày, tính từ DAILY tháng 9/2026
 import type { Col, Row } from '../types'
 import { CUA_HANG, HANG, daysOf, tongKy } from '../../data/mock'
-import { dm } from '../../ui/format'
+import { dm, dauThap } from '../../ui/format'
 import { giamThueHkd } from './giam-thue'
 
 const TY_LE = [0.21, 0.09, 0.12, 0.14, 0.07, 0.15, 0.1, 0.09, 0.03]
@@ -22,7 +22,7 @@ export const baoCaoBanHang = {
     gvs[gvs.length - 1] = t.gv - gvs.slice(0, -1).reduce((a, x) => a + x, 0)
     const rows = HANG.map((h, i) => {
       const dt = dts[i], gv = gvs[i]
-      return { ma: h.ma, ten: h.ten, nhom: h.nhom, sl: Math.round(dt / h.gia), dt, gv, lg: dt - gv, tl: ((dt - gv) / dt * 100).toFixed(1).replace('.', ',') + '%' }
+      return { ma: h.ma, ten: h.ten, nhom: h.nhom, sl: Math.round(dt / h.gia), dt, gv, lg: dt - gv, tl: ((dt - gv) / dt * 100).toFixed(1).replace('.', dauThap()) + '%' }
     })
     const s = (k: string) => rows.reduce((a, r) => a + (r as Row)[k], 0)
     return [...rows, { ten: 'Tổng cộng', sl: s('sl'), dt: s('dt'), gv: s('gv'), lg: s('lg'), _t: 1 }]

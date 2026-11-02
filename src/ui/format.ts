@@ -1,35 +1,50 @@
-// Định dạng số tiền, ngày theo kiểu Việt Nam và bộ sinh số giả có hạt giống (chạy lại ra đúng số cũ)
+// Định dạng số tiền, ngày và bộ sinh số giả có hạt giống (chạy lại ra đúng số cũ)
+
+// ── Kiểu chữ số theo Cấu hình kế toán của đơn vị (T710): Việt Nam 1.234.567,89 hoặc Quốc tế 1,234,567.89.
+//    SessionProvider đặt lại mỗi lần đổi đơn vị hoặc đổi cấu hình; mọi hàm hiện, gõ số dưới đây đọc theo ──
+export type KieuSo = 'vn' | 'qt'
+let kieuSo: KieuSo = 'vn'
+export const datKieuSo = (k: KieuSo) => { kieuSo = k }
+export const layKieuSo = () => kieuSo
+/** Locale cho toLocaleString số: thay cho 'vi-VN' viết cứng */
+export const locSo = () => (kieuSo === 'qt' ? 'en-US' : 'vi-VN')
+/** Dấu ngăn hàng nghìn */
+export const dauNgan = () => (kieuSo === 'qt' ? ',' : '.')
+/** Dấu thập phân */
+export const dauThap = () => (kieuSo === 'qt' ? '.' : ',')
 
 export const money = (n: number) => {
   if (isNaN(n) || !isFinite(n)) return ''
-  return Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+  return Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, dauNgan())
 }
 export const moneyD = (n: number) => money(n) + ' đ'
+/** Đọc chuỗi số đã hiện (1.250.000 hoặc 1,250,000; 7,3 hoặc 7.3) ra số theo kiểu chữ số */
+export const docSoChu = (s: string) => Number(s.split(dauNgan()).join('').replace(dauThap(), '.'))
 /** Số lượng: có lẻ thì tối đa 2 số thập phân (9,5; 1,25), số nguyên giữ nguyên (T359) */
-export const soLuong = (n: number) => (isNaN(n) || !isFinite(n) ? '' : n.toLocaleString('vi-VN', { maximumFractionDigits: 2 }))
+export const soLuong = (n: number) => (isNaN(n) || !isFinite(n) ? '' : n.toLocaleString(locSo(), { maximumFractionDigits: 2 }))
 /** 1.284.560.000 -> "1,28 tỷ"; 45.600.000 -> "45,6 tr" */
 export function short(n: number): string {
   const a = Math.abs(n)
-  if (a >= 1e9) return (n / 1e9).toLocaleString('vi-VN', { maximumFractionDigits: 2 }) + ' tỷ'
-  if (a >= 1e6) return (n / 1e6).toLocaleString('vi-VN', { maximumFractionDigits: 1 }) + ' tr'
-  if (a >= 1e3) return (n / 1e3).toLocaleString('vi-VN', { maximumFractionDigits: 0 }) + ' k'
+  if (a >= 1e9) return (n / 1e9).toLocaleString(locSo(), { maximumFractionDigits: 2 }) + ' tỷ'
+  if (a >= 1e6) return (n / 1e6).toLocaleString(locSo(), { maximumFractionDigits: 1 }) + ' tr'
+  if (a >= 1e3) return (n / 1e3).toLocaleString(locSo(), { maximumFractionDigits: 0 }) + ' k'
   return money(n)
 }
-export const pct = (n: number, d = 1) => (n * 100).toLocaleString('vi-VN', { maximumFractionDigits: d }) + '%'
+export const pct = (n: number, d = 1) => (n * 100).toLocaleString(locSo(), { maximumFractionDigits: d }) + '%'
 
 /** Rút gọn số tiền kiểu 122,5 tr khi từ 1 triệu trở lên (T223) */
 export function rutGonSo(n: number, kemDonVi = true): string {
   const a = Math.abs(n)
   if (a >= 1e9) {
-    const s = (a / 1e9).toLocaleString('vi-VN', { minimumFractionDigits: 0, maximumFractionDigits: 1 })
+    const s = (a / 1e9).toLocaleString(locSo(), { minimumFractionDigits: 0, maximumFractionDigits: 1 })
     return kemDonVi ? `${s} tỷ` : s
   }
   if (a >= 1e6) {
-    const s = (a / 1e6).toLocaleString('vi-VN', { minimumFractionDigits: 0, maximumFractionDigits: 1 })
+    const s = (a / 1e6).toLocaleString(locSo(), { minimumFractionDigits: 0, maximumFractionDigits: 1 })
     return kemDonVi ? `${s} tr` : s
   }
   if (a >= 1e3) {
-    const s = (a / 1e3).toLocaleString('vi-VN', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+    const s = (a / 1e3).toLocaleString(locSo(), { minimumFractionDigits: 0, maximumFractionDigits: 0 })
     return kemDonVi ? `${s} k` : s
   }
   return money(a)
@@ -125,8 +140,8 @@ export function docSoTien(n: number): string {
   return chuoi.charAt(0).toUpperCase() + chuoi.slice(1) + ' đồng'
 }
 
-// ── Số ở thẻ chi phí phân bổ: lưu dạng chuẩn (chữ số, chấm thập phân, không ngăn nghìn); hiện và gõ kiểu Việt Nam
-//    như mọi màn: chấm ngăn hàng nghìn, phẩy thập phân (T284, trước là kiểu quốc tế) ──
+// ── Số ở thẻ chi phí phân bổ: lưu dạng chuẩn (chữ số, chấm thập phân, không ngăn nghìn); hiện và gõ theo kiểu chữ số
+//    của đơn vị như mọi màn (T284, T710) ──
 /** Giữ chữ số và một dấu chấm thập phân của chuỗi dạng chuẩn */
 const chuanSo = (s: string) => {
   const [nguyen, ...sau] = s.replace(/[^\d.]/g, '').split('.')
@@ -134,15 +149,15 @@ const chuanSo = (s: string) => {
 }
 /** Đọc số dạng chuẩn (chuỗi hoặc số) */
 export const docSoQT = (v: unknown) => typeof v === 'number' ? v : Number(String(v ?? '').replace(/,/g, '')) || 0
-/** Chuỗi đang gõ kiểu Việt Nam (1.234,5) -> dạng chuẩn (1234.5) */
-export const nhapSoQT = (s: string) => chuanSo(s.replace(/\./g, '').replace(/,/g, '.'))
-/** Hiện số kiểu Việt Nam, chèn chấm ngăn nghìn cả khi đang gõ dở (giữ nguyên phần thập phân đã gõ) */
+/** Chuỗi đang gõ (1.234,5 hoặc 1,234.5 theo kiểu chữ số) -> dạng chuẩn (1234.5) */
+export const nhapSoQT = (s: string) => chuanSo(kieuSo === 'qt' ? s.replace(/,/g, '') : s.replace(/\./g, '').replace(/,/g, '.'))
+/** Hiện số theo kiểu chữ số, chèn dấu ngăn nghìn cả khi đang gõ dở (giữ nguyên phần thập phân đã gõ) */
 export const soQT = (v: unknown) => {
-  if (typeof v === 'number') return v.toLocaleString('vi-VN', { maximumFractionDigits: 4 })
+  if (typeof v === 'number') return v.toLocaleString(locSo(), { maximumFractionDigits: 4 })
   const s = chuanSo(String(v ?? ''))
   if (!s) return ''
   const [nguyen, thap] = s.split('.')
-  return (nguyen ? Number(nguyen).toLocaleString('vi-VN') : '0') + (thap !== undefined ? `,${thap}` : '')
+  return (nguyen ? Number(nguyen).toLocaleString(locSo()) : '0') + (thap !== undefined ? `${dauThap()}${thap}` : '')
 }
 
 /** Số hoá đơn: chỉ chữ số liền nhau, không phân cách hàng nghìn, không thập phân (T597) */

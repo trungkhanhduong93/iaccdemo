@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type CSSProperties, type PointerEvent as SuKienTro } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { heSoZoom } from './zoom'
+import { locSo } from './format'
 
 export interface DongHang {
   tenHang: string
@@ -201,7 +202,7 @@ function dinhDangGio(ts: number): string {
 }
 
 function dinhDangTien(n: number): string {
-  return n.toLocaleString('vi-VN')
+  return n.toLocaleString(locSo())
 }
 
 export function TroLy() {

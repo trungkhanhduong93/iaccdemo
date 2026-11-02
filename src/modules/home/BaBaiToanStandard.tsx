@@ -9,7 +9,7 @@ import { CUA_HANG, KHOA_SO_DEN, KY_MO } from '../../data/mock'
 import { Icon, ONen } from '../../ui/Icon'
 import { FigmaGradientIcon } from '../../ui/FigmaIcon'
 import { Select } from '../../ui/Dropdown'
-import { moneyD, pad, pct, short } from '../../ui/format'
+import { moneyD, pad, pct, short, locSo } from '../../ui/format'
 import { tonQuyTheoSo } from './LichSuQuy'
 import { soLieuCongNo, soLieuKiemKe, soLieuMua, type CotThang } from './khoStandard'
 import { datLocDaXem, docTuyChinh, luuTuyChinh } from '../../ui/bao-cao/tuyChinhBC'
@@ -1083,7 +1083,7 @@ export function BaBaiToanStandard({ d, thang: thangXem, selCns, chonKy }: { d: T
           {db && (
             <div className="db-dai" role="status">
               <Icon n="refresh" className="ic sm db-quay" />
-              Đang đổ dữ liệu từ FABi: <b>{(ctDaVe + Object.values(dongBoQuy ?? {}).reduce((a, x) => a + x.da, 0)).toLocaleString('vi-VN')} / {(db.ct + Object.values(dongBoQuy ?? {}).reduce((a, x) => a + x.tong, 0)).toLocaleString('vi-VN')}</b> chứng từ. Số liệu doanh thu, thu tiền đang tăng dần, chưa phải số cuối.
+              Đang đổ dữ liệu từ FABi: <b>{(ctDaVe + Object.values(dongBoQuy ?? {}).reduce((a, x) => a + x.da, 0)).toLocaleString(locSo())} / {(db.ct + Object.values(dongBoQuy ?? {}).reduce((a, x) => a + x.tong, 0)).toLocaleString(locSo())}</b> chứng từ. Số liệu doanh thu, thu tiền đang tăng dần, chưa phải số cuối.
             </div>
           )}
           <div className="bbt-e-luoi bbt-e-luoi-2">   {/* hàng trên 2 cột lãi lỗ, thu chi; Quản lý kho kéo hết hàng dưới (T293) */}
@@ -1117,7 +1117,7 @@ export function BaBaiToanStandard({ d, thang: thangXem, selCns, chonKy }: { d: T
               {loiNhuan < 0 ? `Lỗ ${moneyD(Math.abs(loiNhuan))}` : moneyD(loiNhuan)}
             </div>
             <div className="phu bbt-phu bbt-e-phu">
-              Biên lợi nhuận {pct(bien)} <span className="bbt-e-giai">· {bien < 0 ? 'lỗ' : 'lãi'} {Math.abs(bien * 100).toLocaleString('vi-VN', { maximumFractionDigits: 1 })} đ trên mỗi 100 đ doanh thu</span>
+              Biên lợi nhuận {pct(bien)} <span className="bbt-e-giai">· {bien < 0 ? 'lỗ' : 'lãi'} {Math.abs(bien * 100).toLocaleString(locSo(), { maximumFractionDigits: 1 })} đ trên mỗi 100 đ doanh thu</span>
             </div>
           </div>
 
@@ -1427,7 +1427,7 @@ export function BaBaiToanStandard({ d, thang: thangXem, selCns, chonKy }: { d: T
               {kk.topThieu.length ? kk.topThieu.map(x => (
                 <div className="bbt-kho2-dong" key={x.cn + x.ma}>
                   <span className="bbt-kho2-ten" title={x.cn}><span className="bbt-kho-ma">{x.ma}</span>{x.ten}</span>
-                  <b className="bbt-kho-thieu">−{Math.abs(x.lech).toLocaleString('vi-VN')} {x.dvt}</b>
+                  <b className="bbt-kho-thieu">−{Math.abs(x.lech).toLocaleString(locSo())} {x.dvt}</b>
                 </div>
               )) : <div className="bbt-kho2-trong">Không có mặt hàng thiếu</div>}
             </div>
@@ -1436,7 +1436,7 @@ export function BaBaiToanStandard({ d, thang: thangXem, selCns, chonKy }: { d: T
               {kk.topThua.length ? kk.topThua.map(x => (
                 <div className="bbt-kho2-dong" key={x.cn + x.ma}>
                   <span className="bbt-kho2-ten" title={x.cn}><span className="bbt-kho-ma">{x.ma}</span>{x.ten}</span>
-                  <b className="bbt-kho2-thua">+{x.lech.toLocaleString('vi-VN')} {x.dvt}</b>
+                  <b className="bbt-kho2-thua">+{x.lech.toLocaleString(locSo())} {x.dvt}</b>
                 </div>
               )) : <div className="bbt-kho2-trong">Không có mặt hàng thừa</div>}
             </div>

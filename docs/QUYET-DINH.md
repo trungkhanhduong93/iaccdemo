@@ -1012,4 +1012,8 @@ Trum chốt 31/10/2026 (T703).
 - Bỏ qua hoặc Xong: tour đóng hộp, chip về như lúc bấm Hướng dẫn.
 - Điện thoại bỏ các bước này (bước có `web: true`), vì đồng bộ chỉ làm trên máy tính.
 
-## QD92. Quy định chữ số và dấu phân cách theo đơn vị (đang soạn)
+## QD92. Quy định chữ số và dấu phân cách theo đơn vị (02/11/2026)
+
+- Cấu hình kế toán có mục Quy định chữ số và dấu phân cách, 2 kiểu: Việt Nam (chấm ngăn nghìn, phẩy thập phân, 1.234.567,89) và Quốc tế (phẩy ngăn nghìn, chấm thập phân, 1,234,567.89). Mặc định Việt Nam. Lưu theo từng đơn vị (PhuongXT, T710).
+- Chọn kiểu nào thì số trên chứng từ, danh sách, báo cáo và cách gõ ở ô nhập số theo kiểu đó, cả web và điện thoại.
+- Code hiện số dùng hàm trong `src/ui/format.ts` (`money`, `soLuong`, `locSo()`, `dauThap()`, `docSoChu`), không viết cứng `'vi-VN'`, dấu chấm hay dấu phẩy.

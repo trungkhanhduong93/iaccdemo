@@ -16,7 +16,7 @@ import { ChonKhoangNgay, ONgay, docNgay, trongKhoang, type KhoangNgay } from '..
 import { NutExcel, NutThemMoiSplit } from '../../ui/CongCuDs'
 import { useDong } from '../../ui/FormToanMan'
 import { BoLoc, ChipTrangThai, NutTuyChinhCot, useCauHinhLoc, useCotDs, useLocNhap, type Chip, type OLocDef } from '../../ui/LocNangCao'
-import { money } from '../../ui/format'
+import { money, locSo } from '../../ui/format'
 import { suaPhieu, themPhieu, useDaXoa } from '../../ui/generic/daXoa'
 import { DaiGiaiThich } from './PhieuSanXuat'
 import { ChonNhieu } from '../danh-muc/QuyDoiDvt'
@@ -312,7 +312,7 @@ function FormCongThuc({ sc, mod, loai, ct, soCt }: ScreenProps & { loai: LoaiCt;
               {cb && dauRow('Mã công thức', false, <span className="code sx-tt-chu">{ma}</span>,
                 ['Tổng chi phí', false, (
                   <span className="sx-tt-chu sx-tong-cp" title="Tỷ lệ chi phí nguyên vật liệu trên giá bán">
-                    <b>{money(tongCp)}</b> <span className="dim">({giaBan ? `${(tongCp / giaBan * 100).toLocaleString('vi-VN', { maximumFractionDigits: 1 })} %` : '—'})</span>
+                    <b>{money(tongCp)}</b> <span className="dim">({giaBan ? `${(tongCp / giaBan * 100).toLocaleString(locSo(), { maximumFractionDigits: 1 })} %` : '—'})</span>
                   </span>
                 )])}
               {dauRow(cb ? 'Sản phẩm' : 'Nguyên vật liệu gốc', true,

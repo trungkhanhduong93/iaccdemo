@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Select } from '../Dropdown'
 import { Icon } from '../Icon'
-import { money } from '../format'
+import { money, dauThap } from '../format'
 import { OSoGo } from '../OSoGo'
 import type { Dong } from './gen'
 
@@ -75,7 +75,7 @@ export function ApDauBang({ dong, onChange, an, coThue, coCk }: {
             <button type="button" className={kieu === 'pt' ? 'on' : ''} aria-pressed={kieu === 'pt'} title="Chiết khấu theo %" aria-label="Chiết khấu theo %" onClick={() => kieu !== 'pt' && doiCk('pt', 0)}>%</button>
             <button type="button" className={kieu === 'tien' ? 'on' : ''} aria-pressed={kieu === 'tien'} title="Chiết khấu theo số tiền" aria-label="Chiết khấu theo số tiền" onClick={() => kieu !== 'tien' && doiCk('tien', 0)}>đ</button>
           </div>
-          <OSoGo key={kieu} val={gt} onChange={v => doiCk(kieu, v)} hien={kieu === 'pt' ? v => String(v).replace('.', ',') : money}
+          <OSoGo key={kieu} val={gt} onChange={v => doiCk(kieu, v)} hien={kieu === 'pt' ? v => String(v).replace('.', dauThap()) : money}
             thapPhan={kieu === 'pt'} max={kieu === 'pt' ? 100 : undefined} className={`inp sm num ${kieu === 'pt' ? 'ct-ap-pt' : 'ct-ap-tien'}`} />
           <span className="ct-ap-dv">{kieu === 'pt' ? '%' : 'đ'}</span>
         </div>

@@ -15,7 +15,7 @@ import { IconFigmaSearch } from '../../ui/IconFigma'
 import { Table } from '../../ui/Table'
 import { Select } from '../../ui/Dropdown'
 import { BoLoc, useCauHinhLoc, useDongEsc, useLocNhap, type OLocDef } from '../../ui/LocNangCao'
-import { fold, money } from '../../ui/format'
+import { fold, money, dauThap } from '../../ui/format'
 
 export type TrangThai = 'Chưa nộp' | 'Đã nộp' | 'Bị từ chối' | 'Đã huỷ'
 export interface ToKhai { id: string; ma: string; nam: number; dau: boolean; lan: number; tt: TrangThai }   // dau: 6 tháng đầu năm; lan: 0 lần đầu, n bổ sung lần n
@@ -316,7 +316,7 @@ function HopToKhai({ tk, buocDau = 0, onDong, onDoi }: { tk: ToKhai; buocDau?: n
         <div className="tk-nhom-ten">{NHOM_NGANH_NGHE.find(x => x.ma === NGANH.nhom)?.ten} · {NGANH.ten}</div>
         <div className="tk-dong"><span>Doanh thu</span><b>{money(so.dt)}</b></div>
         <div className="tk-dong"><span>Thuế GTGT ({NGANH.gtgt}%)</span><b>{money(so.gtgt)}</b></div>
-        <div className="tk-dong"><span>Thuế TNCN ({String(NGANH.tncn).replace('.', ',')}%)</span><b>{money(so.tncn)}</b></div>
+        <div className="tk-dong"><span>Thuế TNCN ({String(NGANH.tncn).replace('.', dauThap())}%)</span><b>{money(so.tncn)}</b></div>
         {so.giam > 0 && <div className="tk-giam"><Icon n="info" className="ic sm" />Bạn được giảm {money(so.giam)} trước khi tính thuế TNCN (doanh thu cả năm đến 1 tỷ đồng không tính thuế TNCN)</div>}
       </div>
     </>,

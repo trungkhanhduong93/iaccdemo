@@ -3,7 +3,7 @@ import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { Popover } from '../../ui/Dropdown'
 import { Icon } from '../../ui/Icon'
-import { fold } from '../../ui/format'
+import { fold, locSo } from '../../ui/format'
 import { useSession } from '../../app/session'
 import { DON_VI_TINH, QUY_DOI_DVT, TEN_DVT } from './data'
 import { ChamTrangThai } from '../../ui/ChamTrangThai'
@@ -15,9 +15,9 @@ export interface QuyDoi { dv: string; tl: number; nguoc: boolean; apTatCa: boole
 const TAT_CA = 'Tất cả hàng hoá'
 const maDvt = (ten: string) => DON_VI_TINH.find(d => d[1] === ten)?.[0] ?? ''
 /** Số kiểu Việt: phẩy thập phân, tối đa 4 chữ số lẻ */
-const soVn = (n: number) => n.toLocaleString('vi-VN', { maximumFractionDigits: 4 })
+const soVn = (n: number) => n.toLocaleString(locSo(), { maximumFractionDigits: 4 })
 /** Số đưa vào ô nhập: không chấm ngăn nghìn để đọc lại không nhầm thành số lẻ */
-const soNhap = (n: number) => n.toLocaleString('vi-VN', { maximumFractionDigits: 4, useGrouping: false })
+const soNhap = (n: number) => n.toLocaleString(locSo(), { maximumFractionDigits: 4, useGrouping: false })
 /** Đọc số người dùng gõ, nhận cả phẩy lẫn chấm thập phân */
 const docSo = (s: string) => Number(s.trim().replace(/\s/g, '').replace(',', '.'))
 const dienGiai = (q: Pick<QuyDoi, 'dv' | 'tl' | 'nguoc'>, chinh: string) =>

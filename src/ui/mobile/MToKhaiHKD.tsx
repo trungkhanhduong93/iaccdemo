@@ -16,7 +16,7 @@ import {
 } from '../../modules/thue/ToKhaiHKD'
 import { boViecHuongDan, GoiYKeKhai, KhenToKhai, xongViecHuongDan } from '../../modules/home/HuongDan'
 import { Icon } from '../Icon'
-import { fold, moneyD } from '../format'
+import { fold, moneyD, dauThap } from '../format'
 import { MChon } from './MChon'
 import { MBaoCaoTheoDoi, type MucTheoDoi } from './MBaoCaoTheoDoi'
 import { MNutHuongDan } from './MHuongDanNhanh'
@@ -327,7 +327,7 @@ function ManKeKhai({ tk, buocDau, onDong, onDoi }: { tk: ToKhai; buocDau: number
         <p className="m-tacvu-mota">{tenNhom()} · {NGANH.ten}</p>
         {dong('Doanh thu', moneyD(so.dt))}
         {dong(`Thuế GTGT (${NGANH.gtgt}%)`, moneyD(so.gtgt))}
-        {dong(`Thuế TNCN (${String(NGANH.tncn).replace('.', ',')}%)`, moneyD(so.tncn))}
+        {dong(`Thuế TNCN (${String(NGANH.tncn).replace('.', dauThap())}%)`, moneyD(so.tncn))}
         {dong('Tổng thuế', moneyD(so.tong), ' tong')}
         {so.giam > 0 && <div className="m-tacvu-ks-note ok">Được giảm {moneyD(so.giam)} trước khi tính thuế TNCN (doanh thu cả năm đến 1 tỷ đồng không tính thuế TNCN).</div>}
       </div>

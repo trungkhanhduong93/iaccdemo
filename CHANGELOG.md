@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 02/11/2026
+- T710: Cấu hình kế toán có thêm mục Quy định chữ số và dấu phân cách, chọn Việt Nam (1.234.567,89) hoặc Quốc tế (1,234,567.89). Bấm Lưu thì số trên chứng từ, danh sách, báo cáo và cách gõ số ở các ô nhập đổi theo kiểu đã chọn, trên cả máy tính và điện thoại.
 - T709: Chân thanh bên hiện phiên bản web thay cho nút Thu gọn: bản phát hành ghi số phiên bản, bản thử ghi ngày và mã bản dựng. Bấm vào mở hộp Có gì mới, liệt kê thay đổi 3 ngày gần nhất. Muốn thu gọn hoặc mở rộng thanh bên, rê chuột vào đường kẻ giữa thanh bên và nội dung, bấm nút tròn mũi tên vừa hiện.
 - T700: Điện thoại theo tích Chi phí phân bổ nhiều kỳ như máy tính. Danh mục Lý do nghiệp vụ hiện tích ở dòng phụ và màn chi tiết. Phiếu chi lý do có tích này lưu xong mở tạo thẻ chi phí phân bổ. Nhãn Chi phí, ô Tháng ghi nhận chi phí ở phiếu chi (máy tính, điện thoại) theo tích Là chi phí đã sửa trong danh mục.
 - T708: Danh mục Lý do nghiệp vụ có thêm thông tin Nguồn ở danh sách và form chi tiết, trên cả máy tính và điện thoại: lý do có sẵn là FABi, lý do tự thêm là Thủ công. Lý do FABi không xoá được, chỉ sửa được Là chi phí, Chi phí phân bổ nhiều kỳ, Nhóm lý do. Lý do thủ công sửa, xoá được.

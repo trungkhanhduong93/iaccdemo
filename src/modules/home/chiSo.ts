@@ -2,7 +2,7 @@
 import { CUA_HANG, DAILY, HOM_NAY, kqkd, tongKy } from '../../data/mock'
 import { du, soCai } from '../tong-hop/so-cai'
 import type { CheDo } from '../../app/che-do'
-import { pct, short } from '../../ui/format'
+import { pct, short, locSo } from '../../ui/format'
 
 export type KyBaoCao = 'thang-nay' | 'thang-truoc' | 'quy-nay' | 'tu-dau-nam'
 export type SoSanhKieu = 'ky-truoc' | 'ke-hoach'
@@ -709,8 +709,8 @@ export function tinhToanTongQuan(
   const tk331 = Math.abs(Math.min(0, sc.cuoi['331'] || 0))
   const dpoNum = gvBQNgay > 0 ? tk331 / gvBQNgay : 0
 
-  const dsoStr = dsoNum.toLocaleString('vi-VN', { minimumFractionDigits: 1, maximumFractionDigits: 1 })
-  const dpoStr = dpoNum.toLocaleString('vi-VN', { minimumFractionDigits: 1, maximumFractionDigits: 1 })
+  const dsoStr = dsoNum.toLocaleString(locSo(), { minimumFractionDigits: 1, maximumFractionDigits: 1 })
+  const dpoStr = dpoNum.toLocaleString(locSo(), { minimumFractionDigits: 1, maximumFractionDigits: 1 })
 
   chiSo.push({
     id: 'dso-dpo',
@@ -730,7 +730,7 @@ export function tinhToanTongQuan(
   chiSo.push({
     id: 'thanh-toan',
     ten: 'Hệ số thanh toán hiện hành',
-    giaTri: cr > 0 ? cr.toLocaleString('vi-VN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : 'Chưa đủ dữ liệu',
+    giaTri: cr > 0 ? cr.toLocaleString(locSo(), { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : 'Chưa đủ dữ liệu',
     den: cr >= 1.2 ? 'xanh' : cr >= 1.0 ? 'vang' : 'do',
     giaiThich: cr >= 1.2
       ? 'Tài sản ngắn hạn đủ bù đắp nợ đến hạn'

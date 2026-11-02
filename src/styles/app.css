@@ -43727,6 +43727,11 @@ a.hdn-chip:hover { border-color: var(--blue); color: var(--blue); }
 /* ── Hộp Xem lý do thu chi FABi thêm cột Mã phiếu FABi, Lý do (T706) ── */
 .dbtc-bang td.code { white-space: nowrap; font-variant-numeric: tabular-nums; }
 
+/* ── Quy định chữ số và dấu phân cách ở Cấu hình kế toán (T710) ── */
+.ch-so + .note { margin-top: 12px; }
+.m-ch-kieu-so { cursor: pointer; }
+.m-ch-kieu-so input { vertical-align: -2px; margin-right: 4px; }
+.m-ch-kieu-so .code { font-size: 12px; }
 
 /* ── Chân sidebar hiện phiên bản, nút thu gọn trên đường kẻ (T709) ── */
 .sb-toggle-strip {

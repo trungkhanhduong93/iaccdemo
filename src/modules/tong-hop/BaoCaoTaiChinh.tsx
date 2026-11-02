@@ -10,7 +10,7 @@ import type { CheDo } from '../../app/che-do'
 import { CUA_HANG, chiPhiTheoLyDo, chiPhiThang, daysOf, kqkd, phanBoTheoLoai, tongKy } from '../../data/mock'
 import { Note, PageHead } from '../../ui/Page'
 import { KY_CHON, ReportPaper, ReportToolbar, RptTable } from '../../ui/generic/ReportScreen'
-import { pct } from '../../ui/format'
+import { pct, locSo } from '../../ui/format'
 import { TEN_TK, du, soCai, tkTheoCheDo } from './so-cai'
 import { dongB01, dongB02 } from '../bao-cao/tt58'
 import type { Session } from '../../app/session'
@@ -247,7 +247,7 @@ export function LuuChuyenTien(p: ScreenProps) {
         return (
           <ReportPaper title="Báo cáo lưu chuyển tiền tệ" sub={`${kyTen(ky)} · Phương pháp trực tiếp`}>
             <div style={{ marginBottom: 8 }}><span className={`chip ${l60 + l50 === l70 ? 'ok' : 'err'}`}>{l60 + l50 === l70 ? 'Tiền cuối kỳ khớp bảng cân đối kế toán' : 'Lệch tiền cuối kỳ'}</span></div>
-            <RptTable cols={[{ k: 'ct', t: 'Chỉ tiêu' }, { k: 'ma', t: 'Mã số', c: true, w: 70 }, { k: 'v', t: 'Kỳ này', num: true, r: x => x.v === undefined ? '' : x.v.toLocaleString('vi-VN') }]} rows={[
+            <RptTable cols={[{ k: 'ct', t: 'Chỉ tiêu' }, { k: 'ma', t: 'Mã số', c: true, w: 70 }, { k: 'v', t: 'Kỳ này', num: true, r: x => x.v === undefined ? '' : x.v.toLocaleString(locSo()) }]} rows={[
               { ct: 'I. Lưu chuyển tiền từ hoạt động kinh doanh', _b: 1 },
               { ma: '01', ct: 'Tiền thu từ bán hàng, cung cấp dịch vụ và doanh thu khác', v: l01 }, { ma: '02', ct: 'Tiền chi trả cho người cung cấp hàng hoá, dịch vụ', v: l02 },
               { ma: '03', ct: 'Tiền chi trả cho người lao động', v: l03 }, { ma: '04', ct: 'Tiền lãi vay đã trả', v: l04 },

@@ -1,7 +1,7 @@
 // Các thành phần biểu đồ và thẻ cảnh báo dùng chung cho trang chủ gói Free (T274)
 import { Link } from 'react-router-dom'
 import { Icon } from '../../ui/Icon'
-import { moneyD, pct, short } from '../../ui/format'
+import { moneyD, pct, short, locSo } from '../../ui/format'
 import type {
   DuLieuCanTheoDoi,
   ItemTop5,
@@ -21,7 +21,7 @@ const MAU_THE = {
 /** Định dạng số thập phân dùng dấu phẩy kiểu Việt Nam: 10.8 -> 10,8 (T274) */
 export function vnNum(n: number, maxD = 1): string {
   if (isNaN(n) || !isFinite(n)) return '0'
-  return n.toLocaleString('vi-VN', { maximumFractionDigits: maxD })
+  return n.toLocaleString(locSo(), { maximumFractionDigits: maxD })
 }
 
 /** 1. Thẻ biểu đồ top 5 thanh ngang (T274) */

@@ -27,7 +27,7 @@ import { HopXacNhan } from '../../ui/LocNangCao'
 import { Icon } from '../../ui/Icon'
 import { PageHead } from '../../ui/Page'
 import { heSoZoom } from '../../ui/zoom'
-import { fold } from '../../ui/format'
+import { fold, locSo } from '../../ui/format'
 
 /** Danh sách mẫu theo nhóm nghiệp vụ */
 const CAY: [string, string[]][] = [
@@ -55,7 +55,7 @@ const PX = 96 / 25.4
 const CO_CHU = Array.from({ length: 13 }, (_, i) => 8 + i / 2)
 const CO_TIEU_DE = [12, 13, 14, 15, 16, 18, 20, 22, 24]
 const KHO_GIAY: [string, string][] = [['A4-doc', 'A4 dọc'], ['A4-ngang', 'A4 ngang'], ['A5-ngang', 'A5 ngang'], ['A5-doc', 'A5 dọc']]
-const so = (v: number) => v.toLocaleString('vi-VN', { maximumFractionDigits: 1 })
+const so = (v: number) => v.toLocaleString(locSo(), { maximumFractionDigits: 1 })
 
 // Khối chứa nội dung bắt buộc của chứng từ kế toán: tên đơn vị, tên và số chứng từ, ngày, nội dung, số tiền, chữ ký
 function khoiBatBuoc(m: MauIn, k: KhoiInK) {

@@ -6,7 +6,7 @@ import { CUA_HANG } from '../../data/mock'
 import { tinhToanTongQuan } from '../../modules/home/chiSo'
 import { soLieuCongNo, soLieuKiemKe, soLieuMua } from '../../modules/home/khoStandard'
 import { datLocDaXem, docTuyChinh, luuTuyChinh } from '../bao-cao/tuyChinhBC'
-import { moneyD, pct, short } from '../format'
+import { moneyD, pct, short, locSo } from '../format'
 import { Icon } from '../Icon'
 import { FigmaGradientIcon } from '../FigmaIcon'
 
@@ -228,7 +228,7 @@ export function MKhoStandard({ selCns, thang }: { selCns: string[]; thang: numbe
                 <span className="m-tcf-ma-chip">{x.ma}</span>
                 <span className="m-tcf-ds-ten" title={x.cn}>{x.ten}</span>
               </div>
-              <span className="m-tcf-ds-phai do">−{Math.abs(x.lech).toLocaleString('vi-VN')} {x.dvt}</span>
+              <span className="m-tcf-ds-phai do">−{Math.abs(x.lech).toLocaleString(locSo())} {x.dvt}</span>
             </div>
           ))
         ) : (
@@ -246,7 +246,7 @@ export function MKhoStandard({ selCns, thang }: { selCns: string[]; thang: numbe
                 <span className="m-tcf-ma-chip">{x.ma}</span>
                 <span className="m-tcf-ds-ten" title={x.cn}>{x.ten}</span>
               </div>
-              <span className="m-tcf-ds-phai xanh">+{x.lech.toLocaleString('vi-VN')} {x.dvt}</span>
+              <span className="m-tcf-ds-phai xanh">+{x.lech.toLocaleString(locSo())} {x.dvt}</span>
             </div>
           ))
         ) : (

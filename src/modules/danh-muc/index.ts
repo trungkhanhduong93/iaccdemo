@@ -13,6 +13,7 @@ import { Note } from '../../ui/Page'
 import { DanhMucCuaHang } from './DanhMucCuaHang'
 import { datSoDuQuy, soDuQuyBanDau } from '../tong-hop/SoDuBanDau'
 import { luuPtttQuy, ptttCuaQuy, tomTatPttt } from '../tien/dong-bo-fabi'
+import { dauThap } from '../../ui/format'
 
 /** Nhãn ngắn trên thanh tab */
 const NGAN: Record<string, string> = { '1.1': 'Tài khoản', '1.2': 'Hàng hoá', '1.3': 'Đơn vị tính', '1.4': 'Quy đổi ĐVT', '1.5': 'Đối tượng', '1.6': 'Mục chi phí', '1.7': 'Công việc', '1.8': 'Kho', '1.9': 'Tiền tệ', '1.10': 'Tỷ giá', '1.11': 'Loại thuế', '1.12': 'Quỹ tiền', '1.14': 'Bảng giá', '1.15': 'Bút toán tự động', '1.16': 'Lý do nghiệp vụ' }
@@ -172,7 +173,7 @@ const danhMuc: ModuleDef = {
         // TT152, TT58 tính thuế theo tỷ lệ % trên doanh thu của ngành nghề; TT133, TT99 theo thuế suất GTGT (T151)
         ...(goi === 'S' ? [] : [{ k: 'gia', t: 'Giá bán', num: true }]),
         cheDo === 'TT152' || cheDo === 'TT58'
-          ? { k: 'thueGtgt', t: 'Thuế suất', num: true, r: (r: Row) => r.thueGtgt === undefined || r.thueGtgt === '' ? '—' : `${String(r.thueGtgt).replace('.', ',')}%` }
+          ? { k: 'thueGtgt', t: 'Thuế suất', num: true, r: (r: Row) => r.thueGtgt === undefined || r.thueGtgt === '' ? '—' : `${String(r.thueGtgt).replace('.', dauThap())}%` }
           : { k: 'ts', t: 'Thuế suất', num: true, r: (r: Row) => r.ts ? `${r.ts}%` : 'KCT' },
         { k: 'tonKho', t: 'Theo dõi tồn', c: true, w: 110, r: (r: Row) => createElement('input', { type: 'checkbox', className: 'o-tich-xem', checked: Boolean(r.tonKho), readOnly: true, tabIndex: -1, 'aria-label': 'Theo dõi tồn kho' }) },   // T114
         ...(kieuGhiSo(cheDo) === 'noco' ? [tkCot('tkDt', 'TK doanh thu'), tkCot('tkGv', 'TK giá vốn'), tkCot('tkKho', 'TK kho')] : [])],

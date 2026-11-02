@@ -1,6 +1,6 @@
 // Biểu đồ SVG tự vẽ, không thư viện
 import { useEffect, useRef, useState } from 'react'
-import { short } from './format'
+import { short, locSo } from './format'
 
 /** Cột đứng, có thể chồng 2 lớp (vd doanh thu và giá vốn) */
 export function Bars({ data, h = 220, colors = ['#1b6fe0', '#f28020'], hi }: {
@@ -24,7 +24,7 @@ export function Bars({ data, h = 220, colors = ['#1b6fe0', '#f28020'], hi }: {
         return (
           <g key={i}>
             <rect x={x} y={y(d.v)} width={w} height={h - pb - y(d.v)} rx={3} fill={colors[0]} opacity={hi === undefined || hi === i ? 1 : 0.55}>
-              <title>{d.l}: {d.v.toLocaleString('vi-VN')} đ</title>
+              <title>{d.l}: {d.v.toLocaleString(locSo())} đ</title>
             </rect>
             {d.v2 !== undefined && <rect x={x + w * 0.22} y={y(d.v2)} width={w * 0.56} height={h - pb - y(d.v2)} rx={2} fill={colors[1]} opacity={0.9} />}
             {(data.length <= 16 || i % 3 === 0) && <text x={x + w / 2} y={h - 7} textAnchor="middle">{d.l}</text>}
@@ -128,7 +128,7 @@ export function WaterfallChart({ data, h = 240, compact = false }: {
         return (
           <g key={i}>
             <rect x={x} y={yTop} width={w} height={barH} rx={3} fill={fill}>
-              <title>{s.l}: {s.val >= 0 && !s.isTotal ? '+' : ''}{s.val.toLocaleString('vi-VN')} đ</title>
+              <title>{s.l}: {s.val >= 0 && !s.isTotal ? '+' : ''}{s.val.toLocaleString(locSo())} đ</title>
             </rect>
             <text x={x + w / 2} y={yTop - 5} textAnchor="middle" fontSize={10.5} fontWeight={600} fill="var(--ink)">
               {short(Math.abs(s.val)).replace(' tr', 'tr').replace(' tỷ', 'tỷ')}
@@ -224,7 +224,7 @@ export function TrendChart({ data, h = 240 }: {
               strokeWidth={isT10 ? 1.5 : 0}
               strokeDasharray={isT10 ? '3 2' : undefined}
             >
-              <title>{d.l}: Doanh thu {d.dt.toLocaleString('vi-VN')} đ{isT10 ? ' — Tháng 10 mới có dữ liệu đến 07/10' : ''}</title>
+              <title>{d.l}: Doanh thu {d.dt.toLocaleString(locSo())} đ{isT10 ? ' — Tháng 10 mới có dữ liệu đến 07/10' : ''}</title>
             </rect>
             <text x={x + w / 2} y={yb - 5} textAnchor="middle" fontSize={10.5} fill="#0560a6" fontWeight={600}>
               {short(d.dt).replace(' tr', 'tr').replace(' tỷ', 'tỷ')}
@@ -242,7 +242,7 @@ export function TrendChart({ data, h = 240 }: {
         const isT10 = d.l.includes('T10')
         return (
           <circle key={i} cx={cx} cy={cy} r={4} fill="#138a52" stroke="#fff" strokeWidth={1.5}>
-            <title>{d.l}: LNTT {d.ln.toLocaleString('vi-VN')} đ{isT10 ? ' — Tháng 10 mới có dữ liệu đến 07/10' : ''}</title>
+            <title>{d.l}: LNTT {d.ln.toLocaleString(locSo())} đ{isT10 ? ' — Tháng 10 mới có dữ liệu đến 07/10' : ''}</title>
           </circle>
         )
       })}
@@ -253,7 +253,7 @@ export function TrendChart({ data, h = 240 }: {
         const isT10 = d.l.includes('T10')
         return (
           <circle key={i} cx={cx} cy={cy} r={3.5} fill="#f28020" stroke="#fff" strokeWidth={1.5}>
-            <title>{d.l}: Biên lãi {d.bien.toLocaleString('vi-VN', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}%{isT10 ? ' — Tháng 10 mới có dữ liệu đến 07/10' : ''}</title>
+            <title>{d.l}: Biên lãi {d.bien.toLocaleString(locSo(), { minimumFractionDigits: 1, maximumFractionDigits: 1 })}%{isT10 ? ' — Tháng 10 mới có dữ liệu đến 07/10' : ''}</title>
           </circle>
         )
       })}
@@ -299,7 +299,7 @@ export function CashFlowChart({
         return (
           <g key={i}>
             <rect x={x} y={yTop} width={w} height={barH} rx={3} fill={b.c}>
-              <title>{b.l}: {b.val >= 0 ? '+' : ''}{b.val.toLocaleString('vi-VN')} đ</title>
+              <title>{b.l}: {b.val >= 0 ? '+' : ''}{b.val.toLocaleString(locSo())} đ</title>
             </rect>
             <text x={x + w / 2} y={yTop - 5} textAnchor="middle" fontSize={11} fontWeight={600} fill="var(--ink)">
               {short(Math.abs(b.val)).replace(' tr', 'tr').replace(' tỷ', 'tỷ')}
@@ -338,7 +338,7 @@ export function BranchBarChart({
             <b style={{ color: 'var(--ink)' }}>{d.ten}</b>
             <span className="grow" />
             <span className="chip" style={{ background: 'var(--green-t)', color: 'var(--green)', fontWeight: 600, fontSize: 11.5 }}>
-              Biên gộp {(d.bienGop * 100).toLocaleString('vi-VN', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}%
+              Biên gộp {(d.bienGop * 100).toLocaleString(locSo(), { minimumFractionDigits: 1, maximumFractionDigits: 1 })}%
             </span>
             <b className="num" style={{ color: 'var(--ink)', marginLeft: 8 }}>
               {short(d.dt)}
@@ -384,7 +384,7 @@ export function CostStructureChart({
             <div
               key={i}
               style={{ width: `${w}%`, background: p.c, transition: 'width 0.3s' }}
-              title={`${p.l}: ${p.v.toLocaleString('vi-VN')} đ (${w.toFixed(1)}%)`}
+              title={`${p.l}: ${p.v.toLocaleString(locSo())} đ (${w.toFixed(1)}%)`}
             />
           )
         })}
@@ -447,7 +447,7 @@ export function LaiLoChart({ data, h = 260, rong = 640, ten = ['Doanh thu', 'Chi
   const cx = (i: number) => pl + i * bw + bw / 2
   const gon = (v: number) => short(v).replace(' tr', 'tr').replace(' tỷ', 'tỷ').replace(' k', 'k')
   const ticks = Array.from({ length: Math.round(max / buoc) + 1 }, (_, i) => buoc * i).concat(min <= -buoc ? Array.from({ length: Math.floor(-min / buoc) }, (_, i) => -buoc * (i + 1)) : [])
-  const tien = (v: number) => `${v.toLocaleString('vi-VN')} đ`
+  const tien = (v: number) => `${v.toLocaleString(locSo())} đ`
   // Tooltip tự vẽ thay <title> của trình duyệt (T306): rê, focus hoặc chạm vào tháng thì hiện, chạm ra ngoài thì ẩn
   const [chon, setChon] = useState<number | null>(null)
   const khung = useRef<HTMLDivElement>(null)
@@ -466,7 +466,7 @@ export function LaiLoChart({ data, h = 260, rong = 640, ten = ['Doanh thu', 'Chi
     const kq = dc.v, lai = kq >= 0
     const phu = duong
       ? (lai ? 'Thu nhiều hơn chi' : 'Chi nhiều hơn thu')
-      : dc.dt ? <>Biên lãi <b className={lai ? 'll-tip-xanh' : 'll-tip-do'}>{(kq / dc.dt * 100).toLocaleString('vi-VN', { maximumFractionDigits: 1 })}%</b></> : null
+      : dc.dt ? <>Biên lãi <b className={lai ? 'll-tip-xanh' : 'll-tip-do'}>{(kq / dc.dt * 100).toLocaleString(locSo(), { maximumFractionDigits: 1 })}%</b></> : null
     // Đặt bên phải cột nếu đủ chỗ, không thì bên trái cột, cả hai không vừa (điện thoại) thì canh giữa cho khỏi tràn
     const kw = khung.current?.clientWidth ?? W, tw = 290
     const trai = ((pl + chon! * bw) / W) * kw, phai = ((pl + (chon! + 1) * bw) / W) * kw

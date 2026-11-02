@@ -4,7 +4,7 @@ import type { PpGtgt, PpTndn } from '../../app/session'
 import { du, soCai } from '../tong-hop/so-cai'
 import { CUA_HANG, NVL, kqkd } from '../../data/mock'
 import { DS_TSCD } from '../tscd/data'
-import { pad } from '../../ui/format'
+import { pad, dauThap } from '../../ui/format'
 
 /**
  * Ngày tháng chứng từ: kỳ tháng 10 chỉ có dữ liệu đến 07/10 (KY_CHON).
@@ -672,7 +672,7 @@ export function rowsS4b(thang: number): Row[] {
     const ng = Math.round(c.nguyenGia * tiLeNg)
     const kh = Math.round(c.luyKeKh * tiLeNg)
     const muc = Math.round(c.mucKhThang * tiLeNg)
-    const tyLe = ((muc / ng) * 100).toFixed(1).replace('.', ',') + '%'
+    const tyLe = ((muc / ng) * 100).toFixed(1).replace('.', dauThap()) + '%'
     return {
       soTang: `TANG-0${i + 1}`,
       ngayTang: x[3],

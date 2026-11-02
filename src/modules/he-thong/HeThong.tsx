@@ -17,6 +17,7 @@ import { ONgay } from '../../ui/ChonNgay'
 import { thTT58, moTaBoSoTT58 } from '../bao-cao/tt58'
 import { CatalogPanel } from '../../ui/generic/CatalogScreen'
 import type { CauHinhDM } from '../danh-muc/truong-dm'
+import type { KieuSo } from '../../ui/format'
 
 export const VAI_TRO = ['Chủ doanh nghiệp', 'Kế toán trưởng', 'Kế toán viên', 'Quản lý cửa hàng', 'Thủ kho']
 const PHAM_VI_DS = ['Tất cả cửa hàng', ...CUA_HANG.map(c => c.ten)]
@@ -348,13 +349,35 @@ export function PhanQuyen({ sc }: ScreenProps) {
 
 export { GoiThueBao } from './GoiThueBao'
 
+/** Quy định chữ số và dấu phân cách (T710): nhãn, dấu ngăn nghìn, dấu thập phân, số ví dụ */
+export const KIEU_SO: Record<KieuSo, { ten: string; ngan: string; thap: string; tien: string; le: string }> = {
+  vn: { ten: 'Việt Nam', ngan: 'Dấu chấm (.)', thap: 'Dấu phẩy (,)', tien: '1.234.567.890', le: '1.234,56' },
+  qt: { ten: 'Quốc tế', ngan: 'Dấu phẩy (,)', thap: 'Dấu chấm (.)', tien: '1,234,567,890', le: '1,234.56' },
+}
+
 export function CauHinh({ sc }: ScreenProps) {
   const { s, set, toast } = useSession()
   const noco = kieuGhiSo(s.cheDo) === 'noco'
+  const [kieu, setKieu] = useState<KieuSo>(s.kieuSo?.[s.donVi] ?? 'vn')
+  const ks = KIEU_SO[kieu]
+  // Lưu thì chứng từ, danh sách, báo cáo, ô nhập số của đơn vị đổi theo kiểu đã chọn
+  const luu = () => { set({ kieuSo: { ...s.kieuSo, [s.donVi]: kieu } }); toast('Đã lưu cấu hình') }
   return (
     <div className="page">
-      <PageHead crumb={['Hệ thống']} title={sc.ten!}><button className="btn pri" data-hd="luuCh" onClick={() => toast('Đã lưu cấu hình')}>Lưu</button></PageHead>
+      <PageHead crumb={['Hệ thống']} title={sc.ten!}><button className="btn pri" data-hd="luuCh" onClick={luu}>Lưu</button></PageHead>
       <div className="grid g2" style={{ alignItems: 'start' }}>
+        <Card title="Quy định chữ số và dấu phân cách">
+          <div className="form-grid ch-so" data-hd="kieuSo">
+            <div className="f c2"><label>Định dạng số</label>
+              <Select className="inp" value={kieu} aria-label="Định dạng số" onChange={e => setKieu(e.target.value as KieuSo)}
+                ds={(['vn', 'qt'] as const).map(v => ({ v, t: KIEU_SO[v].ten }))} /></div>
+            <div className="f"><label>Ngăn hàng nghìn</label><input className="inp" readOnly value={ks.ngan} /></div>
+            <div className="f"><label>Ngăn phần thập phân</label><input className="inp" readOnly value={ks.thap} /></div>
+            <div className="f c2"><label>Ví dụ số tiền</label><input className="inp num" readOnly value={ks.tien} /></div>
+            <div className="f c2"><label>Ví dụ số lượng, đơn giá</label><input className="inp num" readOnly value={ks.le} /></div>
+          </div>
+          <Note kind="gray">Áp dụng cho số hiện trên chứng từ, danh sách, báo cáo và cách gõ số ở mọi ô nhập của đơn vị này.</Note>
+        </Card>
         <Card title="Bộ định khoản tự động" act={noco ? <Link className="btn sm ghost" to="/app/danh-muc/1-15">Sửa bộ định khoản</Link> : undefined}>
           <div data-hd="dinhKhoan">{noco ? <Note icon="book">Thứ tự ưu tiên tài khoản: hàng hoá, rồi nhóm hàng, rồi mặc định của chế độ. Bộ mặc định ngành F&B đã nạp sẵn 7 bút toán.</Note>
             : <Note kind="gray">Chế độ {cheDoHienTai(s).ngan} không dùng tài khoản Nợ/Có nên không có bộ định khoản.</Note>}</div>

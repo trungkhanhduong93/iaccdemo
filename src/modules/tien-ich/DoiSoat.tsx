@@ -8,7 +8,7 @@ import { CUA_HANG, HOM_NAY, LECH, cnTen } from '../../data/mock'
 import { Icon } from '../../ui/Icon'
 import { Kpi, Note, PageHead } from '../../ui/Page'
 import { St, Table } from '../../ui/Table'
-import { moneyD } from '../../ui/format'
+import { moneyD, locSo } from '../../ui/format'
 import { Select } from '../../ui/Dropdown'
 import { LocO, ThanhLoc } from '../../ui/ThanhLoc'
 import type { KhoangNgay } from '../../ui/ChonNgay'
@@ -41,7 +41,7 @@ export function DoiSoat({ sc, mod }: ScreenProps) {
   const cols: Col[] = [
     { k: 'ngay', t: 'Ngày', w: 96 }, { k: 'cap', t: 'Cặp đối soát' }, { k: 'cnT', t: 'Cửa hàng', cls: 'dim' },
     { k: 'nguonV', t: 'Theo nguồn', num: true }, { k: 'soV', t: 'Theo sổ', num: true },
-    { k: 'lech', t: 'Lệch', num: true, r: r => <b style={{ color: r.lech === 0 ? 'var(--green)' : 'var(--red)' }}>{r.lech > 0 ? '+' : ''}{r.lech.toLocaleString('vi-VN')}</b> },
+    { k: 'lech', t: 'Lệch', num: true, r: r => <b style={{ color: r.lech === 0 ? 'var(--green)' : 'var(--red)' }}>{r.lech > 0 ? '+' : ''}{r.lech.toLocaleString(locSo())}</b> },
     { k: 'nghi', t: 'Nguyên nhân nghi ngờ' },
     { k: 'tt', t: 'Trạng thái', r: r => r.tt === 'xong' ? <St k="ok">Đã xử lý</St> : r.tt === 'xem' ? <St k="warn">Đang xem</St> : <St k="err">Chưa xử lý</St> },
   ]

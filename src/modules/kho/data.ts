@@ -2,7 +2,7 @@
 import { createElement } from 'react'
 import type { CatalogCfg, Col, Row } from '../types'
 import { CUA_HANG, HANG, KHO, NVL } from '../../data/mock'
-import { between, pad, rng } from '../../ui/format'
+import { between, pad, rng, locSo } from '../../ui/format'
 
 const g = (r: () => number, a: number, b: number) => Math.round(between(r, a, b))
 
@@ -68,7 +68,7 @@ export const nhapXuat = {
 }
 
 export const tonTucThoi = {
-  cols: [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Tên' }, { k: 'kho', t: 'Kho' }, { k: 'dvt', t: 'ĐVT' }, { k: 'ton', t: 'Tồn hiện tại', num: true, r: (x: Row) => createElement('b', { style: { color: x.ton < 0 ? 'var(--red)' : 'var(--ink)' } }, x.ton.toLocaleString('vi-VN')) },
+  cols: [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Tên' }, { k: 'kho', t: 'Kho' }, { k: 'dvt', t: 'ĐVT' }, { k: 'ton', t: 'Tồn hiện tại', num: true, r: (x: Row) => createElement('b', { style: { color: x.ton < 0 ? 'var(--red)' : 'var(--ink)' } }, x.ton.toLocaleString(locSo())) },
     { k: 'gt', t: 'Giá trị', num: true }, { k: 'luc', t: 'Cập nhật', cls: 'dim' }] as Col[],
   rows: (): Row[] => {
     const r = rng('tontucthoi')

@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type PointerEvent as PE, type ReactNode } from 'react'
 import type { Col, Row } from '../modules/types'
-import { money } from './format'
+import { money, locSo } from './format'
 import { OLoc, type LocCot } from './LocCot'
 import { useVirtualScroll, type GroupNode } from './virtual'
 import { heSoZoom } from './zoom'
@@ -129,12 +129,12 @@ function tinhRongNum(c: Col, rows: Row[], sum?: Row): number {
   for (const r of rows) {
     const v = r[c.k]
     if (typeof v === 'number' && v !== 0) {
-      const s = v.toLocaleString('vi-VN')
+      const s = v.toLocaleString(locSo())
       if (s.length > maxLen) maxLen = s.length
     }
   }
   if (sum && typeof sum[c.k] === 'number') {
-    const s = (sum[c.k] as number).toLocaleString('vi-VN')
+    const s = (sum[c.k] as number).toLocaleString(locSo())
     if (s.length > maxLen) maxLen = s.length
   }
   const noiDungW = maxLen > 0 ? maxLen * 8.5 + 32 : 0

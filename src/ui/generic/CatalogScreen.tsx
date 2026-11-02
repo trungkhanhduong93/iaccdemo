@@ -10,7 +10,7 @@ import { CanhBaoGon, DaiCanhBao, NutCachLam } from '../DaiCanhBao'
 import { Table } from '../Table'
 import { ChamTrangThai } from '../ChamTrangThai'
 import { CO_TRANG_DM, PhanTrang } from '../PhanTrang'
-import { fold, money, nhapSoQT, soQT } from '../format'
+import { fold, money, nhapSoQT, soQT, locSo } from '../format'
 import { xongViecHuongDan } from '../../modules/home/HuongDan'
 import { Dropdown, MenuItem, Popover, Select } from '../Dropdown'
 import { LocO } from '../ThanhLoc'
@@ -795,7 +795,7 @@ export function CatalogPanel({
     // Số kiểu quốc tế: phẩy ngăn nghìn, chấm thập phân, chèn phẩy cả khi đang gõ
     if (cauHinh?.soQuocTe && laSo(tr)) return soQT(v)
     if (typeof v === 'number') {
-      return tr.kieu === 'tien' ? v.toLocaleString('vi-VN') : String(v)
+      return tr.kieu === 'tien' ? v.toLocaleString(locSo()) : String(v)
     }
     return v ?? ''
   }

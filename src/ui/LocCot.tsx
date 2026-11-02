@@ -5,7 +5,7 @@ import type { Col } from '../modules/types'
 import { Popover, Select } from './Dropdown'
 import { Icon } from './Icon'
 import { IconFigmaSearch, IconFigmaCheck } from './IconFigma'
-import { fold } from './format'
+import { docSoChu, fold } from './format'
 import { LichDon } from './ChonNgay'
 
 /** chu: chữ; so: số tiền, số lượng; ngay: dd/mm/yyyy; chon: phân loại giá trị */
@@ -85,8 +85,7 @@ export function dangLoc(g?: GiaTriLoc, tongChon?: number): boolean {
 function parseSo(v: string | number | undefined): number | null {
   if (v === undefined || v === null || v === '') return null
   if (typeof v === 'number') return isNaN(v) ? null : v
-  const cleaned = String(v).replace(/\./g, '').replace(',', '.')
-  const n = Number(cleaned)
+  const n = docSoChu(String(v))
   return isNaN(n) ? null : n
 }
 

@@ -15,9 +15,11 @@ import {
 } from '../../app/session'
 import { CHE_DO, CHE_DO_HOP_LE, type CheDo } from '../../app/che-do'
 import { CUA_HANG, KHO, NGUOI_DUNG } from '../../data/mock'
+import type { KieuSo } from '../format'
 import { GOI, GOIS, MODS, kieuGhiSo } from '../../app/plan'
 import {
   CAU_HINH_NGUOI_DUNG,
+  KIEU_SO,
   MAC_DINH,
   QUYEN,
   VAI_TRO,
@@ -936,9 +938,23 @@ export const MThongTinDonVi: FC<ScreenProps> = () => {
 export const MCauHinh: FC<ScreenProps> = () => {
   const { s, set, toast } = useSession()
   const noco = kieuGhiSo(s.cheDo) === 'noco'
+  const [kieu, setKieu] = useState<KieuSo>(s.kieuSo?.[s.donVi] ?? 'vn')
 
   return (
     <div className="m-ht-khung">
+      {/* Quy định chữ số và dấu phân cách (T710) */}
+      <section className="m-form-the">
+        <h3 className="m-form-the-tieu">Quy định chữ số và dấu phân cách</h3>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {(['vn', 'qt'] as const).map(v => (
+            <label key={v} className="m-ch-mau-so m-ch-kieu-so">
+              <span><input type="radio" name="m-kieu-so" checked={kieu === v} onChange={() => setKieu(v)} /> <b>{KIEU_SO[v].ten}</b></span>
+              <span className="code">{KIEU_SO[v].tien} · {KIEU_SO[v].le}</span>
+            </label>
+          ))}
+        </div>
+      </section>
+
       {/* Thẻ 1: Bộ định khoản tự động */}
       <section className="m-form-the">
         <h3 className="m-form-the-tieu">Bộ định khoản tự động</h3>
@@ -1013,7 +1029,7 @@ export const MCauHinh: FC<ScreenProps> = () => {
           type="button"
           className="btn pri m-ch-btn-luu"
           style={{ width: '100%', height: 44, borderRadius: 12 }}
-          onClick={() => toast('Đã lưu cấu hình')}
+          onClick={() => { set({ kieuSo: { ...s.kieuSo, [s.donVi]: kieu } }); toast('Đã lưu cấu hình') }}
         >
           Lưu cấu hình
         </button>

@@ -5,6 +5,7 @@
 import type { Row, VoucherCfg } from '../types'
 import type { Dong } from '../../ui/generic/gen'
 import { HANG, HANG_SX, NCC, NVL } from '../../data/mock'
+import { locSo } from '../../ui/format'
 
 export type LoaiSx = NonNullable<VoucherCfg['sanXuat']>
 
@@ -34,7 +35,7 @@ export const hangCua = (ma: string) => TAT_CA.find(h => h.ma === ma)
 export const tenMa = (ma: string) => `${hangCua(ma)?.ten ?? ma} - ${ma}`
 /** Số lượng làm tròn 3 chữ số thập phân, hiện kiểu Việt Nam */
 export const tron3 = (n: number) => Math.round(n * 1000) / 1000
-export const soLuong = (n: number) => (Number(n) || 0).toLocaleString('vi-VN', { maximumFractionDigits: 3 })
+export const soLuong = (n: number) => (Number(n) || 0).toLocaleString(locSo(), { maximumFractionDigits: 3 })
 
 // ── Công thức ──
 

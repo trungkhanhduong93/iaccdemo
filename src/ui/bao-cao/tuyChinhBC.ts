@@ -3,6 +3,7 @@ import { useSyncExternalStore } from 'react'
 import type { Col, Row } from '../../modules/types'
 import type { OKy } from '../generic/ReportScreen'
 import { thangLamViec } from '../../app/thangLamViec'
+import { docSoChu } from '../format'
 
 export interface TuyChinhCot {
   k: string
@@ -301,7 +302,7 @@ export interface BienDoiOpts {
 const soO = (v: unknown): number => {
   if (typeof v === 'number') return v
   if (typeof v === 'string' && v.trim()) {
-    return Number(v.replace(/\./g, '').replace(',', '.')) || 0
+    return docSoChu(v) || 0
   }
   return 0
 }

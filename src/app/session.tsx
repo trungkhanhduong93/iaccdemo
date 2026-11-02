@@ -1,9 +1,9 @@
 // Phiên làm việc: người dùng, vai trò, đơn vị kế toán, gói. Lưu ở localStorage để F5 không mất.
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
+import { Fragment, createContext, useContext, useEffect, useState, type ReactNode } from 'react'
 import type { Goi } from './plan'
 import { CHE_DO, CHE_DO_DN_STANDARD, CHE_DO_HOP_LE, CHE_DO_MAC_DINH, chuanHoaCheDo, type CheDo } from './che-do'
 import { CUA_HANG, DON_VI, HOM_NAY, type DonVi, type Role } from '../data/mock'
-import { dmy } from '../ui/format'
+import { datKieuSo, dmy, type KieuSo } from '../ui/format'
 import type { LichCachNvl } from '../modules/home/chi-phi-nvl'
 import { thangLamViec } from './thangLamViec'
 
@@ -47,6 +47,7 @@ export interface Session {
   giaThanhTay?: Record<string, Record<string, number>>   // giá thành món nhập tay theo đơn vị; khoá cửa hàng-yyyymm-mã món (T232)
   dongBoThuChi?: Record<string, Record<string, boolean>>   // tự động đồng bộ phiếu thu, chi lập trên FABi theo đơn vị, từng cửa hàng (mã cửa hàng); chưa đặt là bật (T264)
   mapPttt?: Record<string, Record<string, string>>   // map PTTT FABi về quỹ theo đơn vị; khoá 'mã cửa hàng|mã PTTT', giá trị mã quỹ (T264)
+  kieuSo?: Record<string, KieuSo>   // quy định chữ số và dấu phân cách theo đơn vị, chọn ở Cấu hình kế toán: 'vn' 1.234.567,89 (mặc định), 'qt' 1,234,567.89 (T710)
   lyDoGhiDe?: Record<string, Record<string, { chiPhi: number; phanBo: number; nhomCp: string }>>   // lý do nghiệp vụ có sẵn sửa tích Là chi phí, Chi phí phân bổ nhiều kỳ, nhóm lý do theo đơn vị; khoá mã lý do (T700)
 }
 
@@ -137,9 +138,12 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const cheDoKhiDoiGoi = (n: Session, g: Goi): CheDo =>
     loaiHinhDv(n, donViHienTai(n)) === 'hkd' && CHE_DO_HOP_LE[g].includes('TT152') ? 'TT152' : CHE_DO_MAC_DINH[g]
   const set = (p: Partial<Session>) => setS(x => { const n = { ...x, ...p, goiBan: 2 }; if (p.goi && !p.cheDo) n.cheDo = cheDoKhiDoiGoi(n, p.goi); n.cheDo = chuanHoaCheDo(n.goi, n.cheDo); return chuanHoaStandard(n) })
+  // Kiểu chữ số của đơn vị đặt trước khi vẽ; đổi kiểu thì vẽ lại toàn bộ để mọi số hiện theo kiểu mới (T710)
+  const kieu = s.kieuSo?.[s.donVi] ?? 'vn'
+  datKieuSo(kieu)
   return (
     <Ctx.Provider value={{ s, set, toast: setMsg }}>
-      {children}
+      <Fragment key={kieu}>{children}</Fragment>
       {msg && <div className="toast">{msg}</div>}
     </Ctx.Provider>
   )

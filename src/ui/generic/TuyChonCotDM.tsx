@@ -3,6 +3,7 @@ import type { Col, Row } from '../../modules/types'
 import type { CauHinhDM } from '../../modules/danh-muc/truong-dm'
 import type { Goi } from '../../app/plan'
 import type { CheDo } from '../../app/che-do'
+import { locSo } from '../format'
 
 /** Sinh các cột bổ sung từ trường form truong-dm, lọc theo gói và thông tư, mặc định ẩn (T148) */
 export function sinhCotBoSung(cols: Col[], cauHinh: CauHinhDM | undefined, goi: Goi, cheDo: CheDo): Col[] {
@@ -27,7 +28,7 @@ export function sinhCotBoSung(cols: Col[], cauHinh: CauHinhDM | undefined, goi: 
       r: (row: Row) => {
         const v = row[tr.k]
         if (v === undefined || v === null || v === '') return '—'
-        if (tr.kieu === 'tien' && typeof v === 'number') return v.toLocaleString('vi-VN')
+        if (tr.kieu === 'tien' && typeof v === 'number') return v.toLocaleString(locSo())
         if (tr.kieu === 'tich') return v ? 'Có' : 'Không'
         return String(v)
       },

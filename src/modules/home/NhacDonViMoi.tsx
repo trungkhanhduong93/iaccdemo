@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useSession, type Session } from '../../app/session'
 import { Icon } from '../../ui/Icon'
+import { locSo } from '../../ui/format'
 
 /** Đơn vị mới tạo khi kết nối FABi hoặc Thêm đơn vị kế toán; 3 đơn vị mẫu đã có đủ số liệu nên không nhắc */
 export const laDonViMoi = (s: Pick<Session, 'dvMoi' | 'donVi'>) => !!s.dvMoi && s.donVi === s.dvMoi.id
@@ -32,11 +33,11 @@ export const phanDaVe = (t: number, k = 1) => Math.min(1, t / k)
 
 /** Thanh tiến độ và dòng "Đang đồng bộ x / y chứng từ"; đủ rồi thì dòng xanh "Đã đủ" (T687) */
 export function DongDongBo({ da, tong }: { da: number; tong: number }) {
-  if (da >= tong) return <span className="db-dong xong"><Icon n="check" className="ic sm" />Đã đủ {tong.toLocaleString('vi-VN')} / {tong.toLocaleString('vi-VN')} chứng từ</span>
+  if (da >= tong) return <span className="db-dong xong"><Icon n="check" className="ic sm" />Đã đủ {tong.toLocaleString(locSo())} / {tong.toLocaleString(locSo())} chứng từ</span>
   return (
     <span className="db-dong">
       <span className="db-thanh"><i style={{ width: `${Math.round(da / (tong || 1) * 100)}%` }} /></span>
-      <span className="db-chu"><Icon n="refresh" className="ic sm db-quay" />Đang đồng bộ {da.toLocaleString('vi-VN')} / {tong.toLocaleString('vi-VN')} chứng từ</span>
+      <span className="db-chu"><Icon n="refresh" className="ic sm db-quay" />Đang đồng bộ {da.toLocaleString(locSo())} / {tong.toLocaleString(locSo())} chứng từ</span>
     </span>
   )
 }

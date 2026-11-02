@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T710 | Cấu hình kế toán thêm Quy định chữ số và dấu phân cách: Việt Nam (1.234.567,89) hoặc Quốc tế (1,234,567.89), theo đơn vị; số trên chứng từ, danh sách, báo cáo và ô nhập số hiện, gõ theo kiểu đã chọn, cả web và điện thoại | PhuongXT | 02/11/2026 | [nhật ký](../nhat-ky/2026-11-02-phuongxt-kieu-chu-so.md) |
 | T708 | Danh mục Lý do nghiệp vụ thêm thông tin Nguồn (FABi hoặc Thủ công) ở form chi tiết và cột danh sách; lý do nguồn FABi không xoá, chỉ sửa tích Là chi phí, Chi phí phân bổ nhiều kỳ, Nhóm lý do; lý do thủ công sửa, xoá được | PhuongXT | 02/11/2026 | [nhật ký](../nhat-ky/2026-11-02-phuongxt-nguon-ly-do.md) |
 | T707 | Danh mục Lý do nghiệp vụ: đổi tên tích Chi phí phân bổ nhiều kỳ thành Chờ phân bổ, tích sẵn cho thuê nhà, công cụ dụng cụ, tài sản cố định. Bỏ, đã có (T700, QD90) | PhuongXT | 02/11/2026 | [nhật ký](../nhat-ky/2026-11-02-phuongxt-bo-cho-phan-bo.md) |
 | T709 | Chân sidebar web: bỏ nút Thu gọn, thay bằng dòng phiên bản (i-accounting ghi tag, iaccdemo ghi ngày và mã commit), bấm mở hộp Có gì mới 3 ngày gần nhất của CHANGELOG; thu gọn, mở rộng sidebar bằng nút tròn mũi tên hiện khi rê chuột vào đường kẻ giữa sidebar và nội dung | Trum | 02/11/2026 | [nhật ký](../nhat-ky/2026-11-02-trum-chan-sidebar-phien-ban.md) |

@@ -9,12 +9,12 @@ import { Link } from 'react-router-dom'
 import { useSession } from '../../app/session'
 import { Icon } from '../../ui/Icon'
 import { HopDongBo } from '../../ui/HopDongBo'
-import { dmy } from '../../ui/format'
+import { dmy, locSo } from '../../ui/format'
 import { CUA_HANG } from '../../data/mock'
 import { phanDaVe, useDongBoFabi } from '../home/NhacDonViMoi'
 import { batDongBoThuChi, phieuThuChiFabi, type PhieuChoFabi } from './dong-bo-fabi'
 
-const tien = (n: number) => n.toLocaleString('vi-VN')
+const tien = (n: number) => n.toLocaleString(locSo())
 /** Ngày dd/mm/yyyy của phiếu thành Date để so với kỳ chọn */
 const ngayCua = (n: string) => { const [d, m, y] = n.split('/').map(Number); return new Date(y, m - 1, d) }
 /** Giờ đồng bộ theo ngày làm việc của bản mẫu (07/10/2026), giờ phút theo đồng hồ máy */

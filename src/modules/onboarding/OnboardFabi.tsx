@@ -15,6 +15,7 @@ import { ChonHaiCot } from '../../ui/ChonHaiCot'
 import { ONgay } from '../../ui/ChonNgay'
 import { boViecHuongDan, TiepHuongDan } from '../home/HuongDan'
 import { useLaMobile } from '../../ui/mobile/useLaMobile'
+import { locSo } from '../../ui/format'
 
 export const BUOC = ['Loại hình và gói', 'Đơn vị', 'Cửa hàng']   // bỏ Đồng bộ bán hàng; FABi luôn kéo chi tiết theo hoá đơn (T158, T247)
 const XONG = BUOC.length   // bước hoàn tất
@@ -281,7 +282,7 @@ function demCt(chon: string[], dongBo: Nhap['dongBo'], tu: number) {
 }
 const ngay = (dmy: string) => { const [d, m, y] = dmy.split('/').map(Number); return +new Date(y, m - 1, d) }
 
-const so = (n: number) => n.toLocaleString('vi-VN')
+const so = (n: number) => n.toLocaleString(locSo())
 /** Phần trăm lấy dữ liệu xong danh mục; Kết nối từ FABi tới mốc này là vào Trang chủ (T687) */
 const MOC_DANH_MUC = 30
 /** Chữ viết tắt đơn vị: chữ đầu hai từ cuối tên, vd Công ty TNHH Nhà hàng Phố Mây thành PM */

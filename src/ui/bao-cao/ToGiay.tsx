@@ -10,7 +10,7 @@ import { RptTable, type KyHieuCot } from '../generic/ReportScreen'
 import { Table } from '../Table'
 import { Dropdown, MenuItem, MenuSep } from '../Dropdown'
 import { Icon } from '../Icon'
-import { fold } from '../format'
+import { docSoChu, fold, locSo } from '../format'
 import { heSoZoom } from '../zoom'
 import { PhanTrang } from '../PhanTrang'
 import { chiaCot, paddingTheoMatDo, tinhCoChu, trichDoDaiCot, type DoDaiCot } from './chiaCot'
@@ -46,8 +46,8 @@ const CONG_TRUOC = 'Số trang trước chuyển sang'
 /** Cột cộng chuyển trang có trong bảng này */
 const cotCong = (kh: Khoi, congChuyen?: string[]) => kh.loai === 'bang' && congChuyen ? congChuyen.filter(k => kh.cols.some(c => c.k === k)) : []
 
-// Số trong ô: số giữ nguyên, chữ kiểu vi-VN ('1.250.000', '7,3') đổi ra số
-const soO = (v: unknown) => typeof v === 'number' ? v : typeof v === 'string' && v.trim() ? Number(v.replace(/\./g, '').replace(',', '.')) || 0 : 0
+// Số trong ô: số giữ nguyên, chữ theo kiểu chữ số ('1.250.000', '7,3' hoặc '1,250,000', '7.3') đổi ra số (T710)
+const soO = (v: unknown) => typeof v === 'number' ? v : typeof v === 'string' && v.trim() ? docSoChu(v) || 0 : 0
 
 /** Dòng cộng luỹ kế các cột cộng chuyển từ đầu bảng tới trước dòng den; bỏ dòng đầu kỳ, dòng tổng */
 function dongCong(kh: Extract<Khoi, { loai: 'bang' }>, cot: string[], den: number, nhan: string): Row {
@@ -57,7 +57,7 @@ function dongCong(kh: Extract<Khoi, { loai: 'bang' }>, cot: string[], den: numbe
   for (const k of cot) {
     const chu = ds.some(r => typeof r[k] === 'string')
     const t = Math.round(ds.reduce((a, r) => a + soO(r[k]), 0) * 1000) / 1000
-    dong[k] = chu ? (t ? t.toLocaleString('vi-VN') : '') : t
+    dong[k] = chu ? (t ? t.toLocaleString(locSo()) : '') : t
   }
   return dong
 }
@@ -581,11 +581,11 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, gia
                 <PhanTrang tong={tongDongBang} trang={trangBangHt} coTrang={coTrangBang} dsCoTrang={[100, 200, 500]}
                   onTrang={t => { setTrangBang(t); cuonBangLenDau() }} onCoTrang={doiCoTrangBang} />
               ) : (
-                tongDong > 0 && <span className="bc-thanh-dem">{dongBang.length.toLocaleString('vi-VN')} dòng</span>
+                tongDong > 0 && <span className="bc-thanh-dem">{dongBang.length.toLocaleString(locSo())} dòng</span>
               )
             ) : (
               <>
-                {!giay && tongDong > 0 && !hienPhanTrang && <span className="bc-thanh-dem">{tongDong.toLocaleString('vi-VN')} dòng</span>}
+                {!giay && tongDong > 0 && !hienPhanTrang && <span className="bc-thanh-dem">{tongDong.toLocaleString(locSo())} dòng</span>}
                 {hienPhanTrang && (
                   <PhanTrang tong={dongXem} trang={trangXemHt} coTrang={coTrangXem} dsCoTrang={[50, 100, 200, 500]}
                     onTrang={t => { setTrangXem(t); ban.current?.scrollTo({ top: 0 }) }} onCoTrang={c => { setCoTrangXem(c); setTrangXem(1) }} />
