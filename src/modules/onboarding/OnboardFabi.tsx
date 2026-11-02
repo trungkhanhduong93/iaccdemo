@@ -1,6 +1,6 @@
 // Khởi tạo dữ liệu khi mở từ FABi (T138), phần popup: bấm Kết nối ở /khoi-tao-fabi thì vào phần mềm, popup 1 bước mở đè lên:
 // chọn cửa hàng, ngày bắt đầu làm việc, xem PTTT FABi về quỹ nào. Loại hình, gói, thông tin đơn vị (3 bước cũ) hỏi khi mở Kê khai thuế.
-// Thêm đơn vị kế toán đi cùng popup 1 bước này, chỉ khác danh sách cửa hàng (PhuongXT 29/10/2026). Tiến độ lưu ở localStorage để quay lại đúng bước.
+// Thêm đơn vị kế toán đi cùng popup này, chia 2 bước: loại hình, thông tin đơn vị, cửa hàng; rồi ngày, quỹ, đồng bộ (PhuongXT 02/11/2026). Tiến độ lưu ở localStorage để quay lại đúng bước.
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { SO_NGAY_DUNG_THU, batDauDungThu, dungThuDv, useSession, type PpGtgt, type PpTndn, type Session } from '../../app/session'
@@ -19,6 +19,8 @@ import { locSo } from '../../ui/format'
 
 export const BUOC = ['Loại hình và gói', 'Đơn vị', 'Cửa hàng']   // bỏ Đồng bộ bán hàng; FABi luôn kéo chi tiết theo hoá đơn (T158, T247)
 const XONG = BUOC.length   // bước hoàn tất
+/** Thêm đơn vị kế toán chia 2 bước: khai đơn vị, cửa hàng rồi mới chọn ngày, quỹ, đồng bộ (PhuongXT 02/11/2026) */
+const BUOC_THEM = ['Đơn vị và cửa hàng', 'Đồng bộ dữ liệu']
 export const KEY = 'iacc-khoi-tao-fabi'
 /** Tên đơn vị trên FABi; FABi không có mã số thuế (T138) */
 export const TEN_FABI = 'Phố Mây'
@@ -312,7 +314,9 @@ export function OnboardFabi() {
     const cn = (s.cnThem?.[s.donVi] ?? []).map(c => c.id)
     // gói Standard chỉ kê khai được hộ kinh doanh nhóm 1, 2 và doanh nghiệp theo % doanh thu (KE_KHAI): mặc định theo % doanh thu
     // trụ sở chính mặc định là cửa hàng đầu tiên, bấm Chính ở dòng khác để đổi (PhuongXT 30/10/2026)
-    setN({ ...MAC_DINH, thue: true, b: 0, mo: true, nhom: 1, ppHkd: 'doanhThu', tenDv: s.dvMoi?.ten ?? TEN_FABI, chon: cn, cnChinh: cn[0] ?? '', ngayDauNam: s.ngayDauNam?.[s.donVi] ?? DAU_NAM })
+    // Thêm đơn vị kế toán đã khai loại hình, MST, địa chỉ ở bước 1 thì điền sẵn
+    const tt = s.ttDv?.[s.donVi]
+    setN({ ...MAC_DINH, thue: true, b: 0, mo: true, nhom: 1, ppHkd: 'doanhThu', loai: tt?.loai ?? MAC_DINH.loai, mst: tt?.mst ?? '', diaChi: tt?.diaChi ?? '', tenDv: s.dvMoi?.ten ?? TEN_FABI, chon: cn, cnChinh: cn[0] ?? '', ngayDauNam: s.ngayDauNam?.[s.donVi] ?? DAU_NAM })
   }, [loc.pathname, s.donVi])   // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
@@ -341,6 +345,7 @@ export function OnboardFabi() {
     : keKhaiDuoc(s.goi, n.loai, n.nhom, n.ppHkd) ? [] : [thue]
   // nhanh: khởi tạo 1 bước, từ FABi lẫn Thêm đơn vị kế toán; thue: 3 bước cũ hỏi khi mở Kê khai thuế, hộ kinh doanh thêm bước cửa hàng chính, kênh bán
   const nhanh = !n.thue
+  const haiBuoc = nhanh && n.kieu === 'them'   // Thêm đơn vị kế toán: b 0 là đơn vị, cửa hàng; b 1 là ngày, quỹ, đồng bộ
   const buoc = n.thue && n.loai === 'dn' ? BUOC.slice(0, 2) : BUOC
   const cuaHang = n.thue ? (s.cnThem?.[s.donVi] ?? []).map(c => ({ id: c.id, ten: c.ten, khuVuc: c.khuVuc })) : dsCuaHang(n.kieu, s)
   const anCh = n.kieu === 'them' ? CUA_HANG_FABI.length - cuaHang.length : 0   // cửa hàng FABi đã dùng kế toán ở đơn vị khác
@@ -372,9 +377,12 @@ export function OnboardFabi() {
     if (nhanh) {
       // chưa chọn loại hình, gói: giữ gói, chế độ lúc bấm Kết nối; mở Kê khai thuế thì hỏi (choKeKhai)
       // huongDan false: khởi tạo xong, chờ hiện hướng dẫn từng bước ở Trang chủ; Thêm đơn vị kế toán là người đã dùng nên không hiện (PhuongXT 29/10/2026)
+      // Thêm đơn vị kế toán: lưu loại hình, tên, MST, địa chỉ khai ở bước 1; chế độ theo loại hình
+      const khai = haiBuoc ? { ten: n.tenDv.trim(), viettat: vietTat(n.tenDv) || 'DV', mst: n.mst.trim(), diaChi: n.diaChi.trim() } : {}
       set({ khoiTao: true, choKeKhai: { ...s.choKeKhai, [s.donVi]: true }, huongDan: { ...s.huongDan, [s.donVi]: n.kieu === 'them' },
         dongBoFabi: { ...s.dongBoFabi, [s.donVi]: { bd: Date.now(), ct: soCtDaTao, tc: soTcDaTao } },   // chứng từ đổ về tiếp ở Trang chủ (T687)
-        ...(s.dvMoi && s.donVi === s.dvMoi.id ? { cnThem: { ...s.cnThem, [s.donVi]: cnChon.map(c => ({ id: c.id, ten: c.ten, khuVuc: c.khuVuc ?? '', tuNgay: n.ngayLam, banDau: true })) }, dvMoi: { ...s.dvMoi, diem: cnChon.length } } : {}),
+        ...(haiBuoc ? { cheDo: cheDoMoi(n.loai, s.goi), ttDv: { ...s.ttDv, [s.donVi]: { ...s.ttDv?.[s.donVi], loai: n.loai, ten: n.tenDv.trim(), mst: n.mst.trim(), diaChi: n.diaChi.trim() } } } : {}),
+        ...(s.dvMoi && s.donVi === s.dvMoi.id ? { cnThem: { ...s.cnThem, [s.donVi]: cnChon.map(c => ({ id: c.id, ten: c.ten, khuVuc: c.khuVuc ?? '', tuNgay: n.ngayLam, banDau: true })) }, dvMoi: { ...s.dvMoi, ...khai, diem: cnChon.length } } : {}),
         ngayDauNam: { ...s.ngayDauNam, [s.donVi]: DAU_NAM }, namTaiChinh: { ...s.namTaiChinh, [s.donVi]: HOM_NAY.getFullYear() } })
       try { localStorage.removeItem(KEY) } catch { /* bỏ qua */ }
       setN(MAC_DINH)
@@ -401,7 +409,8 @@ export function OnboardFabi() {
     nav('/app/danh-muc')   // vào phân hệ Danh mục để khởi tạo danh mục
   }
   const tiep = () => {
-    if (nhanh) { sua({ b: XONG }); setTai(0); return }   // 1 bước rồi lấy dữ liệu
+    if (haiBuoc && n.b === 0) { sua({ b: 1 }); return }   // Thêm đơn vị kế toán: sang bước đồng bộ
+    if (nhanh) { sua({ b: XONG }); setTai(0); return }   // bước cuối rồi lấy dữ liệu
     if (n.thue) { xong(); return }   // kê khai thuế: một màn
     sua({ b: n.b + 1 }); if (n.b === XONG - 1) setTai(0)
   }
@@ -438,15 +447,51 @@ export function OnboardFabi() {
           {n.b < XONG && !nhanh && <span className="muted ktf-luu">{n.thue ? 'Khai một lần để lập tờ khai thuế' : `Hoàn tất ${BUOC.length} bước để bắt đầu dùng phần mềm`}</span>}
           {(n.thue || (n.truoc && n.b < XONG)) && <button className="btn ghost" onClick={deSau}>Để sau</button>}
         </div>
-            {n.b < XONG && nhanh && (
-              <div className="ktf-luoi">
+            {n.b < XONG && nhanh && (<>
+              {haiBuoc && <div className="steps">{BUOC_THEM.map((t, i) => <div key={t} className={i <= n.b ? 'on' : ''}><i /><span>{i + 1}. {t}</span></div>)}</div>}
+              <div className={`ktf-luoi${haiBuoc && n.b === 0 ? ' ktf-mot' : ''}`}>
                 <div className="card" style={{ padding: '24px 26px' }}>
-                  <h3 className="ktf-h3 ktf-h3-dau">Cửa hàng</h3>
-                  <p className="muted ktf-p">{laMobile ? 'Chọn cửa hàng lên sổ.' : 'Tích cửa hàng FABi lên sổ kế toán. Thêm cửa hàng sau ở Danh mục cửa hàng.'}{anCh > 0 && (laMobile ? ` Đã ẩn ${anCh} cửa hàng ở đơn vị khác.` : ` Chỉ hiện cửa hàng chưa dùng kế toán, đã ẩn ${anCh} cửa hàng đang ở đơn vị khác.`)}</p>
-                  <DsCuaHang ds={cuaHang} chon={n.chon} chinh="" doi={chon => sua({ chon })} coChinh={false} />
-                  {cnChon.length === 0 && <Note kind="warn" icon="alert">Chọn ít nhất một cửa hàng để tiếp tục.</Note>}
+                  {haiBuoc && n.b === 0 && (
+                    <>
+                      <h3 className="ktf-h3 ktf-h3-dau">Đơn vị thuộc loại hình nào?</h3>
+                      <div className="grid g2">
+                        {([['hkd', 'store', 'Hộ kinh doanh', 'Hộ, cá nhân kinh doanh'], ['dn', 'building', 'Doanh nghiệp', 'Công ty TNHH, cổ phần, doanh nghiệp tư nhân']] as const).map(([k, ic, t, m]) => (
+                          <button key={k} className={`opt ${n.loai === k ? 'on' : ''}`} onClick={() => sua({ loai: k })}>
+                            <span className="radio" /><span className="grow"><b>{t}</b><small>{m}</small></span><Icon n={ic} />
+                          </button>
+                        ))}
+                      </div>
 
-                  <h3 className="ktf-h3">Ngày bắt đầu làm việc</h3>
+                      <h3 className="ktf-h3">Thông tin {n.loai === 'hkd' ? 'hộ kinh doanh' : 'công ty'}</h3>
+                      <div className="form-grid">
+                        <div className="f c2">{n.loai === 'hkd' ? <label>CCCD/MST</label> : <label>Mã số thuế <em>*</em></label>}
+                          <div className="row"><input className="inp" value={n.mst} placeholder={n.loai === 'hkd' ? 'Nhập CCCD hoặc mã số thuế' : 'Nhập mã số thuế'} onChange={e => sua({ mst: e.target.value })} />
+                            <button className="btn" onClick={() => sua({ traCuu: true, mst: n.mst || '0319 990 088',   // kết quả tra cứu mẫu, khác 3 đơn vị mẫu
+                              tenDv: n.loai === 'hkd' ? 'Hộ kinh doanh Nhà hàng Phố Mây' : 'Công ty TNHH Nhà hàng Phố Mây', diaChi: '24 Nguyễn Huệ, phường Sài Gòn, TP.HCM' })}>Tra cứu</button></div>
+                        </div>
+                        <div className="f c2"><label>{n.loai === 'hkd' ? 'Tên hộ kinh doanh' : 'Tên công ty'} <em>*</em></label><input className="inp" value={n.tenDv} onChange={e => sua({ tenDv: e.target.value })} /></div>
+                        <div className="f c4"><label>Địa chỉ</label><input className="inp" value={n.diaChi} placeholder={n.loai === 'hkd' ? 'Tra cứu theo CCCD/MST hoặc nhập' : 'Tra cứu theo mã số thuế hoặc nhập'} onChange={e => sua({ diaChi: e.target.value })} /></div>
+                      </div>
+                    </>
+                  )}
+
+                  {(!haiBuoc || n.b === 0) && (
+                    <>
+                      <h3 className={`ktf-h3${haiBuoc ? '' : ' ktf-h3-dau'}`}>{haiBuoc ? 'Có những cửa hàng nào' : 'Cửa hàng'}</h3>
+                      <p className="muted ktf-p">{laMobile ? 'Chọn cửa hàng lên sổ.' : 'Tích cửa hàng FABi lên sổ kế toán. Thêm cửa hàng sau ở Danh mục cửa hàng.'}{anCh > 0 && (laMobile ? ` Đã ẩn ${anCh} cửa hàng ở đơn vị khác.` : ` Chỉ hiện cửa hàng chưa dùng kế toán, đã ẩn ${anCh} cửa hàng đang ở đơn vị khác.`)}</p>
+                      <DsCuaHang ds={cuaHang} chon={n.chon} chinh="" doi={chon => sua({ chon })} coChinh={false} />
+                      {cnChon.length === 0 && <Note kind="warn" icon="alert">Chọn ít nhất một cửa hàng để tiếp tục.</Note>}
+                    </>
+                  )}
+
+                  {haiBuoc && n.b === 0 && (
+                    <div className="row ktf-pop-nut">
+                      <button className="btn pri lg" disabled={cnChon.length === 0 || !n.tenDv.trim() || (n.loai === 'dn' && !n.mst.trim())} onClick={tiep}>Tiếp tục<Icon n="arrow" className="ic sm" /></button>
+                    </div>
+                  )}
+
+                  {(!haiBuoc || n.b === 1) && (<>
+                  <h3 className={`ktf-h3${haiBuoc ? ' ktf-h3-dau' : ''}`}>Ngày bắt đầu làm việc</h3>
                   <div className="ktf-ngay">
                     <ONgay value={n.ngayLam} onChange={v => sua({ ngayLam: v })} ariaLabel="Ngày bắt đầu làm việc" />
                     <small className="muted">{laMobile ? 'Đơn POS, thu chi từ ngày này tự về sổ.' : 'Ngày bắt đầu nhập liệu trên iPOS Accounting. Từ ngày này, doanh thu bán hàng POS và phiếu thu, chi lập trên FABi tự về sổ.'}</small>
@@ -472,11 +517,13 @@ export function OnboardFabi() {
 
                   {laMobile && <p className="ktf-dt-lay"><Icon n="check" className="ic sm" />Sẽ lấy {so(soCtDaTao)} đơn bán, {so(soTcDaTao)} phiếu thu chi</p>}
                   <div className="row ktf-pop-nut">
+                    {haiBuoc && <button className="btn lg" onClick={() => sua({ b: 0 })}>Quay lại</button>}
                     <button className="btn pri lg" disabled={cnChon.length === 0 || !ngayLamHopLe} onClick={tiep}>Đồng bộ dữ liệu ngay<Icon n="arrow" className="ic sm" /></button>
                   </div>
+                  </>)}
                 </div>
 
-                {!laMobile && <aside className="card ktf-ben">
+                {!laMobile && (!haiBuoc || n.b === 1) && <aside className="card ktf-ben">
                   <h3>Dữ liệu sẽ tự động đồng bộ từ ngày {ngayLamHopLe ? n.ngayLam : '…'}</h3>
                   <ul>
                     <li><Icon n="check" className="ic sm" /><span><b>{so(soCtDaTao)} đơn bán hàng</b> từ máy POS sẽ tự động lên doanh thu</span></li>
@@ -485,7 +532,7 @@ export function OnboardFabi() {
                   </ul>
                 </aside>}
               </div>
-            )}
+            </>)}
             {n.b < XONG && !nhanh && (
               <>
                 {!n.thue && <div className="steps">{buoc.map((t, i) => <div key={t} className={i <= n.b ? 'on' : ''}><i /><span>{i + 1}. {t}</span></div>)}</div>}
