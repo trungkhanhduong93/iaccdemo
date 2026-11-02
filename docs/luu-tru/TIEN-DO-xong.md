@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T707 | Danh mục Lý do nghiệp vụ: đổi tên tích Chi phí phân bổ nhiều kỳ thành Chờ phân bổ, tích sẵn cho thuê nhà, công cụ dụng cụ, tài sản cố định. Bỏ, đã có (T700, QD90) | PhuongXT | 02/11/2026 | [nhật ký](../nhat-ky/2026-11-02-phuongxt-bo-cho-phan-bo.md) |
 | T706 | Thu chi lấy lại tiện ích đồng bộ FABi của T691 (nhãn phiếu chưa đồng bộ, hộp Xem lý do thêm cột Mã phiếu FABi, Lý do; nút Đồng bộ bên phải thanh tab), bỏ chip Chưa đồng bộ của T697, T699 ở web và điện thoại; tour Thu chi sửa theo. Trum đồng ý | PhuongXT | 02/11/2026 | [nhật ký](../nhat-ky/2026-11-02-phuongxt-lay-lai-dong-bo-thu-chi.md) |
 | T705 | Ô chọn mã hàng phiếu dòng NVL chia 2 tab: Thực đơn (mọi mặt hàng nguồn FABi, theo dõi tồn hay không), NVL (mặt hàng nguồn khác có theo dõi tồn kho); web và điện thoại (`MLapPhieu.tsx`) | PhuongXT | 31/10/2026 | [nhật ký](../nhat-ky/2026-10-31-phuongxt-chon-hang-tab-thuc-don.md) |
 | T704 | Thông tin kê khai thuế (hộp ở Kê khai thuế, Thông tin đơn vị web và điện thoại): hộ kinh doanh đủ nhóm 1 tới 4, doanh nghiệp chọn riêng thuế GTGT, TNDN đủ 4 trường hợp; ngoài phần gói Standard làm được thì báo gói Plus, Pro; hộp thu gọn; Thông tin đơn vị để trống khi chưa khai; nút Thiết lập thông tin mở Thông tin đơn vị | PhuongXT | 31/10/2026 | [nhật ký](../nhat-ky/2026-10-31-phuongxt-ke-khai-du-truong-hop.md) |
