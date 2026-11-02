@@ -455,7 +455,6 @@ export function ThongTinDonVi({ sc }: ScreenProps) {
   // Doanh nghiệp gói Free, Standard chỉ dùng TT58, không đổi; TT152 của gói Free, Standard chỉ dành cho hộ kinh doanh (T174, T632)
   const cdDn: CheDo[] = s.goi === 'PL' || dnStandard ? ['TT58'] : CHE_DO_HOP_LE[s.goi]
   const [choDoi, setChoDoi] = useState<CheDo | null>(null)   // đổi chế độ kế toán, hỏi lại trước khi đổi
-  const doiLoai = loai !== '' && loai !== loaiHinhDv(s, dv)
   return (
     <div className="page">
       <PageHead crumb={['Hệ thống']} title={sc.ten!}><button className="btn pri" data-hd="luuDv" onClick={luuDv}>Lưu</button></PageHead>
@@ -524,10 +523,7 @@ export function ThongTinDonVi({ sc }: ScreenProps) {
             </>}
           </div>
           {ngoaiStd.length > 0 && <Note kind="warn" icon="alert">
-            Gói {GOI[s.goi].ten} chưa kê khai được {ngoaiStd.join(', ')}. Gói {GOIS.filter(g => g !== 'S').map(g => GOI[g].ten).join(', ')} mới đáp ứng, sắp ra mắt.
-          </Note>}
-          {doiLoai && <Note kind="warn" icon="alert">
-            {loai && cheDoTheoLoai(loai) !== s.cheDo ? `Lưu sẽ đổi chế độ kế toán sang ${CHE_DO[cheDoTheoLoai(loai)].ngan}, sổ và báo cáo đổi theo. ` : ''}Đổi loại hình không tự đổi gói, xem lại ở <Link to="/app/he-thong/goi-thue-bao">Gói thuê bao</Link>.
+            Tính năng kê khai thuế chưa hỗ trợ cho cách tính thuế này tại gói Accounting {GOI[s.goi].ten}. Vui lòng nâng cấp lên {(f.loai === 'dn' ? GOIS.filter(g => g !== 'S') : ['PL' as const]).map(g => `Accounting ${GOI[g].ten}`).join(' hoặc ')} để trải nghiệm.
           </Note>}
         </Card>
         <Card title="Chế độ kế toán">

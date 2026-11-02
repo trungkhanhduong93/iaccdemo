@@ -880,7 +880,7 @@ export const MThongTinDonVi: FC<ScreenProps> = () => {
         </div>
         {ngoaiStd.length > 0 && (
           <Note kind="warn" icon="alert">
-            Gói {GOI[s.goi].ten} chưa kê khai được {ngoaiStd.join(', ')}. Gói {GOIS.filter(g => g !== 'S').map(g => GOI[g].ten).join(', ')} mới đáp ứng, sắp ra mắt.
+            Tính năng kê khai thuế chưa hỗ trợ cho cách tính thuế này tại gói Accounting {GOI[s.goi].ten}. Vui lòng nâng cấp lên {(f.loai === 'dn' ? GOIS.filter(g => g !== 'S') : ['PL' as const]).map(g => `Accounting ${GOI[g].ten}`).join(' hoặc ')} để trải nghiệm.
           </Note>
         )}
       </section>

@@ -497,7 +497,7 @@ export function OnboardFabi() {
                         <h2 className="ktf-h">Đơn vị thuộc loại hình nào?</h2>
                         <p className="muted ktf-p">{n.thue ? 'Loại hình quyết định chế độ kế toán và cách kê khai thuế.' : 'Loại hình quyết định chế độ kế toán và gói gợi ý. Chọn xong là có gói ngay bên dưới.'}</p>
                         <div className="grid g2">
-                          {([['hkd', 'store', 'Hộ kinh doanh', 'Hộ, cá nhân kinh doanh. Chế độ kế toán TT152'], ['dn', 'building', 'Doanh nghiệp', 'Công ty TNHH, cổ phần, doanh nghiệp tư nhân']] as const).map(([k, ic, t, m]) => (
+                          {([['hkd', 'store', 'Hộ kinh doanh', 'Hộ, cá nhân kinh doanh'], ['dn', 'building', 'Doanh nghiệp', 'Công ty TNHH, cổ phần, doanh nghiệp tư nhân']] as const).map(([k, ic, t, m]) => (
                             <button key={k} className={`opt ${n.loai === k ? 'on' : ''}`} onClick={() => doiLoai({ loai: k })}>
                               <span className="radio" /><span className="grow"><b>{t}</b><small>{m}</small></span><Icon n={ic} />
                             </button>
@@ -565,7 +565,7 @@ export function OnboardFabi() {
                         )}
                         {/* kê khai thuế: chọn được mọi nhóm, cách tính thuế; ngoài phần gói đang dùng đáp ứng thì báo gói cao hơn (PhuongXT 31/10/2026) */}
                         {n.thue && ngoaiGoi.length > 0 && (
-                          <Note kind="warn" icon="alert">Gói {GOI[s.goi].ten} chưa kê khai được {ngoaiGoi.join(', ')}. Gói {GOIS.filter(g => g !== s.goi && keKhaiDuoc(g, n.loai, n.nhom, 'loiNhuan')).map(g => GOI[g].ten).join(', ')} mới đáp ứng, sắp ra mắt.</Note>
+                          <Note kind="warn" icon="alert">Tính năng kê khai thuế chưa hỗ trợ cho cách tính thuế này tại gói Accounting {GOI[s.goi].ten}. Vui lòng nâng cấp lên {GOIS.filter(g => GOIS.indexOf(g) > GOIS.indexOf(s.goi) && (n.loai === 'dn' || keKhaiDuoc(g, n.loai, n.nhom, 'loiNhuan'))).map(g => `Accounting ${GOI[g].ten}`).join(' hoặc ')} để trải nghiệm.</Note>
                         )}
                         {!n.thue && (<>
                         <h3 className="ktf-h3">{goiChon.length === 1 ? 'Gói đang mở bán' : n.loai === 'hkd' ? 'Gói cho hộ kinh doanh' : `Doanh nghiệp chọn được cả ${goiChon.length} gói`}</h3>

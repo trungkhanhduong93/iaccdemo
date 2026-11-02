@@ -19,7 +19,6 @@ const GIA_TRI: [string, string, string, string][] = [
   ['percent', 'Kê khai thuế và sổ sách', 'Tự động tính thuế GTGT và TNCN, TNDN theo % doanh thu. Hỗ trợ lập tờ khai thuế và theo dõi sổ sách báo cáo theo quy định.', 'Tự tính thuế, lập tờ khai'],
 ]
 const CAM_KET = ['Không phát sinh chi phí', 'Không yêu cầu thẻ thanh toán', 'Dữ liệu an toàn tuyệt đối']
-const CAM_KET_DT = ['Miễn phí', 'Dữ liệu an toàn']   // điện thoại: một hàng trên nút kết nối
 const KET_NOI = 'ket-noi'   // tham số đường dẫn vào thẳng phần mềm
 
 export function KhoiTaoFabi() {
@@ -80,7 +79,7 @@ export function KhoiTaoFabi() {
               <div className="ktf-b1-chu">
                 <span className="ktf-b1-huy"><Icon n="shield" className="ic sm" />{laMobile ? 'Miễn phí trọn đời cho khách FABi' : 'Gói Standard: Miễn phí trọn đời cho khách hàng FABi POS'}</span>
                 <h1>{laMobile ? 'Kế toán tự động cho quán của bạn' : 'Kế toán tự động dành riêng cho quán của bạn'}</h1>
-                {!laMobile && <p>Gạt bỏ sổ tay thu chi. Tự động đồng bộ doanh thu bán hàng từ FABi POS chỉ với 1 chạm.</p>}
+                {!laMobile && <p>Gạt bỏ sổ tay thu chi. Tự động đồng bộ doanh thu bán hàng từ FABi POS.</p>}
               </div>
               {!laMobile && <div className="ktf-anh ktf-b1-anh">
                 <img src={`${import.meta.env.BASE_URL}trang-chu-standard.jpg`} alt="Trang chủ iPOS Accounting gói Standard" />
@@ -95,11 +94,6 @@ export function KhoiTaoFabi() {
                 </div>
               ))}
             </div>
-            {laMobile && (
-              <div className="ktf-b1-cam">
-                {CAM_KET_DT.map(t => <span key={t}><Icon n="check" className="ic sm" />{t}</span>)}
-              </div>
-            )}
             <div className="ktf-b1-cta">
               <div className="ktf-gt-nut">   {/* điện thoại: ghim đáy (T668) */}
                 <button className="btn pri lg" onClick={dungThu}>Bắt đầu kết nối dữ liệu<Icon n="arrow" className="ic sm" /></button>
