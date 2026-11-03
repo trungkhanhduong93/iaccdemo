@@ -576,7 +576,7 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
           { k: 'loai', nhan: 'Loại quỹ', kieu: 'chon', ds: ['Tiền mặt', 'Ngân hàng'], batBuoc: true },
           { k: 'stk', nhan: 'Số tài khoản / Ngân hàng', kieu: 'chu', hien: v => v.loai !== 'Tiền mặt' },   // quỹ tiền mặt không có số tài khoản (T144)
           { k: 'cn', nhan: 'Cửa hàng áp dụng', kieu: 'chonNhieu', ds: CUA_HANG.map(c => c.ten), maDs: maCuaHang },   // một quỹ dùng cho nhiều cửa hàng (T144)
-          { k: 'soDu', nhan: 'Số dư ban đầu', kieu: 'tien', goi: ['S'] },   // gói Standard khai số dư quỹ ở đây, thay màn Số dư ban đầu (T245)
+          { k: 'soDu', nhan: 'Số dư ban đầu', kieu: 'tien', goi: ['S', 'PL'] },   // gói Standard khai số dư quỹ ở đây, thay màn Số dư ban đầu (T245); gói Plus theo gói Standard (T719)
         ],
       },
       {

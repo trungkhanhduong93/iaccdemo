@@ -310,6 +310,7 @@ const FLYOUT_CONFIG: Record<string, FlyoutData> = {
         { ten: 'Hàng hoá, món ăn', di: '/app/danh-muc/1-2' },
         { ten: 'Đơn vị tính', di: '/app/danh-muc/1-3' },
         { ten: 'Quy đổi đơn vị tính', di: '/app/danh-muc/1-4' },
+        { ten: 'Công thức chế biến', di: '/app/danh-muc/cong-thuc-che-bien' },   // chỉ gói Plus (T719)
         { ten: 'Khách hàng, NCC, nhân viên', di: '/app/danh-muc/1-5' },
         { ten: 'Kho hàng', di: '/app/danh-muc/1-8' },
         { ten: 'Cửa hàng làm việc', di: '/app/danh-muc/cua-hang' },
