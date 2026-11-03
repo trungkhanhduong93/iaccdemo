@@ -22,6 +22,9 @@ import { MThanhCong, type DongTomTat } from './MThanhCong'
 import { addCatalogRow, getAllCatalogRows, getDmMeta, laLyChiPhi, laLyPhanBo, sinhMaKeTiep, useAddedCatalogRows } from '../generic/danhMucStore'
 import { LichDon } from '../ChonNgay'
 import { xongViecHuongDan } from '../../modules/home/HuongDan'
+import { ghiTraNo, phieuMuaConNo, type TraNo } from '../generic/BangTraNoNcc'
+import { useBanPhieu } from '../generic/daXoa'
+import { MTraNoNcc } from './MTraNoNcc'
 
 export interface MDtThuChiLapProps extends ScreenProps {
   id?: string
@@ -179,6 +182,7 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
 
   const [lyDo, setLyDo] = useState<string>(() => {
     if (dienSan?.lyDo) return dienSan.lyDo
+    if (!goc && sp.get('ly')) return LY_DO.find(x => x.ma === sp.get('ly'))?.ten ?? ''   // mở từ nút Thanh toán nhà cung cấp (?ly=CHI02, T718)
     return lyDoGoc(goc)
   })
   const [thangChiPhi, setThangChiPhi] = useState<string>(() => `Tháng ${goc?.thang || 10}/2026`)
@@ -286,6 +290,27 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
       }
     }
   }, [row])
+
+  // Gói Standard phiếu chi lý do Thanh toán công nợ nhà cung cấp (T718): Chi tiết chọn phiếu mua còn nợ, như web.
+  // Thanh toán ngay từ một phiếu mua (dienSan.idMua) giữ cách cũ
+  const traNoMode = s.goi === 'S' && isChi && !dienSan?.idMua && lyDo === LY_DO.find(x => x.ma === 'CHI02')?.ten
+  const [traNo, setTraNo] = useState<TraNo[]>(() => (row?._traNo as TraNo[] | undefined) ?? [])
+  useEffect(() => { setTraNo((row?._traNo as TraNo[] | undefined) ?? []) }, [row?.id])
+  const banPhieu = useBanPhieu()
+  const dsTraNo = useMemo(() => traNoMode ? phieuMuaConNo(doiTuong, cuaHang, row ? String(row.id) : undefined) : [],
+    [traNoMode, doiTuong, cuaHang, row?.id, banPhieu])
+  useEffect(() => {
+    // Đổi nhà cung cấp thì bỏ phiếu không còn trong danh sách. Lưu xong phiếu mua đã trả hết rơi khỏi danh sách, giữ nguyên để màn thành công đúng số
+    if (traNoMode && !daLuu) setTraNo(c => c.filter(x => dsTraNo.some(d => d.id === x.id)))
+  }, [dsTraNo])
+  useEffect(() => {
+    if (!traNoMode || daLuu) return
+    const tk = tkTheoLyDo('chi', lyDo)
+    setDsDong(traNo.map(x => ({ ten: `Thanh toán ${x.so}`, sl: 1, gia: x.tien, tien: x.tien, ly: lyDo, dt: doiTuong, km: '', cv: '', tkNo: tk.tkNo ?? '331', tkCo: tk.tkCo ?? '1111' })))
+    const tong = traNo.reduce((a, x) => a + x.tien, 0)
+    setSoTien(tong)
+    setStrTien(tong ? money(tong) : '')
+  }, [traNoMode, traNo, doiTuong])
 
   // Sheets modal
   const [moChonDt, setMoChonDt] = useState(false)
@@ -418,6 +443,10 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
     const tienLuu = tour && soTien <= 0 ? 500000 : soTien
     const lyDoLuu = tour && !lyDo ? 'Tiền điện' : lyDo
     const quyLuu = tour && !quy ? `Quỹ tiền mặt ${ch.ngan}` : quy
+    if (traNoMode && !traNo.length) {
+      toast(doiTuong ? 'Chọn phiếu mua cần thanh toán ở mục Chi tiết' : 'Chọn nhà cung cấp cần thanh toán')
+      return
+    }
     if (tienLuu <= 0) {
       toast('Vui lòng nhập số tiền lớn hơn 0')
       return
@@ -456,10 +485,13 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
               } : {}),
             })),
       _theCp: theCpDs,
+      _traNo: traNoMode ? traNo : undefined,
       tt: row?.tt ?? (s.goi === 'S' ? 'ghi' : 'nhap'),
       nguon: row?.nguon ?? 'tay',
     }
     const targetId = dangSua && row ? String(row.id) : `phieu-${Date.now()}`
+    // Phiếu mua được trả ghi thêm phiếu chi này vào phần đã thanh toán; bỏ chọn hoặc đổi lý do thì gỡ ra (T718)
+    if (traNoMode || row?._traNo) ghiTraNo({ id: targetId, so: soCt, loai }, (row?._traNo as TraNo[] | undefined) ?? [], traNoMode ? traNo : [], s.ten)
     if (dienSan) {
       const duLieuMoi: Partial<Row> = {
         ...duLieuPhieu,
@@ -518,6 +550,7 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
   const handleLapMoi = () => {
     setDaLuu(false)
     setPhieuVuaLuu(null)
+    setTraNo([])
     setSoTien(0)
     setStrTien('')
     setDoiTuong('')
@@ -620,7 +653,7 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
   const coTienDau = isCq
 
   const dongTongCong = (
-    <div className="m-tc-dong-tong-cong">
+    <div className={`m-tc-dong-tong-cong${traNoMode ? ' m-tra-no-tong' : ''}`}>
       <span className="nhan">Tổng cộng</span>
       <span className={`so ${isChi ? 'chi' : isThu ? 'thu' : 'cq'}`}>
         {money(soTien)} đ
@@ -867,7 +900,15 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
         </section>
 
         {/* 3. Thẻ CHI TIẾT (mọi gói, trừ chuyển quỹ T555) */}
-        {!coTienDau && (
+        {!coTienDau && traNoMode && (
+          <section className="m-tc-lap-card m-t650-the" data-hd="chi-tiet">
+            <div className="m-t650-tieu">
+              Chi tiết {traNo.length > 0 && <small>{traNo.length} phiếu mua</small>}
+            </div>
+            <MTraNoNcc ncc={doiTuong} ds={dsTraNo} chon={traNo} onChange={v => { setTraNo(v); setDaSua(true) }} />
+          </section>
+        )}
+        {!coTienDau && !traNoMode && (
           <section className="m-tc-lap-card m-t650-the" data-hd="chi-tiet">
             <div className="m-t650-tieu">
               Chi tiết {dsDong.length > 0 && <small>{dsDong.length} dòng</small>}
@@ -999,7 +1040,7 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
 
       {/* ── CHÂN: một nút Lưu rộng hết màn (T650); huỷ bằng mũi tên quay lại. Tạo mới thì Tổng cộng ghim trên nút Lưu ── */}
       <footer className="m-tc-lap-footer m-lp-day">
-        {!dangSua && !coTienDau && dongTongCong}
+        {(!dangSua || traNoMode) && !coTienDau && dongTongCong}
         <button
           type="button"
           className="m-tc-btn-luu m-lp-nut-chinh m-lp-nut-luu"

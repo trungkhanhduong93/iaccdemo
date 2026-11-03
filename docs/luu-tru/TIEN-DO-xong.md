@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T718 | Phiếu chi, UNC gói Standard (web, điện thoại): lý do Thanh toán công nợ nhà cung cấp thì Chi tiết chọn phiếu mua còn nợ để trả (Mã chứng từ, Ngày chứng từ, Giá trị đơn, Đã thanh toán, Công nợ, Thanh toán), dòng Tổng ghim, chữ to; lưu thì phiếu mua giảm công nợ. Có sửa `MDtThuChiLap.tsx` (đang ghi trong T552) | PhuongXT | 03/11/2026 | 2026-11-03-phuongxt-chi-tra-no-ncc.md |
 | T717 | Xuất bán POS gói Standard chỉ hiện danh sách, bỏ chip Tất cả, Đã đồng bộ, Chưa đồng bộ và nút Đồng bộ lại; điện thoại bỏ lọc Trạng thái; Hướng dẫn nhanh bỏ các bước chip | PhuongXT | 03/11/2026 | [nhật ký](../nhat-ky/2026-11-03-phuongxt-bo-chip-dong-bo-pos-standard.md) |
 | T716 | Điện thoại, danh sách Xuất bán POS: nhóm theo ngày, dưới mỗi ngày là từng đơn POS như web (Mã hoá đơn POS, khách hàng, cửa hàng, Thành tiền; Tổng tiền đậm bên phải), không tách theo món; bấm thẻ mở chi tiết như cũ | Trum | 03/11/2026 | [nhật ký](../nhat-ky/2026-11-03-trum-xuat-ban-pos-nhom-don.md) |
 | T715 | Lịch sử phiếu theo bản E, web và app: bỏ cột trái và bộ lọc của T714, mỗi thao tác ghi Thao tác, Người làm, Thời điểm, Nội dung đầy đủ; sửa, xoá, huỷ có bảng Trước/Sau nổi bật và khối Lý do; dữ liệu mẫu điền đủ. Hộp bắt nhập lý do làm việc riêng sau | Trum | 03/11/2026 | [nhật ký](../nhat-ky/2026-11-03-trum-lich-su-ban-e.md) |

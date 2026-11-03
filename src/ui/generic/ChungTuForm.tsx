@@ -12,7 +12,7 @@ import { CUA_HANG, KHACH, KHO, LY_CAN_DOI_TUONG, LY_DO, NCC, NHAN_VIEN, TK_NGAN_
 import { laLyChiPhi, laLyPhanBo } from './danhMucStore'
 import { DS_PTTT } from '../../modules/danh-muc/data'
 import { HopXacNhan } from '../LocNangCao'
-import { bayGio, ctTtCon, dsDcCon, dsTtCon, ghiNhatKy, laDaXoa, soDaTra, soKeTiep, suaPhieu, themPhieu, ttThamChieu, ttTienTheoTra, useNhatKy, xoaPhieu, type CtTt, type PhieuTt } from './daXoa'
+import { bayGio, ctTtCon, dsDcCon, dsTtCon, ghiNhatKy, laDaXoa, soDaTra, soKeTiep, suaPhieu, themPhieu, ttThamChieu, ttTienTheoTra, useBanPhieu, useNhatKy, xoaPhieu, type CtTt, type PhieuTt } from './daXoa'
 import { Icon } from '../Icon'
 import { HopPhimTat, phimDong } from '../BangPhimTat'
 import { Card, Note } from '../Page'
@@ -34,6 +34,7 @@ import { BangDieuChuyen, DauDieuChuyen, cotDcn } from '../../modules/kho/BangDie
 import { DCN, dongNhapDc, type DongDcn } from '../../modules/kho/dieu-chuyen'
 import { BangSua, DS_DOI_TUONG, HopCotPhieu, cotTuyChon } from './BangSua'
 import { ApDauBang } from './ApDauBang'
+import { BangTraNoNcc, ghiTraNo, phieuMuaConNo, type TraNo } from './BangTraNoNcc'
 import { HopInChungTu, type PhieuIn } from '../bao-cao/InChungTu'
 import { createPortal } from 'react-dom'
 import { theMauTheoGoc, theMauTheoSo } from '../../modules/ccdc'
@@ -199,6 +200,24 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
       setDsDong(ds => ds.map(d => ({ ...d, ly: lyDo })))
     }
   }, [dongGoc, lyDo, coTkTheoLy, loaiPhieuTien])   // không đưa oLy vào: object tạo lại mỗi lần vẽ làm effect chạy lặp
+  // Gói Standard phiếu chi, UNC lý do Thanh toán công nợ nhà cung cấp (T718): tab Chi tiết chọn phiếu mua còn nợ để trả,
+  // mỗi phiếu mua chọn thành một dòng chi tiết. Phiếu mẫu chưa chọn phiếu mua thì khi xem vẫn hiện bảng dòng như cũ
+  const traNoNcc = s.goi === 'S' && laTien && (loai?.k === 'chi' || loai?.k === 'unc') && lyDo === LY_DO.find(x => x.ma === 'CHI02')?.ten
+  const [traNo, setTraNo] = useState<TraNo[]>(() => (row?._traNo as TraNo[] | undefined) ?? [])
+  useEffect(() => { setTraNo((row?._traNo as TraNo[] | undefined) ?? []) }, [row?.id])
+  const hienTraNo = traNoNcc && (dangSua || Boolean(row?._traNo))
+  const banPhieu = useBanPhieu()
+  const dsTraNo = useMemo(() => traNoNcc && dangSua ? phieuMuaConNo(doiTuong, cuaHang, row ? String(row.id) : undefined) : [],
+    [traNoNcc, dangSua, doiTuong, cuaHang, row?.id, banPhieu])
+  useEffect(() => {
+    if (!traNoNcc || !dangSua) return
+    setTraNo(c => c.filter(x => dsTraNo.some(d => d.id === x.id)))   // đổi nhà cung cấp thì bỏ phiếu không còn trong danh sách
+  }, [dsTraNo])
+  useEffect(() => {
+    if (!traNoNcc || !dangSua) return
+    const tk = tkTheoLyDo(loaiPhieuTien, lyDo)
+    setDsDong(traNo.map(x => ({ ma: '', ten: `Thanh toán ${x.so}`, dvt: '', sl: 1, gia: x.tien, tien: x.tien, ts: 0, thue: 0, ly: lyDo, dt: doiTuong, ...tk })))
+  }, [traNoNcc, dangSua, traNo, doiTuong])
   // Đối tượng đầu phiếu đổi thì đối tượng mọi dòng đổi theo, vẫn sửa lại được từng dòng
   useEffect(() => {
     if (laTien && cfg.doiTuong !== 'none') setDsDong(ds => ds.map(d => ({ ...d, dt: doiTuong })))
@@ -409,6 +428,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
     }
     // Phiếu thu, chi chỉ bắt buộc đối tượng khi lý do là thu nợ, đi vay, chi công nợ, cho vay (T330)
     if (laTien && canDt && !doiTuong.trim()) { toast(`Chọn đối tượng cho lý do ${lyDo}`); return }
+    if (traNoNcc && !traNo.length) { toast('Chọn phiếu mua cần thanh toán ở tab Chi tiết'); return }   // T718
     // Phiếu sản xuất (T152): bắt buộc kho, phiếu nhập bắt buộc tham chiếu, phải có dòng
     if (laSx) {
       const thieu = sxNhap && !thamChieuSx.id ? 'Chọn phiếu tham chiếu' : !kho ? `Chọn ${sxNhap ? 'Kho nhập' : 'Kho xuất'}` : !dsDong.length ? 'Phiếu chưa có dòng hàng nào' : ''
@@ -435,6 +455,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
       _nhanKemHd: nhanKemHd, _soHd: soHd, _ngayHd: ngayHd, _kyHieuHd: kyHieuHd, _httt: hinhThucTt, _ctTt: ctTt,
       ...(nhom === 'ban' && hinhThucTt !== 'congno' ? { _pttt: pttt } : {}),
       ...(dsDc ? { _dsDc: dsDc } : {}),
+      ...(laTien ? { _traNo: traNoNcc ? traNo : undefined } : {}),
       // Phiếu sản xuất (T152): tham chiếu phiếu xuất, người cập nhật; phiếu xuất mới chờ nhập, phiếu nhập lưu là đã nhập
       ...(laSx ? {
         ttSx: row?.ttSx ?? (sxNhap ? 'da' : 'cho'),
@@ -464,6 +485,10 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
         .filter(([k]) => g[k] !== m[k]).map(([, ten]): string => ten)
       if (g.tong !== m.tong) doi.push(`Tổng tiền ${money(g.tong)} → ${money(m.tong)}`)
       if (doi.length) ghiNhatKy(man, String(row.id), soCt, s.ten, `Sửa chứng từ: ${doi.join(', ')}`)
+    }
+    // Phiếu mua được trả ghi thêm phiếu chi này vào phần đã thanh toán; bỏ chọn hoặc đổi lý do thì gỡ ra (T718)
+    if (laTien && (traNoNcc || row?._traNo)) {
+      ghiTraNo({ id: moi ? idMoi : String(row!.id), so: soCt, loai: String(loai?.k) }, (row?._traNo as TraNo[] | undefined) ?? [], traNoNcc ? traNo : [], s.ten)
     }
     // Lưu phiếu nhập sản xuất: phiếu xuất tham chiếu chuyển Đã nhập; đổi tham chiếu thì phiếu xuất cũ về Chờ nhập (T152). Nhập điều chuyển cũng vậy (T155)
     if (coTcNhap) {
@@ -1242,7 +1267,10 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
             <BangDieuChuyen loai={dcn!} dong={dsDong as DongDcn[]} onChange={setDsDong} cheDo={dangSua ? 'sua' : 'xem'} coTk={hienTk} an={anCot}
               khongTong={!hienChan('dongTong')} kho={kho} coThamChieu={Boolean(thamChieuSx.id)} />
           )}
-          {tab === 'ct' && !laKk && !laSx && !laDcn && (
+          {tab === 'ct' && hienTraNo && (
+            <BangTraNoNcc ncc={doiTuong} ds={dsTraNo} chon={traNo} onChange={setTraNo} cheDo={dangSua ? 'sua' : 'xem'} />
+          )}
+          {tab === 'ct' && !laKk && !laSx && !laDcn && !hienTraNo && (
             <BangSua
               cfg={cfg}
               dong={dsDong}

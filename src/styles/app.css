@@ -44412,3 +44412,25 @@ a.hdn-chip:hover { border-color: var(--blue); color: var(--blue); }
 .m-ls-ly-do-chu {
   color: var(--body);
 }
+
+/* ── Phiếu chi chọn phiếu mua trả công nợ nhà cung cấp (T718) ── */
+.tra-no .tra-no-chon { width: 36px; text-align: center; }
+.tra-no .tra-no-tt { width: 22%; }
+.tra-no td.tra-no-tt .inp { width: 100%; height: 28px; }
+.tra-no tbody tr.on td { background: var(--tint); }
+.tra-no .tbl tfoot tr.sum td { height: 48px; font-size: 15px; font-weight: 700; color: var(--ink); }
+.tra-no .tbl tfoot tr.sum td.tra-no-tt { font-size: 17px; }
+.tra-no-trong { padding: 32px; }
+/* Điện thoại: thẻ phiếu mua còn nợ, Tổng cộng ghim trên nút Lưu, chữ to (T718) */
+.m-tra-no { display: flex; flex-direction: column; gap: 10px; }
+.m-tra-no-tat-ca { display: flex; align-items: center; gap: 8px; font-size: 13.5px; color: var(--ink); }
+.m-tra-no-the { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; background: var(--white); display: flex; flex-direction: column; gap: 6px; }
+.m-tra-no-the.on { border-color: var(--blue); background: var(--tint); }
+.m-tra-no-dau { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--ink); }
+.m-tra-no-dau .ngay { margin-left: auto; font-size: 12.5px; color: var(--muted); }
+.m-tra-no-hang { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 13px; color: var(--body); font-variant-numeric: tabular-nums; }
+.m-tra-no-hang.no span:last-child { font-weight: 600; color: var(--ink); }
+.m-tra-no-hang.tt .m-tc-lap-inp-tien-wrap { width: 55%; }
+.m-tra-no-hang.tt .m-tc-lap-inp { text-align: right; font-weight: 600; }
+.m-tc-lap-man.m-t650 .m-tc-dong-tong-cong.m-tra-no-tong .nhan { font-size: 15px; font-weight: 700; }
+.m-tc-lap-man.m-t650 .m-tc-dong-tong-cong.m-tra-no-tong .so { font-size: 21px; font-weight: 800; }
