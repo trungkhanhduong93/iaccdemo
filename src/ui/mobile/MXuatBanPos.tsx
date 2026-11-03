@@ -182,7 +182,8 @@ export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
 
   const oLoc = useMemo(() => {
     const o: { k: KhoaLoc; nhan: string; tieuDe: string; tatCa: string; ds: { k: string; ten: string }[]; tim?: boolean }[] = [
-      { k: 'trangThai', nhan: 'Trạng thái', tieuDe: 'Chọn trạng thái', tatCa: 'Tất cả trạng thái', ds: [{ k: 'da-db', ten: 'Đã đồng bộ' }, { k: 'chua-db', ten: 'Chưa đồng bộ' }] },
+      // Gói Standard không lọc theo trạng thái Đã, Chưa đồng bộ (T717)
+      ...(s.goi === 'S' ? [] : [{ k: 'trangThai' as KhoaLoc, nhan: 'Trạng thái', tieuDe: 'Chọn trạng thái', tatCa: 'Tất cả trạng thái', ds: [{ k: 'da-db', ten: 'Đã đồng bộ' }, { k: 'chua-db', ten: 'Chưa đồng bộ' }] }]),
       { k: 'monBan', nhan: 'Món bán', tieuDe: 'Chọn món bán', tatCa: 'Tất cả món bán', ds: dsMonBan, tim: true },
       { k: 'kh', nhan: 'Khách hàng', tieuDe: 'Chọn khách hàng', tatCa: 'Tất cả khách hàng', ds: tuDs(rows.map(r => String(r.doiTuong ?? ''))) },
       { k: 'kenh', nhan: 'Kênh', tieuDe: 'Chọn kênh bán hàng', tatCa: 'Tất cả kênh', ds: tuDs(rows.map(r => String(r.kenh ?? ''))) },
@@ -195,7 +196,7 @@ export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
     }
     if (!cnChon) o.unshift({ k: 'cn', nhan: 'Kho/CN', tieuDe: 'Chọn cửa hàng', tatCa: 'Tất cả cửa hàng', ds: CUA_HANG.map(c => ({ k: c.id, ten: c.ten })) })
     return o
-  }, [rows, cnChon, dsMonBan, dsNguyenNhan, loc.trangThai])
+  }, [rows, cnChon, dsMonBan, dsNguyenNhan, loc.trangThai, s.goi])
   const oDangMo = oLoc.find(o => o.k === moChon)
   // Chip ghi ngắn: hàng hoá chỉ hiện mã
   const tenChip = (o: (typeof oLoc)[number]) => !loc[o.k] ? 'Tất cả' : o.k === 'hang' ? loc.hang : o.ds.find(d => d.k === loc[o.k])?.ten ?? 'Tất cả'

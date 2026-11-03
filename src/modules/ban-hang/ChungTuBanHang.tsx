@@ -631,15 +631,18 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
             />
           </div>
           <div className="ds-hang-trang-thai">
-            <ChipTrangThai
-              ds={chips}
-              chon={chipTab}
-              onChon={k => {
-                setChipTab(k as 'all' | 'da-db' | 'chua-db')
-                setSelectedLoiIds(new Set())
-                setTrang(1)
-              }}
-            />
+            {/* Gói Standard chỉ hiện danh sách, không chia chip Đã, Chưa đồng bộ (T717) */}
+            {s.goi !== 'S' && (
+              <ChipTrangThai
+                ds={chips}
+                chon={chipTab}
+                onChon={k => {
+                  setChipTab(k as 'all' | 'da-db' | 'chua-db')
+                  setSelectedLoiIds(new Set())
+                  setTrang(1)
+                }}
+              />
+            )}
             <div className="ds-toolbar-phai ds-cong-cu-h2">
               {chipTab === 'chua-db' ? (
                 <>
