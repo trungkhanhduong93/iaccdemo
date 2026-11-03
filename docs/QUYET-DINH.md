@@ -1017,3 +1017,5 @@ Trum chốt 31/10/2026 (T703).
 - Cấu hình kế toán có mục Quy định chữ số và dấu phân cách, 2 kiểu: Việt Nam (chấm ngăn nghìn, phẩy thập phân, 1.234.567,89) và Quốc tế (phẩy ngăn nghìn, chấm thập phân, 1,234,567.89). Mặc định Việt Nam. Lưu theo từng đơn vị (PhuongXT, T710).
 - Chọn kiểu nào thì số trên chứng từ, danh sách, báo cáo và cách gõ ở ô nhập số theo kiểu đó, cả web và điện thoại.
 - Code hiện số dùng hàm trong `src/ui/format.ts` (`money`, `soLuong`, `locSo()`, `dauThap()`, `docSoChu`), không viết cứng `'vi-VN'`, dấu chấm hay dấu phẩy.
+
+## QD93. Nhóm ngành nghề tính thuế doanh nghiệp TT58 tách riêng hộ kinh doanh (đang soạn)

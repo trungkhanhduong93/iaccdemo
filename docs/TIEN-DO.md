@@ -11,6 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T720 | Nhóm ngành nghề tính thuế doanh nghiệp theo TT58 (file PhuongXT 03/11/2026), tách riêng khỏi danh sách hộ kinh doanh: hiện ở danh mục hàng hoá, tính ngầm ở sổ, báo cáo, tờ khai của doanh nghiệp gói Standard, Plus | PhuongXT | Đang làm | Sửa `nganh-nghe.ts`, file mới `nganh-nghe-dn.ts`, `truong-dm.ts`, `danh-muc/index.ts`, `bao-cao/tt58.ts`, `ToKhaiGTGT.tsx`, `MToKhaiGTGT.tsx` |
 | T696 | `kiem_tra.py --dien-thoai` dừng ở đợt 5 (lập phiếu): chờ 30 giây không thấy `.m-xp-nut-menu` nên không chạy tới các đợt sau | | Chờ | Thấy lúc nghiệm thu T695. Nút có trong `src/ui/mobile/MDtThuChiXem.tsx:341`, xem `tools/kiem_tra.py:642`. Đợt 11A chạy riêng vẫn qua |
 | T690 | `kiem_tra.py` đợt 11A (điện thoại) báo "Gói thuê bao: thiếu 4 thẻ gói dịch vụ dọc": màn Gói thuê bao điện thoại hoặc bài kiểm lệch nhau | | Chờ | Thấy lúc nghiệm thu T689, `--nhanh` không chạy đợt 11A. Xem `tools/kiem_tra.py` mục 4 Gói thuê bao và `src/ui/mobile/MHeThong.tsx` |
 | T688 | Điện thoại, Trang chủ gói Standard báo đang đồng bộ chứng từ FABi như web (T687): dòng Doanh thu, từng quỹ x / y chứng từ, biểu đồ làm mờ | | Chờ | Ghi lúc làm T687. Sửa `src/ui/mobile/MTrangChuStandard.tsx`, dùng `useDongBoFabi`, `DongDongBo` trong `NhacDonViMoi.tsx` |
