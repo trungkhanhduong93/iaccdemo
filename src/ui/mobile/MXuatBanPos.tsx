@@ -401,6 +401,7 @@ export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
             <MDsDongPhieu
               key={r.id ?? i}
               so={r.so}
+              tieuDe={`#${String(r.so).slice(-5)}`}
               dongPhu={r.dongPhu}
               dongPhu2={r.dongPhu2}
               tien={Number(r.tong ?? 0)}
