@@ -4,6 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 03/11/2026
 - T717: Xuất bán POS gói Standard chỉ hiện một danh sách hoá đơn, không còn chip Tất cả, Đã đồng bộ, Chưa đồng bộ và nút Đồng bộ lại. Điện thoại bỏ ô lọc Trạng thái. Hướng dẫn nhanh bỏ các bước giới thiệu chip.
+- T716: Điện thoại, danh sách Xuất bán POS nhóm theo ngày, dưới mỗi ngày là từng đơn POS thay cho từng món. Mỗi thẻ ghi Số đơn POS, Mã đơn POS, khách hàng và Tổng tiền. Bấm thẻ vẫn mở chi tiết đơn như cũ.
 - T715: Tab Lịch sử của phiếu trên máy tính và điện thoại theo bản E. Bỏ cột lọc bên trái, chỉ còn một dòng tóm tắt số thao tác, số người, lần sửa gần nhất. Mỗi thao tác là một thẻ ghi Thao tác, Người làm, Thời điểm, Nội dung. Lần sửa có bảng Trước và Sau (máy tính 3 cột, điện thoại mỗi chỗ sửa một khối), dòng bị xoá có nhãn đỏ, đổi tổng tiền thì hiện số chênh, cuối thẻ có khối Lý do sửa.
 
 ## 02/11/2026

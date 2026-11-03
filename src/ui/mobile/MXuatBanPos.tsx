@@ -270,33 +270,20 @@ export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
   const qHang = fold(timHang.trim())
   const dsMonLoc = qHang ? dsMon.filter(m => fold(`${m.ten} ${m.ma}`).includes(qHang)) : dsMon
 
-  // T628: Tách mỗi phiếu thành các dòng hàng, mỗi thẻ là một dòng hàng
+  // T716: mỗi thẻ là một đơn POS như web: Số đơn POS, Mã đơn POS, khách hàng, Tổng tiền
   const listDong = useMemo(() => {
-    return list.flatMap(r => {
-      const dsDong = r.x ? dongCuaPhieu(r.x as XPos) : []
-      const dongLoc1 = loc.hang ? dsDong.filter(d => d.ma === loc.hang) : dsDong
-      const dongLoc = loc.tonKho ? dongLoc1.filter(d => Boolean(d.tonKho) === (loc.tonKho === 'co')) : dongLoc1
-      const maKh = layMaKh(r.doiTuong)
-      return dongLoc.map((d, dIdx) => ({
-        id: `${r.id}_${dIdx}`,
+    return list.map(r => {
+      const dp = r.x ? donPosCua(r.x as XPos) : null
+      const khach = dp?.khach?.ten ?? layMaKh(r.doiTuong)
+      return {
+        ...r,
         phieu: r,
-        so: r.so,
-        ngay: r.ngay,
-        tenHang: d.ten,
-        maHang: d.ma,
-        dvt: d.dvt,
-        sl: d.sl,
-        tien: d.tien ?? d.thanh ?? (d.sl * d.gia),
-        tong: d.tien ?? d.thanh ?? (d.sl * d.gia),
-        maKh,
-        dienGiai: r.dienGiai,
-        cn: r.cn,
-        doiTuong: maKh,
-        dongPhu: `${maKh} · ${r.so}`,   // ngày đã ở đầu thẻ ngày (T653)
+        soDon: dp?.soDon ?? r.so,
+        dongPhu: `${r.so} · ${khach}`,   // ngày đã ở đầu thẻ ngày (T653)
         laDongMon: false,
-      }))
+      }
     })
-  }, [list, loc.hang, loc.tonKho])
+  }, [list])
 
   const listPosDaDb = useMemo(() => {
     if (loc.trangThai !== 'da-db') return []
@@ -414,11 +401,9 @@ export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
             <MDsDongPhieu
               key={r.id ?? i}
               so={r.so}
-              tieuDe={r.tenHang}
-              soLuong={r.sl}
-              dvt={r.dvt}
+              tieuDe={r.soDon}
               dongPhu={r.dongPhu}
-              tien={Number(r.tien ?? 0)}
+              tien={Number(r.tong ?? 0)}
               hienTien={true}
               onClick={() => xemDon(r.phieu ?? r)}
             />
