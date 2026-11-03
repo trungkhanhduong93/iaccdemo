@@ -7,6 +7,7 @@ import { kieuGhiSo } from '../../app/plan'
 import { CCDC_HANG, CUA_HANG, HANG, KHACH, KHO, LY_DO, NCC, NHAN_VIEN, NHOM_LY_DO, NVL, ganLyDo, luuLyDo } from '../../data/mock'
 import { DON_VI_TINH, tkCot, taiKhoan, NHOM_HANG, NHOM_DOI_TUONG, NHOM_MUC_CP, NHOM_CONG_VIEC, NHOM_KHO, DS_PTTT, QUY_DOI_DVT, DS_MUC_CHI_PHI_16, DS_CONG_VIEC_17, DS_QUY_TIEN_112, DS_HANG_HOA_12 } from './data'
 import { timNganhNghe } from './nganh-nghe'
+import { DN_AN_UONG, DN_BAN_LE, nhanTyLe, timNganhNgheDn } from './nganh-nghe-dn'
 import { HeThongTaiKhoan } from './HeThongTaiKhoan'
 import { tkTheoCheDo } from '../tong-hop/so-cai'
 import { Note } from '../../ui/Page'
@@ -126,8 +127,13 @@ const cuaHang: ScreenDef = { slug: 'cua-hang', ten: 'Danh mục cửa hàng', ng
 /** Ngành nghề tính thuế của hàng hoá theo mã: tự điền nhóm và 2 tỷ lệ (T151) */
 const nganhNghe = (ma: string) => {
   const n = timNganhNghe(ma)
-  return n ? { nganhNghe: ma, nhomNganh: n.tenNhom, thueGtgt: String(n.gtgt).replace('.', ','), thueTn: String(n.tncn).replace('.', ',') } : {}
+  // T720: điền luôn ngành nghề doanh nghiệp TT58 ở ô riêng; hàng mẫu chỉ có bán lẻ hoặc ăn uống
+  const dn = timNganhNgheDn(ma === '101-1' ? DN_BAN_LE : DN_AN_UONG)
+  return n && dn ? { nganhNghe: ma, nhomNganh: n.tenNhom, thueGtgt: String(n.gtgt).replace('.', ','), thueTn: String(n.tncn).replace('.', ','),
+    nganhNgheDn: dn.ma, nhomNganhDn: dn.tenNhom, thueGtgtDn: dn.gtgt === null ? '' : String(dn.gtgt).replace('.', ','), thueTndn: String(dn.tndn).replace('.', ',') } : {}
 }
+/** Tỷ lệ trong ô hàng hoá ("1,5") ra chữ theo dấu thập phân đang chọn; trống là "—" (T720) */
+const tyLeO = (v: unknown) => v === undefined || v === '' ? '—' : nhanTyLe(Number(String(v).replace(',', '.')), dauThap())
 /** Hàng bán thẳng mua về bán lại: bia, nước suối */
 const BAN_THANG = new Set(['BIA01', 'NS01'])
 /** Đồ uống pha chế bán dưới thương hiệu quầy cà phê */
@@ -186,9 +192,13 @@ const danhMuc: ModuleDef = {
         { k: 'thuongHieu', t: 'Thương hiệu' },
         // TT152, TT58 tính thuế theo tỷ lệ % trên doanh thu của ngành nghề; TT133, TT99 theo thuế suất GTGT (T151)
         ...(goi === 'S' || goi === 'PL' ? [] : [{ k: 'gia', t: 'Giá bán', num: true }]),
-        cheDo === 'TT152' || cheDo === 'TT58'
-          ? { k: 'thueGtgt', t: 'Thuế suất', num: true, r: (r: Row) => r.thueGtgt === undefined || r.thueGtgt === '' ? '—' : `${String(r.thueGtgt).replace('.', dauThap())}%` }
-          : { k: 'ts', t: 'Thuế suất', num: true, r: (r: Row) => r.ts ? `${r.ts}%` : 'KCT' },
+        // T720: doanh nghiệp TT58 hiện 2 tỷ lệ theo ngành nghề doanh nghiệp, ô riêng với hộ kinh doanh
+        ...(cheDo === 'TT58'
+          ? [{ k: 'thueGtgtDn', t: 'Thuế GTGT', num: true, w: 100, r: (r: Row) => tyLeO(r.thueGtgtDn) },
+            { k: 'thueTndn', t: 'Thuế TNDN', num: true, w: 100, r: (r: Row) => tyLeO(r.thueTndn) }]
+          : cheDo === 'TT152'
+          ? [{ k: 'thueGtgt', t: 'Thuế suất', num: true, r: (r: Row) => r.thueGtgt === undefined || r.thueGtgt === '' ? '—' : `${String(r.thueGtgt).replace('.', dauThap())}%` }]
+          : [{ k: 'ts', t: 'Thuế suất', num: true, r: (r: Row) => r.ts ? `${r.ts}%` : 'KCT' }]),
         { k: 'tonKho', t: 'Theo dõi tồn', c: true, w: 110, r: (r: Row) => createElement('input', { type: 'checkbox', className: 'o-tich-xem', checked: Boolean(r.tonKho), readOnly: true, tabIndex: -1, 'aria-label': 'Theo dõi tồn kho' }) },   // T114
         ...(kieuGhiSo(cheDo) === 'noco' ? [tkCot('tkDt', 'TK doanh thu'), tkCot('tkGv', 'TK giá vốn'), tkCot('tkKho', 'TK kho')] : [])],
       rows: () => [

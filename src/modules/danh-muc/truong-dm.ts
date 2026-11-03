@@ -5,6 +5,7 @@ import { DON_VI_TINH, TEN_DVT, TEN_NHOM_HANG, TEN_NHOM_DOI_TUONG, TEN_NHOM_MUC_C
 import { CUA_HANG, HOM_NAY, KHACH, KHO, NCC, NHAN_VIEN, NHOM_LY_DO, nhomLyTuDong } from '../../data/mock'
 import { dmy } from '../../ui/format'
 import { NGANH_NGHE_CON, timNganhNghe } from './nganh-nghe'
+import { DN_AN_UONG, NGANH_NGHE_DN, timNganhNgheDn } from './nganh-nghe-dn'
 import { KhoiQuyDoi } from './QuyDoiDvt'
 import { KhoiPtttQuy } from './QuyPttt'
 
@@ -56,10 +57,15 @@ const dienNganhNghe = (ma: string) => {
   const n = timNganhNghe(ma)
   return { nhomNganh: n?.tenNhom ?? '', thueGtgt: n ? soPhay(n.gtgt) : '', thueTn: n ? soPhay(n.tncn) : '' }
 }
+/** Doanh nghiệp TT58 dùng danh sách ngành nghề riêng, lưu ở ô riêng để không lẫn với hộ kinh doanh (T720) */
+const MA_NGANH_DN = NGANH_NGHE_DN.map(n => n.ma)
+const tenNganhDn = (ma: string) => NGANH_NGHE_DN.find(n => n.ma === ma)?.ten ?? ma
+const dienNganhDn = (ma: string) => {
+  const n = timNganhNgheDn(ma)
+  return { nhomNganhDn: n?.tenNhom ?? '', thueGtgtDn: n && n.gtgt !== null ? soPhay(n.gtgt) : '', thueTndn: n ? soPhay(n.tndn) : '' }
+}
 /** Ô tích đang bật: 1, true, '1' (T473) */
 const laTich = (x: unknown) => x === 1 || x === true || x === '1'
-/** Thông tư tính thuế hộ kinh doanh theo tỷ lệ % trên doanh thu ngành nghề */
-const THEO_NGANH_NGHE: CheDo[] = ['TT152', 'TT58']
 /** Ô Theo dõi tồn kho đang tích: chưa đặt cũng hiểu là tích, như ô tích của form */
 const coTonKho = (v: Record<string, any>) => v.tonKho !== 0 && v.tonKho !== false && v.tonKho !== '0'
 
@@ -152,14 +158,24 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
       {
         // Hộ kinh doanh nộp thuế theo tỷ lệ % trên doanh thu của ngành nghề (T151)
         ten: 'Thông tin thuế',
-        cheDo: THEO_NGANH_NGHE,
+        cheDo: ['TT152'],
         truong: [
           { k: 'nganhNghe', nhan: 'Nhóm ngành nghề con', kieu: 'chonTim', batBuoc: true, caHang: true, ds: MA_NGANH_NGHE, nhanDs: tenNganhNghe },
           { k: 'nhomNganh', nhan: 'Nhóm ngành nghề', kieu: 'chu', chiDoc: true, caHang: true },
           // T154: 2 tỷ lệ chỉ đọc, tự điền theo ngành nghề con; chưa chọn ngành nghề thì trống
           { k: 'thueGtgt', nhan: 'Thuế GTGT (%)', kieu: 'so', chiDoc: true },
-          { k: 'thueTn', nhan: 'Thuế TNCN (%)', kieu: 'so', chiDoc: true, cheDo: ['TT152'] },
-          { k: 'thueTn', nhan: 'Thuế TNDN (%)', kieu: 'so', chiDoc: true, cheDo: ['TT58'] },
+          { k: 'thueTn', nhan: 'Thuế TNCN (%)', kieu: 'so', chiDoc: true },
+        ],
+      },
+      {
+        // Doanh nghiệp gói Standard, Plus (TT58): ngành nghề, tỷ lệ theo bảng TT58 riêng (T720, QD93)
+        ten: 'Thông tin thuế',
+        cheDo: ['TT58'],
+        truong: [
+          { k: 'nganhNgheDn', nhan: 'Ngành nghề', kieu: 'chonTim', batBuoc: true, caHang: true, ds: MA_NGANH_DN, nhanDs: tenNganhDn },
+          { k: 'nhomNganhDn', nhan: 'Nhóm ngành nghề', kieu: 'chu', chiDoc: true, caHang: true },
+          { k: 'thueGtgtDn', nhan: 'Thuế GTGT (%)', kieu: 'so', chiDoc: true },
+          { k: 'thueTndn', nhan: 'Thuế TNDN (%)', kieu: 'so', chiDoc: true },
         ],
       },
       {
@@ -214,7 +230,7 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
       },
     ],
     // Thêm mới hàng hoá ở mọi màn (danh mục, nút Thêm trong phiếu, điện thoại): ngành nghề mặc định Dịch vụ ăn uống 301-5 (T469)
-    moi: () => ({ nganhNghe: '301-5', ...dienNganhNghe('301-5') }),
+    moi: () => ({ nganhNghe: '301-5', ...dienNganhNghe('301-5'), nganhNgheDn: DN_AN_UONG, ...dienNganhDn(DN_AN_UONG) }),
     doi: (k, v, rows, s) => {
       const boSung: Record<string, any> = {}
       if (s?.goi === 'S') {
@@ -223,10 +239,14 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
         }
       }
       if (k === 'nganhNghe') return { ...boSung, ...dienNganhNghe(String(v.nganhNghe ?? '')) }
+      if (k === 'nganhNgheDn') return { ...boSung, ...dienNganhDn(String(v.nganhNgheDn ?? '')) }
       // T151: TT152, TT58 chỉ đi với gói Free, Standard nên không qua hoiDoi (gói Plus, Pro). Chọn nhóm thì điền ngành nghề
       // của nhóm khi ô ngành nghề đang trống, đã có giá trị thì giữ nguyên. Ô ẩn ở TT133, TT99 nên điền ở mọi thông tư
-      const nn = k === 'nhom' && !v.nganhNghe ? NHOM_HANG.find(n => n.ten === v.nhom)?.nganhNghe : undefined
-      return nn ? { ...boSung, nganhNghe: nn, ...dienNganhNghe(nn) } : boSung
+      // T720: ngành nghề hộ kinh doanh và doanh nghiệp điền riêng từng ô
+      const nhom = k === 'nhom' ? NHOM_HANG.find(n => n.ten === v.nhom) : undefined
+      const nn = !v.nganhNghe ? nhom?.nganhNghe : undefined
+      const nd = !v.nganhNgheDn ? nhom?.nganhNgheDn : undefined
+      return { ...boSung, ...(nn ? { nganhNghe: nn, ...dienNganhNghe(nn) } : {}), ...(nd ? { nganhNgheDn: nd, ...dienNganhDn(nd) } : {}) }
     },
     goiHoiDoi: ['PR'],   // nhóm hàng hoá gói Standard, Plus không có ngầm định nên không hỏi áp (T144)
     hoiDoi: (k, v) => {
@@ -755,7 +775,8 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
           { k: 'ten', nhan: 'Tên nhóm', kieu: 'chu', batBuoc: true, caHang: true },
           { k: 'dienGiai', nhan: 'Diễn giải', kieu: 'chu', caHang: true },   // T154: bỏ loại hàng hoá
           // T151: ngầm định ngành nghề nằm ở Thông tin chung vì TT152, TT58 chỉ có ở gói Free, Standard, không có khối Ngầm định
-          { k: 'nganhNghe', nhan: 'Nhóm ngành nghề con', kieu: 'chonTim', caHang: true, ds: MA_NGANH_NGHE, nhanDs: tenNganhNghe, cheDo: THEO_NGANH_NGHE },
+          { k: 'nganhNghe', nhan: 'Nhóm ngành nghề con', kieu: 'chonTim', caHang: true, ds: MA_NGANH_NGHE, nhanDs: tenNganhNghe, cheDo: ['TT152'] },
+          { k: 'nganhNgheDn', nhan: 'Ngành nghề', kieu: 'chonTim', caHang: true, ds: MA_NGANH_DN, nhanDs: tenNganhDn, cheDo: ['TT58'] },   // T720
         ],
       },
       {

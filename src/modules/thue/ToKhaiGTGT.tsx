@@ -8,7 +8,8 @@ import { tongKy } from '../../data/mock'
 import { Icon } from '../../ui/Icon'
 import { Note, PageHead } from '../../ui/Page'
 import { ReportPaper, RptTable } from '../../ui/generic/ReportScreen'
-import { k } from '../../ui/format'
+import { dauThap, k } from '../../ui/format'
+import { NGANH_NGHE_DN, nhanTyLe } from '../danh-muc/nganh-nghe-dn'
 
 /** Số liệu tờ khai quý 3/2026: chỉ tiêu mẫu 01/GTGT (khấu trừ) và 04/GTGT (trực tiếp). Web và điện thoại dùng chung (T623) */
 export function soLieuGTGT() {
@@ -16,12 +17,15 @@ export function soLieuGTGT() {
   const dt = q.reduce((a, x) => a + x.dt, 0), vat = q.reduce((a, x) => a + x.vat, 0), gv = q.reduce((a, x) => a + x.gv, 0)
   const muaVao = k(gv * 0.62 + 486_000_000), thueVao = k(muaVao * 0.074)
   const c22 = 18_640_000, c36 = vat - thueVao, c40 = Math.max(0, c36 - c22)
+  // Tỷ lệ % GTGT theo nhóm ngành nghề doanh nghiệp TT58 (nganh-nghe-dn.ts, T720); đơn vị mẫu chỉ có doanh thu ăn uống
+  const tl = (nhom: string) => NGANH_NGHE_DN.find(n => n.nhom === nhom)?.gtgt ?? 0
+  const thue3 = Math.round((dt + vat) * tl('3') / 100)
   const dong04: Row[] = [
-    { stt: 1, nhom: 'Phân phối, cung cấp hàng hoá', tl: '1%' },
-    { stt: 2, nhom: 'Dịch vụ, xây dựng không bao thầu nguyên vật liệu', tl: '5%' },
-    { stt: 3, nhom: 'Sản xuất, vận tải, dịch vụ có gắn với hàng hoá (ăn uống)', dt: dt + vat, tl: '3%', thue: Math.round((dt + vat) * 0.03) },
-    { stt: 4, nhom: 'Hoạt động kinh doanh khác', tl: '2%' },
-    { nhom: 'Tổng cộng', dt: dt + vat, thue: Math.round((dt + vat) * 0.03), _t: 1 },
+    { stt: 1, nhom: 'Phân phối, cung cấp hàng hoá', tl: nhanTyLe(tl('1'), dauThap()) },
+    { stt: 2, nhom: 'Dịch vụ, xây dựng không bao thầu nguyên vật liệu', tl: nhanTyLe(tl('2'), dauThap()) },
+    { stt: 3, nhom: 'Sản xuất, vận tải, dịch vụ có gắn với hàng hoá (ăn uống)', dt: dt + vat, tl: nhanTyLe(tl('3'), dauThap()), thue: thue3 },
+    { stt: 4, nhom: 'Hoạt động kinh doanh khác', tl: nhanTyLe(tl('4'), dauThap()) },
+    { nhom: 'Tổng cộng', dt: dt + vat, thue: thue3, _t: 1 },
   ]
   const dong01: Row[] = [
     { stt: 'A', ct: 'Không phát sinh hoạt động mua, bán trong kỳ', ma1: '[21]', _b: 1 },

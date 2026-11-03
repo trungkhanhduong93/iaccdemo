@@ -76,20 +76,21 @@ export interface NhomHang {
   ppGia?: string
   ts?: string
   // T154: nhóm không còn loại hàng, theo dõi tồn kho, kho mặc định
-  nganhNghe?: string   // nhóm ngành nghề con ngầm định, chỉ dùng ở TT152, TT58 (T151)
+  nganhNghe?: string   // nhóm ngành nghề con ngầm định, hộ kinh doanh TT152 (T151)
+  nganhNgheDn?: string   // nhóm ngành nghề ngầm định của doanh nghiệp, TT58 (T720, nganh-nghe-dn.ts)
 }
 
 export const NHOM_HANG: NhomHang[] = [
-  { ma: 'NHH01', ten: 'Món khai vị', dienGiai: 'Món ăn nhẹ đầu bữa', tkKho: '', tkDt: '5111', tkGv: '632', tkCp: '6421', tkTraLai: '', mucCp: 'Quảng cáo, khuyến mãi', ppGia: 'Bình quân cuối kỳ', ts: '8', nganhNghe: '301-5' },
-  { ma: 'NHH02', ten: 'Món chính', dienGiai: 'Món ăn no chính của quán', tkKho: '', tkDt: '5111', tkGv: '632', tkCp: '6421', tkTraLai: '', mucCp: 'Quảng cáo, khuyến mãi', ppGia: 'Bình quân cuối kỳ', ts: '8', nganhNghe: '301-5' },
-  { ma: 'NHH03', ten: 'Món lẩu', dienGiai: 'Các món lẩu và đồ nhúng', tkKho: '', tkDt: '5111', tkGv: '632', tkCp: '6421', tkTraLai: '', mucCp: 'Quảng cáo, khuyến mãi', ppGia: 'Bình quân cuối kỳ', ts: '8', nganhNghe: '301-5' },
-  { ma: 'NHH04', ten: 'Đồ uống', dienGiai: 'Cà phê, trà, nước ngọt', tkKho: '1561', tkDt: '5111', tkGv: '632', tkCp: '6421', tkTraLai: '', mucCp: 'Quảng cáo, khuyến mãi', ppGia: 'Bình quân cuối kỳ', ts: '8', nganhNghe: '301-5' },
-  { ma: 'NHH05', ten: 'Tráng miệng', dienGiai: 'Chè, bánh ngọt, trái cây', tkKho: '', tkDt: '5111', tkGv: '632', tkCp: '6421', tkTraLai: '', mucCp: 'Quảng cáo, khuyến mãi', ppGia: 'Bình quân cuối kỳ', ts: '8', nganhNghe: '301-5' },
-  { ma: 'NHH06', ten: 'Món mới tháng 10', dienGiai: 'Các món ăn ra mắt trong tháng 10', tkKho: '', tkDt: '5111', tkGv: '632', tkCp: '6421', tkTraLai: '', mucCp: 'Quảng cáo, khuyến mãi', ppGia: 'Bình quân cuối kỳ', ts: '8', nganhNghe: '301-5' },
-  { ma: 'NHH07', ten: 'Thịt, cá', dienGiai: 'Nguyên liệu thịt tươi sống, thuỷ hải sản', tkKho: '152', tkDt: '', tkGv: '632', tkCp: '6421', tkTraLai: '', mucCp: '', ppGia: 'Bình quân cuối kỳ', ts: 'KCT', nganhNghe: '' },
-  { ma: 'NHH08', ten: 'Rau củ', dienGiai: 'Rau sạch, nấm, củ quả tươi', tkKho: '152', tkDt: '', tkGv: '632', tkCp: '6421', tkTraLai: '', mucCp: '', ppGia: 'Bình quân cuối kỳ', ts: '0', nganhNghe: '' },
-  { ma: 'NHH09', ten: 'Gia vị', dienGiai: 'Dầu ăn, nước mắm, sốt, đồ khô', tkKho: '152', tkDt: '', tkGv: '632', tkCp: '6421', tkTraLai: '', mucCp: '', ppGia: 'Bình quân cuối kỳ', ts: '8', nganhNghe: '' },
-  { ma: 'NHH10', ten: 'Bia, nước ngọt', dienGiai: 'Bia lon, nước đóng chai', tkKho: '1561', tkDt: '5111', tkGv: '632', tkCp: '6421', tkTraLai: '', mucCp: 'Quảng cáo, khuyến mãi', ppGia: 'Bình quân cuối kỳ', ts: '10', nganhNghe: '101-1' },
+  { ma: 'NHH01', ten: 'Món khai vị', dienGiai: 'Món ăn nhẹ đầu bữa', tkKho: '', tkDt: '5111', tkGv: '632', tkCp: '6421', tkTraLai: '', mucCp: 'Quảng cáo, khuyến mãi', ppGia: 'Bình quân cuối kỳ', ts: '8', nganhNghe: '301-5', nganhNgheDn: 'DN3-5' },
+  { ma: 'NHH02', ten: 'Món chính', dienGiai: 'Món ăn no chính của quán', tkKho: '', tkDt: '5111', tkGv: '632', tkCp: '6421', tkTraLai: '', mucCp: 'Quảng cáo, khuyến mãi', ppGia: 'Bình quân cuối kỳ', ts: '8', nganhNghe: '301-5', nganhNgheDn: 'DN3-5' },
+  { ma: 'NHH03', ten: 'Món lẩu', dienGiai: 'Các món lẩu và đồ nhúng', tkKho: '', tkDt: '5111', tkGv: '632', tkCp: '6421', tkTraLai: '', mucCp: 'Quảng cáo, khuyến mãi', ppGia: 'Bình quân cuối kỳ', ts: '8', nganhNghe: '301-5', nganhNgheDn: 'DN3-5' },
+  { ma: 'NHH04', ten: 'Đồ uống', dienGiai: 'Cà phê, trà, nước ngọt', tkKho: '1561', tkDt: '5111', tkGv: '632', tkCp: '6421', tkTraLai: '', mucCp: 'Quảng cáo, khuyến mãi', ppGia: 'Bình quân cuối kỳ', ts: '8', nganhNghe: '301-5', nganhNgheDn: 'DN3-5' },
+  { ma: 'NHH05', ten: 'Tráng miệng', dienGiai: 'Chè, bánh ngọt, trái cây', tkKho: '', tkDt: '5111', tkGv: '632', tkCp: '6421', tkTraLai: '', mucCp: 'Quảng cáo, khuyến mãi', ppGia: 'Bình quân cuối kỳ', ts: '8', nganhNghe: '301-5', nganhNgheDn: 'DN3-5' },
+  { ma: 'NHH06', ten: 'Món mới tháng 10', dienGiai: 'Các món ăn ra mắt trong tháng 10', tkKho: '', tkDt: '5111', tkGv: '632', tkCp: '6421', tkTraLai: '', mucCp: 'Quảng cáo, khuyến mãi', ppGia: 'Bình quân cuối kỳ', ts: '8', nganhNghe: '301-5', nganhNgheDn: 'DN3-5' },
+  { ma: 'NHH07', ten: 'Thịt, cá', dienGiai: 'Nguyên liệu thịt tươi sống, thuỷ hải sản', tkKho: '152', tkDt: '', tkGv: '632', tkCp: '6421', tkTraLai: '', mucCp: '', ppGia: 'Bình quân cuối kỳ', ts: 'KCT', nganhNghe: '', nganhNgheDn: '' },
+  { ma: 'NHH08', ten: 'Rau củ', dienGiai: 'Rau sạch, nấm, củ quả tươi', tkKho: '152', tkDt: '', tkGv: '632', tkCp: '6421', tkTraLai: '', mucCp: '', ppGia: 'Bình quân cuối kỳ', ts: '0', nganhNghe: '', nganhNgheDn: '' },
+  { ma: 'NHH09', ten: 'Gia vị', dienGiai: 'Dầu ăn, nước mắm, sốt, đồ khô', tkKho: '152', tkDt: '', tkGv: '632', tkCp: '6421', tkTraLai: '', mucCp: '', ppGia: 'Bình quân cuối kỳ', ts: '8', nganhNghe: '', nganhNgheDn: '' },
+  { ma: 'NHH10', ten: 'Bia, nước ngọt', dienGiai: 'Bia lon, nước đóng chai', tkKho: '1561', tkDt: '5111', tkGv: '632', tkCp: '6421', tkTraLai: '', mucCp: 'Quảng cáo, khuyến mãi', ppGia: 'Bình quân cuối kỳ', ts: '10', nganhNghe: '101-1', nganhNgheDn: 'DN1-1' },
 ]
 export const TEN_NHOM_HANG = NHOM_HANG.map(n => n.ten)
 

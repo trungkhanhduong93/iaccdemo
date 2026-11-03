@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T720 | Nhóm ngành nghề tính thuế doanh nghiệp theo TT58 (file PhuongXT 03/11/2026), tách riêng khỏi danh sách hộ kinh doanh: hiện ở danh mục hàng hoá, tính ngầm ở sổ, báo cáo, tờ khai của doanh nghiệp gói Standard, Plus | PhuongXT | 03/11/2026 | `docs/nhat-ky/2026-11-03-phuongxt-nganh-nghe-dn-tt58.md` |
 | T719 | Danh mục gói Plus theo đúng bộ danh mục, cột của gói Standard, thêm Đơn vị tính, Quy đổi ĐVT, Công thức chế biến, Bảng giá; ẩn tài khoản, mục chi phí, công việc, tiền tệ, tỷ giá, loại thuế, bút toán tự động, nhóm mục chi phí, nhóm công việc, nhóm kho khỏi tab, menu | PhuongXT | 03/11/2026 | 2026-11-03-phuongxt-danh-muc-goi-plus.md |
 | T718 | Phiếu chi, UNC gói Standard (web, điện thoại): lý do Thanh toán công nợ nhà cung cấp thì Chi tiết chọn phiếu mua còn nợ để trả (Mã chứng từ, Ngày chứng từ, Giá trị đơn, Đã thanh toán, Công nợ, Thanh toán), dòng Tổng ghim, chữ to; lưu thì phiếu mua giảm công nợ. Có sửa `MDtThuChiLap.tsx` (đang ghi trong T552) | PhuongXT | 03/11/2026 | 2026-11-03-phuongxt-chi-tra-no-ncc.md |
 | T717 | Xuất bán POS gói Standard chỉ hiện danh sách, bỏ chip Tất cả, Đã đồng bộ, Chưa đồng bộ và nút Đồng bộ lại; điện thoại bỏ lọc Trạng thái; Hướng dẫn nhanh bỏ các bước chip | PhuongXT | 03/11/2026 | [nhật ký](../nhat-ky/2026-11-03-phuongxt-bo-chip-dong-bo-pos-standard.md) |

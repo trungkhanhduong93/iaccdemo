@@ -5,6 +5,7 @@ import { du, soCai } from '../tong-hop/so-cai'
 import { CUA_HANG, NVL, kqkd } from '../../data/mock'
 import { DS_TSCD } from '../tscd/data'
 import { pad, dauThap } from '../../ui/format'
+import { DN_AN_UONG, DN_BAN_LE, timNganhNgheDn } from '../danh-muc/nganh-nghe-dn'
 
 /**
  * Ngày tháng chứng từ: kỳ tháng 10 chỉ có dữ liệu đến 07/10 (KY_CHON).
@@ -54,17 +55,22 @@ export function moTaBoSoTT58(th: ThTT58): string {
   }
 }
 
-// Tỷ lệ mẫu, chưa đối chiếu pháp luật thuế (T04)
+// Tỷ lệ lấy từ bảng ngành nghề doanh nghiệp TT58 (nganh-nghe-dn.ts, T720), không ghi cứng
 export interface NhomNganhTT58 {
   ten: string
   tyLeGtgt: number
   tyLeTndn: number
 }
 
-export const NHOM_NGANH_TT58: NhomNganhTT58[] = [
-  { ten: 'Dịch vụ ăn uống', tyLeGtgt: 3, tyLeTndn: 1.5 },
-  { ten: 'Bán lẻ hàng hóa', tyLeGtgt: 1, tyLeTndn: 0.5 },
-]
+const tyLeDn = (ma: string, ten: string): NhomNganhTT58 => {
+  const n = timNganhNgheDn(ma)
+  return { ten, tyLeGtgt: n?.gtgt ?? 0, tyLeTndn: n?.tndn ?? 0 }
+}
+/** 2 nhóm doanh thu của đơn vị mẫu: ăn uống và bán lẻ hàng đóng gói */
+export const NHOM_NGANH_TT58: NhomNganhTT58[] = [tyLeDn(DN_AN_UONG, 'Dịch vụ ăn uống'), tyLeDn(DN_BAN_LE, 'Bán lẻ hàng hóa')]
+const [AU, BL] = NHOM_NGANH_TT58
+/** "1,5%" theo dấu thập phân đang chọn */
+const pt = (n: number) => `${String(n).replace('.', dauThap())}%`
 
 /** 6 mục chi phí trên S2b-DNSN theo sheet "Dong in san" */
 export const MUC_CHI_PHI_S2B = [
@@ -88,27 +94,27 @@ export function rowsS1(thang: number): Row[] {
   const q = kqkd(thang, 2026)
   const dt1 = Math.round(q.dtThuan * 0.85) // Dịch vụ ăn uống
   const dt2 = q.dtThuan - dt1             // Bán lẻ hàng hóa
-  const vat1 = Math.round(dt1 * 0.03)
-  const tndn1 = Math.round(dt1 * 0.015)
-  const vat2 = Math.round(dt2 * 0.01)
-  const tndn2 = Math.round(dt2 * 0.005)
+  const vat1 = Math.round(dt1 * AU.tyLeGtgt / 100)
+  const tndn1 = Math.round(dt1 * AU.tyLeTndn / 100)
+  const vat2 = Math.round(dt2 * BL.tyLeGtgt / 100)
+  const tndn2 = Math.round(dt2 * BL.tyLeTndn / 100)
 
   return [
-    { dienGiai: '1. Nhóm Dịch vụ ăn uống (GTGT 3%, TNDN 1,5%)', _b: 1, _nhom: 1 },
+    { dienGiai: `1. Nhóm Dịch vụ ăn uống (GTGT ${pt(AU.tyLeGtgt)}, TNDN ${pt(AU.tyLeTndn)})`, _b: 1, _nhom: 1 },
     { so: soCt('BH', thang, '01'), ngay: ngayCt(5, thang), dienGiai: 'Doanh thu dịch vụ ăn uống tuần 1', tien: Math.round(dt1 * 0.25) },
     { so: soCt('BH', thang, '02'), ngay: ngayCt(12, thang), dienGiai: 'Doanh thu dịch vụ ăn uống tuần 2', tien: Math.round(dt1 * 0.25) },
     { so: soCt('BH', thang, '03'), ngay: ngayCt(19, thang), dienGiai: 'Doanh thu dịch vụ ăn uống tuần 3', tien: Math.round(dt1 * 0.25) },
     { so: soCt('BH', thang, '04'), ngay: ngayCt(26, thang), dienGiai: 'Doanh thu dịch vụ ăn uống tuần 4', tien: dt1 - Math.round(dt1 * 0.25) * 3 },
     { dienGiai: 'Tổng cộng (1)', tien: dt1, _b: 1 },
-    { dienGiai: 'Thuế GTGT (3%)', tien: vat1, _b: 1 },
-    { dienGiai: 'Thuế TNDN (1,5%)', tien: tndn1, _b: 1 },
+    { dienGiai: `Thuế GTGT (${pt(AU.tyLeGtgt)})`, tien: vat1, _b: 1 },
+    { dienGiai: `Thuế TNDN (${pt(AU.tyLeTndn)})`, tien: tndn1, _b: 1 },
 
-    { dienGiai: '2. Nhóm Bán lẻ hàng hóa (GTGT 1%, TNDN 0,5%)', _b: 1, _nhom: 1 },
+    { dienGiai: `2. Nhóm Bán lẻ hàng hóa (GTGT ${pt(BL.tyLeGtgt)}, TNDN ${pt(BL.tyLeTndn)})`, _b: 1, _nhom: 1 },
     { so: soCt('BH', thang, '05'), ngay: ngayCt(15, thang), dienGiai: 'Doanh thu bán lẻ hàng đóng gói đợt 1', tien: Math.round(dt2 * 0.5) },
     { so: soCt('BH', thang, '06'), ngay: ngayCt(28, thang), dienGiai: 'Doanh thu bán lẻ hàng đóng gói đợt 2', tien: dt2 - Math.round(dt2 * 0.5) },
     { dienGiai: 'Tổng cộng (2)', tien: dt2, _b: 1 },
-    { dienGiai: 'Thuế GTGT (1%)', tien: vat2, _b: 1 },
-    { dienGiai: 'Thuế TNDN (0,5%)', tien: tndn2, _b: 1 },
+    { dienGiai: `Thuế GTGT (${pt(BL.tyLeGtgt)})`, tien: vat2, _b: 1 },
+    { dienGiai: `Thuế TNDN (${pt(BL.tyLeTndn)})`, tien: tndn2, _b: 1 },
 
     { dienGiai: 'Tổng số thuế GTGT phải nộp', tien: vat1 + vat2, _t: 1 },
     { dienGiai: 'Tổng số thuế TNDN phải nộp', tien: tndn1 + tndn2, _t: 1 },
@@ -127,8 +133,8 @@ export function rowsS2a(thang: number): Row[] {
   const q = kqkd(thang, 2026)
   const dt1 = Math.round(q.dtThuan * 0.85)
   const dt2 = q.dtThuan - dt1
-  const vat1 = Math.round(dt1 * 0.03)
-  const vat2 = Math.round(dt2 * 0.01)
+  const vat1 = Math.round(dt1 * AU.tyLeGtgt / 100)
+  const vat2 = Math.round(dt2 * BL.tyLeGtgt / 100)
   const tongVatTrongKy = vat1 + vat2
   const vatDauKy = Math.round(tongVatTrongKy * 0.45)
   const daNop = Math.round((vatDauKy + tongVatTrongKy) * 0.7)
@@ -137,7 +143,7 @@ export function rowsS2a(thang: number): Row[] {
   return [
     { dienGiai: 'Số thuế GTGT còn phải nộp đầu kỳ (1)', tien: vatDauKy, _b: 1 },
     { dienGiai: 'Số phát sinh trong kỳ', _b: 1 },
-    { dienGiai: 'A. Nhóm Dịch vụ ăn uống (GTGT 3%)', _b: 1, _nhom: 1 },
+    { dienGiai: `A. Nhóm Dịch vụ ăn uống (GTGT ${pt(AU.tyLeGtgt)})`, _b: 1, _nhom: 1 },
     { so: soCt('BH', thang, '01'), ngay: ngayCt(5, thang), dienGiai: 'Doanh thu dịch vụ ăn uống tuần 1', tien: Math.round(dt1 * 0.25) },
     { so: soCt('BH', thang, '02'), ngay: ngayCt(12, thang), dienGiai: 'Doanh thu dịch vụ ăn uống tuần 2', tien: Math.round(dt1 * 0.25) },
     { so: soCt('BH', thang, '03'), ngay: ngayCt(19, thang), dienGiai: 'Doanh thu dịch vụ ăn uống tuần 3', tien: Math.round(dt1 * 0.25) },
@@ -145,7 +151,7 @@ export function rowsS2a(thang: number): Row[] {
     { dienGiai: 'Tổng cộng (A)', tien: dt1, _b: 1 },
     { dienGiai: 'Thuế GTGT', tien: vat1, _b: 1 },
 
-    { dienGiai: 'B. Nhóm Bán lẻ hàng hóa (GTGT 1%)', _b: 1, _nhom: 1 },
+    { dienGiai: `B. Nhóm Bán lẻ hàng hóa (GTGT ${pt(BL.tyLeGtgt)})`, _b: 1, _nhom: 1 },
     { so: soCt('BH', thang, '05'), ngay: ngayCt(15, thang), dienGiai: 'Doanh thu bán lẻ hàng đóng gói đợt 1', tien: Math.round(dt2 * 0.5) },
     { so: soCt('BH', thang, '06'), ngay: ngayCt(28, thang), dienGiai: 'Doanh thu bán lẻ hàng đóng gói đợt 2', tien: dt2 - Math.round(dt2 * 0.5) },
     { dienGiai: 'Tổng cộng (B)', tien: dt2, _b: 1 },
@@ -169,8 +175,8 @@ export function rowsS3a(thang: number): Row[] {
   const q = kqkd(thang, 2026)
   const dt1 = Math.round(q.dtThuan * 0.85)
   const dt2 = q.dtThuan - dt1
-  const tndn1 = Math.round(dt1 * 0.015)
-  const tndn2 = Math.round(dt2 * 0.005)
+  const tndn1 = Math.round(dt1 * AU.tyLeTndn / 100)
+  const tndn2 = Math.round(dt2 * BL.tyLeTndn / 100)
   const tongTndnTrongKy = tndn1 + tndn2
   const tndnDauKy = Math.round(tongTndnTrongKy * 0.35)
   const daNop = Math.round((tndnDauKy + tongTndnTrongKy) * 0.6)
@@ -179,7 +185,7 @@ export function rowsS3a(thang: number): Row[] {
   return [
     { dienGiai: 'Số thuế TNDN còn phải nộp đầu kỳ (1)', tien: tndnDauKy, _b: 1 },
     { dienGiai: 'Số phát sinh trong kỳ', _b: 1 },
-    { dienGiai: 'A. Nhóm Dịch vụ ăn uống (TNDN 1,5%)', _b: 1, _nhom: 1 },
+    { dienGiai: `A. Nhóm Dịch vụ ăn uống (TNDN ${pt(AU.tyLeTndn)})`, _b: 1, _nhom: 1 },
     { so: soCt('BH', thang, '01'), ngay: ngayCt(5, thang), dienGiai: 'Doanh thu dịch vụ ăn uống tuần 1', tien: Math.round(dt1 * 0.25) },
     { so: soCt('BH', thang, '02'), ngay: ngayCt(12, thang), dienGiai: 'Doanh thu dịch vụ ăn uống tuần 2', tien: Math.round(dt1 * 0.25) },
     { so: soCt('BH', thang, '03'), ngay: ngayCt(19, thang), dienGiai: 'Doanh thu dịch vụ ăn uống tuần 3', tien: Math.round(dt1 * 0.25) },
@@ -187,7 +193,7 @@ export function rowsS3a(thang: number): Row[] {
     { dienGiai: 'Tổng cộng (A)', tien: dt1, _b: 1 },
     { dienGiai: 'Thuế TNDN', tien: tndn1, _b: 1 },
 
-    { dienGiai: 'B. Nhóm Bán lẻ hàng hóa (TNDN 0,5%)', _b: 1, _nhom: 1 },
+    { dienGiai: `B. Nhóm Bán lẻ hàng hóa (TNDN ${pt(BL.tyLeTndn)})`, _b: 1, _nhom: 1 },
     { so: soCt('BH', thang, '05'), ngay: ngayCt(15, thang), dienGiai: 'Doanh thu bán lẻ hàng đóng gói đợt 1', tien: Math.round(dt2 * 0.5) },
     { so: soCt('BH', thang, '06'), ngay: ngayCt(28, thang), dienGiai: 'Doanh thu bán lẻ hàng đóng gói đợt 2', tien: dt2 - Math.round(dt2 * 0.5) },
     { dienGiai: 'Tổng cộng (B)', tien: dt2, _b: 1 },
