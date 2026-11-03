@@ -35,8 +35,8 @@ export const MDanhMuc: FC<ScreenProps> = ({ sc }) => {
 
   const [ky] = useState(() => kyMacDinh(s))
   const cols0 = useMemo(
-    () => (typeof cfg.cols === 'function' ? cfg.cols(s.goi, s.cheDo) : cfg.cols),
-    [cfg.cols, s.goi, s.cheDo],
+    () => (typeof cfg.cols === 'function' ? cfg.cols(s.goi, s.cheDo, s) : cfg.cols),
+    [cfg.cols, s.goi, s.cheDo, s.ppGtgt, s.ppTndn],
   )
 
   // Ghi đè trạng thái bật/tắt theo dòng khi người dùng đổi trong form (T181, T183)

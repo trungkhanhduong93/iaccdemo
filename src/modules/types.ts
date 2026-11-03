@@ -26,7 +26,7 @@ export interface Col {
 
 /** Danh mục: bảng có tìm kiếm, nút thêm */
 export interface CatalogCfg {
-  cols: Col[] | ((goi: Goi, cheDo: CheDo) => Col[])
+  cols: Col[] | ((goi: Goi, cheDo: CheDo, s?: Pick<Session, 'ppGtgt' | 'ppTndn'>) => Col[])   // s: phương pháp thuế TT58 để ẩn cột thuế (T720)
   rows: (cd: CheDo, ky: number) => Row[] // danh mục đổi theo chế độ kế toán, vd hệ thống tài khoản; ky (yyyymm) khi có kySoLieu
   them?: string
   khongThem?: Goi[]        // gói không có nút thêm mới (vd danh mục Kho gói Free, T143)

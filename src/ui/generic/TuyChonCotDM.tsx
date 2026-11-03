@@ -1,18 +1,18 @@
 // Sinh cột bổ sung từ cấu hình trường form danh mục (T148)
 import type { Col, Row } from '../../modules/types'
-import type { CauHinhDM } from '../../modules/danh-muc/truong-dm'
+import { hopPp, type CauHinhDM } from '../../modules/danh-muc/truong-dm'
 import type { Goi } from '../../app/plan'
 import type { CheDo } from '../../app/che-do'
 import { locSo } from '../format'
 
 /** Sinh các cột bổ sung từ trường form truong-dm, lọc theo gói và thông tư, mặc định ẩn (T148) */
-export function sinhCotBoSung(cols: Col[], cauHinh: CauHinhDM | undefined, goi: Goi, cheDo: CheDo): Col[] {
+export function sinhCotBoSung(cols: Col[], cauHinh: CauHinhDM | undefined, goi: Goi, cheDo: CheDo, pp: { ppGtgt?: string; ppTndn?: string } = {}): Col[] {
   if (!cauHinh?.khoi) return []
   const daCo = new Set(cols.map(c => c.k))
   // Bỏ khối có goi/cheDo không khớp session
-  const khoiHopLe = cauHinh.khoi.filter(kh => (!kh.goi || kh.goi.includes(goi)) && (!kh.cheDo || kh.cheDo.includes(cheDo)))
+  const khoiHopLe = cauHinh.khoi.filter(kh => (!kh.goi || kh.goi.includes(goi)) && (!kh.cheDo || kh.cheDo.includes(cheDo)) && hopPp(kh.pp, pp))
   // Bỏ trường có goi/cheDo không khớp session
-  const truongHopLe = khoiHopLe.flatMap(kh => kh.truong).filter(tr => (!tr.goi || tr.goi.includes(goi)) && (!tr.cheDo || tr.cheDo.includes(cheDo)))
+  const truongHopLe = khoiHopLe.flatMap(kh => kh.truong).filter(tr => (!tr.goi || tr.goi.includes(goi)) && (!tr.cheDo || tr.cheDo.includes(cheDo)) && hopPp(tr.pp, pp))
 
   const them: Col[] = []
   for (const tr of truongHopLe) {

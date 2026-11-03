@@ -1022,6 +1022,6 @@ Trum chốt 31/10/2026 (T703).
 
 - Doanh nghiệp gói Standard, Plus (TT58) tính thuế GTGT, TNDN theo tỷ lệ % trên doanh thu của ngành nghề, theo bảng của PhuongXT, bản gốc `docs/NGANH-NGHE-THUE-TT58.xlsx`. Nhóm 1 phân phối hàng hoá: GTGT 1%, TNDN 1%. Nhóm 2 dịch vụ, xây dựng không bao thầu NVL: 5%, 5%. Giáo dục, y tế, biểu diễn nghệ thuật: 5%, 2%. Lãi tiền gửi, tiền vay: không GTGT, TNDN 5%. Nhóm 3 sản xuất, vận tải, ăn uống, xây dựng có bao thầu NVL: 3%, 2%. Nhóm 4 khác: 2%, 2%.
 - Danh sách doanh nghiệp nằm ở file riêng `src/modules/danh-muc/nganh-nghe-dn.ts`, mã có tiền tố `DN`. Hộ kinh doanh (TT152) giữ `nganh-nghe.ts` 37 ngành nghề con của iFaster. Hàng hoá, nhóm hàng lưu ở ô riêng: `nganhNghe`, `thueGtgt`, `thueTn` cho hộ kinh doanh; `nganhNgheDn`, `thueGtgtDn`, `thueTndn` cho doanh nghiệp.
-- Danh mục hàng hoá TT58 hiện cột Thuế GTGT, Thuế TNDN; form có khối Thông tin thuế riêng. Sổ S1, S2a, S3a-DNSN và tờ khai 04/GTGT lấy tỷ lệ từ bảng này, không ghi cứng.
+- Danh mục hàng hoá TT58 hiện cột Thuế GTGT, Thuế TNDN; form có khối Thông tin thuế riêng. Thuế GTGT theo phương pháp khấu trừ thì ẩn cột, ô Thuế GTGT. Thuế TNDN trên thu nhập tính thuế thì ẩn cột, ô Thuế TNDN. Cả hai đều không theo tỷ lệ thì ẩn luôn khối Thông tin thuế ở hàng hoá và ô Ngành nghề ở nhóm hàng (PhuongXT, 03/11/2026). Sổ S1, S2a, S3a-DNSN và tờ khai 04/GTGT lấy tỷ lệ từ bảng này, không ghi cứng.
 
 Lý do: PhuongXT gửi bảng TT58 ngày 03/11/2026, chọn tách file riêng cho khỏi lẫn với hộ kinh doanh (T720). Bảng cũ dùng nhầm tỷ lệ TNCN của hộ kinh doanh làm TNDN.

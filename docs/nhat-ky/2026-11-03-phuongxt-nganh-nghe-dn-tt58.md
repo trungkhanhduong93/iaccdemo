@@ -11,6 +11,7 @@
 - `truong-dm.ts`: form hàng hoá tách 2 khối Thông tin thuế, TT152 dùng `nganhNghe`, TT58 dùng `nganhNgheDn`, `nhomNganhDn`, `thueGtgtDn`, `thueTndn`. Thêm mới mặc định Dịch vụ ăn uống ở cả hai. Chọn nhóm hàng điền ngành nghề riêng từng ô. Form nhóm hàng có ô Ngành nghề cho TT58.
 - `data.ts`: nhóm hàng mẫu có thêm `nganhNgheDn`. `danh-muc/index.ts`: hàng hoá mẫu điền cả ngành nghề doanh nghiệp; danh sách TT58 hiện cột Thuế GTGT, Thuế TNDN.
 - `bao-cao/tt58.ts`: `NHOM_NGANH_TT58` lấy từ bảng doanh nghiệp. Sổ S1, S2a, S3a-DNSN tính và ghi tỷ lệ theo bảng: ăn uống TNDN 2%, bán lẻ 1% (trước ghi nhầm 1,5%, 0,5% của TNCN hộ kinh doanh).
+- Ẩn theo phương pháp thuế (PhuongXT góp ý): ô và khối form có thêm `pp` (`gtgt`, `tndn`, `motTyLe`), hàm `hopPp` trong `truong-dm.ts`. `CatalogScreen.tsx`, `TuyChonCotDM.tsx` lọc theo `hopPp`. Hàm `cols` của danh mục nhận thêm `s` (phương pháp thuế) ở `types.ts`, `CatalogScreen.tsx`, `MDanhMuc.tsx`. GTGT khấu trừ thì ẩn cột, ô Thuế GTGT; TNDN trên thu nhập thì ẩn cột, ô Thuế TNDN; cả hai thì ẩn khối Thông tin thuế và ô Ngành nghề ở nhóm hàng.
 - `thue/ToKhaiGTGT.tsx`: bảng 04/GTGT lấy tỷ lệ theo nhóm từ bảng doanh nghiệp; điện thoại dùng chung số liệu.
 
 ## Đã kiểm
@@ -18,7 +19,7 @@
 - `npm run typecheck`: không lỗi.
 - `npm run build`: chạy xong, không lỗi.
 - `python tools/kiem_tra.py --nhanh`: Không có lỗi.
-- Chưa mở trình duyệt xem form hàng hoá doanh nghiệp bằng mắt.
+- Trình duyệt, gói Plus TT58, đổi 4 tổ hợp phương pháp thuế: cột danh sách hàng hoá và ô form Thêm mới ẩn hiện đúng.
 - `python tools/xuat_bao_cao_he_thong.py` không chạy được trên máy này: thiếu file Excel tính năng "Dự kiến tính năng IACC Cloud.xlsx", nên chưa làm mới `docs/IACC-Cloud-Chi-Tiet-He-Thong.xlsx`.
 
 ## Dở dang, việc tiếp theo

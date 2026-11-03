@@ -85,6 +85,7 @@ export interface TruongDM {
   hien?: (v: Record<string, any>) => boolean   // chỉ hiện ô khi điều kiện đúng theo giá trị form
   goi?: Goi[]                                  // chỉ hiện ô ở các gói này (T144)
   cheDo?: CheDo[]                              // chỉ hiện ô ở các chế độ/thông tư này (T147)
+  pp?: PpThue                                  // chỉ hiện ô khi thuế đó tính theo tỷ lệ % trên doanh thu (TT58, T720)
   nhanDs?: (v: string) => string               // nhãn hiện trong ô chọn khác giá trị lưu, vd đơn vị tính hiện mã và tên (T144)
   chiDoc?: boolean | ((v: Record<string, any>, s?: { goi: Goi; cheDo: CheDo }) => boolean)   // ô tự sinh, không sửa được; hàm: chỉ đọc theo giá trị form, vd khi sửa thẻ có sẵn (T165)
   chuThich?: string | null | ((v: Record<string, any>, s?: { goi: Goi; cheDo: CheDo }) => string | null)   // dòng chú thích nhỏ dưới ô
@@ -94,10 +95,19 @@ export interface TruongDM {
   dauNam?: (v: Record<string, any>) => 'tu' | 'truoc' | undefined
 }
 
+/** Ô, cột thuế theo tỷ lệ % trên doanh thu của doanh nghiệp TT58 (T720): GTGT khấu trừ thì ẩn ô GTGT,
+ *  TNDN trên thu nhập tính thuế thì ẩn ô TNDN, cả hai không theo tỷ lệ thì ẩn luôn ngành nghề (motTyLe) */
+export type PpThue = 'gtgt' | 'tndn' | 'motTyLe'
+export function hopPp(pp: PpThue | undefined, s: { ppGtgt?: string; ppTndn?: string }): boolean {
+  const gtgt = s.ppGtgt !== 'khauTru', tndn = s.ppTndn !== 'thuNhap'
+  return !pp || (pp === 'gtgt' ? gtgt : pp === 'tndn' ? tndn : gtgt || tndn)
+}
+
 export interface KhoiDM {
   ten: string
   goi?: Goi[]   // chỉ hiện khối ở các gói này (T144)
   cheDo?: CheDo[]   // chỉ hiện khối ở các chế độ/thông tư này (T147)
+  pp?: PpThue   // chỉ hiện khối khi thuế tính theo tỷ lệ % (T720)
   truong: TruongDM[]
   // khối dạng lưới tự tính từ giá trị form; doi ghi giá trị khi gõ trong lưới; goi: gói đang dùng (T159)
   bang?: (v: Record<string, any>, doi: (k: string, val: unknown) => void, goi: Goi, xem: boolean) => { cols: Col[]; rows: Row[]; sum?: Row; rowCls?: (r: Row) => string; chan?: ReactNode; trong: string }
@@ -171,11 +181,12 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
         // Doanh nghiệp gói Standard, Plus (TT58): ngành nghề, tỷ lệ theo bảng TT58 riêng (T720, QD93)
         ten: 'Thông tin thuế',
         cheDo: ['TT58'],
+        pp: 'motTyLe',
         truong: [
           { k: 'nganhNgheDn', nhan: 'Ngành nghề', kieu: 'chonTim', batBuoc: true, caHang: true, ds: MA_NGANH_DN, nhanDs: tenNganhDn },
           { k: 'nhomNganhDn', nhan: 'Nhóm ngành nghề', kieu: 'chu', chiDoc: true, caHang: true },
-          { k: 'thueGtgtDn', nhan: 'Thuế GTGT (%)', kieu: 'so', chiDoc: true },
-          { k: 'thueTndn', nhan: 'Thuế TNDN (%)', kieu: 'so', chiDoc: true },
+          { k: 'thueGtgtDn', nhan: 'Thuế GTGT (%)', kieu: 'so', chiDoc: true, pp: 'gtgt' },
+          { k: 'thueTndn', nhan: 'Thuế TNDN (%)', kieu: 'so', chiDoc: true, pp: 'tndn' },
         ],
       },
       {
@@ -776,7 +787,7 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
           { k: 'dienGiai', nhan: 'Diễn giải', kieu: 'chu', caHang: true },   // T154: bỏ loại hàng hoá
           // T151: ngầm định ngành nghề nằm ở Thông tin chung vì TT152, TT58 chỉ có ở gói Free, Standard, không có khối Ngầm định
           { k: 'nganhNghe', nhan: 'Nhóm ngành nghề con', kieu: 'chonTim', caHang: true, ds: MA_NGANH_NGHE, nhanDs: tenNganhNghe, cheDo: ['TT152'] },
-          { k: 'nganhNgheDn', nhan: 'Ngành nghề', kieu: 'chonTim', caHang: true, ds: MA_NGANH_DN, nhanDs: tenNganhDn, cheDo: ['TT58'] },   // T720
+          { k: 'nganhNgheDn', nhan: 'Ngành nghề', kieu: 'chonTim', caHang: true, ds: MA_NGANH_DN, nhanDs: tenNganhDn, cheDo: ['TT58'], pp: 'motTyLe' },   // T720
         ],
       },
       {

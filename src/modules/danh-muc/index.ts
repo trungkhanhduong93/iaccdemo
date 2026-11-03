@@ -188,14 +188,15 @@ const danhMuc: ModuleDef = {
       them: 'Thêm hàng hoá', nhomLoc: 'nhom',
       nutPhu: { nhan: 'Đồng bộ FABi', bao: `Đã đồng bộ ${DS_HANG_HOA_12.length} hàng hoá từ FABi` },
       chucNang: r => r.tkKho === '152' ? [{ nhan: 'Xem thẻ kho', di: 'kho/5-2-1' }] : r.tkKho === '153' ? [{ nhan: 'Xem thẻ chi phí', di: 'ccdc/8-1-1' }] : [{ nhan: 'Xem doanh thu', di: 'ban-hang/3-2-5' }],
-      cols: (goi, cheDo) => [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Tên hàng hoá' }, { k: 'nhom', t: 'Nhóm' }, { k: 'dvt', t: 'ĐVT' },
+      cols: (goi, cheDo, s) => [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Tên hàng hoá' }, { k: 'nhom', t: 'Nhóm' }, { k: 'dvt', t: 'ĐVT' },
         { k: 'thuongHieu', t: 'Thương hiệu' },
         // TT152, TT58 tính thuế theo tỷ lệ % trên doanh thu của ngành nghề; TT133, TT99 theo thuế suất GTGT (T151)
         ...(goi === 'S' || goi === 'PL' ? [] : [{ k: 'gia', t: 'Giá bán', num: true }]),
-        // T720: doanh nghiệp TT58 hiện 2 tỷ lệ theo ngành nghề doanh nghiệp, ô riêng với hộ kinh doanh
+        // T720: doanh nghiệp TT58 hiện 2 tỷ lệ theo ngành nghề doanh nghiệp, ô riêng với hộ kinh doanh.
+        // GTGT khấu trừ thì bỏ cột GTGT, TNDN trên thu nhập tính thuế thì bỏ cột TNDN
         ...(cheDo === 'TT58'
-          ? [{ k: 'thueGtgtDn', t: 'Thuế GTGT', num: true, w: 100, r: (r: Row) => tyLeO(r.thueGtgtDn) },
-            { k: 'thueTndn', t: 'Thuế TNDN', num: true, w: 100, r: (r: Row) => tyLeO(r.thueTndn) }]
+          ? [...(s?.ppGtgt === 'khauTru' ? [] : [{ k: 'thueGtgtDn', t: 'Thuế GTGT', num: true, w: 100, r: (r: Row) => tyLeO(r.thueGtgtDn) }]),
+            ...(s?.ppTndn === 'thuNhap' ? [] : [{ k: 'thueTndn', t: 'Thuế TNDN', num: true, w: 100, r: (r: Row) => tyLeO(r.thueTndn) }])]
           : cheDo === 'TT152'
           ? [{ k: 'thueGtgt', t: 'Thuế suất', num: true, r: (r: Row) => r.thueGtgt === undefined || r.thueGtgt === '' ? '—' : `${String(r.thueGtgt).replace('.', dauThap())}%` }]
           : [{ k: 'ts', t: 'Thuế suất', num: true, r: (r: Row) => r.ts ? `${r.ts}%` : 'KCT' }]),

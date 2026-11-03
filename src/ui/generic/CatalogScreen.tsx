@@ -14,7 +14,7 @@ import { fold, money, nhapSoQT, soQT, locSo } from '../format'
 import { xongViecHuongDan } from '../../modules/home/HuongDan'
 import { Dropdown, MenuItem, Popover, Select } from '../Dropdown'
 import { LocO } from '../ThanhLoc'
-import { TRUONG_DM, type CauHinhDM, type KhoiDM, type TruongDM, type KieuTruong } from '../../modules/danh-muc/truong-dm'
+import { TRUONG_DM, hopPp, type CauHinhDM, type KhoiDM, type TruongDM, type KieuTruong } from '../../modules/danh-muc/truong-dm'
 import { heThongTk } from '../../modules/danh-muc/he-thong-tk'
 import { FormToanMan } from '../FormToanMan'
 import { LichSu } from './ChungTuForm'
@@ -50,7 +50,7 @@ export function CatalogScreen({ sc }: ScreenProps) {
   const [ky, setKy] = useState(() => kyMacDinh(s))
   // Cảnh báo trên bảng theo kỳ số liệu, vd khoản chờ phân bổ chưa tạo thẻ (T287); màn đổi thì CatalogScreen vẽ lại từ đầu nên gọi hook có điều kiện vẫn đúng thứ tự
   const canhBao = cfg.useCanhBao?.(ky) ?? null
-  const cols0 = useMemo(() => typeof cfg.cols === 'function' ? cfg.cols(s.goi, s.cheDo) : cfg.cols, [sc, s.goi, s.cheDo])
+  const cols0 = useMemo(() => typeof cfg.cols === 'function' ? cfg.cols(s.goi, s.cheDo, s) : cfg.cols, [sc, s.goi, s.cheDo, s.ppGtgt, s.ppTndn])
   // Ghi đè trạng thái bật/tắt theo dòng khi người dùng bấm chấm tròn (T181)
   const [ttGhiDe, setTtGhiDe] = useState<Record<string, number>>({})
   // Dòng xoá qua Tiện ích ở form toàn màn (T297): ẩn trong phiên, theo số chứng từ (vd số thẻ) hoặc khoá dòng
@@ -235,7 +235,7 @@ export function CatalogScreen({ sc }: ScreenProps) {
   ], [cols0, sc, cfg.stt, cfg.chucNang])
   // Khối trường của danh mục: cấu hình riêng của màn, theo mã màn, hoặc dự phòng từ cột
   const cauHinh = cfg.truong ?? TRUONG_DM[sc.code ?? ''] ?? TRUONG_DM[sc.slug ?? '']
-  const cotBoSung = useMemo(() => sinhCotBoSung(cols, cauHinh, s.goi, s.cheDo), [cols, cauHinh, s.goi, s.cheDo])
+  const cotBoSung = useMemo(() => sinhCotBoSung(cols, cauHinh, s.goi, s.cheDo, s), [cols, cauHinh, s.goi, s.cheDo, s.ppGtgt, s.ppTndn])
   const tatCaCols = useMemo(() => [...cols, ...cotBoSung], [cols, cotBoSung])
   // Thứ tự, ẩn hiện, độ rộng cột lưu theo màn dùng chung useCotDs (T148)
   const cot = useCotDs(`/danh-muc/${sc.slug ?? sc.code ?? 'chung'}`, tatCaCols, COT_CO_DINH)
@@ -757,7 +757,7 @@ export function CatalogPanel({
   }, [edit, onDong])
 
   const dsKhoi: KhoiDM[] = useMemo(() => {
-    if (cauHinh?.khoi) return cauHinh.khoi.filter(kh => (!kh.goi || kh.goi.includes(s.goi)) && (!kh.cheDo || kh.cheDo.includes(s.cheDo)))
+    if (cauHinh?.khoi) return cauHinh.khoi.filter(kh => (!kh.goi || kh.goi.includes(s.goi)) && (!kh.cheDo || kh.cheDo.includes(s.cheDo)) && hopPp(kh.pp, s))
     if (cols0.length > 0) {
       const dsTuCot: TruongDM[] = cols0.map(c => ({
         k: c.k,
@@ -768,7 +768,7 @@ export function CatalogPanel({
       return [{ ten: 'Thông tin chung', truong: dsTuCot }]
     }
     return []
-  }, [cauHinh, cols0, s.goi, s.cheDo])
+  }, [cauHinh, cols0, s.goi, s.cheDo, s.ppGtgt, s.ppTndn])
 
   const dsTk = useMemo(() => heThongTk(s.cheDo), [s.cheDo])
   // Lựa chọn của ô chọn tính một lần theo khoá trường, dùng lại giữa các lần vẽ
@@ -800,7 +800,7 @@ export function CatalogPanel({
     return v ?? ''
   }
 
-  const hienO = (tr: TruongDM) => (!tr.goi || tr.goi.includes(s.goi)) && (!tr.cheDo || tr.cheDo.includes(s.cheDo)) && (!tr.hien || tr.hien(formVal))
+  const hienO = (tr: TruongDM) => (!tr.goi || tr.goi.includes(s.goi)) && (!tr.cheDo || tr.cheDo.includes(s.cheDo)) && hopPp(tr.pp, s) && (!tr.hien || tr.hien(formVal))
   // Nút phụ ở chân panel theo màn (vd Áp cho hàng hoá trong nhóm, T136)
   const nutPhu = typeof nutChanPhu === 'function' ? nutChanPhu(formVal) : nutChanPhu
   const isMo = (tenK: string) => moKhoi[tenK] !== false
