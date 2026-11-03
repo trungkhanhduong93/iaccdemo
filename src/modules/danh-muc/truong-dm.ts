@@ -145,7 +145,7 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
         ten: 'Giá và thuế',
         truong: [
           { k: 'giaMua', nhan: 'Giá mua', kieu: 'tien', goi: ['PR'], cot: 'PURCHASE_PRICE' },   // gói Plus bỏ (T719)
-          { k: 'gia', nhan: 'Giá bán', kieu: 'tien', goi: ['PL', 'PR'], cot: 'SALE_PRICE' },
+          { k: 'gia', nhan: 'Giá bán', kieu: 'tien', goi: ['PR'], cot: 'SALE_PRICE' },   // gói Plus bỏ (T719)
           { k: 'ts', nhan: 'Thuế suất GTGT (%)', kieu: 'chon', ds: ['KCT', '0', '5', '8', '10'], cot: 'VAT_TAX_ID', cheDo: ['TT133', 'TT99'] },   // TT152, TT58 tính theo ngành nghề (T151)
         ],
       },
