@@ -120,6 +120,7 @@ export interface MDsDongPhieuProps {
   so: string
   soDongHang?: number
   dongPhu?: string
+  dongPhu2?: string   // dòng phụ thứ hai, vd Thành tiền ở Xuất bán POS (T716)
   tien?: number
   hienTien?: boolean
   onClick: () => void
@@ -133,6 +134,7 @@ export function MDsDongPhieu({
   so,
   soDongHang = 0,
   dongPhu,
+  dongPhu2,
   tien = 0,
   hienTien = true,
   onClick,
@@ -154,6 +156,7 @@ export function MDsDongPhieu({
           {soDongHang > 0 && <span className="m-mh-dong-hh">{soDongHang} hàng hoá</span>}
         </div>
         {dongPhu && <span className="m-mh-dong-ncc" title={dongPhu}>{dongPhu}</span>}
+        {dongPhu2 && <span className="m-mh-dong-ncc">{dongPhu2}</span>}
         {lyDo && <div className="m-dong-ly">{lyDo}</div>}
       </div>
       {coSl ? (

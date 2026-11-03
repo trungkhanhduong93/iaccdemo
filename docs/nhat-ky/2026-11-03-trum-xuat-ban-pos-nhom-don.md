@@ -7,9 +7,10 @@
 ## Đã làm
 
 - `src/ui/mobile/MXuatBanPos.tsx`: danh sách nhóm theo ngày, dưới mỗi ngày là một thẻ cho mỗi đơn POS thay cho một thẻ mỗi món (bỏ cách tách của T628).
-- Thẻ đơn: dòng đầu Số đơn POS, dòng phụ Mã đơn POS · khách hàng, bên phải Tổng tiền. Khách có hoá đơn GTGT hiện tên khách, còn lại hiện Khách lẻ.
+- Thẻ đơn: dòng đầu Mã hoá đơn POS, dòng phụ khách hàng · cửa hàng, dòng Thành tiền, bên phải Tổng tiền in đậm. Bỏ Số đơn POS theo ý Trum. Khách có hoá đơn GTGT hiện tên khách, còn lại hiện Khách lẻ.
 - Tổng mỗi ngày giờ cộng Tổng tiền của đơn.
 - Bấm thẻ vẫn mở tấm chi tiết đơn như cũ.
+- `MDsChungTuChuan.tsx`: `MDsDongPhieu` thêm prop tuỳ chọn `dongPhu2` cho dòng phụ thứ hai.
 
 ## Đã kiểm
 

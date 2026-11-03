@@ -270,7 +270,7 @@ export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
   const qHang = fold(timHang.trim())
   const dsMonLoc = qHang ? dsMon.filter(m => fold(`${m.ten} ${m.ma}`).includes(qHang)) : dsMon
 
-  // T716: mỗi thẻ là một đơn POS như web: Số đơn POS, Mã đơn POS, khách hàng, Tổng tiền
+  // T716: mỗi thẻ là một hoá đơn POS: Mã hoá đơn POS, khách hàng · cửa hàng, Thành tiền; Tổng tiền đậm bên phải
   const listDong = useMemo(() => {
     return list.map(r => {
       const dp = r.x ? donPosCua(r.x as XPos) : null
@@ -278,8 +278,8 @@ export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
       return {
         ...r,
         phieu: r,
-        soDon: dp?.soDon ?? r.so,
-        dongPhu: `${r.so} · ${khach}`,   // ngày đã ở đầu thẻ ngày (T653)
+        dongPhu: `${khach} · ${r.cn}`,   // ngày đã ở đầu thẻ ngày (T653)
+        dongPhu2: `Thành tiền ${money(Number(r.tien) || 0)} đ`,
         laDongMon: false,
       }
     })
@@ -401,8 +401,8 @@ export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
             <MDsDongPhieu
               key={r.id ?? i}
               so={r.so}
-              tieuDe={r.soDon}
               dongPhu={r.dongPhu}
+              dongPhu2={r.dongPhu2}
               tien={Number(r.tong ?? 0)}
               hienTien={true}
               onClick={() => xemDon(r.phieu ?? r)}
