@@ -136,15 +136,15 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
           { k: 'loai', nhan: 'Loại hàng hoá', kieu: 'chon', ds: LOAI_HANG, goi: ['S', 'PL'], cot: 'ITEM_TYPE_ID' },
           { k: 'loai', nhan: 'Loại hàng hoá', kieu: 'chon', ds: LOAI_HANG_PRO, goi: ['PR'], cot: 'ITEM_TYPE_ID' },
           { k: 'dvt', nhan: 'Đơn vị tính', kieu: 'chon', ds: TEN_DVT, nhanDs: nhanDvt, cot: 'UNIT_ID' },
-          { k: 'dvtPhu', nhan: 'ĐVT phụ', kieu: 'chon', ds: TEN_DVT, nhanDs: nhanDvt, goi: ['PL', 'PR'], cot: 'UNIT_ID_EXTRA' },   // gói Standard không có quy đổi ĐVT nên bỏ (T144)
-          { k: 'barcode', nhan: 'Mã vạch', kieu: 'chu', goi: ['PL', 'PR'], cot: 'BARCODE' },
+          { k: 'dvtPhu', nhan: 'ĐVT phụ', kieu: 'chon', ds: TEN_DVT, nhanDs: nhanDvt, goi: ['PR'], cot: 'UNIT_ID_EXTRA' },   // gói Standard không có quy đổi ĐVT nên bỏ (T144); gói Plus bỏ (T719)
+          { k: 'barcode', nhan: 'Mã vạch', kieu: 'chu', goi: ['PR'], cot: 'BARCODE' },   // gói Plus bỏ (T719)
           { k: 'thuongHieu', nhan: 'Thương hiệu', kieu: 'chon', ds: TEN_THUONG_HIEU, chiDoc: (v, s) => s?.goi === 'S' },   // thương hiệu FABi (T151), gói Standard chỉ xem
         ],
       },
       {
         ten: 'Giá và thuế',
         truong: [
-          { k: 'giaMua', nhan: 'Giá mua', kieu: 'tien', goi: ['PL', 'PR'], cot: 'PURCHASE_PRICE' },
+          { k: 'giaMua', nhan: 'Giá mua', kieu: 'tien', goi: ['PR'], cot: 'PURCHASE_PRICE' },   // gói Plus bỏ (T719)
           { k: 'gia', nhan: 'Giá bán', kieu: 'tien', goi: ['PL', 'PR'], cot: 'SALE_PRICE' },
           { k: 'ts', nhan: 'Thuế suất GTGT (%)', kieu: 'chon', ds: ['KCT', '0', '5', '8', '10'], cot: 'VAT_TAX_ID', cheDo: ['TT133', 'TT99'] },   // TT152, TT58 tính theo ngành nghề (T151)
         ],
@@ -164,7 +164,7 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
       },
       {
         ten: 'Hạch toán',
-        goi: ['PL', 'PR'],   // gói Standard tạm bỏ (T144)
+        goi: ['PR'],   // gói Standard tạm bỏ (T144), gói Plus bỏ (T719)
         truong: [
           { k: 'tkKho', nhan: 'TK kho', kieu: 'chon', cot: 'ACCOUNT_ID_COST', cheDo: ['TT133', 'TT99'] },
           { k: 'tkDt', nhan: 'TK doanh thu', kieu: 'chon', cot: 'ACCOUNT_ID_INCOME', cheDo: ['TT133', 'TT99'] },
@@ -186,15 +186,15 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
             chiDoc: (v, s) => s?.goi === 'S',
             chuThich: (v, s) => s?.goi === 'S' ? 'Gói Standard tự đặt theo loại hàng' : null,
           },   // tích thì nhập, xuất, tồn theo mặt hàng; gói Free cố định theo loại hàng (T380)
-          { k: 'khoMacDinh', nhan: 'Kho mặc định', kieu: 'chon', ds: ['Kho tổng', 'Kho bếp Lê Lợi', 'Kho bar Lê Lợi', 'Kho bếp Thảo Điền', 'Kho bar Thảo Điền'], cot: 'DEFAULT_WAREHOUSE_ID', goi: ['PL', 'PR'] },
-          { k: 'tonToiThieu', nhan: 'Tồn tối thiểu', kieu: 'so', cot: 'MIN_QUANTITY', goi: ['PL', 'PR'] },
-          { k: 'tonToiDa', nhan: 'Tồn tối đa', kieu: 'so', cot: 'MAX_QUANTITY', goi: ['PL', 'PR'] },
+          { k: 'khoMacDinh', nhan: 'Kho mặc định', kieu: 'chon', ds: ['Kho tổng', 'Kho bếp Lê Lợi', 'Kho bar Lê Lợi', 'Kho bếp Thảo Điền', 'Kho bar Thảo Điền'], cot: 'DEFAULT_WAREHOUSE_ID', goi: ['PR'] },   // gói Plus bỏ kho mặc định, tồn tối thiểu, tối đa (T719)
+          { k: 'tonToiThieu', nhan: 'Tồn tối thiểu', kieu: 'so', cot: 'MIN_QUANTITY', goi: ['PR'] },
+          { k: 'tonToiDa', nhan: 'Tồn tối đa', kieu: 'so', cot: 'MAX_QUANTITY', goi: ['PR'] },
           { k: 'khoTheoDoi', nhan: 'Kho theo dõi', kieu: 'chonNhieu', ds: KHO, maDs: maKho, caHang: true, hien: coTonKho, goi: ['PL', 'PR'], goiY: 'Để trống nếu hàng hoá theo dõi tồn tại mọi kho' },   // T151
         ],
       },
       {
         ten: 'Nhà cung cấp',
-        goi: ['PL', 'PR'],
+        goi: ['PR'],   // gói Plus bỏ (T719)
         truong: [
           { k: 'ncc', nhan: 'Nhà cung cấp cung ứng', kieu: 'chonNhieu', ds: NCC.map(n => n.ten), maDs: maNcc, caHang: true, goiY: 'Để trống nếu hàng hoá này được tất cả nhà cung cấp đáp ứng' },   // T151, T380
         ],

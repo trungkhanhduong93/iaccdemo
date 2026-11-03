@@ -3,7 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 03/11/2026
-- T719: Danh mục gói Plus giống gói Standard, thêm Đơn vị tính, Quy đổi ĐVT, Công thức chế biến, Bảng giá. Không còn hiện Mục chi phí, Công việc, Tiền tệ, Tỷ giá, Loại thuế, Bút toán tự động, Hệ thống tài khoản, Nhóm kho. Hàng hoá bỏ cột Giá bán, Kho bỏ cột Nhóm kho, Quỹ tiền có cột Số dư ban đầu.
+- T719: Danh mục gói Plus giống gói Standard, thêm Đơn vị tính, Quy đổi ĐVT, Công thức chế biến, Bảng giá. Không còn hiện Mục chi phí, Công việc, Tiền tệ, Tỷ giá, Loại thuế, Bút toán tự động, Hệ thống tài khoản, Nhóm kho. Hàng hoá bỏ cột Giá bán, Kho bỏ cột Nhóm kho, Quỹ tiền có cột Số dư ban đầu. Form hàng hoá bỏ Giá mua, ĐVT phụ, Mã vạch, Hạch toán, Kho mặc định, Tồn tối thiểu, Tồn tối đa, Nhà cung cấp.
 - T718: Phiếu chi, chi ngân hàng gói Standard chọn lý do Thanh toán công nợ nhà cung cấp thì phần Chi tiết hiện các phiếu mua còn nợ của nhà cung cấp đó. Mỗi phiếu có Mã chứng từ, Ngày chứng từ, Giá trị đơn, Đã thanh toán, Công nợ, Thanh toán. Tích phiếu muốn trả, số Thanh toán tự bằng công nợ, sửa được để trả một phần. Dòng Tổng ghim dưới, chữ to, đậm. Lưu xong phiếu mua giảm công nợ. Cả máy tính và điện thoại.
 - T717: Xuất bán POS gói Standard chỉ hiện một danh sách hoá đơn, không còn chip Tất cả, Đã đồng bộ, Chưa đồng bộ và nút Đồng bộ lại. Điện thoại bỏ ô lọc Trạng thái. Hướng dẫn nhanh bỏ các bước giới thiệu chip.
 - T716: Điện thoại, danh sách Xuất bán POS nhóm theo ngày, dưới mỗi ngày là từng đơn POS thay cho từng món. Mỗi thẻ ghi Mã hoá đơn POS rút gọn 5 ký tự cuối (vd #MRSBM), khách hàng, cửa hàng, Thành tiền, bên phải là Tổng tiền in đậm. Bấm thẻ vẫn mở chi tiết đơn như cũ.
