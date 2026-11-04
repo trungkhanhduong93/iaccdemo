@@ -11,7 +11,7 @@
 - `truong-dm.ts`: form hàng hoá tách 2 khối Thông tin thuế, TT152 dùng `nganhNghe`, TT58 dùng `nganhNgheDn`, `nhomNganhDn`, `thueGtgtDn`, `thueTndn`. Thêm mới mặc định Dịch vụ ăn uống ở cả hai. Chọn nhóm hàng điền ngành nghề riêng từng ô. Form nhóm hàng có ô Ngành nghề cho TT58.
 - `data.ts`: nhóm hàng mẫu có thêm `nganhNgheDn`. `danh-muc/index.ts`: hàng hoá mẫu điền cả ngành nghề doanh nghiệp; danh sách TT58 hiện cột Thuế GTGT, Thuế TNDN.
 - `bao-cao/tt58.ts`: `NHOM_NGANH_TT58` lấy từ bảng doanh nghiệp. Sổ S1, S2a, S3a-DNSN tính và ghi tỷ lệ theo bảng: ăn uống TNDN 2%, bán lẻ 1% (trước ghi nhầm 1,5%, 0,5% của TNCN hộ kinh doanh).
-- Ẩn theo phương pháp thuế (PhuongXT góp ý): ô và khối form có thêm `pp` (`gtgt`, `tndn`, `motTyLe`), hàm `hopPp` trong `truong-dm.ts`. `CatalogScreen.tsx`, `TuyChonCotDM.tsx` lọc theo `hopPp`. Hàm `cols` của danh mục nhận thêm `s` (phương pháp thuế) ở `types.ts`, `CatalogScreen.tsx`, `MDanhMuc.tsx`. GTGT khấu trừ thì ẩn cột, ô Thuế GTGT; TNDN trên thu nhập thì ẩn cột, ô Thuế TNDN; cả hai thì ẩn khối Thông tin thuế và ô Ngành nghề ở nhóm hàng.
+- Ẩn theo phương pháp thuế (PhuongXT góp ý): ô form có thêm `pp` (`gtgt`, `tndn`), hàm `hopPp` trong `truong-dm.ts`. `CatalogScreen.tsx`, `TuyChonCotDM.tsx` lọc theo `hopPp`. Hàm `cols` của danh mục nhận thêm `s` (phương pháp thuế) ở `types.ts`, `CatalogScreen.tsx`, `MDanhMuc.tsx`. GTGT khấu trừ thì ẩn cột, ô Thuế GTGT; TNDN trên thu nhập thì ẩn cột, ô Thuế TNDN; ô Ngành nghề luôn hiện vì vẫn cần tạm tính TNDN theo tỷ lệ nộp hàng quý (PhuongXT góp ý lần 2).
 - `thue/ToKhaiGTGT.tsx`: bảng 04/GTGT lấy tỷ lệ theo nhóm từ bảng doanh nghiệp; điện thoại dùng chung số liệu.
 
 ## Đã kiểm

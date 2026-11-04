@@ -96,11 +96,10 @@ export interface TruongDM {
 }
 
 /** Ô, cột thuế theo tỷ lệ % trên doanh thu của doanh nghiệp TT58 (T720): GTGT khấu trừ thì ẩn ô GTGT,
- *  TNDN trên thu nhập tính thuế thì ẩn ô TNDN, cả hai không theo tỷ lệ thì ẩn luôn ngành nghề (motTyLe) */
-export type PpThue = 'gtgt' | 'tndn' | 'motTyLe'
+ *  TNDN trên thu nhập tính thuế thì ẩn ô TNDN. Ngành nghề luôn hiện: vẫn cần để tạm tính TNDN theo tỷ lệ nộp hàng quý */
+export type PpThue = 'gtgt' | 'tndn'
 export function hopPp(pp: PpThue | undefined, s: { ppGtgt?: string; ppTndn?: string }): boolean {
-  const gtgt = s.ppGtgt !== 'khauTru', tndn = s.ppTndn !== 'thuNhap'
-  return !pp || (pp === 'gtgt' ? gtgt : pp === 'tndn' ? tndn : gtgt || tndn)
+  return !pp || (pp === 'gtgt' ? s.ppGtgt !== 'khauTru' : s.ppTndn !== 'thuNhap')
 }
 
 export interface KhoiDM {
@@ -181,7 +180,6 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
         // Doanh nghiệp gói Standard, Plus (TT58): ngành nghề, tỷ lệ theo bảng TT58 riêng (T720, QD93)
         ten: 'Thông tin thuế',
         cheDo: ['TT58'],
-        pp: 'motTyLe',
         truong: [
           { k: 'nganhNgheDn', nhan: 'Ngành nghề', kieu: 'chonTim', batBuoc: true, caHang: true, ds: MA_NGANH_DN, nhanDs: tenNganhDn },
           { k: 'nhomNganhDn', nhan: 'Nhóm ngành nghề', kieu: 'chu', chiDoc: true, caHang: true },
@@ -787,7 +785,7 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
           { k: 'dienGiai', nhan: 'Diễn giải', kieu: 'chu', caHang: true },   // T154: bỏ loại hàng hoá
           // T151: ngầm định ngành nghề nằm ở Thông tin chung vì TT152, TT58 chỉ có ở gói Free, Standard, không có khối Ngầm định
           { k: 'nganhNghe', nhan: 'Nhóm ngành nghề con', kieu: 'chonTim', caHang: true, ds: MA_NGANH_NGHE, nhanDs: tenNganhNghe, cheDo: ['TT152'] },
-          { k: 'nganhNgheDn', nhan: 'Ngành nghề', kieu: 'chonTim', caHang: true, ds: MA_NGANH_DN, nhanDs: tenNganhDn, cheDo: ['TT58'], pp: 'motTyLe' },   // T720
+          { k: 'nganhNgheDn', nhan: 'Ngành nghề', kieu: 'chonTim', caHang: true, ds: MA_NGANH_DN, nhanDs: tenNganhDn, cheDo: ['TT58'] },   // T720
         ],
       },
       {
