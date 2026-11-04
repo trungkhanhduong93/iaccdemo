@@ -12,6 +12,7 @@
 - `CatalogCfg.formThem` (`src/modules/types.ts`): danh mục khai form thêm riêng thì nút Thêm mới, nút ở bảng trống, `?moi=` mở form đó; bấm dòng vẫn sửa bằng panel cũ (`CatalogScreen.tsx`).
 - CSS mục T723 cuối `src/styles/app.css`.
 - Form Thêm bảng giá chừa thanh menu bên trái: `FormToanMan` có thêm `chuaMenu` (class `fsf-chua-menu`, lề trái 232px, menu thu gọn 64px).
+- Góp ý PhuongXT: bỏ cột Giá gồm VAT. Cột ĐVT chọn lại được ĐVT quy đổi (`quyDoiTuDanhMuc`), đổi ĐVT thì đơn giá tự quy theo tỷ lệ. Giá bán có cột Khách hàng, Khách hàng mặc định; để trống là mọi khách hàng. Kho áp dụng đổi thành Cửa hàng áp dụng ở form, danh sách, panel sửa (`truong-dm.ts`).
 
 ## Đã kiểm
 

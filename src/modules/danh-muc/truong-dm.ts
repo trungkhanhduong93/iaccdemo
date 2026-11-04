@@ -692,7 +692,9 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
           { k: 'gia', nhan: 'Đơn giá', kieu: 'tien', batBuoc: true },
           { k: 'vat', nhan: 'VAT (%)', kieu: 'so' },
           { k: 'ncc', nhan: 'Nhà cung cấp', kieu: 'chonTim', batBuoc: true, caHang: true, ds: NCC.map(n => n.ten), maDs: maNcc, hien: v => v.loai === 'Giá nhập' },
-          { k: 'kho', nhan: 'Kho áp dụng', kieu: 'chonNhieu', ds: KHO, maDs: maKho, caHang: true, goiY: 'Để trống nếu đơn giá áp dụng cho mọi kho' },
+          // T723: giá bán chọn khách hàng hoặc để trống là mọi khách hàng; áp dụng theo cửa hàng thay cho kho
+          { k: 'kh', nhan: 'Khách hàng', kieu: 'chonTim', caHang: true, ds: KHACH.map(n => n.ten), maDs: t => KHACH.find(n => n.ten === t)?.ma ?? '', hien: v => v.loai === 'Giá bán', goiY: 'Để trống nếu đơn giá áp dụng cho mọi khách hàng' },
+          { k: 'cuaHang', nhan: 'Cửa hàng áp dụng', kieu: 'chonNhieu', ds: CUA_HANG.map(c => c.ten), caHang: true, goiY: 'Để trống nếu đơn giá áp dụng cho mọi cửa hàng' },
         ],
       },
       {

@@ -305,11 +305,13 @@ const danhMuc: ModuleDef = {
     // T723: Thêm mới mở form nhiều dòng (một khoảng thời gian, nhiều nhà cung cấp, nhiều mặt hàng); bấm dòng vẫn sửa từng dòng
     '1.14': { catalog: { them: 'Thêm bảng giá', formThem: ThemBangGia, nhomLoc: 'loai', nhanLoc: 'Loại giá',
       cols: [{ k: 'loai', t: 'Loại giá' }, { k: 'ten', t: 'Hàng hoá' }, { k: 'dvt', t: 'ĐVT' }, { k: 'thoiGian', t: 'Thời gian áp dụng', w: 200 }, { k: 'gia', t: 'Đơn giá', num: true },
-        { k: 'vat', t: 'VAT (%)', num: true }, { k: 'ncc', t: 'Nhà cung cấp', r: (r: Row) => r.ncc || '—' }, { k: 'kho', t: 'Kho áp dụng', r: (r: Row) => r.kho || 'Tất cả kho' }],
+        { k: 'vat', t: 'VAT (%)', num: true }, { k: 'ncc', t: 'Nhà cung cấp', r: (r: Row) => r.ncc || '—' },
+        // T723: giá bán có khách hàng (trống là mọi khách hàng); áp dụng theo cửa hàng thay cho kho
+        { k: 'kh', t: 'Khách hàng', r: (r: Row) => r.loai === 'Giá bán' ? (r.kh || 'Tất cả khách hàng') : '—' }, { k: 'cuaHang', t: 'Cửa hàng áp dụng', r: (r: Row) => r.cuaHang || 'Tất cả cửa hàng' }],
       rows: () => [
-        ...HANG.map(h => ({ loai: 'Giá bán', ten: h.ten, dvt: h.dvt, thoiGian: '01/09/2026 - 31/12/2026', gia: h.gia, vat: h.ts, ncc: '', kho: '' })),
+        ...HANG.map(h => ({ loai: 'Giá bán', ten: h.ten, dvt: h.dvt, thoiGian: '01/09/2026 - 31/12/2026', gia: h.gia, vat: h.ts, ncc: '', kh: '', cuaHang: '' })),
         ...NVL.slice(0, 8).map(h => ({ loai: 'Giá nhập', ten: h.ten, dvt: h.dvt, thoiGian: '01/10/2026 - 31/03/2027', gia: h.gia, vat: h.ts,
-          ncc: (NCC.find(n => n.nhom === h.nhom) ?? NCC[0]).ten, kho: 'Kho tổng' })),
+          ncc: (NCC.find(n => n.nhom === h.nhom) ?? NCC[0]).ten, kh: '', cuaHang: '' })),
       ] } },
     '1.15': { cheDo: ['TT133', 'TT99'], catalog: { them: 'Thêm bút toán', nhomLoc: 'lct', nhanLoc: 'Loại chứng từ',
       cols: [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Nghiệp vụ' }, { k: 'lct', t: 'Loại chứng từ' }, { k: 'loc', t: 'Lọc theo', cls: 'dim' },
