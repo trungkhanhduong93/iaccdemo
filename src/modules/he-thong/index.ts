@@ -14,7 +14,7 @@ const heThong: ModuleDef = {
     { slug: 'thong-tin', ten: 'Thông tin đơn vị', nhom: 'Cài đặt', kind: 'custom', comp: ThongTinDonVi },
     { slug: 'cau-hinh', ten: 'Cấu hình kế toán', nhom: 'Cài đặt', kind: 'custom', comp: CauHinh },
     // Gói Free: Khoá sổ là tab riêng trong Hệ thống, gói khác dùng Khoá sổ 10.1.6 ở Tổng hợp (T315)
-    { slug: 'khoa-so', ten: 'Khoá sổ', nhom: 'Cài đặt', goi: ['S'], kind: 'custom', comp: KhoaSoStandard },
+    { slug: 'khoa-so', ten: 'Khoá sổ', nhom: 'Cài đặt', goi: ['S', 'PL'], kind: 'custom', comp: KhoaSoStandard },
     // Gói thuê bao xuống tab cuối (T472); gói Standard ẩn tab, vẫn mở từ nút Nâng cấp, nhãn gói
     { slug: 'goi-thue-bao', ten: 'Gói thuê bao', nhom: 'Thuê bao', anTab: ['S'], kind: 'custom', comp: GoiThueBao },
     // Nhật ký thao tác xuống tab cuối cùng

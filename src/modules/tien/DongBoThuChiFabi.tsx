@@ -68,7 +68,7 @@ export function DongBoThuChiFabi() {
           : <span className="dbtc-trang xong" role="status" title={`Lần đồng bộ cuối ${lan.luc}`}><Icon n="check" className="ic sm" />Đã đồng bộ hết</span>}
       {!db && nutDongBo}
       {hopDongBo}
-      {mo && <HopPhieuCho cho={cho} khoa={khoa} goiS={s.goi === 'S'} nutDongBo={nutDongBo} onDong={() => setMo(false)} />}
+      {mo && <HopPhieuCho cho={cho} khoa={khoa} goiS={s.goi !== 'PR'} nutDongBo={nutDongBo} onDong={() => setMo(false)} />}
     </div>
   )
 }

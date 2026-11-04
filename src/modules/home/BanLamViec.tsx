@@ -21,25 +21,25 @@ export function BanLamViec({ sc }: ScreenProps) {
   const ten = s.ten.split(' ').slice(-1)[0]
   const chMoi = cuaHangChuaDung(s)   // cửa hàng FABi mới chưa lên sổ ở đơn vị nào (T142)
 
-  const viec: { k: string; ic: string; b: string; sub: string; nut: string; to: string; ma?: string }[] = [
+  const viec: { k: string; ic: string; b: string; sub: string; nut: string; to: string; ma?: string; pro?: boolean }[] = [
     ...(chMoi.length ? [{ k: 'info', ic: 'chinhanh', b: `FABi có ${chMoi.length} cửa hàng mới chưa lên sổ kế toán`, sub: chMoi.map(c => c.ten).join(', '), nut: 'Lên sổ', to: '/app/danh-muc/cua-hang?them=1' }] : []),
     { k: 'err', ic: 'alert', b: `${loi} đơn POS chưa vào sổ`, sub: noco ? 'Nhóm món "Món mới tháng 10" chưa gắn tài khoản doanh thu' : 'Đơn huỷ sau khi chốt ca, chờ xác nhận', nut: noco ? 'Gắn tài khoản' : 'Xem đơn', to: noco ? '/app/danh-muc/1-2' : '/app/ban-hang/3-1-1' },
-    { k: 'err', ic: 'scale', b: `${lech} dòng lệch đối soát`, sub: 'FABi với sổ, sổ với hoá đơn, sổ với tiền', nut: 'Xử lý', to: '/app/tien-ich/11-7', ma: '11.7' },
-    { k: 'warn', ic: 'filein', b: '18 hoá đơn đầu vào chờ hạch toán, 5 hoá đơn lỗi', sub: 'Tải từ iPOS Invoice lúc 09:12 hôm nay', nut: 'Hạch toán', to: '/app/tien-ich/11-4', ma: '11.4' },
+    { k: 'err', ic: 'scale', b: `${lech} dòng lệch đối soát`, sub: 'FABi với sổ, sổ với hoá đơn, sổ với tiền', nut: 'Xử lý', to: s.goi === 'PR' ? '/app/tien-ich/11-7' : '/app/ban-hang/3-2-2', ma: '11.7' },
+    { k: 'warn', ic: 'filein', b: '18 hoá đơn đầu vào chờ hạch toán, 5 hoá đơn lỗi', sub: 'Tải từ iPOS Invoice lúc 09:12 hôm nay', nut: 'Hạch toán', to: '/app/tien-ich/11-4', ma: '11.4', pro: true },   // gói Plus ẩn phân hệ Tiện ích (T721)
     { k: 'warn', ic: 'wallet', b: 'Công nợ quá hạn: 4 khách, 86.400.000 đ', sub: 'Quá hạn nhiều nhất 47 ngày: Công ty CP Du lịch Biển Xanh', nut: 'Xem công nợ', to: '/app/tien/2-2-5', ma: '2.2.5' },
     { k: 'warn', ic: 'box', b: 'Tồn kho âm 2 mặt hàng', sub: 'Thịt bò thăn, Bánh phở tươi tại Kho bếp Lê Lợi', nut: 'Xem tồn kho', to: '/app/kho/5-2-4', ma: '5.2.4' },
     { k: 'info', ic: 'percent', b: 'Tờ khai thuế GTGT quý 3/2026', sub: 'Hạn nộp 30/10/2026, còn 23 ngày', nut: 'Lập tờ khai', to: '/app/thue/6-2-3', ma: '6.2.3' },
     { k: 'info', ic: 'check', b: '12 chứng từ chờ duyệt cấp 1', sub: 'Phiếu chi, phiếu mua hàng do kế toán viên lập', nut: 'Duyệt', to: '/app/tien-ich/11-5', ma: '11.5' },
-  ]
+  ].filter(v => !v.pro || s.goi === 'PR')
   const co = viec.filter(v => !v.ma || coTrongGoi(v.ma, s.goi))
 
   const buoc: [string, string, number, string][] = [
     ['done', 'Đồng bộ đủ 30 ngày doanh thu FABi', 1, '/app/ban-hang/3-1-1'],
-    ['done', 'Đối soát doanh thu với sổ', 1, '/app/tien-ich/11-7'],
+    ['done', 'Đối soát doanh thu với sổ', 1, s.goi === 'PR' ? '/app/tien-ich/11-7' : '/app/ban-hang/3-2-2'],
     ['now', 'Tính giá vốn cuối kỳ', 0, '/app/kho/5-1-7'],
     ['', 'Phân bổ CCDC, chi phí trả trước', 0, '/app/ccdc/8-1-1'],
     ['', 'Kết chuyển lãi lỗ', 0, '/app/tong-hop/10-1-5'],
-    ['', 'Khoá sổ', 0, '/app/tong-hop/10-1-6'],
+    ['', 'Khoá sổ', 0, s.goi === 'PR' ? '/app/tong-hop/10-1-6' : '/app/he-thong/khoa-so'],   // gói Plus khoá sổ ở Hệ thống (T721)
   ]
 
   return (

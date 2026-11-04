@@ -16,6 +16,10 @@
 - Các chỗ dùng `anNgoaiGoi` mà thật ra là giao diện riêng gói Standard đổi sang `goi === 'S'`. Gồm quy đổi ĐVT ở `MLapPhieu.tsx`, `MLapPhieuKho.tsx`, hàng tab ở `MChungTu.tsx`, tab Báo cáo theo dõi ở `MCcdc.tsx`.
 - `src/modules/home/BanLamViec.tsx`, `TongQuan.tsx`: gói Plus bỏ việc, thẻ Cảnh báo rủi ro của gói Pro. `src/modules/tong-hop/CuoiKy.tsx`: Khoá sổ bỏ bước Kiểm tra cuối kỳ, Kết chuyển lãi lỗ ghi "Có từ gói Pro".
 - `src/app/Screen.tsx`: mở bằng đường dẫn phân hệ không màn nào trong gói (Giá thành ở gói Plus) thì về Trang chủ, không hiện sơ đồ xem trước gói Pro.
+- PhuongXT dặn gọn tiếp gói Plus. `src/modules/kho/index.ts`, `CHI_GOI_PRO`: Kho bỏ Xuất bán POS, Xuất bán hàng (đã có ở Bán hàng), Chuyển kho (mỗi cửa hàng một kho), Công thức chế biến (đã ở Danh mục), Tính giá thành đơn giản. Các màn này chỉ còn gói Pro.
+- `src/app/registry.ts`, `AN_PHAN_HE`: gói Plus ẩn phân hệ Tài sản cố định, Tiện ích. Sổ TSCĐ S4b-DNSN vẫn ở phân hệ Báo cáo. `Screen.tsx`: mở hai phân hệ này bằng đường dẫn thì về Trang chủ.
+- Khoá sổ: Tổng hợp bỏ Khoá sổ 10.1.6 (`goi: ['PR']`), Hệ thống hiện Khoá sổ như gói Standard (`he-thong/index.ts`). Link Mở khoá sổ ở `ChungTuBanHang.tsx`, `DongBoThuChiFabi.tsx`, bước Khoá sổ ở Bàn làm việc trỏ về Hệ thống.
+- `BanLamViec.tsx`: gói Plus bỏ việc Hoá đơn đầu vào (thuộc Tiện ích). Việc lệch đối soát, bước Đối soát doanh thu trỏ về Đối soát bán hàng với POS 3.2.2.
 
 ## Đã kiểm
 

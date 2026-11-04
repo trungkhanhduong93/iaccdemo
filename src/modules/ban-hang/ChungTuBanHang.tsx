@@ -543,7 +543,7 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
         if (r.lyDo === 'hang') return <Link to="/app/danh-muc/1-2" className="ds-link-xl" onClick={e => e.stopPropagation()}>Thêm hàng hoá</Link>
         if (r.lyDo === 'pttt') return <Link to="/app/danh-muc/1-12" className="ds-link-xl" onClick={e => e.stopPropagation()}>Map tài khoản</Link>
         if (r.lyDo === 'kho') return <Link to="/app/danh-muc/1-8" className="ds-link-xl" onClick={e => e.stopPropagation()}>Chọn kho</Link>
-        const to = s.goi === 'S' ? '/app/he-thong/khoa-so' : '/app/tong-hop/10-1-6'
+        const to = s.goi !== 'PR' ? '/app/he-thong/khoa-so' : '/app/tong-hop/10-1-6'
         return <Link to={to} className="ds-link-xl" onClick={e => e.stopPropagation()}>Mở khoá sổ</Link>
       },
     },

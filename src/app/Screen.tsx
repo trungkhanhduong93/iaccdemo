@@ -3,7 +3,7 @@ import type { ComponentType } from 'react'
 import { Link, Navigate, useParams } from 'react-router-dom'
 import { useSession, cheDoHienTai } from './session'
 import { cheDoCuaGoi } from './che-do'
-import { MODULES, duongDan, hienMan, hienPhanHe, laBaoCao, maKhoa, manDau, moDuoc, tenMan, timMan, vaoBaoCao } from './registry'
+import { MODULES, anPhanHeGoi, duongDan, hienMan, hienPhanHe, laBaoCao, maKhoa, manDau, moDuoc, tenMan, timMan, vaoBaoCao } from './registry'
 import { FEATURE, FEATURES, GOI, GOIS, anNgoaiGoi, minGoi, type Goi } from './plan'
 import type { ScreenProps } from '../modules/types'
 import { Icon } from '../ui/Icon'
@@ -31,9 +31,10 @@ export function ScreenRoute() {
   const { mod: mk, slug } = useParams()
   const { mod, sc } = timMan(mk, slug)
   if (!mod) return <Navigate to="/app" replace />
-  // Phân hệ không màn nào trong gói (vd Giá thành ở gói Plus) mở bằng đường dẫn thì về Trang chủ, không hiện sơ đồ xem trước gói Pro (T721)
+  // Phân hệ không màn nào trong gói (vd Giá thành ở gói Plus) hoặc ẩn ở gói Plus (Tài sản cố định, Tiện ích) mở bằng đường dẫn thì về Trang chủ (T721)
   const coMa = mod.screens.filter(x => x.code || x.can)
   if (anNgoaiGoi(s.goi) && coMa.length > 0 && !coMa.some(x => moDuoc(x, s.goi))) return <Navigate to="/app" replace />
+  if (s.goi === 'PL' && anPhanHeGoi(mod, s.goi)) return <Navigate to="/app" replace />
   if (!sc) {
     // Báo cáo của phân hệ khác mà sơ đồ Quy trình nhắc tới, mở ngay trong phân hệ đang đứng (T385), vd mua-hang/5-2-3
     const ngoai = !laMobile && mod.key !== 'bao-cao' ? baoCaoCuaPhanHe(mod, s).find(x => x.slug === slug && x.goc !== mod.key) : undefined
