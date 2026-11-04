@@ -3,6 +3,8 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 04/11/2026
+- T722: Danh mục Đơn vị tính có nút Đồng bộ FABi. Quy đổi ĐVT hiện mã kèm tên ở cột Từ ĐVT, Đến ĐVT; bộ lọc bỏ Tỷ lệ, Diễn giải. Danh mục Hàng hoá, Đối tượng, Kho bỏ cột Chức năng.
+- T722: Công thức chế biến, sơ chế: thêm, sửa mở panel bên phải như Hàng hoá. Bỏ mã công thức, tổng chi phí, đơn giá, chi phí; chọn lại đơn vị tính khi có quy đổi; Thêm hàng loạt nguyên vật liệu; Trạng thái ở cuối, thêm mới bật sẵn. Áp dụng theo cửa hàng thay cho kho. Bỏ dải giải thích ở đầu danh sách công thức.
 - T721: Gói Plus mở thêm theo roadmap: Hoá đơn bán hàng, Xuất hoá đơn điện tử, Hoá đơn điều chỉnh, thay thế, Xuất, nhập điều chuyển kho, Tự động đồng bộ dữ liệu kho, Nhận hoá đơn đầu vào, Đối soát bán hàng với POS, Đối chiếu xuất kho với định lượng. Báo cáo bán hàng, Báo cáo doanh thu có lại ở gói Plus, Pro. Gói Standard không đổi.
 - T721: Gói Plus không còn hiện màn, nhãn, ghi chú của gói Pro: bỏ màn khoá mời nâng cấp, phân hệ Chi phí, giá thành, việc và thẻ cảnh báo gói Pro ở Trang chủ, bước gói Pro ở Khoá sổ.
 - T721: Gói Plus gọn tiếp. Kho bỏ Xuất bán POS, Xuất bán hàng, Chuyển kho, Công thức chế biến, Tính giá thành đơn giản. Ẩn phân hệ Tài sản cố định, Tiện ích. Khoá sổ chuyển từ Tổng hợp sang Hệ thống như gói Standard.

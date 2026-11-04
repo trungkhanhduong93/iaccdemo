@@ -97,7 +97,7 @@ export const MDanhMuc: FC<ScreenProps> = ({ sc }) => {
   }, [all, cfg.nhomLoc])
 
   const laHangHoa = sc.code === '1.2' || sc.slug === 'hang-hoa' || sc.slug === '1-2'
-  const CAC_DM_FABI = ['1.2', '1-2', 'hang-hoa', 'nhom-hang-hoa', 'cua-hang', 'phuong-thuc-thanh-toan']
+  const CAC_DM_FABI = ['1.2', '1-2', 'hang-hoa', 'nhom-hang-hoa', 'cua-hang', 'phuong-thuc-thanh-toan', '1.3']
   const hienFabi = CAC_DM_FABI.includes(sc.code ?? '') || CAC_DM_FABI.includes(sc.slug ?? '')
 
   const [locTrangThai, setLocTrangThai] = useState<'hd' | 'ngung' | 'all'>('hd')

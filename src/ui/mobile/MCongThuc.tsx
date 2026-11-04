@@ -10,7 +10,7 @@ import { suaPhieu, themPhieu } from '../generic/daXoa'
 import {
   hangCua,
   soLuong,
-  tenKhoAd,
+  tenCuaHangAd,
   type TtCongThuc,
   type NvlCongThuc,
 } from '../../modules/kho/san-xuat'
@@ -118,7 +118,7 @@ export const MCongThuc: FC<ScreenProps> = ({ sc }) => {
           spMa: formSp,
           ngay: formNgay,
           kenh: dangSua?.kenh ?? ['Tại quán', 'Mang về'],
-          kho: dangSua?.kho ?? [],
+          cuaHang: dangSua?.cuaHang ?? [],
           moTa: dangSua?.moTa ?? '',
           tt: dangSua?.tt ?? 'on',
           nvl: formNvl,
@@ -127,7 +127,7 @@ export const MCongThuc: FC<ScreenProps> = ({ sc }) => {
           ma,
           gocMa: formSp,
           ngay: formNgay,
-          kho: dangSua?.kho ?? [],
+          cuaHang: dangSua?.cuaHang ?? [],
           moTa: dangSua?.moTa ?? '',
           tt: dangSua?.tt ?? 'on',
           dich: formNvl,
@@ -286,8 +286,8 @@ export const MCongThuc: FC<ScreenProps> = ({ sc }) => {
             <div className="pn-than m-ct-sheet-than">
               <div className="m-ct-sheet-tt-hang">
                 <div>
-                  <small className="muted">Kho áp dụng</small>
-                  <div><b>{tenKhoAd((dangXem.kho as string[]) ?? [])}</b></div>
+                  <small className="muted">Cửa hàng áp dụng</small>
+                  <div><b>{tenCuaHangAd((dangXem.cuaHang as string[]) ?? [])}</b></div>
                 </div>
                 {cb && (
                   <div>

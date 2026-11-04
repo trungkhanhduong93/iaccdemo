@@ -44438,3 +44438,6 @@ a.hdn-chip:hover { border-color: var(--blue); color: var(--blue); }
 /* ── Tab con Xuất, Nhập điều chuyển gói Plus (T721) ── */
 .dm-bang > .tabs.dcn-tabs { padding: 0 16px; flex: none; }
 .dm-bang > .tabs.dcn-tabs button { font-size: 14px; padding: 12px 14px 11px; }
+
+/* ── Panel công thức chế biến: hộp Thêm hàng loạt nổi trên panel bên phải, z-index 60 (T722) ── */
+.overlay.ds-hop-nen:has(> .thl-hop) { z-index: 70; }

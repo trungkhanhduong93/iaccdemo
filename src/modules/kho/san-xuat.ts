@@ -43,43 +43,43 @@ export type TtCongThuc = 'on' | 'off' | 'nhap'
 export const TT_CONG_THUC: [TtCongThuc, string, string][] = [['on', 'Đang hoạt động', 'var(--green)'], ['off', 'Không hoạt động', 'var(--red)'], ['nhap', 'Nháp', 'var(--muted)']]
 
 export interface NvlCongThuc { ma: string; sl: number; tang?: number; giam?: number }
-export interface CongThucCb { id: string; ma: string; spMa: string; ngay: string; kenh: string[]; kho: string[]; moTa: string; tt: TtCongThuc; nvl: NvlCongThuc[] }
-export interface CongThucSc { id: string; ma: string; gocMa: string; ngay: string; kho: string[]; moTa: string; tt: TtCongThuc; dich: NvlCongThuc[] }
+export interface CongThucCb { id: string; ma: string; spMa: string; dvt?: string; ngay: string; kenh: string[]; cuaHang: string[]; moTa: string; tt: TtCongThuc; nvl: NvlCongThuc[] }   // dvt: ĐVT quy đổi chọn ở form, để trống là ĐVT chính
+export interface CongThucSc { id: string; ma: string; gocMa: string; dvt?: string; ngay: string; cuaHang: string[]; moTa: string; tt: TtCongThuc; dich: NvlCongThuc[] }
 
 /** Định lượng cho một đơn vị tính của sản phẩm */
 export const CONG_THUC_CB: CongThucCb[] = [
-  { id: 'cb1', ma: 'CTCB001', spMa: 'PHO01', ngay: '01/09/2026', kenh: ['Tại quán', 'Mang về', 'GrabFood'], kho: [], moTa: 'Tô tiêu chuẩn 650 ml', tt: 'on',
+  { id: 'cb1', ma: 'CTCB001', spMa: 'PHO01', ngay: '01/09/2026', kenh: ['Tại quán', 'Mang về', 'GrabFood'], cuaHang: [], moTa: 'Tô tiêu chuẩn 650 ml', tt: 'on',
     nvl: [{ ma: 'NVL003', sl: 0.2, tang: 10, giam: 5 }, { ma: 'NVL001', sl: 0.08, tang: 5, giam: 5 }, { ma: 'BTP01', sl: 0.45, tang: 10, giam: 10 }, { ma: 'NVL007', sl: 0.02, tang: 20, giam: 20 }] },
-  { id: 'cb2', ma: 'CTCB002', spMa: 'BUN02', ngay: '15/09/2026', kenh: ['Tại quán', 'Mang về'], kho: ['Kho bếp Thảo Điền'], moTa: 'Tạm ngưng chờ đổi nhà cung cấp mắm ruốc', tt: 'off',
+  { id: 'cb2', ma: 'CTCB002', spMa: 'BUN02', ngay: '15/09/2026', kenh: ['Tại quán', 'Mang về'], cuaHang: ['Phố Mây Thảo Điền'], moTa: 'Tạm ngưng chờ đổi nhà cung cấp mắm ruốc', tt: 'off',
     nvl: [{ ma: 'NVL025', sl: 0.2, tang: 10, giam: 5 }, { ma: 'NVL015', sl: 0.06, tang: 5, giam: 5 }, { ma: 'NVL014', sl: 0.04, tang: 5, giam: 5 }, { ma: 'BTP02', sl: 0.5, tang: 10, giam: 10 }, { ma: 'NVL007', sl: 0.02, tang: 20, giam: 20 }] },
-  { id: 'cb3', ma: 'CTCB003', spMa: 'COM01', ngay: '10/10/2026', kenh: ['Tại quán', 'Mang về', 'ShopeeFood'], kho: [], moTa: 'Bản thử thêm trứng ốp la, chưa duyệt', tt: 'nhap',
+  { id: 'cb3', ma: 'CTCB003', spMa: 'COM01', ngay: '10/10/2026', kenh: ['Tại quán', 'Mang về', 'ShopeeFood'], cuaHang: [], moTa: 'Bản thử thêm trứng ốp la, chưa duyệt', tt: 'nhap',
     nvl: [{ ma: 'NVL005', sl: 0.18, tang: 10, giam: 5 }, { ma: 'BTP03', sl: 0.16, tang: 5, giam: 5 }, { ma: 'NVL032', sl: 1 }, { ma: 'NVL012', sl: 0.015, tang: 20, giam: 20 }] },
-  { id: 'cb4', ma: 'CTCB004', spMa: 'BTP01', ngay: '01/08/2026', kenh: [], kho: ['Kho bếp Lê Lợi', 'Kho bếp Thảo Điền', 'Kho bếp Nguyễn Trãi'], moTa: 'Nấu nồi 200 lít, ninh xương 8 giờ', tt: 'on',
+  { id: 'cb4', ma: 'CTCB004', spMa: 'BTP01', ngay: '01/08/2026', kenh: [], cuaHang: ['Phố Mây Lê Lợi', 'Phố Mây Thảo Điền', 'Phố Mây Nguyễn Trãi'], moTa: 'Nấu nồi 200 lít, ninh xương 8 giờ', tt: 'on',
     nvl: [{ ma: 'NVL002', sl: 0.35, tang: 10, giam: 5 }, { ma: 'NVL015', sl: 0.05, tang: 10, giam: 5 }, { ma: 'NVL031', sl: 0.004 }, { ma: 'NVL027', sl: 0.01 }, { ma: 'NVL029', sl: 0.01 }, { ma: 'NVL030', sl: 0.005 }] },
-  { id: 'cb5', ma: 'CTCB005', spMa: 'BTP02', ngay: '01/08/2026', kenh: [], kho: ['Kho bếp Thảo Điền'], moTa: 'Nấu nồi 120 lít', tt: 'on',
+  { id: 'cb5', ma: 'CTCB005', spMa: 'BTP02', ngay: '01/08/2026', kenh: [], cuaHang: ['Phố Mây Thảo Điền'], moTa: 'Nấu nồi 120 lít', tt: 'on',
     nvl: [{ ma: 'NVL002', sl: 0.3, tang: 10, giam: 5 }, { ma: 'NVL026', sl: 0.03 }, { ma: 'NVL028', sl: 0.01 }, { ma: 'NVL027', sl: 0.01 }, { ma: 'NVL029', sl: 0.01 }, { ma: 'NVL030', sl: 0.006 }] },
-  { id: 'cb6', ma: 'CTCB006', spMa: 'BTP03', ngay: '01/09/2026', kenh: [], kho: [], moTa: 'Ướp tối thiểu 4 giờ trước khi nướng', tt: 'on',
+  { id: 'cb6', ma: 'CTCB006', spMa: 'BTP03', ngay: '01/09/2026', kenh: [], cuaHang: [], moTa: 'Ướp tối thiểu 4 giờ trước khi nướng', tt: 'on',
     nvl: [{ ma: 'NVL004', sl: 1, tang: 5, giam: 5 }, { ma: 'NVL027', sl: 0.04 }, { ma: 'NVL026', sl: 0.03 }, { ma: 'NVL029', sl: 0.05 }, { ma: 'NVL030', sl: 0.04 }, { ma: 'NVL012', sl: 0.02 }] },
 ]
 
 /** Tỉ lệ ra cho một đơn vị NVL gốc; phần còn lại là hao hụt */
 export const CONG_THUC_SC: CongThucSc[] = [
-  { id: 'sc1', ma: 'CTSC001', gocMa: 'NVL013', ngay: '01/09/2026', kho: [], moTa: 'Lọc gân, mỡ; hao hụt khoảng 8%', tt: 'on',
+  { id: 'sc1', ma: 'CTSC001', gocMa: 'NVL013', ngay: '01/09/2026', cuaHang: [], moTa: 'Lọc gân, mỡ; hao hụt khoảng 8%', tt: 'on',
     dich: [{ ma: 'NVL001', sl: 0.45 }, { ma: 'NVL014', sl: 0.2 }, { ma: 'NVL015', sl: 0.15 }, { ma: 'NVL002', sl: 0.12 }] },
-  { id: 'sc2', ma: 'CTSC002', gocMa: 'NVL016', ngay: '01/09/2026', kho: ['Kho bếp Lê Lợi', 'Kho bếp Thảo Điền'], moTa: 'Bỏ đầu, bóc vỏ, rút chỉ', tt: 'on',
+  { id: 'sc2', ma: 'CTSC002', gocMa: 'NVL016', ngay: '01/09/2026', cuaHang: ['Phố Mây Lê Lợi', 'Phố Mây Thảo Điền'], moTa: 'Bỏ đầu, bóc vỏ, rút chỉ', tt: 'on',
     dich: [{ ma: 'NVL017', sl: 0.6 }, { ma: 'NVL018', sl: 0.35 }] },
-  { id: 'sc3', ma: 'CTSC003', gocMa: 'NVL019', ngay: '15/09/2026', kho: [], moTa: 'Chặt miếng 5 cm, tách sụn', tt: 'on',
+  { id: 'sc3', ma: 'CTSC003', gocMa: 'NVL019', ngay: '15/09/2026', cuaHang: [], moTa: 'Chặt miếng 5 cm, tách sụn', tt: 'on',
     dich: [{ ma: 'NVL004', sl: 0.82 }, { ma: 'NVL020', sl: 0.12 }] },
-  { id: 'sc4', ma: 'CTSC004', gocMa: 'NVL021', ngay: '01/10/2026', kho: ['Kho bếp Nguyễn Trãi'], moTa: 'Chờ bếp trưởng chốt tỉ lệ', tt: 'off',
+  { id: 'sc4', ma: 'CTSC004', gocMa: 'NVL021', ngay: '01/10/2026', cuaHang: ['Phố Mây Nguyễn Trãi'], moTa: 'Chờ bếp trưởng chốt tỉ lệ', tt: 'off',
     dich: [{ ma: 'NVL022', sl: 0.25 }, { ma: 'NVL023', sl: 0.35 }, { ma: 'NVL024', sl: 0.3 }] },
 ]
 
 /** Công thức đang hoạt động của sản phẩm, NVL gốc */
 export const ctCbCua = (spMa: string) => CONG_THUC_CB.find(c => c.spMa === spMa && c.tt === 'on')
 export const ctScCua = (gocMa: string) => CONG_THUC_SC.find(c => c.gocMa === gocMa && c.tt === 'on')
-/** Kho áp dụng: rỗng là mọi kho */
-export const tenKhoAd = (kho: string[]) => !kho.length ? 'Tất cả các kho' : kho.length === 1 ? kho[0] : `${kho.length} kho`
-export const apDungKho = (kho: string[], k: string) => !k || !kho.length || kho.includes(k)
+/** Cửa hàng áp dụng: rỗng là mọi cửa hàng */
+export const tenCuaHangAd = (ch: string[]) => !ch.length ? 'Tất cả cửa hàng' : ch.length === 1 ? ch[0] : `${ch.length} cửa hàng`
+export const apDungCuaHang = (ch: string[], k: string) => !k || !ch.length || ch.includes(k)
 
 // ── Dòng phiếu ──
 

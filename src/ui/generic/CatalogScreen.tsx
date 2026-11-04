@@ -101,7 +101,7 @@ export function CatalogScreen({ sc }: ScreenProps) {
   // Danh sách, cột và bảng ghi nhớ lại: mở panel hay gõ trong panel không vẽ lại cả bảng danh sách phía sau (T81)
   const nhoms = useMemo(() => cfg.nhomLoc ? [...new Set(all.map(r => r[cfg.nhomLoc!]))] : [], [all])
   const laHangHoa = sc.code === '1.2' || sc.slug === 'hang-hoa' || sc.slug === '1-2'
-  const laDongBoFabi = laHangHoa || sc.slug === 'nhom-hang-hoa' || sc.slug === 'phuong-thuc-thanh-toan' || sc.code === '1.17'
+  const laDongBoFabi = laHangHoa || sc.slug === 'nhom-hang-hoa' || sc.slug === 'phuong-thuc-thanh-toan' || sc.code === '1.17' || sc.code === '1.3'
   const coTrangThai = !cfg.dsChungTu
 
   const [tabPhanLoai, setTabPhanLoai] = useState<'tat-ca' | 'da-phan-loai' | 'chua-phan-loai'>('tat-ca')
@@ -154,7 +154,7 @@ export function CatalogScreen({ sc }: ScreenProps) {
 
   // Các cột lọc nâng cao của riêng từng danh mục
   const cacCotLoc = useMemo(() => {
-    const bo = new Set(['_stt', 'ma', 'ten', 'so', '_tt', '_k', '_cn'])
+    const bo = new Set(['_stt', 'ma', 'ten', 'so', '_tt', '_k', '_cn', ...(cfg.khongLoc ?? [])])
     return cols0.filter(c => c.k && !bo.has(c.k) && c.k !== 'stk' && c.k !== 'mst')
   }, [cols0])
 

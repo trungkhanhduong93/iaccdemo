@@ -27,6 +27,9 @@ const BIEU_TUONG: Record<string, string> = {
   '1.12': 'quytien', '1.14': 'banggia', '1.15': 'buttoan', '1.16': 'lydo',
 }
 
+/** Cột ĐVT ở danh sách Quy đổi ĐVT hiện mã kèm tên, vd "THUNG - Thùng" */
+const maTenDvt = (ten: string) => { const d = DON_VI_TINH.find(x => x[1] === ten); return d ? `${d[0]} - ${d[1]}` : ten }
+
 /** 5 màn danh mục nhóm ngoài Excel (T136) */
 const nhomHangHoa: ScreenDef = {
   slug: 'nhom-hang-hoa', ten: 'Danh mục nhóm hàng hoá', ngan: 'Nhóm hàng hoá', nhom: 'Danh mục', kind: 'catalog', icon: 'nhomhang',
@@ -187,7 +190,6 @@ const danhMuc: ModuleDef = {
     '1.2': { catalog: {
       them: 'Thêm hàng hoá', nhomLoc: 'nhom',
       nutPhu: { nhan: 'Đồng bộ FABi', bao: `Đã đồng bộ ${DS_HANG_HOA_12.length} hàng hoá từ FABi` },
-      chucNang: r => r.tkKho === '152' ? [{ nhan: 'Xem thẻ kho', di: 'kho/5-2-1' }] : r.tkKho === '153' ? [{ nhan: 'Xem thẻ chi phí', di: 'ccdc/8-1-1' }] : [{ nhan: 'Xem doanh thu', di: 'ban-hang/3-2-5' }],
       cols: (goi, cheDo, s) => [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Tên hàng hoá' }, { k: 'nhom', t: 'Nhóm' }, { k: 'dvt', t: 'ĐVT' },
         { k: 'thuongHieu', t: 'Thương hiệu' },
         // TT152, TT58 tính thuế theo tỷ lệ % trên doanh thu của ngành nghề; TT133, TT99 theo thuế suất GTGT (T151)
@@ -218,18 +220,14 @@ const danhMuc: ModuleDef = {
       ],
     } },
     '1.3': { catalog: { them: 'Thêm đơn vị tính',
+      nutPhu: { nhan: 'Đồng bộ FABi', bao: `Đã đồng bộ ${DON_VI_TINH.length} đơn vị tính từ FABi` },
       cols: [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Tên đơn vị tính' }, { k: 'mota', t: 'Mô tả', cls: 'dim' }],
       rows: () => DON_VI_TINH.map(([ma, ten, mota]) => ({ ma, ten, mota })) } },
     // T154: 1 Từ ĐVT = tỷ lệ Đến ĐVT; hàng hoá áp dụng để trống là mọi hàng hoá
-    '1.4': { catalog: { them: 'Thêm quy đổi', cols: [{ k: 'tu', t: 'Từ ĐVT', c: true }, { k: 'den', t: 'Đến ĐVT', c: true }, { k: 'tl', t: 'Tỷ lệ', num: true },
+    '1.4': { catalog: { them: 'Thêm quy đổi', khongLoc: ['tl', 'dienGiai'], cols: [{ k: 'tu', t: 'Từ ĐVT', c: true, r: (r: Row) => maTenDvt(r.tu) }, { k: 'den', t: 'Đến ĐVT', c: true, r: (r: Row) => maTenDvt(r.den) }, { k: 'tl', t: 'Tỷ lệ', num: true },
       { k: 'dienGiai', t: 'Diễn giải' }, { k: 'hangAd', t: 'Hàng hoá áp dụng', r: (r: Row) => r.hangAd || 'Tất cả hàng hoá' }],
       rows: () => QUY_DOI_DVT } },
-    '1.5': { catalog: { them: 'Thêm đối tượng', nhomLoc: 'loai', nhanLoc: 'Loại',      chucNang: r => {
-        if (r.loai === 'Khách hàng') return [{ nhan: 'Lập hoá đơn', di: 'ban-hang/3-1-2/moi' }, { nhan: 'Thu tiền', di: 'tien/2-1-1/moi?loai=thu' }, { nhan: 'Xem công nợ', di: 'tien/2-2-5' }]
-        if (r.loai === 'Nhà cung cấp') return [{ nhan: 'Lập phiếu mua', di: 'mua-hang/4-1-1/moi' }, { nhan: 'Trả tiền', di: 'tien/2-1-1/moi?loai=chi' }, { nhan: 'Xem công nợ', di: 'mua-hang/4-2-2' }]
-        if (r.loai === 'Nhân viên') return [{ nhan: 'Chi tạm ứng', di: 'tien/2-1-1/moi?loai=chi' }]
-        return []
-      },
+    '1.5': { catalog: { them: 'Thêm đối tượng', nhomLoc: 'loai', nhanLoc: 'Loại',
       cols: (goi, cheDo) => [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Tên' }, { k: 'loai', t: 'Loại' }, { k: 'mst', t: 'Mã số thuế' }, { k: 'nhom', t: 'Nhóm', cls: 'dim' },
         { k: 'dongY', t: 'Đồng ý chia sẻ', c: true, r: (r: Row) => r.dongY ? 'Đã đồng ý' : 'Chưa' },
         ...(goi === 'PR' ? [{ k: 'dktt', t: 'Điều khoản thanh toán' } as Col] : []),
@@ -248,7 +246,6 @@ const danhMuc: ModuleDef = {
     '1.8': { catalog: { them: 'Thêm kho', khongThem: ['S', 'PL'],
       // gói Free: mỗi cửa hàng một kho mặc định theo iPOS Inventory (kho đầu của cửa hàng), không thêm kho mới (T143)
       locGoi: (goi, r) => goi === 'PR' || CUA_HANG.some(c => c.kho[0] === r.ten),   // gói Standard, Plus: dữ liệu mẫu một kho mỗi cửa hàng
-      chucNang: () => [{ nhan: 'Xem tồn kho', di: 'kho/5-2-4' }, { nhan: 'Chuyển kho', di: 'kho/5-1-4-3/moi' }, { nhan: 'Xuất điều chuyển', di: 'kho/5-1-4/moi' }],
       cols: (goi, cheDo) => [{ k: 'ma', t: 'Mã kho', cls: 'code' }, { k: 'ten', t: 'Tên kho' }, { k: 'cn', t: 'Cửa hàng' }, ...(goi === 'S' || goi === 'PL' ? [] : [{ k: 'loai', t: 'Nhóm kho' }]), { k: 'tk', t: 'Thủ kho', cls: 'dim' },
         { k: 'thuongHieu', t: 'Thương hiệu', an: true, r: (r: Row) => r.thuongHieu || 'Tất cả' },   // bảng rộng nên mặc định ẩn, bật ở Tuỳ chỉnh cột (T151)
         ...(kieuGhiSo(cheDo) === 'noco' ? [tkCot('tkKho', 'TK kho'), tkCot('tkGv', 'TK giá vốn'), tkCot('tkCp', 'TK chi phí')] : [])],

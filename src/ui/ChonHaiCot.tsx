@@ -176,10 +176,10 @@ export function ChonHaiCot({
       donVi = ' kênh'
     } else if (lowerNhan.includes('kho')) {
       donVi = ' kho'
+    } else if (lowerNhan.includes('cửa hàng')) {   // xét trước "hàng", vd Cửa hàng áp dụng
+      donVi = ' CH'
     } else if (lowerNhan.includes('hàng')) {
       donVi = ' hàng hoá'
-    } else if (lowerNhan.includes('cửa hàng')) {
-      donVi = ' CH'
     }
     return `${maDau} +${n}${donVi}`
   }, [giaTriHopLe, daChon, nhan])
