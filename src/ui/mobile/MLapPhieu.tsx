@@ -5,7 +5,7 @@ import type { Row, ScreenProps } from '../../modules/types'
 import { dongCua, tkTheoLyDo, ttNghiepVu, type Dong } from '../generic/gen'
 import { duongDan, tenMan } from '../../app/registry'
 import { cuaHangHienTai, ngayDauNam, truocDauNam, useSession } from '../../app/session'
-import { anNgoaiGoi, type Goi, kieuGhiSoDv } from '../../app/plan'
+import { type Goi, kieuGhiSoDv } from '../../app/plan'
 import { CUA_HANG, HANG, KHACH, KHO, LY_CAN_DOI_TUONG, LY_DO, NCC, NHAN_VIEN, NVL, MA_LY_CHO_PHAN_BO, TK_NGAN_HANG } from '../../data/mock'
 import { boO, nhomCua, theoLoai } from '../generic/nhom'
 import { DS_DOI_TUONG } from '../generic/BangSua'
@@ -244,7 +244,7 @@ const TheHangMoi: FC<TheHangMoiProps> = ({
 
   const dvtChinh = d.dvtChinh || HANG.find(h => h.ma === d.ma || h.ten === d.ten)?.dvt || NVL.find(n => n.ma === d.ma || n.ten === d.ten)?.dvt || d.dvt
   const dsQd = useMemo(() => quyDoiTuDanhMuc(d.ten, dvtChinh), [d.ten, dvtChinh])
-  const coQuyDoi = !anNgoaiGoi(goi) && dsQd.length > 0
+  const coQuyDoi = goi !== 'S' && dsQd.length > 0
   const tongDong = d.tongNhap !== undefined ? d.tongNhap : ((Number(d.tien) || 0) - (Number(d.ck) || 0) + (Number(d.thue) || 0))
 
   if (!dangSua) {
@@ -298,7 +298,7 @@ const TheHangMoi: FC<TheHangMoiProps> = ({
         {/* 2. ĐVT */}
         <div className="mh-o">
           <small>ĐVT</small>
-          {anNgoaiGoi(goi) || !coQuyDoi ? (
+          {!coQuyDoi ? (
             <span className="mh-dvt khoa">{d.dvt || 'Cái'}</span>
           ) : (
             <span className="mh-chon" onClick={onMoChonDvt}>{d.dvt || 'Cái'} ▾</span>

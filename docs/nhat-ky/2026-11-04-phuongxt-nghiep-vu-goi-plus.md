@@ -12,6 +12,10 @@
 - `src/modules/bao-cao/danh-sach.ts`, `MO_IFASTER`: thêm 3.2.1, 3.2.2, 3.2.3, 5.2.5 để Báo cáo bán hàng, Đối soát bán hàng với POS, Báo cáo doanh thu, Đối chiếu xuất kho với định lượng hiện ở mọi chế độ. Trước đây Đối soát và Đối chiếu có trong gói Plus nhưng bị lọc theo chế độ nên không hiện.
 - Báo cáo nhập kho, xuất kho 5.2.2 của roadmap: PhuongXT chốt dùng Tổng hợp xuất kho 5.2.11, Chi tiết xuất kho 5.2.12, hai màn này gói Plus đã có. 5.2.2 vẫn bỏ (T624).
 - Gói Standard không đổi.
+- PhuongXT dặn ẩn hết màn, ghi chú gói Pro ở gói Plus. `src/app/plan.ts`: `anNgoaiGoi` đúng cho cả gói Plus. Gói Plus ẩn hẳn màn ngoài gói như gói Standard, không còn màn khoá, nhãn Pro, trang mời nâng cấp.
+- Các chỗ dùng `anNgoaiGoi` mà thật ra là giao diện riêng gói Standard đổi sang `goi === 'S'`. Gồm quy đổi ĐVT ở `MLapPhieu.tsx`, `MLapPhieuKho.tsx`, hàng tab ở `MChungTu.tsx`, tab Báo cáo theo dõi ở `MCcdc.tsx`.
+- `src/modules/home/BanLamViec.tsx`, `TongQuan.tsx`: gói Plus bỏ việc, thẻ Cảnh báo rủi ro của gói Pro. `src/modules/tong-hop/CuoiKy.tsx`: Khoá sổ bỏ bước Kiểm tra cuối kỳ, Kết chuyển lãi lỗ ghi "Có từ gói Pro".
+- `src/app/Screen.tsx`: mở bằng đường dẫn phân hệ không màn nào trong gói (Giá thành ở gói Plus) thì về Trang chủ, không hiện sơ đồ xem trước gói Pro.
 
 ## Đã kiểm
 
@@ -26,8 +30,7 @@
 - Roadmap ghi 3.1.2 là "Bán hàng"; đang mở theo mã là Hoá đơn bán hàng 3.1.2. Bán hàng lập tay 3.1.7 vẫn chỉ gói Pro. Cần thì PhuongXT chốt lại.
 - Tự động xuất kho định lượng 11.2 roadmap xếp Plus, chưa mở lại (vẫn bỏ theo T100).
 - Gói Plus còn mở 8 màn roadmap không ghi "Mới ở Plus": 5.1.8, 10.1.1, 2.2.8, 2.2.9, 4.2.6, 10.4.3, 11.13, X3. Giữ nguyên vì chưa biết roadmap xếp gói Standard hay Pro.
-- Màn gói Pro vẫn hiện khoá ở gói Plus để mời nâng cấp như cũ.
 
 ## Bẫy, quyết định mới
 
-- Không.
+- `anNgoaiGoi` giờ đúng cho gói Standard và Plus. Giao diện chỉ riêng gói Standard thì xét `goi === 'S'`, đừng dùng `anNgoaiGoi`.

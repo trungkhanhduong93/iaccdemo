@@ -31,6 +31,9 @@ export function ScreenRoute() {
   const { mod: mk, slug } = useParams()
   const { mod, sc } = timMan(mk, slug)
   if (!mod) return <Navigate to="/app" replace />
+  // Phân hệ không màn nào trong gói (vd Giá thành ở gói Plus) mở bằng đường dẫn thì về Trang chủ, không hiện sơ đồ xem trước gói Pro (T721)
+  const coMa = mod.screens.filter(x => x.code || x.can)
+  if (anNgoaiGoi(s.goi) && coMa.length > 0 && !coMa.some(x => moDuoc(x, s.goi))) return <Navigate to="/app" replace />
   if (!sc) {
     // Báo cáo của phân hệ khác mà sơ đồ Quy trình nhắc tới, mở ngay trong phân hệ đang đứng (T385), vd mua-hang/5-2-3
     const ngoai = !laMobile && mod.key !== 'bao-cao' ? baoCaoCuaPhanHe(mod, s).find(x => x.slug === slug && x.goc !== mod.key) : undefined

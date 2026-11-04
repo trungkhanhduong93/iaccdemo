@@ -4,7 +4,6 @@ import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-do
 import type { Row, ScreenProps } from '../../modules/types'
 import { cuaHangHienTai, dsKyNam, kyMacDinh, ngayDauNam, truocDauNam, useSession } from '../../app/session'
 import { hienMan, laBaoCao } from '../../app/registry'
-import { anNgoaiGoi } from '../../app/plan'
 import { CUA_HANG } from '../../data/mock'
 import { money, fold } from '../format'
 import { Icon } from '../Icon'
@@ -244,7 +243,7 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
       ds.push({ k: '8-1-3', ten: 'Kiểm kê CCDC', onClick: () => nav('/app/ccdc/8-1-3') })
     }
 
-    if (!anNgoaiGoi(s.goi)) {
+    if (s.goi !== 'S') {
       ds.push({ k: 'bctd', ten: 'Báo cáo theo dõi', onClick: () => setMoTheoDoi(true) })
     }
 

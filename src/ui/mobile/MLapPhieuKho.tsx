@@ -3,7 +3,7 @@ import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import type { Row, ScreenProps } from '../../modules/types'
 import { duongDan, tenMan } from '../../app/registry'
 import { cuaHangHienTai, ngayDauNam, truocDauNam, useSession } from '../../app/session'
-import { anNgoaiGoi, type Goi } from '../../app/plan'
+import { type Goi } from '../../app/plan'
 import { CUA_HANG, HANG, KHO, NVL } from '../../data/mock'
 import { fold, money } from '../format'
 import { Icon } from '../Icon'
@@ -111,7 +111,7 @@ const TheHangKho: FC<TheHangKhoProps> = ({
 
   const dvtChinh = d.dvtChinh || NVL.find(n => n.ma === d.ma || n.ten === d.ten)?.dvt || HANG.find(h => h.ma === d.ma || h.ten === d.ten)?.dvt || d.dvt
   const dsQd = useMemo(() => quyDoiTuDanhMuc(d.ten, dvtChinh), [d.ten, dvtChinh])
-  const coQuyDoi = !anNgoaiGoi(goi) && dsQd.length > 0
+  const coQuyDoi = goi !== 'S' && dsQd.length > 0
 
   if (laKk) {
     const tonHt = Number(d.tonHt ?? 0)

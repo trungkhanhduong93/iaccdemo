@@ -3,7 +3,7 @@ import { useState, useRef, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import type { ScreenProps } from '../types'
 import { cuaHangHienTai, useSession } from '../../app/session'
-import { coTrongGoi, minGoi } from '../../app/plan'
+import { anNgoaiGoi, coTrongGoi, minGoi } from '../../app/plan'
 import { MODULES, hienMan } from '../../app/registry'
 import { CUA_HANG, HOM_NAY } from '../../data/mock'
 import { Icon, ONen } from '../../ui/Icon'
@@ -420,6 +420,7 @@ export function TongQuan({ sc }: ScreenProps) {
       }
 
       case 'canh-bao': {
+        if (!canhBao && anNgoaiGoi(s.goi)) return null   // gói Plus không hiện thẻ mời gói Pro (T721)
         return (
           <div key="canh-bao" className="tq-col-4">
             {canhBao ? (

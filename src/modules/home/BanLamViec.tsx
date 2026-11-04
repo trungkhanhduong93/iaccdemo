@@ -2,7 +2,7 @@
 import { Link } from 'react-router-dom'
 import type { ScreenProps } from '../types'
 import { dsCuaHang, useSession } from '../../app/session'
-import { coTrongGoi, kieuGhiSo, minGoi } from '../../app/plan'
+import { anNgoaiGoi, coTrongGoi, kieuGhiSo, minGoi } from '../../app/plan'
 import { DONG_BO, KY_KHOA_SO, LECH, daysOf } from '../../data/mock'
 import { Icon } from '../../ui/Icon'
 import { Card, PageHead, Pk } from '../../ui/Page'
@@ -72,6 +72,7 @@ export function BanLamViec({ sc }: ScreenProps) {
           <Card title="Việc cần xử lý" sub={`${co.length} việc`} pad={false}>
             {viec.map(v => {
               const ok = !v.ma || coTrongGoi(v.ma, s.goi)
+              if (!ok && anNgoaiGoi(s.goi)) return null   // gói Plus không hiện việc của gói Pro (T721)
               return (
                 <div className={`task ${ok ? '' : 'lock'}`} key={v.b}>
                   <span className={`task-ic ${v.k}`}><Icon n={v.ic} /></span>

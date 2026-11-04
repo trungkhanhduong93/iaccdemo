@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 import type { ScreenProps } from '../types'
 import { tenMan } from '../../app/registry'
 import { useSession } from '../../app/session'
-import { coTrongGoi } from '../../app/plan'
+import { anNgoaiGoi, coTrongGoi } from '../../app/plan'
 import { KY_KHOA_SO } from '../../data/mock'
 import { Icon } from '../../ui/Icon'
 import { Card, Note, PageHead } from '../../ui/Page'
@@ -61,7 +61,7 @@ export function KhoaSo({ sc, mod }: ScreenProps) {
       </PageHead>
       <div className="grid g-21" style={{ alignItems: 'start' }}>
         <Card title={`Các bước khoá sổ tháng ${KY_KHOA_SO.thang}/${KY_KHOA_SO.nam}`}>
-          {buoc.map(([st, b, sub, ok]) => (
+          {buoc.filter(b => b[3] || !anNgoaiGoi(s.goi)).map(([st, b, sub, ok]) => (
             <div className={`check ${khoa ? 'done' : st}`} key={b} style={ok ? undefined : { opacity: .55 }}>
               <span className="box">{(khoa || st === 'done') && <Icon n="check" className="ic sm" />}</span>
               <b>{b}</b><small className="muted">{sub}</small>

@@ -223,8 +223,8 @@ export function demTheoGoi(goi: Goi, mod?: number) {
   return { co: fs.filter(f => f.g.includes(goi)).length, tong: fs.length }
 }
 
-/** Gói Free ẩn hẳn tính năng ngoài gói thay vì hiện mờ có khoá (QD22). Gói khác vẫn hiện khoá để mời nâng cấp. */
-export const anNgoaiGoi = (goi: Goi) => goi === 'S'
+/** Gói Free ẩn hẳn tính năng ngoài gói thay vì hiện mờ có khoá (QD22). Gói Plus cũng ẩn hẳn, không hiện màn, ghi chú gói Pro, PhuongXT 04/11/2026 (T721) */
+export const anNgoaiGoi = (goi: Goi) => goi !== 'PR'
 
 /** Kiểu ghi sổ theo gói hoặc chế độ kế toán. */
 export function kieuGhiSo(x: Goi | CheDo): 'khong' | 'so' | 'noco' {

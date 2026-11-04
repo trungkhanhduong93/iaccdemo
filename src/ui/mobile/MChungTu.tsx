@@ -4,7 +4,7 @@ import { Navigate, useLocation, useNavigate, useParams, useSearchParams } from '
 import type { Row, ScreenProps } from '../../modules/types'
 import { duongDan } from '../../app/registry'
 import { cuaHangHienTai, useSession } from '../../app/session'
-import { anNgoaiGoi, kieuGhiSoDv } from '../../app/plan'
+import { kieuGhiSoDv } from '../../app/plan'
 import { docNgay, khoangThang, trongKhoang } from '../ChonNgay'
 import { money, rutGonSo } from '../format'
 import { dsChipTT, khopChipTT } from '../LocNangCao'
@@ -373,7 +373,7 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
           </div>
         )
       }
-      if (anNgoaiGoi(s.goi)) {
+      if (s.goi === 'S') {
         return (
           <div className="m-tc-tabs" role="tablist">
             <button
@@ -588,7 +588,7 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
     }
 
     if (mod.key === 'mua-hang') {
-      if (anNgoaiGoi(s.goi)) {
+      if (s.goi === 'S') {
         return (
           <div className="m-tc-tabs" role="tablist">
             <button
