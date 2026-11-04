@@ -1025,3 +1025,5 @@ Trum chốt 31/10/2026 (T703).
 - Danh mục hàng hoá TT58 hiện cột Thuế GTGT, Thuế TNDN; form có khối Thông tin thuế riêng. Thuế GTGT theo phương pháp khấu trừ thì ẩn cột, ô Thuế GTGT. Thuế TNDN trên thu nhập tính thuế thì ẩn cột, ô Thuế TNDN. Ô chọn Ngành nghề ở hàng hoá, nhóm hàng luôn hiện, kể cả khi cả hai thuế không theo tỷ lệ, vì vẫn cần để tạm tính thuế TNDN theo tỷ lệ nộp hàng quý (PhuongXT, 03/11/2026). Sổ S1, S2a, S3a-DNSN và tờ khai 04/GTGT lấy tỷ lệ từ bảng này, không ghi cứng.
 
 Lý do: PhuongXT gửi bảng TT58 ngày 03/11/2026, chọn tách file riêng cho khỏi lẫn với hộ kinh doanh (T720). Bảng cũ dùng nhầm tỷ lệ TNCN của hộ kinh doanh làm TNDN.
+
+## QD94. Lịch sử phiếu bản gọn (đang soạn)
