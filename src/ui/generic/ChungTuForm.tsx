@@ -617,9 +617,9 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
     ['ct', bo.tabDau ?? 'Chi tiết'],
     // Mua hàng: thông tin hoá đơn nằm ở đầu phiếu khi tích Nhận kèm hoá đơn, không có tab Hoá đơn (T62)
     ...(bo.hd && nhom !== 'mua' && nhom !== 'ban' ? [['hd', 'Hoá đơn'] as [string, string]] : []),   // mua, bán: hoá đơn ở đầu phiếu khi tích kèm hoá đơn (T83)
-    // Phiếu thu chi bỏ tab hạch toán (T49); gói Standard không ghi sổ nên không có tab Ghi sổ (T62, T646, T648)
-    ...(laTien || laKk || dcn === 'ck' || !coGhiSo ? [] :   // phiếu kiểm kê, chuyển kho không có tab Hạch toán (T124, T155)
-      [['ht', kieu === 'noco' ? 'Hạch toán' : 'Ghi sổ'] as [string, string]]),
+    // Phiếu thu chi bỏ tab hạch toán (T49); bỏ tab Ghi sổ ở mọi gói, chỉ chế độ Nợ/Có còn tab Hạch toán (T726, như T640)
+    ...(laTien || laKk || dcn === 'ck' || kieu !== 'noco' ? [] :   // phiếu kiểm kê, chuyển kho không có tab Hạch toán (T124, T155)
+      [['ht', 'Hạch toán'] as [string, string]]),
     ...(s.goi === 'S' ? [] : [['dk', 'Đính kèm'] as [string, string]]),   // gói Standard không có đính kèm (T52)
     ['ls', 'Lịch sử'],
   ]
