@@ -303,8 +303,10 @@ const danhMuc: ModuleDef = {
       } } },
     // T154: bảng giá theo iFaster; giá nhập có nhà cung cấp, kho áp dụng để trống là mọi kho
     // T723: Thêm mới mở form nhiều dòng (một khoảng thời gian, nhiều nhà cung cấp, nhiều mặt hàng); bấm dòng vẫn sửa từng dòng
-    '1.14': { catalog: { them: 'Thêm bảng giá', formThem: ThemBangGia, nhomLoc: 'loai', nhanLoc: 'Loại giá',
-      cols: [{ k: 'loai', t: 'Loại giá' }, { k: 'ten', t: 'Hàng hoá' }, { k: 'dvt', t: 'ĐVT' }, { k: 'thoiGian', t: 'Thời gian áp dụng', w: 200 }, { k: 'gia', t: 'Đơn giá', num: true },
+    // T724: 2 tab Giá nhập, Giá bán thay lọc Loại giá; Bộ lọc có Trạng thái, bỏ ĐVT, Đơn giá, VAT
+    '1.14': { catalog: { them: 'Thêm bảng giá', formThem: ThemBangGia, khongLoc: ['loai', 'dvt', 'gia', 'vat'],
+      tabTheo: { k: 'loai', ds: ['Giá nhập', 'Giá bán'], anCot: { 'Giá nhập': ['kh'], 'Giá bán': ['ncc'] } },
+      cols: [{ k: 'ten', t: 'Hàng hoá' }, { k: 'dvt', t: 'ĐVT' }, { k: 'thoiGian', t: 'Thời gian áp dụng', w: 200 }, { k: 'gia', t: 'Đơn giá', num: true },
         { k: 'vat', t: 'VAT (%)', num: true }, { k: 'ncc', t: 'Nhà cung cấp', r: (r: Row) => r.ncc || '—' },
         // T723: giá bán có khách hàng (trống là mọi khách hàng); áp dụng theo cửa hàng thay cho kho
         { k: 'kh', t: 'Khách hàng', r: (r: Row) => r.loai === 'Giá bán' ? (r.kh || 'Tất cả khách hàng') : '—' }, { k: 'cuaHang', t: 'Cửa hàng áp dụng', r: (r: Row) => r.cuaHang || 'Tất cả cửa hàng' }],

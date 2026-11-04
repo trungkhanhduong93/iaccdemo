@@ -56,8 +56,8 @@ export function CongThucScreen({ sc, mod }: ScreenProps) {
 
 // ── Danh sách ──
 
-interface GtLoc { ngay: KhoangNgay; sp: string; nvl: string; cuaHang: string }
-const locMacDinh = (): GtLoc => ({ ngay: { tu: new Date(2026, 0, 1), den: new Date(2026, 11, 31) }, sp: '', nvl: '', cuaHang: '' })
+interface GtLoc { ngay: KhoangNgay; sp: string; nvl: string; cuaHang: string; kenh: string }
+const locMacDinh = (): GtLoc => ({ ngay: { tu: new Date(2026, 0, 1), den: new Date(2026, 11, 31) }, sp: '', nvl: '', cuaHang: '', kenh: '' })
 const COT_CO_DINH = new Set(['stt'])
 
 function DsCongThuc({ sc, mod, loai, ds }: ScreenProps & { loai: LoaiCt; ds: Row[] }) {
@@ -76,7 +76,7 @@ function DsCongThuc({ sc, mod, loai, ds }: ScreenProps & { loai: LoaiCt; ds: Row
 
   const dsSp = [...new Set(ds.map(c => String(c[khoaSp])))].map(ma => ({ v: ma, t: `${hangCua(ma)?.ten ?? ma} - ${ma}` }))
   const dsNvl = [...new Set(ds.flatMap(c => nvlCua(c).map(n => n.ma)))].map(ma => ({ v: ma, t: `${hangCua(ma)?.ten ?? ma} - ${ma}` }))
-  const chonO = (k: 'sp' | 'nvl' | 'cuaHang', ten: string, mucs: { v: string; t: string }[]) => (
+  const chonO = (k: 'sp' | 'nvl' | 'cuaHang' | 'kenh', ten: string, mucs: { v: string; t: string }[]) => (
     <Select className="ds-o-sel" value={nhap[k]} aria-label={ten} onChange={e => dat(k, e.target.value)} ds={[{ v: '', t: 'Tất cả' }, ...mucs]} />
   )
   const apLoc = () => { loc0.loc(); setTrang(1) }
@@ -85,12 +85,15 @@ function DsCongThuc({ sc, mod, loai, ds }: ScreenProps & { loai: LoaiCt; ds: Row
     { k: 'sp', ten: nhanSp, coGiaTri: Boolean(nhap.sp), o: chonO('sp', nhanSp, dsSp) },
     { k: 'nvl', ten: nhanNvl, coGiaTri: Boolean(nhap.nvl), o: chonO('nvl', nhanNvl, dsNvl) },
     { k: 'cuaHang', ten: 'Cửa hàng áp dụng', coGiaTri: Boolean(nhap.cuaHang), o: chonO('cuaHang', 'Cửa hàng áp dụng', CUA_HANG.map(c => ({ v: c.ten, t: c.ten }))) },
+    // T724: công thức chế biến lọc theo kênh áp dụng; công thức để trống kênh là mọi kênh nên luôn hiện
+    ...(cb ? [{ k: 'kenh', ten: 'Kênh áp dụng', coGiaTri: Boolean(nhap.kenh), o: chonO('kenh', 'Kênh áp dụng', KENH.map(k => ({ v: k, t: k }))) }] : []),
   ]
-  const [cauHinhLoc, datCauHinhLoc] = useCauHinhLoc(path, oLoc.map(o => o.k), ['sp', 'nvl', 'cuaHang'])   // Ngày áp dụng nằm trong Bộ lọc nâng cao cho vừa thanh công cụ
+  const [cauHinhLoc, datCauHinhLoc] = useCauHinhLoc(path, oLoc.map(o => o.k), cb ? ['sp', 'nvl', 'cuaHang', 'kenh'] : ['sp', 'nvl', 'cuaHang'])   // Ngày áp dụng nằm trong Bộ lọc nâng cao cho vừa thanh công cụ
 
   const truocChip = ds.filter(c =>
     trongKhoang(docNgay(String(c.ngay)), ap.ngay) && (!ap.sp || c[khoaSp] === ap.sp) && (!ap.nvl || nvlCua(c).some(n => n.ma === ap.nvl))
-    && (!ap.cuaHang || apDungCuaHang(c.cuaHang as string[], ap.cuaHang)))
+    && (!ap.cuaHang || apDungCuaHang(c.cuaHang as string[], ap.cuaHang))
+    && (!cb || !ap.kenh || !((c.kenh as string[] | undefined)?.length) || (c.kenh as string[]).includes(ap.kenh)))
   const chips: Chip[] = TT_CONG_THUC.map(([k, ten, mau]) => ({ k, ten, mau, so: truocChip.filter(c => c.tt === k).length }))
   const list = chip ? truocChip.filter(c => c.tt === chip) : truocChip
   const trangHt = Math.min(trang, Math.max(1, Math.ceil(list.length / coTrang)))

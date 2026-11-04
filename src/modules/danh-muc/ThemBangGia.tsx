@@ -38,10 +38,10 @@ function dvtCua(h: HangGia): { dv: string; heSo: number }[] {
 let soKhoa = 0
 const dongMoi = (dt = '', h?: HangGia): DongGia => ({ key: ++soKhoa, dt, ma: h?.ma ?? '', dvt: h?.dvt ?? '', gia: h ? String(h.gia) : '', vat: h ? String(h.vat) : '' })
 
-export function ThemBangGia({ onDong }: { onDong: () => void }) {
+export function ThemBangGia({ onDong, tab }: { onDong: () => void; tab?: string }) {
   const { toast } = useSession()
   const homNay = new Date(HOM_NAY.getFullYear(), HOM_NAY.getMonth(), HOM_NAY.getDate())
-  const [loai, setLoai] = useState<LoaiGia>('Giá nhập')
+  const [loai, setLoai] = useState<LoaiGia>(tab === 'Giá bán' ? 'Giá bán' : 'Giá nhập')   // mở theo tab đang xem (T724)
   const [khoang, setKhoang] = useState<KhoangNgay>({ tu: homNay, den: new Date(homNay.getFullYear() + 1, homNay.getMonth(), homNay.getDate() - 1) })
   const [cuaHang, setCuaHang] = useState<string[]>([])
   const [dtMacDinh, setDtMacDinh] = useState('')

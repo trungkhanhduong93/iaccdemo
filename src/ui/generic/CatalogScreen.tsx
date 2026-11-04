@@ -105,6 +105,10 @@ export function CatalogScreen({ sc }: ScreenProps) {
   const coTrangThai = !cfg.dsChungTu
 
   const [tabPhanLoai, setTabPhanLoai] = useState<'tat-ca' | 'da-phan-loai' | 'chua-phan-loai'>('tat-ca')
+  // Tab theo giá trị một cột (cfg.tabTheo, vd Bảng giá: Giá nhập, Giá bán, T724)
+  const tabTheo = cfg.tabTheo
+  const [tabGt, setTabGt] = useState(tabTheo?.ds[0] ?? '')
+  const anTheoTab = useMemo(() => new Set(tabTheo?.anCot?.[tabGt] ?? []), [tabTheo, tabGt])
   // Danh mục thường: dùng useLocNhap để đổi điều kiện chỉ ghi nháp, bấm Lọc mới lọc (T511)
   const locDm = useLocNhap(() => ({
     q: '',
@@ -116,6 +120,7 @@ export function CatalogScreen({ sc }: ScreenProps) {
   useEffect(() => {
     locDm.xoaHet()
     setTabPhanLoai('tat-ca')
+    setTabGt(cfg.tabTheo?.ds[0] ?? '')
   }, [sc])
 
   // Lọc theo trạng thái trước để tính số đếm tab
@@ -134,6 +139,10 @@ export function CatalogScreen({ sc }: ScreenProps) {
   const demKhongHd = useMemo(() => all.filter(r => r._tt === 0).length, [all])
 
   const chips: Chip[] = useMemo(() => {
+    if (tabTheo) {
+      const mau = ['var(--blue)', 'var(--green)', 'var(--amber)']
+      return tabTheo.ds.map((t, i) => ({ k: t, ten: t, mau: mau[i % mau.length], so: allSauTrangThai.filter(r => r[tabTheo.k] === t).length }))
+    }
     if (laHangHoa) {
       return [
         { k: 'tat-ca', ten: 'Tất cả', mau: 'var(--blue)', so: demTatCa },
@@ -145,7 +154,7 @@ export function CatalogScreen({ sc }: ScreenProps) {
       { k: 'hd', ten: 'Đang hoạt động', mau: 'var(--green)', so: demDangHd },
       { k: 'ngung', ten: 'Không hoạt động', mau: 'var(--red)', so: demKhongHd },
     ]
-  }, [laHangHoa, demTatCa, demDaPhanLoai, demChuaPhanLoai, demDangHd, demKhongHd])
+  }, [tabTheo, allSauTrangThai, laHangHoa, demTatCa, demDaPhanLoai, demChuaPhanLoai, demDangHd, demKhongHd])
 
   const [thamDau] = useSearchParams()   // ?tich=1 mở màn với ô tích lọc nhanh đã bật, vd Khoá sổ mở Quỹ tiền chưa map PTTT (T317)
   const [tichLoc, setTichLoc] = useState(thamDau.get('tich') === '1' || (cfg.tich?.macDinh ?? false))
@@ -184,13 +193,14 @@ export function CatalogScreen({ sc }: ScreenProps) {
         }
       }
       if (tichLoc && cfg.tich && !cfg.tich.loc(r)) return false
+      if (tabTheo && r[tabTheo.k] !== tabGt) return false
       if (laHangHoa) {
         if (tabPhanLoai === 'da-phan-loai' && !r.loai) return false
         if (tabPhanLoai === 'chua-phan-loai' && Boolean(r.loai)) return false
       }
       return true
     })
-  }, [all, dsct, nhom, q, locDm.ap, tichLoc, daXoaDm, xoaTheoPhieu.ban, coTrangThai, laHangHoa, tabPhanLoai, cfg])
+  }, [all, dsct, nhom, q, locDm.ap, tichLoc, daXoaDm, xoaTheoPhieu.ban, coTrangThai, laHangHoa, tabPhanLoai, tabTheo, tabGt, cfg])
   const cols: Col[] = useMemo(() => [
     ...(cfg.stt ? [{ k: '_stt', t: 'STT', w: 60, c: true }] : []),
     ...cols0.map(c => {
@@ -261,7 +271,7 @@ export function CatalogScreen({ sc }: ScreenProps) {
   const trangHt = Math.min(trang, Math.max(1, Math.ceil(rowsHien.length / coTrang)))
   const rowsTrang = useMemo(() => rowsHien.slice((trangHt - 1) * coTrang, trangHt * coTrang), [rowsHien, trangHt, coTrang])
   // Đổi danh mục, tìm, lọc thì về trang 1 (T153)
-  useEffect(() => { setTrang(1) }, [sc, q, nhom, tichLoc, locDm.ap, tabPhanLoai])
+  useEffect(() => { setTrang(1) }, [sc, q, nhom, tichLoc, locDm.ap, tabPhanLoai, tabGt])
   const cong = (ds: Row[]) => Object.fromEntries((dsct?.cotCong ?? []).map(k => [k, ds.reduce((a, r) => a + (Number(r[k]) || 0), 0)]))
   // Dòng đang xem ở khung dưới: dòng đã chọn nếu còn trong danh sách, không thì dòng đầu
   const dangChon = (chon && rowsHien.find(r => r[cols0[0].k] === chon[cols0[0].k])) ?? rowsHien[0]
@@ -271,7 +281,7 @@ export function CatalogScreen({ sc }: ScreenProps) {
         ) } : c)} doRong={cot.doRong} rows={rowsTrang} motDong keDoc onRow={setChon} onDbl={moSua}
         rowCls={r => dangChon && r[cols0[0].k] === dangChon[cols0[0].k] ? 'dang-chon' : ''}
         sum={{ [cols[0].k]: `Tổng: ${rowsTrang.length}`, ...cong(rowsTrang) }} />
-    : <Table cols={cot.colsHien} doRong={cot.doRong} rows={rowsTrang} motDong onRow={moSua} />, [dsct, cot.colsHien, cot.doRong, rowsTrang, dangChon, cols0, cols, moSua])
+    : <Table cols={anTheoTab.size ? cot.colsHien.filter(c => !anTheoTab.has(c.k)) : cot.colsHien} doRong={cot.doRong} rows={rowsTrang} motDong onRow={moSua} />, [dsct, anTheoTab, cot.colsHien, cot.doRong, rowsTrang, dangChon, cols0, cols, moSua])
   const ten = tenMan(sc)
 
 
@@ -357,7 +367,7 @@ export function CatalogScreen({ sc }: ScreenProps) {
           ds={[{ v: 'hd', t: 'Đang hoạt động' }, { v: 'ngung', t: 'Không hoạt động' }, { v: '', t: 'Tất cả' }]} />
       ),
     }] : []),
-    ...cacCotLoc.filter(c => !keysDaCo.has(c.k)).map(c => {
+    ...cacCotLoc.filter(c => !keysDaCo.has(c.k) && !anTheoTab.has(c.k)).map(c => {
       const laBool = c.k === 'tonKho' || c.k === 'chiPhi' || c.k === 'dongY' || all.some(r => typeof r[c.k] === 'boolean')
       const dsGiaTri = [...new Set(all.map(r => r[c.k]).filter(v => v !== undefined && v !== '' && typeof v !== 'object'))].sort()
       return {
@@ -378,8 +388,9 @@ export function CatalogScreen({ sc }: ScreenProps) {
         ),
       }
     }),
-  ], [locDm.nhap, nhoms, cfg.nhanLoc, coTrangThai, cacCotLoc, all])
-  const [cauHinhLocDm, datCauHinhLocDm] = useCauHinhLoc(pathDm, oLocDm.map(o => o.k), ['tim', ...(nhoms.length > 1 ? [khoaNhomLoc] : [])])
+  ], [locDm.nhap, nhoms, cfg.nhanLoc, coTrangThai, cacCotLoc, all, anTheoTab])
+  // Màn có tab (tabTheo) không còn chip trạng thái, ô Trạng thái hiện sẵn trên thanh lọc (T724)
+  const [cauHinhLocDm, datCauHinhLocDm] = useCauHinhLoc(pathDm, oLocDm.map(o => o.k), ['tim', ...(nhoms.length > 1 ? [khoaNhomLoc] : []), ...(tabTheo && coTrangThai ? ['trangThai'] : [])])
 
   return (
     <div className={dsct ? 'page page-voucher' : 'page page-voucher page-dm'}>
@@ -521,9 +532,10 @@ export function CatalogScreen({ sc }: ScreenProps) {
                 {coTrangThai && (
                   <ChipTrangThai
                     ds={chips}
-                    chon={laHangHoa ? tabPhanLoai : (locDm.ap.trangThai || 'hd')}
+                    chon={tabTheo ? tabGt : laHangHoa ? tabPhanLoai : (locDm.ap.trangThai || 'hd')}
                     onChon={k => {
-                      if (laHangHoa) setTabPhanLoai(k as 'tat-ca' | 'da-phan-loai' | 'chua-phan-loai')
+                      if (tabTheo) setTabGt(k)
+                      else if (laHangHoa) setTabPhanLoai(k as 'tat-ca' | 'da-phan-loai' | 'chua-phan-loai')
                       else {
                         locDm.datVaAp('trangThai', k as 'hd' | 'ngung')
                         setTrang(1)
@@ -625,7 +637,7 @@ export function CatalogScreen({ sc }: ScreenProps) {
       )}
       {quyVuaTao && <GoiYLapPhieu quy={quyVuaTao} onDong={() => setQuyVuaTao(null)} />}
       {moHangLoat && cfg.hangLoat && <cfg.hangLoat.Form soDong={all.length} rows={all} onDong={() => setMoHangLoat(false)} />}
-      {moFormThem && cfg.formThem && <cfg.formThem onDong={() => setMoFormThem(false)} />}
+      {moFormThem && cfg.formThem && <cfg.formThem tab={tabGt || undefined} onDong={() => setMoFormThem(false)} />}
     </div>
   )
 }

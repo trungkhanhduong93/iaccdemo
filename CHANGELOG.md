@@ -3,6 +3,8 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 04/11/2026
+- T724: Danh mục Bảng giá chia 2 tab Giá nhập, Giá bán. Bộ lọc có Trạng thái, mặc định Đang hoạt động; bỏ lọc Loại giá, ĐVT, Đơn giá, VAT. Thêm mới mở sẵn loại giá của tab đang xem.
+- T724: Công thức chế biến thêm bộ lọc Kênh áp dụng.
 - T723: Danh mục Bảng giá: Thêm mới mở form khai giá một lần cho nhiều mặt hàng, nhiều nhà cung cấp, khách hàng cùng một thời gian áp dụng. Giá nhập có nhà cung cấp, giá bán có khách hàng (để trống là mọi khách hàng). Chọn lại được ĐVT quy đổi, đơn giá tự quy theo. Áp dụng theo cửa hàng thay cho kho. Form chừa menu bên trái.
 - T723: Panel thêm, sửa công thức chế biến, sơ chế rộng như form Thêm bảng giá, chừa menu bên trái.
 - T722: Danh mục Đơn vị tính có nút Đồng bộ FABi. Quy đổi ĐVT hiện mã kèm tên ở cột Từ ĐVT, Đến ĐVT; bộ lọc bỏ Tỷ lệ, Diễn giải. Danh mục Hàng hoá, Đối tượng, Kho bỏ cột Chức năng.
