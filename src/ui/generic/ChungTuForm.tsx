@@ -5,7 +5,7 @@ import type { Row, ScreenProps, VoucherCfg } from '../../modules/types'
 import { duongDan, moDuoc, tenMan, timMan } from '../../app/registry'
 import { cuaHangHienTai, useSession, cheDoHienTai, ngayDauNam, truocDauNam, donViHienTai, loaiHinhDv, gtgtTyLe } from '../../app/session'
 import { giamThueHkd } from '../../modules/ban-hang/giam-thue'
-import { kieuGhiSo, type Goi, kieuGhiSoDv } from '../../app/plan'
+import { kieuGhiSo, type Goi, kieuGhiSoDv, tcNhuStandard } from '../../app/plan'
 import { CHE_DO, type CheDo } from '../../app/che-do'
 import { tkTheoCheDo } from '../../modules/tong-hop/so-cai'
 import { CUA_HANG, KHACH, KHO, LY_CAN_DOI_TUONG, LY_DO, NCC, NHAN_VIEN, TK_NGAN_HANG, daKhoaSo, khoaSoDenCua } from '../../data/mock'
@@ -103,7 +103,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
   const doRongTab = useDoRongCot(`${path}:${tab}`)
   // Phiếu đang thêm mới chưa lưu: Huỷ, nút X, Esc đều hỏi lại trước khi bỏ (T125)
   const dongMoi = () => (moi ? setHoiDong(true) : dongForm())
-  const kieu = kieuGhiSoDv(s)
+  const kieu = kieuGhiSoDv(s, mod.key)
   // Gói Standard, Plus hộ kinh doanh lưu là xong, không có Chưa ghi sổ, tab, nút Ghi sổ; Plus doanh nghiệp ghi sổ TT58, Pro hạch toán Nợ/Có (QD81)
   const coGhiSo = kieu !== 'khong'
   const coTkGoi = kieu === 'noco'
@@ -178,7 +178,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
   }, [loai?.k, row?.id])
   // Thu chi tiền mặt và ngân hàng (T346)
   const laThuChiTien = laTien && (loai?.k === 'thu' || loai?.k === 'chi' || loai?.k === 'bc' || loai?.k === 'unc')
-  const khoaLyDtStandard = s.goi === 'S' && laThuChiTien
+  const khoaLyDtStandard = tcNhuStandard(s.goi) && laThuChiTien   // gói Plus như Standard (T733)
 
   // Gói Free phiếu thu, chi (T346): khi mở xem vẫn hiện đúng dữ liệu đã lưu; khi bấm Sửa hoặc thêm mới thì các dòng lấy theo giá trị phía trên; đổi ô phía trên thì các dòng đổi theo ngay
   useEffect(() => {
@@ -205,7 +205,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
   }, [dongGoc, lyDo, coTkTheoLy, loaiPhieuTien])   // không đưa oLy vào: object tạo lại mỗi lần vẽ làm effect chạy lặp
   // Gói Standard phiếu chi, UNC lý do Thanh toán công nợ nhà cung cấp (T718): tab Chi tiết chọn phiếu mua còn nợ để trả,
   // mỗi phiếu mua chọn thành một dòng chi tiết. Phiếu mẫu chưa chọn phiếu mua thì khi xem vẫn hiện bảng dòng như cũ
-  const traNoNcc = s.goi === 'S' && laTien && (loai?.k === 'chi' || loai?.k === 'unc') && lyDo === LY_DO.find(x => x.ma === 'CHI02')?.ten
+  const traNoNcc = tcNhuStandard(s.goi) && laTien && (loai?.k === 'chi' || loai?.k === 'unc') && lyDo === LY_DO.find(x => x.ma === 'CHI02')?.ten
   const [traNo, setTraNo] = useState<TraNo[]>(() => (row?._traNo as TraNo[] | undefined) ?? [])
   useEffect(() => { setTraNo((row?._traNo as TraNo[] | undefined) ?? []) }, [row?.id])
   const hienTraNo = traNoNcc && (dangSua || Boolean(row?._traNo))
@@ -297,7 +297,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
   }
   const truocThue = nhom === 'mua' && Boolean(bo.tongNhap)   // phiếu mua: các số tiền ở dòng, khối tổng chỉ Tổng tiền (T84)
   const coHdDau = (nhom === 'mua' || nhom === 'ban') && Boolean(bo.hd) && nhanKemHd
-  const coThangLl = laTien && s.goi === 'S' && nhom !== 'cq'   // chuyển quỹ không ảnh hưởng lãi lỗ
+  const coThangLl = laTien && tcNhuStandard(s.goi) && nhom !== 'cq'   // chuyển quỹ không ảnh hưởng lãi lỗ
   const dsThangLl = useMemo(() => thangLaiLo(ngayCt, cuaHang), [ngayCt, cuaHang])
   const [thangLl, setThangLl] = useState(dsThangLl[0])
   useEffect(() => { setThangLl(dsThangLl[0]) }, [dsThangLl])

@@ -12,6 +12,7 @@ import type { Dong } from '../generic/gen'
 import { tinhButToan } from './butToan'
 import { CUA_HANG } from '../../data/mock'
 import { laLyChiPhi } from '../generic/danhMucStore'
+import { tcNhuStandard } from '../../app/plan'
 
 export interface MDtThuChiXemProps extends ScreenProps {
   row: Row
@@ -92,7 +93,7 @@ export const MDtThuChiXem: FC<MDtThuChiXemProps> = ({
   // Bút toán cho gói Plus, Pro
   const { cfg } = useDongChungTu(sc, mod)
   const dsButToan = useMemo(() => {
-    if (s.goi === 'S') return []
+    if (tcNhuStandard(s.goi)) return []   // gói Plus như Standard, không hiện bút toán (T733)
     return tinhButToan(
       cfg,
       dsDong,

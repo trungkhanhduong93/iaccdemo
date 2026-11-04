@@ -61,7 +61,7 @@ export const MDtThuChiDs: FC<ScreenProps> = ({ sc, mod }) => {
     })
   }, [rowsGoc, mod.key, cfg])
 
-  const ghi = kieuGhiSoDv(s) !== 'khong'   // gói Standard, Plus hộ kinh doanh không ghi sổ (QD81)
+  const ghi = kieuGhiSoDv(s, mod.key) !== 'khong'   // gói Standard, Plus hộ kinh doanh không ghi sổ (QD81)
   const cnChon = cuaHangHienTai(s)
 
   const [sp, setSearchParams] = useSearchParams()

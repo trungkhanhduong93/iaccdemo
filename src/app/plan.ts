@@ -234,7 +234,11 @@ export function kieuGhiSo(x: Goi | CheDo): 'khong' | 'so' | 'noco' {
 
 /** Kiểu ghi sổ của đơn vị đang làm việc (QD81): gói Standard không ghi sổ, kể cả doanh nghiệp chạy TT58;
  *  gói khác theo chế độ kế toán: Plus doanh nghiệp TT58 ghi thẳng vào sổ, Plus hộ kinh doanh TT152 không ghi sổ, Pro Nợ/Có */
-export function kieuGhiSoDv(s: { goi: Goi; cheDo: CheDo }): ReturnType<typeof kieuGhiSo> {
+export function kieuGhiSoDv(s: { goi: Goi; cheDo: CheDo }, modKey?: string): ReturnType<typeof kieuGhiSo> {
+  if (modKey === 'tien' && tcNhuStandard(s.goi)) return 'khong'   // T733: thu chi gói Plus không ghi sổ, như Standard
   return s.goi === 'S' ? 'khong' : kieuGhiSo(s.cheDo)
 }
+
+/** Màn thu chi gói Plus giống gói Standard, chỉ thêm tab Đính kèm, PhuongXT 04/11/2026 (T733) */
+export const tcNhuStandard = (goi: Goi) => goi === 'S' || goi === 'PL'
 

@@ -292,7 +292,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
   const [phieuIn, setPhieuIn] = useState<PhieuIn[] | null>(null)
   const [activeId, setActiveId] = useState<string>(rowsGoc[0]?.id ?? '')
 
-  const ghi = kieuGhiSoDv(s) !== 'khong'   // gói Standard, Plus hộ kinh doanh không ghi sổ (QD81)
+  const ghi = kieuGhiSoDv(s, mod.key) !== 'khong'   // gói Standard, Plus hộ kinh doanh không ghi sổ (QD81)
   const cnChon = cuaHangHienTai(s)
   const nhom = nhomCua(mod.key, cfg)
   const bo = boO(nhom, cfg)

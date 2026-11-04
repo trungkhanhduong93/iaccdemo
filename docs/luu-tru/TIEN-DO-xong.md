@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T733 | Màn thu chi gói Plus giống Standard, chỉ thêm tab Đính kèm (web, danh sách và xem phiếu điện thoại): lý do, đối tượng ở đầu phiếu, chi trả nợ NCC, tháng tính chi phí, không ghi sổ, không bút toán | PhuongXT | 04/11/2026 | `docs/nhat-ky/2026-11-04-phuongxt-thu-chi-plus-nhu-standard.md` |
 | T731 | Khối Sổ sách, báo cáo cuối sơ đồ Quy trình liệt kê đủ báo cáo như tab Báo cáo của phân hệ, thay danh sách chọn tay | PhuongXT | 04/11/2026 | 2026-11-04-phuongxt-bo-s4a-mua-hang.md |
 | T730 | Mọi màn Quy trình, mọi gói bỏ cột Tiện ích liên quan, Thiết lập & Thao tác ở hàng dưới sơ đồ, chỉ còn Danh mục liên quan. Sơ đồ Mua hàng bỏ ô Nhận hoá đơn đầu vào | PhuongXT | 04/11/2026 | 2026-11-04-phuongxt-bo-s4a-mua-hang.md |
 | T729 | Tab Báo cáo phân hệ Mua hàng bỏ Sổ công nợ S4a-DNSN (bỏ khỏi khung Báo cáo của sơ đồ Quy trình Mua hàng) | PhuongXT | 04/11/2026 | 2026-11-04-phuongxt-bo-s4a-mua-hang.md |
