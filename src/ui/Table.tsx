@@ -156,7 +156,6 @@ export function Table({
   keDoc,
   virtual,
   onToggleGroup,
-  dongDau,
 }: {
   cols: Col[]
   rows: (Row | GroupNode)[]
@@ -172,7 +171,6 @@ export function Table({
   keDoc?: boolean                       // kẻ dọc giữa các cột
   virtual?: boolean                     // bật cuộn ảo cho danh sách lớn
   onToggleGroup?: (id: string) => void  // đóng mở nhóm
-  dongDau?: Record<string, ReactNode>   // dòng nhập ngay đầu bảng, ô theo khoá cột (T736)
 }) {
   const doRongCtx = useContext(BaoCaoDoRongCtx)
   const doRong = doRongProp ?? doRongCtx
@@ -403,11 +401,6 @@ export function Table({
           )}
         </thead>
         <tbody>
-          {dongDau && (
-            <tr className="tbl-dong-nhap">
-              {cols.map((c, j) => <td key={c.k} className={lop(c, j)} style={tdStyle(c, j)}>{dongDau[c.k] ?? null}</td>)}
-            </tr>
-          )}
           {vs.topPadding > 0 && (
             <tr key="vs-top" aria-hidden><td colSpan={cols.length} style={{ height: vs.topPadding, padding: 0, border: 0 }} /></tr>
           )}

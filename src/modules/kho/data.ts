@@ -3,17 +3,13 @@ import { createElement } from 'react'
 import type { CatalogCfg, Col, Row } from '../types'
 import { CUA_HANG, HANG, KHO, NVL } from '../../data/mock'
 import { between, pad, rng, locSo } from '../../ui/format'
-import { useONhapTonDau } from './TonDauNhap'
 
 const g = (r: () => number, a: number, b: number) => Math.round(between(r, a, b))
 
-export const tonBanDau: CatalogCfg = {
-  them: 'Thêm dòng tồn đầu', nhomLoc: 'kho', themTaiCho: { useO: useONhapTonDau },   // thêm ngay trên danh sách (T736)
-  cols: [{ k: 'kho', t: 'Kho' }, { k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Tên' }, { k: 'dvt', t: 'ĐVT' }, { k: 'sl', t: 'Số lượng', num: true }, { k: 'gia', t: 'Đơn giá', num: true }, { k: 'tien', t: 'Thành tiền', num: true }],
-  rows: () => {
-    const r = rng('tondau')
-    return KHO.slice(0, 3).flatMap(kho => NVL.slice(0, 6).map(n => { const sl = g(r, 5, 60); return { kho, ma: n.ma, ten: n.ten, dvt: n.dvt, sl, gia: n.gia, tien: sl * n.gia } }))
-  },
+/** Dòng tồn đầu mẫu: 3 kho, 6 nguyên vật liệu; màn Tồn kho ban đầu sửa ngay trên bảng (TonKhoBanDau.tsx) lấy từ đây (T736) */
+export function tonBanDauMau() {
+  const r = rng('tondau')
+  return KHO.slice(0, 3).flatMap(kho => NVL.slice(0, 6).map(n => { const sl = g(r, 5, 60); return { kho, ma: n.ma, ten: n.ten, dvt: n.dvt, sl, gia: n.gia, tien: sl * n.gia } }))
 }
 
 export const dinhMucTon: CatalogCfg = {

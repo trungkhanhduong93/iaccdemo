@@ -3,7 +3,8 @@ import type { ModuleDef, ReportCfg, ScreenDef, VoucherCfg } from '../types'
 import { tuExcel } from '../types'
 import { quyTrinh } from './quy-trinh'
 import { XuatNhapTon } from './XuatNhapTon'
-import { dinhMucTon, nhapXuat, tonBanDau, tonTucThoi } from './data'
+import { dinhMucTon, nhapXuat, tonTucThoi } from './data'
+import { TonKhoBanDau } from './TonKhoBanDau'
 import { TheKho } from './TheKho'
 import { SO_BO_SUNG } from '../bao-cao/so-bo-sung'
 import { MAN_KK, mauDieuChinh, mauKiemKe } from './dieu-chinh'
@@ -117,7 +118,7 @@ const kho: ModuleDef = {
     '5.1.8': { tool: { nut: 'Tính giá thành tháng 9/2026', mota: 'Giá thành món theo công thức chế biến và giá xuất kho bình quân. Dùng cho chuỗi có một cấp chế biến.', caiDat: [['Kỳ tính', 'Tháng 9/2026'], ['Đối tượng', 'Món bán trên FABi']] } },
     '5.1.10': KK,
     '5.1.11': { voucher: { prefix: 'BSG', doiTuong: 'ncc', nhan: 'Nhà cung cấp', them: 'Thêm phiếu bổ sung giá', dong: 'nvl', tien: [0, 0], thue: 0, dienGiai: ['Bổ sung giá cho phiếu nhập chưa có giá'], noCo: [['152', '331', 'Bổ sung giá nhập']] } },
-    '5.1.12': { kind: 'catalog', catalog: tonBanDau },
+    '5.1.12': { kind: 'custom', comp: TonKhoBanDau },   // sửa ngay trên bảng, không panel thêm, sửa (T736)
     '5.1.13': { kind: 'catalog', catalog: dinhMucTon },
     '5.2.1': { kind: 'custom', comp: TheKho },   // đọc mặt hàng, kho, kỳ trên đường dẫn khi mở từ xuất nhập tồn (T157)
     '5.2.2': { report: { kieu: 'bangke', ...nhapXuat } },

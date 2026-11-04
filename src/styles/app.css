@@ -44384,16 +44384,12 @@ a.hdn-chip:hover { border-color: var(--blue); color: var(--blue); }
 }
 
 
-/* ── Tồn kho ban đầu: dòng nhập ngay đầu danh sách (T736) ── */
-.tbl tr.tbl-dong-nhap > td {
-  background: var(--tint);
-  padding-top: 4px;
-  padding-bottom: 4px;
-  overflow: visible;
-}
-.tbl tr.tbl-dong-nhap .tdn-o { display: block; }
-.tbl tr.tbl-dong-nhap .tdn-chon { width: 100%; height: 30px; }
-.tbl tr.tbl-dong-nhap .tdn-so { width: 100%; height: 30px; text-align: right; }
-.tbl tr.tbl-dong-nhap .tdn-loi .sel,
-.tbl tr.tbl-dong-nhap input.tdn-loi { border-color: var(--red); }
-.tbl tr.tbl-dong-nhap .tdn-nut { display: inline-flex; gap: 2px; }
+/* ── Tồn kho ban đầu sửa ngay trên bảng: nút + và xoá ở dòng, ĐVT quy đổi (T736) ── */
+.tkbd .ds-toolbar-figma { padding: 12px 16px; }
+.tkbd .tkbd-loc-kho { width: 180px; }
+.tkbd-bang td { vertical-align: middle; }
+.tkbd-bang .inp.sm { width: 100%; }
+.tkbd-bang .tkbd-so { text-align: right; }
+.tkbd-bang .tkbd-dvt { padding-left: 8px; }
+.tkbd-bang .tkbd-qd { display: block; font-size: 11px; margin-top: 2px; }
+.tkbd-bang .tkbd-nut { display: inline-flex; gap: 2px; }
