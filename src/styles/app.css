@@ -44434,3 +44434,7 @@ a.hdn-chip:hover { border-color: var(--blue); color: var(--blue); }
 .m-tra-no-hang.tt .m-tc-lap-inp { text-align: right; font-weight: 600; }
 .m-tc-lap-man.m-t650 .m-tc-dong-tong-cong.m-tra-no-tong .nhan { font-size: 15px; font-weight: 700; }
 .m-tc-lap-man.m-t650 .m-tc-dong-tong-cong.m-tra-no-tong .so { font-size: 21px; font-weight: 800; }
+
+/* ── Tab con Xuất, Nhập điều chuyển gói Plus (T721) ── */
+.dm-bang > .tabs.dcn-tabs { padding: 0 16px; flex: none; }
+.dm-bang > .tabs.dcn-tabs button { font-size: 14px; padding: 12px 14px 11px; }

@@ -21,7 +21,7 @@
 - Khoá sổ: Tổng hợp bỏ Khoá sổ 10.1.6 (`goi: ['PR']`), Hệ thống hiện Khoá sổ như gói Standard (`he-thong/index.ts`). Link Mở khoá sổ ở `ChungTuBanHang.tsx`, `DongBoThuChiFabi.tsx`, bước Khoá sổ ở Bàn làm việc trỏ về Hệ thống.
 - `BanLamViec.tsx`: gói Plus bỏ việc Hoá đơn đầu vào (thuộc Tiện ích). Việc lệch đối soát, bước Đối soát doanh thu trỏ về Đối soát bán hàng với POS 3.2.2.
 - Thanh tab Kho gói Plus xếp lại: Tồn kho ban đầu, Nhập khác, Điều chuyển, Xuất huỷ, Xuất khác, Kiểm kê, Tính giá vốn. Thêm `xepTab` ở `ModuleDef` (thứ tự tab theo gói), `tabCua(m, goi)` xếp theo đó.
-- Tab Điều chuyển gói Plus: Xuất điều chuyển đổi nhãn bằng `nganGoi`, Nhập điều chuyển không có tab riêng nhờ `tabChaGoi`. `PhieuDieuChuyen.tsx` thêm tab con Xuất, Nhập điều chuyển trước chip trạng thái (`tabCon` ở `KieuDs`, `PhieuSanXuat.tsx`).
+- Tab Điều chuyển gói Plus: Xuất điều chuyển đổi nhãn bằng `nganGoi`, Nhập điều chuyển không có tab riêng nhờ `tabChaGoi`. `PhieuDieuChuyen.tsx` thêm hàng tab con Xuất, Nhập điều chuyển kiểu gạch chân `.tabs` ở đầu bảng, trên thanh lọc, tách khỏi chip trạng thái (`tabCon` ở `KieuDs`, `PhieuSanXuat.tsx`; CSS cuối `app.css`). Bản đầu đặt tab con cạnh chip, PhuongXT thấy chưa hợp lý.
 
 ## Đã kiểm
 

@@ -29,7 +29,7 @@ export function PhieuDieuChuyen({ sc, mod }: ScreenProps) {
   const nav = useNavigate()
   // Gói Plus gộp Xuất, Nhập điều chuyển vào một tab Điều chuyển, chuyển qua lại bằng tab con (T721)
   const tabCon = s.goi === 'PL' && loai !== 'ck' ? (
-    <div className="seg dc-tabs" role="tablist" aria-label="Xuất, nhập điều chuyển">
+    <div className="tabs dcn-tabs" role="tablist" aria-label="Xuất, nhập điều chuyển">
       {(['xdc', 'ndc'] as const).map(k => (
         <button key={k} type="button" role="tab" aria-selected={k === loai} className={k === loai ? 'on' : ''}
           onClick={() => { if (k !== loai) nav(`/app/${DCN[k].man}`) }}>{DCN[k].ten}</button>
