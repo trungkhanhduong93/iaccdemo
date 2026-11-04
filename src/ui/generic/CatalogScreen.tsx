@@ -79,7 +79,8 @@ export function CatalogScreen({ sc }: ScreenProps) {
   }
   const allGoc = useMemo(() => {
     const goc = cfg.rows(s.cheDo, ky).filter(r => !cfg.locGoi || cfg.locGoi(s.goi, r)).map(r => cfg.phien ? cfg.phien.gan(r, s) : r).map(r => hauXuLy ? hauXuLy(r) : r)
-    return [...goc, ...addedRows]
+    // Màn thêm ngay trên danh sách: dòng vừa thêm nằm ngay dưới dòng nhập, mới nhất trên cùng (T736)
+    return cfg.themTaiCho ? [...[...addedRows].reverse(), ...goc] : [...goc, ...addedRows]
   }, [sc, s.cheDo, ky, s.goi, cfg.phien ? s : null, addedRows, hauXuLy])
   const all = useMemo((): Row[] => {
     return allGoc.map((r, i) => {
@@ -97,6 +98,10 @@ export function CatalogScreen({ sc }: ScreenProps) {
   const khacNhap = nhapLoc.ky !== ky || nhapLoc.q !== q || nhapLoc.nhom !== nhom
   const apLoc = () => { setKy(nhapLoc.ky); setQ(nhapLoc.q); setNhom(nhapLoc.nhom) }
   const [edit, setEdit] = useState<Row | null>(null)
+  // Dòng nhập ngay đầu bảng thay panel Thêm mới (cfg.themTaiCho, T736); màn đổi thì CatalogScreen vẽ lại từ đầu nên gọi hook có điều kiện vẫn đúng thứ tự
+  const [themDong, setThemDong] = useState(false)
+  const oNhap = cfg.themTaiCho?.useO(r => { addCatalogRow(catKey, r); toast('Đã lưu') }, () => setThemDong(false))
+  const bamThem = () => cfg.themTaiCho ? setThemDong(true) : cfg.formThem ? setMoFormThem(true) : moSua({})
 
   // Danh sách, cột và bảng ghi nhớ lại: mở panel hay gõ trong panel không vẽ lại cả bảng danh sách phía sau (T81)
   const nhoms = useMemo(() => cfg.nhomLoc ? [...new Set(all.map(r => r[cfg.nhomLoc!]))] : [], [all])
@@ -119,6 +124,7 @@ export function CatalogScreen({ sc }: ScreenProps) {
 
   useEffect(() => {
     locDm.xoaHet()
+    setThemDong(false)
     setTabPhanLoai('tat-ca')
     setTabGt(cfg.tabTheo?.ds[0] ?? '')
   }, [sc])
@@ -281,7 +287,8 @@ export function CatalogScreen({ sc }: ScreenProps) {
         ) } : c)} doRong={cot.doRong} rows={rowsTrang} motDong keDoc onRow={setChon} onDbl={moSua}
         rowCls={r => dangChon && r[cols0[0].k] === dangChon[cols0[0].k] ? 'dang-chon' : ''}
         sum={{ [cols[0].k]: `Tổng: ${rowsTrang.length}`, ...cong(rowsTrang) }} />
-    : <Table cols={anTheoTab.size ? cot.colsHien.filter(c => !anTheoTab.has(c.k)) : cot.colsHien} doRong={cot.doRong} rows={rowsTrang} motDong onRow={moSua} />, [dsct, anTheoTab, cot.colsHien, cot.doRong, rowsTrang, dangChon, cols0, cols, moSua])
+    : <Table cols={anTheoTab.size ? cot.colsHien.filter(c => !anTheoTab.has(c.k)) : cot.colsHien} doRong={cot.doRong} rows={rowsTrang} motDong onRow={moSua}
+        dongDau={themDong ? oNhap : undefined} />, [dsct, anTheoTab, cot.colsHien, cot.doRong, rowsTrang, dangChon, cols0, cols, moSua, themDong, oNhap])
   const ten = tenMan(sc)
 
 
@@ -310,6 +317,7 @@ export function CatalogScreen({ sc }: ScreenProps) {
     if (k === null) return
     setGoiYThuChi(thamSo.get('goiY') === 'thuchi')
     if (k === HANG_LOAT) { setMoHangLoat(true); setThamSo({}, { replace: true }); return }
+    if (cfg.themTaiCho) { setThemDong(true); setThamSo({}, { replace: true }); return }
     if (cfg.formThem) { setMoFormThem(true); setThamSo({}, { replace: true }); return }
     const tuPhieu = (viTri.state as { tuPhieu?: Row } | null)?.tuPhieu
     setVeGoc(tuPhieu?._goc ? String(tuPhieu._goc) : null)
@@ -513,7 +521,7 @@ export function CatalogScreen({ sc }: ScreenProps) {
                   </button>
                 )}
                 {choThem && (
-                  <button type="button" className="btn pri" onClick={() => cfg.formThem ? setMoFormThem(true) : moSua({})}>
+                  <button type="button" className="btn pri" onClick={bamThem}>
                     <Icon n="plus" className="ic sm" />
                     <span>Thêm mới</span>
                   </button>
@@ -560,7 +568,7 @@ export function CatalogScreen({ sc }: ScreenProps) {
         )}
         {/* Dải cảnh báo trên bảng; không có nút riêng, chỉ sang nút thêm hàng loạt đang có số đếm ngay phía trên (T287) */}
         {canhBao && !dsct && <DaiCanhBao cb={canhBao} />}   {/* danh sách kiểu chứng từ: cảnh báo gọn trong thanh công cụ (T429) */}
-        {rows.length ? bang : (
+        {rows.length || (themDong && oNhap) ? bang : (
           all.length ? (
             <div className="empty">
               <b>Không có dòng khớp bộ lọc</b>
@@ -569,7 +577,7 @@ export function CatalogScreen({ sc }: ScreenProps) {
           ) : (
             <div className="empty">
               <b>Chưa có dữ liệu</b>
-              {choThem && <button type="button" className="btn sm pri empty-btn" onClick={() => cfg.formThem ? setMoFormThem(true) : moSua({})}>{cfg.them ?? 'Thêm mới'}</button>}
+              {choThem && <button type="button" className="btn sm pri empty-btn" onClick={bamThem}>{cfg.them ?? 'Thêm mới'}</button>}
             </div>
           )
         )}

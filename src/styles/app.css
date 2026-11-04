@@ -44383,3 +44383,17 @@ a.hdn-chip:hover { border-color: var(--blue); color: var(--blue); }
   margin-right: 6px;
 }
 
+
+/* ── Tồn kho ban đầu: dòng nhập ngay đầu danh sách (T736) ── */
+.tbl tr.tbl-dong-nhap > td {
+  background: var(--tint);
+  padding-top: 4px;
+  padding-bottom: 4px;
+  overflow: visible;
+}
+.tbl tr.tbl-dong-nhap .tdn-o { display: block; }
+.tbl tr.tbl-dong-nhap .tdn-chon { width: 100%; height: 30px; }
+.tbl tr.tbl-dong-nhap .tdn-so { width: 100%; height: 30px; text-align: right; }
+.tbl tr.tbl-dong-nhap .tdn-loi .sel,
+.tbl tr.tbl-dong-nhap input.tdn-loi { border-color: var(--red); }
+.tbl tr.tbl-dong-nhap .tdn-nut { display: inline-flex; gap: 2px; }

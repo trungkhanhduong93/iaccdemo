@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 04/11/2026
+- T736: Kho, Tồn kho ban đầu: bấm Thêm mới hiện dòng nhập ngay đầu danh sách (chọn kho, mặt hàng, gõ số lượng, đơn giá, Enter lưu rồi nhập tiếp), không mở màn thêm mới.
 - T735: Tab Báo cáo Thu chi gói Plus (và khối Sổ sách, báo cáo cuối sơ đồ Quy trình) thêm Công nợ khách hàng, Công nợ nhà cung cấp, bỏ Sổ công nợ S4a-DNSN.
 - T732: Tab Lịch sử của phiếu (web và điện thoại) gọn hơn: mỗi thao tác một dòng tên, người làm, giờ; dữ kiện ngắn thay câu dài; mỗi chỗ sửa một hàng cũ → mới kèm số tiền chênh.
 - T733: Màn thu chi gói Plus giống gói Standard, chỉ thêm tab Đính kèm: lý do, đối tượng chọn ở đầu phiếu, có chi trả nợ nhà cung cấp, tháng tính chi phí, lưu là ghi sổ luôn, không còn bút toán. Màn lập phiếu thu chi điện thoại chưa đổi theo.

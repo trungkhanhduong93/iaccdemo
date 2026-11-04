@@ -56,6 +56,8 @@ export interface CatalogCfg {
   dsChungTu?: { cotCong: string[]; cotSo?: string; so: (r: Row) => string; moTa: (r: Row) => string; chiTiet: (r: Row) => ReactNode }
   note?: (goi: Goi) => ReactNode
   truong?: CauHinhDM                     // trường panel Thêm / Sửa riêng của màn, không khai thì lấy TRUONG_DM theo mã màn
+  // Thêm mới bằng dòng nhập ngay đầu bảng, không mở panel (vd Tồn kho ban đầu, T736): useO trả ô nhập theo khoá cột; luu ghi dòng mới, huy đóng dòng nhập
+  themTaiCho?: { useO: (luu: (r: Row) => void, huy: () => void) => Record<string, ReactNode> }
   formThem?: ComponentType<{ onDong: () => void; tab?: string }>   // nút Thêm mới mở form riêng thay panel thêm từng dòng; bấm dòng vẫn sửa bằng panel (vd Bảng giá nhiều dòng, T723); tab: tab đang mở (tabTheo)
   // Chia danh sách thành tab theo giá trị cột k (vd Bảng giá: Giá nhập, Giá bán, T724); tab thay hàng chip trạng thái, trạng thái lọc trong Bộ lọc (mặc định đang hoạt động);
   // anCot: cột ẩn khỏi bảng và bộ lọc ở từng tab
