@@ -96,10 +96,11 @@ export interface TruongDM {
 }
 
 /** Ô, cột thuế theo tỷ lệ % trên doanh thu của doanh nghiệp TT58 (T720): GTGT khấu trừ thì ẩn ô GTGT,
- *  TNDN trên thu nhập tính thuế thì ẩn ô TNDN. Ngành nghề luôn hiện: vẫn cần để tạm tính TNDN theo tỷ lệ nộp hàng quý */
-export type PpThue = 'gtgt' | 'tndn'
+ *  TNDN trên thu nhập tính thuế thì ẩn ô TNDN. Ngành nghề luôn hiện: vẫn cần để tạm tính TNDN theo tỷ lệ nộp hàng quý.
+ *  gtgtKt: ô thuế suất GTGT người dùng tự chọn, chỉ hiện khi GTGT khấu trừ */
+export type PpThue = 'gtgt' | 'gtgtKt' | 'tndn'
 export function hopPp(pp: PpThue | undefined, s: { ppGtgt?: string; ppTndn?: string }): boolean {
-  return !pp || (pp === 'gtgt' ? s.ppGtgt !== 'khauTru' : s.ppTndn !== 'thuNhap')
+  return !pp || (pp === 'gtgt' ? s.ppGtgt !== 'khauTru' : pp === 'gtgtKt' ? s.ppGtgt === 'khauTru' : s.ppTndn !== 'thuNhap')
 }
 
 export interface KhoiDM {
@@ -184,6 +185,8 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
           { k: 'nganhNgheDn', nhan: 'Ngành nghề', kieu: 'chonTim', batBuoc: true, caHang: true, ds: MA_NGANH_DN, nhanDs: tenNganhDn },
           { k: 'nhomNganhDn', nhan: 'Nhóm ngành nghề', kieu: 'chu', chiDoc: true, caHang: true },
           { k: 'thueGtgtDn', nhan: 'Thuế GTGT (%)', kieu: 'so', chiDoc: true, pp: 'gtgt' },
+          // GTGT khấu trừ: thuế suất không theo bảng ngành nghề, người dùng tự chọn
+          { k: 'ts', nhan: 'Thuế suất GTGT (%)', kieu: 'chon', ds: ['KCT', '0', '5', '8', '10'], cot: 'VAT_TAX_ID', pp: 'gtgtKt' },
           { k: 'thueTndn', nhan: 'Thuế TNDN (%)', kieu: 'so', chiDoc: true, pp: 'tndn' },
         ],
       },

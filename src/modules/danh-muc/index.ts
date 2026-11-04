@@ -193,9 +193,11 @@ const danhMuc: ModuleDef = {
         // TT152, TT58 tính thuế theo tỷ lệ % trên doanh thu của ngành nghề; TT133, TT99 theo thuế suất GTGT (T151)
         ...(goi === 'S' || goi === 'PL' ? [] : [{ k: 'gia', t: 'Giá bán', num: true }]),
         // T720: doanh nghiệp TT58 hiện 2 tỷ lệ theo ngành nghề doanh nghiệp, ô riêng với hộ kinh doanh.
-        // GTGT khấu trừ thì bỏ cột GTGT, TNDN trên thu nhập tính thuế thì bỏ cột TNDN
+        // GTGT khấu trừ thì cột GTGT là thuế suất người dùng tự chọn, không theo ngành nghề; TNDN trên thu nhập tính thuế thì bỏ cột TNDN
         ...(cheDo === 'TT58'
-          ? [...(s?.ppGtgt === 'khauTru' ? [] : [{ k: 'thueGtgtDn', t: 'Thuế GTGT', num: true, w: 100, r: (r: Row) => tyLeO(r.thueGtgtDn) }]),
+          ? [s?.ppGtgt === 'khauTru'
+              ? { k: 'ts', t: 'Thuế GTGT', num: true, w: 100, r: (r: Row) => r.ts === undefined || r.ts === '' ? '—' : r.ts === 'KCT' ? 'KCT' : `${r.ts}%` }
+              : { k: 'thueGtgtDn', t: 'Thuế GTGT', num: true, w: 100, r: (r: Row) => tyLeO(r.thueGtgtDn) },
             ...(s?.ppTndn === 'thuNhap' ? [] : [{ k: 'thueTndn', t: 'Thuế TNDN', num: true, w: 100, r: (r: Row) => tyLeO(r.thueTndn) }])]
           : cheDo === 'TT152'
           ? [{ k: 'thueGtgt', t: 'Thuế suất', num: true, r: (r: Row) => r.thueGtgt === undefined || r.thueGtgt === '' ? '—' : `${String(r.thueGtgt).replace('.', dauThap())}%` }]
