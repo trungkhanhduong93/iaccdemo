@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 04/11/2026
+- T729: Tab Báo cáo của phân hệ Mua hàng không còn Sổ công nợ S4a-DNSN. Sổ vẫn xem được ở phân hệ Tiền và màn Báo cáo.
 - T728: Phiếu trả lại hàng mua có thêm cột Giá trị xuất kho ở cuối bảng chi tiết.
 - T727: Phiếu trả lại đổi tên thành Phiếu trả lại hàng mua, đáy form chỉ còn Tổng tiền, ô tích đổi thành Xuất kèm hoá đơn. Chi tiết phiếu mua có Tiện ích, Trả hàng: mở phiếu trả lại điền sẵn nhà cung cấp, kho, dòng hàng. Hai phiếu hiện mã của nhau ở Tham chiếu.
 - T726: Màn xem chi tiết, thêm mới, sửa chứng từ bỏ tab Ghi sổ. Gói Pro vẫn có tab Hạch toán.
