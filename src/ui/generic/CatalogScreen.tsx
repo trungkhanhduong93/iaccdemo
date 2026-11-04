@@ -150,6 +150,7 @@ export function CatalogScreen({ sc }: ScreenProps) {
   const [thamDau] = useSearchParams()   // ?tich=1 mở màn với ô tích lọc nhanh đã bật, vd Khoá sổ mở Quỹ tiền chưa map PTTT (T317)
   const [tichLoc, setTichLoc] = useState(thamDau.get('tich') === '1' || (cfg.tich?.macDinh ?? false))
   const [moHangLoat, setMoHangLoat] = useState(false)
+  const [moFormThem, setMoFormThem] = useState(false)   // form thêm riêng của màn (cfg.formThem, T723)
   const khoaXoa = (r: Row) => String(cfg.dsChungTu?.cotSo ? r[cfg.dsChungTu.cotSo] : khoaDong(r))
 
   // Các cột lọc nâng cao của riêng từng danh mục
@@ -299,6 +300,7 @@ export function CatalogScreen({ sc }: ScreenProps) {
     if (k === null) return
     setGoiYThuChi(thamSo.get('goiY') === 'thuchi')
     if (k === HANG_LOAT) { setMoHangLoat(true); setThamSo({}, { replace: true }); return }
+    if (cfg.formThem) { setMoFormThem(true); setThamSo({}, { replace: true }); return }
     const tuPhieu = (viTri.state as { tuPhieu?: Row } | null)?.tuPhieu
     setVeGoc(tuPhieu?._goc ? String(tuPhieu._goc) : null)
     moSua({}, cauHinh?.bien?.some(b => b.k === k) ? k : undefined, tuPhieu)
@@ -500,7 +502,7 @@ export function CatalogScreen({ sc }: ScreenProps) {
                   </button>
                 )}
                 {choThem && (
-                  <button type="button" className="btn pri" onClick={() => moSua({})}>
+                  <button type="button" className="btn pri" onClick={() => cfg.formThem ? setMoFormThem(true) : moSua({})}>
                     <Icon n="plus" className="ic sm" />
                     <span>Thêm mới</span>
                   </button>
@@ -555,7 +557,7 @@ export function CatalogScreen({ sc }: ScreenProps) {
           ) : (
             <div className="empty">
               <b>Chưa có dữ liệu</b>
-              {choThem && <button type="button" className="btn sm pri empty-btn" onClick={() => moSua({})}>{cfg.them ?? 'Thêm mới'}</button>}
+              {choThem && <button type="button" className="btn sm pri empty-btn" onClick={() => cfg.formThem ? setMoFormThem(true) : moSua({})}>{cfg.them ?? 'Thêm mới'}</button>}
             </div>
           )
         )}
@@ -623,6 +625,7 @@ export function CatalogScreen({ sc }: ScreenProps) {
       )}
       {quyVuaTao && <GoiYLapPhieu quy={quyVuaTao} onDong={() => setQuyVuaTao(null)} />}
       {moHangLoat && cfg.hangLoat && <cfg.hangLoat.Form soDong={all.length} rows={all} onDong={() => setMoHangLoat(false)} />}
+      {moFormThem && cfg.formThem && <cfg.formThem onDong={() => setMoFormThem(false)} />}
     </div>
   )
 }

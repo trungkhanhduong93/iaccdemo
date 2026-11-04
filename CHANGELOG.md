@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 04/11/2026
+- T723: Danh mục Bảng giá: Thêm mới mở form khai giá một lần cho nhiều mặt hàng, nhiều nhà cung cấp cùng một thời gian áp dụng, kho áp dụng. Có Nhà cung cấp mặc định, Chọn nhiều mặt hàng, Giá gồm VAT; lưu thì báo dòng thiếu hoặc trùng.
 - T722: Danh mục Đơn vị tính có nút Đồng bộ FABi. Quy đổi ĐVT hiện mã kèm tên ở cột Từ ĐVT, Đến ĐVT; bộ lọc bỏ Tỷ lệ, Diễn giải. Danh mục Hàng hoá, Đối tượng, Kho bỏ cột Chức năng.
 - T722: Công thức chế biến, sơ chế: thêm, sửa mở panel bên phải như Hàng hoá. Bỏ mã công thức, tổng chi phí, đơn giá, chi phí; chọn lại đơn vị tính khi có quy đổi; Thêm hàng loạt nguyên vật liệu; Trạng thái ở cuối, thêm mới bật sẵn. Áp dụng theo cửa hàng thay cho kho. Bỏ dải giải thích ở đầu danh sách công thức.
 - T721: Gói Plus mở thêm theo roadmap: Hoá đơn bán hàng, Xuất hoá đơn điện tử, Hoá đơn điều chỉnh, thay thế, Xuất, nhập điều chuyển kho, Tự động đồng bộ dữ liệu kho, Nhận hoá đơn đầu vào, Đối soát bán hàng với POS, Đối chiếu xuất kho với định lượng. Báo cáo bán hàng, Báo cáo doanh thu có lại ở gói Plus, Pro. Gói Standard không đổi.

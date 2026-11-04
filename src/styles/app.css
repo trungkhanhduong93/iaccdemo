@@ -44441,3 +44441,24 @@ a.hdn-chip:hover { border-color: var(--blue); color: var(--blue); }
 
 /* ── Panel công thức chế biến: hộp Thêm hàng loạt nổi trên panel bên phải, z-index 60 (T722) ── */
 .overlay.ds-hop-nen:has(> .thl-hop) { z-index: 70; }
+
+/* ── Form Thêm bảng giá nhiều dòng: đầu form chung, lưới nhà cung cấp, mặt hàng, đơn giá (T723) ── */
+.bg-dau { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px 20px; padding: 16px; margin-bottom: 12px; align-items: start; }
+.bg-dau-o { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.bg-nhan { font-size: 13px; font-weight: 600; color: var(--ink); }
+.bg-nhan .req, .bg-bang th .req { color: var(--red); }
+.bg-goi-y { font-size: 12px; color: var(--muted); }
+.bg-loai { display: inline-flex; border: 1px solid var(--line); border-radius: var(--r-sm); overflow: hidden; width: max-content; }
+.bg-loai button { border: 0; background: var(--white); padding: 0 16px; height: 34px; font: inherit; font-size: 13px; color: var(--body); cursor: pointer; }
+.bg-loai button + button { border-left: 1px solid var(--line); }
+.bg-loai button.on { background: var(--tint); color: var(--blue); font-weight: 600; }
+.bg-chi-tiet { padding: 0; overflow: hidden; }
+.bg-thanh { display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-bottom: 1px solid var(--line); font-size: 14px; }
+.bg-bang-cuon { overflow-x: auto; }
+.bg-bang { width: 100%; border-collapse: collapse; font-size: 13px; }
+.bg-bang th { background: var(--th); color: var(--ink); font-weight: 600; text-align: left; padding: 8px 10px; white-space: nowrap; }
+.bg-bang td { padding: 4px 10px; border-bottom: 1px solid var(--line-2); vertical-align: middle; }
+.bg-bang .c { text-align: center; }
+.bg-bang .r { text-align: right; }
+.bg-bang .inp { width: 100%; height: 30px; font-size: 13px; }
+.bg-bang tr.bg-loi td { background: var(--red-t); }

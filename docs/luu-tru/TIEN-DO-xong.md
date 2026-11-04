@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T723 | Danh mục Bảng giá: form Thêm mới vẽ lại, một lần thêm giá cho một khoảng thời gian, nhiều nhà cung cấp, nhiều mặt hàng | PhuongXT | 04/11/2026 | `docs/nhat-ky/2026-11-04-phuongxt-them-bang-gia.md` |
 | T722 | Danh mục gói Plus: Đơn vị tính có Đồng bộ FABi; Quy đổi ĐVT hiện mã kèm tên, bộ lọc bỏ Tỷ lệ, Diễn giải; bỏ cột Chức năng ở danh mục; form công thức chế biến, sơ chế thành panel bên phải như Hàng hoá (chọn lại ĐVT quy đổi, thêm NVL hàng loạt, Trạng thái ở cuối, áp dụng theo cửa hàng) | PhuongXT | 04/11/2026 | 2026-11-04-phuongxt-danh-muc-cong-thuc.md |
 | T721 | Gói Plus hiện màn nghiệp vụ, báo cáo theo tab Tính năng của roadmap: mở Hoá đơn bán hàng, Xuất hoá đơn điện tử, Hoá đơn điều chỉnh, Điều chuyển kho, Đồng bộ kho, Hoá đơn đầu vào, Đối soát bán hàng với POS, Đối chiếu xuất kho với định lượng; mở lại Báo cáo bán hàng, Báo cáo doanh thu; ẩn hẳn màn, nhãn, ghi chú gói Pro ở gói Plus; Kho bỏ 5 màn, ẩn Tài sản cố định, Tiện ích, Khoá sổ sang Hệ thống; xếp lại tab Kho, gộp tab Điều chuyển | PhuongXT | 04/11/2026 | 2026-11-04-phuongxt-nghiep-vu-goi-plus.md |
 | T720 | Nhóm ngành nghề tính thuế doanh nghiệp theo TT58 (file PhuongXT 03/11/2026), tách riêng khỏi danh sách hộ kinh doanh: hiện ở danh mục hàng hoá, tính ngầm ở sổ, báo cáo, tờ khai của doanh nghiệp gói Standard, Plus | PhuongXT | 03/11/2026 | `docs/nhat-ky/2026-11-03-phuongxt-nganh-nghe-dn-tt58.md` |

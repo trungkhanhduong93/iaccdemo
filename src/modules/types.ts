@@ -56,6 +56,7 @@ export interface CatalogCfg {
   dsChungTu?: { cotCong: string[]; cotSo?: string; so: (r: Row) => string; moTa: (r: Row) => string; chiTiet: (r: Row) => ReactNode }
   note?: (goi: Goi) => ReactNode
   truong?: CauHinhDM                     // trường panel Thêm / Sửa riêng của màn, không khai thì lấy TRUONG_DM theo mã màn
+  formThem?: ComponentType<{ onDong: () => void }>   // nút Thêm mới mở form riêng thay panel thêm từng dòng; bấm dòng vẫn sửa bằng panel (vd Bảng giá nhiều dòng, T723)
 }
 
 /** Chứng từ: danh sách + form chi tiết */

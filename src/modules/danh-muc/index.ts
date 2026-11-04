@@ -16,6 +16,7 @@ import { datSoDuQuy, soDuQuyBanDau } from '../tong-hop/SoDuBanDau'
 import { luuPtttQuy, ptttCuaQuy, tomTatPttt } from '../tien/dong-bo-fabi'
 import { dauThap } from '../../ui/format'
 import { CongThucScreen } from '../kho/CongThuc'
+import { ThemBangGia } from './ThemBangGia'
 
 /** Nhãn ngắn trên thanh tab */
 const NGAN: Record<string, string> = { '1.1': 'Tài khoản', '1.2': 'Hàng hoá', '1.3': 'Đơn vị tính', '1.4': 'Quy đổi ĐVT', '1.5': 'Đối tượng', '1.6': 'Mục chi phí', '1.7': 'Công việc', '1.8': 'Kho', '1.9': 'Tiền tệ', '1.10': 'Tỷ giá', '1.11': 'Loại thuế', '1.12': 'Quỹ tiền', '1.14': 'Bảng giá', '1.15': 'Bút toán tự động', '1.16': 'Lý do nghiệp vụ' }
@@ -301,7 +302,8 @@ const danhMuc: ModuleDef = {
         },
       } } },
     // T154: bảng giá theo iFaster; giá nhập có nhà cung cấp, kho áp dụng để trống là mọi kho
-    '1.14': { catalog: { them: 'Thêm bảng giá', nhomLoc: 'loai', nhanLoc: 'Loại giá',
+    // T723: Thêm mới mở form nhiều dòng (một khoảng thời gian, nhiều nhà cung cấp, nhiều mặt hàng); bấm dòng vẫn sửa từng dòng
+    '1.14': { catalog: { them: 'Thêm bảng giá', formThem: ThemBangGia, nhomLoc: 'loai', nhanLoc: 'Loại giá',
       cols: [{ k: 'loai', t: 'Loại giá' }, { k: 'ten', t: 'Hàng hoá' }, { k: 'dvt', t: 'ĐVT' }, { k: 'thoiGian', t: 'Thời gian áp dụng', w: 200 }, { k: 'gia', t: 'Đơn giá', num: true },
         { k: 'vat', t: 'VAT (%)', num: true }, { k: 'ncc', t: 'Nhà cung cấp', r: (r: Row) => r.ncc || '—' }, { k: 'kho', t: 'Kho áp dụng', r: (r: Row) => r.kho || 'Tất cả kho' }],
       rows: () => [
