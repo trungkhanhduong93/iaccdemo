@@ -3,6 +3,8 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 04/11/2026
+- T725: Gói Plus không còn Hoá đơn bán hàng ở phân hệ Bán hàng, chỉ gói Pro có.
+- T725: Mọi màn chứng từ bỏ tab Tất cả, Chưa ghi sổ, Đã ghi sổ, Lỗi hạch toán; danh sách luôn hiện tất cả phiếu. Trên điện thoại, mục Chứng từ chưa ghi sổ ở trang chủ mở danh sách tất cả phiếu.
 - T724: Danh mục Bảng giá chia 2 tab Giá nhập, Giá bán. Bộ lọc có Trạng thái, mặc định Đang hoạt động; bỏ lọc Loại giá, ĐVT, Đơn giá, VAT. Thêm mới mở sẵn loại giá của tab đang xem.
 - T724: Công thức chế biến thêm bộ lọc Kênh áp dụng.
 - T723: Danh mục Bảng giá: Thêm mới mở form khai giá một lần cho nhiều mặt hàng, nhiều nhà cung cấp, khách hàng cùng một thời gian áp dụng. Giá nhập có nhà cung cấp, giá bán có khách hàng (để trống là mọi khách hàng). Chọn lại được ĐVT quy đổi, đơn giá tự quy theo. Áp dụng theo cửa hàng thay cho kho. Form chừa menu bên trái.

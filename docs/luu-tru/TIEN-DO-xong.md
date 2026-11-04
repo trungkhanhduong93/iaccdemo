@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T725 | Gói Plus ẩn Hoá đơn bán hàng 3.1.2 ở phân hệ Bán hàng, chỉ gói Pro. Mọi màn chứng từ, mọi gói bỏ tab Tất cả, Chưa ghi sổ, Đã ghi sổ, Lỗi hạch toán | PhuongXT | 04/11/2026 | `docs/nhat-ky/2026-11-04-phuongxt-bo-tab-ghi-so.md` |
 | T724 | Danh mục Bảng giá chia 2 tab Giá nhập, Giá bán; bộ lọc có Trạng thái (mặc định đang hoạt động), bỏ Loại giá, ĐVT, Đơn giá, VAT. Công thức chế biến thêm lọc Kênh áp dụng | PhuongXT | 04/11/2026 | `docs/nhat-ky/2026-11-04-phuongxt-bang-gia-hai-tab.md` |
 | T723 | Danh mục Bảng giá: form Thêm mới vẽ lại, một lần thêm giá cho một khoảng thời gian, nhiều nhà cung cấp, nhiều mặt hàng | PhuongXT | 04/11/2026 | `docs/nhat-ky/2026-11-04-phuongxt-them-bang-gia.md` |
 | T722 | Danh mục gói Plus: Đơn vị tính có Đồng bộ FABi; Quy đổi ĐVT hiện mã kèm tên, bộ lọc bỏ Tỷ lệ, Diễn giải; bỏ cột Chức năng ở danh mục; form công thức chế biến, sơ chế thành panel bên phải như Hàng hoá (chọn lại ĐVT quy đổi, thêm NVL hàng loạt, Trạng thái ở cuối, áp dụng theo cửa hàng) | PhuongXT | 04/11/2026 | 2026-11-04-phuongxt-danh-muc-cong-thuc.md |

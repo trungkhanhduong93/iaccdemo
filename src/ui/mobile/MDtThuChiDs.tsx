@@ -65,7 +65,7 @@ export const MDtThuChiDs: FC<ScreenProps> = ({ sc, mod }) => {
   const cnChon = cuaHangHienTai(s)
 
   const [sp, setSearchParams] = useSearchParams()
-  const [chipTT, setChipTT] = useState(() => sp.get('tt') ?? 'all')
+  const [chipTT, setChipTT] = useState('all')   // bỏ tab trạng thái, luôn hiện tất cả (PhuongXT 04/11/2026)
   const [moChonCnTruoc, setMoChonCnTruoc] = useState(false)
   const [dichDenMoi, setDichDenMoi] = useState<string | null>(null)
   const [loaiChon, setLoaiChon] = useState<string>('')

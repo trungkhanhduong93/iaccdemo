@@ -56,17 +56,10 @@ export function ONhanVien({ nhan, children, className = '' }: { nhan: string; ch
 
 export interface Chip { k: string; ten: string; mau: string; so: number }
 
-/** Chip theo trạng thái phiếu nhap, ghi, loi. Gói Free lưu là duyệt luôn nên không có chip, danh sách hiện tất cả (T48) */
-export function dsChipTT(ds: Row[], ghi: boolean, tenLoi = 'Lỗi hạch toán'): Chip[] {
-  const dem = (k: string) => ds.filter(r => khopChipTT(k, r.tt, ghi)).length
-  const tatCa: Chip = { k: 'all', ten: 'Tất cả', mau: 'var(--blue)', so: ds.length }
-  if (!ghi) return []
-  return [
-    tatCa,
-    { k: 'nhap', ten: 'Chưa ghi sổ', mau: 'var(--amber)', so: dem('nhap') },
-    { k: 'ghi', ten: 'Đã ghi sổ', mau: 'var(--green)', so: dem('ghi') },
-    { k: 'loi', ten: tenLoi, mau: 'var(--red)', so: dem('loi') },
-  ]
+/** Chip theo trạng thái phiếu: bỏ hẳn tab Tất cả, Chưa ghi sổ, Đã ghi sổ, Lỗi hạch toán ở mọi màn chứng từ, mọi gói,
+ *  danh sách hiện tất cả, PhuongXT 04/11/2026. Giữ hàm để các màn gọi không phải sửa */
+export function dsChipTT(_ds: Row[], _ghi: boolean): Chip[] {
+  return []
 }
 
 export function khopChipTT(chip: string, tt: unknown, ghi: boolean): boolean {

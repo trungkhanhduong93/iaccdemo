@@ -54,8 +54,8 @@ const THEO_ROADMAP: Record<string, Goi[]> = {
   '5.2.1': ['S', 'PL', 'PR'],   // Thẻ kho mở cho gói Standard để bấm hàng hoá ở Xuất nhập tồn mở thẻ kho, PhuongXT chốt 14/10/2026 (T211)
   '10.1.3': ['PL', 'PR'],   // Số dư ban đầu mở cho Plus: tiền, công nợ, tồn kho, PhuongXT chốt 11/10/2026 (T141)
   // Gói Plus theo tab Tính năng của roadmap, PhuongXT 04/11/2026 (T721): hoá đơn bán hàng, hoá đơn điện tử, hoá đơn điều chỉnh,
-  // điều chuyển kho, đồng bộ kho, hoá đơn đầu vào
-  '3.1.2': ['PL', 'PR'],
+  // điều chuyển kho, đồng bộ kho, hoá đơn đầu vào. Hoá đơn bán hàng ẩn lại ở gói Plus, chỉ gói Pro, PhuongXT 04/11/2026
+  '3.1.2': ['PR'],
   '3.1.5': ['PL', 'PR'],
   '3.1.6': ['PL', 'PR'],
   '5.1.4': ['PL', 'PR'],

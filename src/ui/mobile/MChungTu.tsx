@@ -98,9 +98,9 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
   const cnChon = cuaHangHienTai(s)
 
   // Chip trạng thái
-  // ?tt=nhap từ mục Chứng từ chưa ghi sổ ở trang chủ thì bật sẵn chip đó
+  // Bỏ tab trạng thái ở màn chứng từ nên luôn hiện tất cả, bỏ qua ?tt= (PhuongXT 04/11/2026)
   const [sp, setSearchParams] = useSearchParams()
-  const [chipTT, setChipTT] = useState(() => sp.get('tt') ?? 'all')
+  const [chipTT, setChipTT] = useState('all')
 
   // Bộ lọc nâng cao (T394: đọc tham số ?lyDo= và ?thang=)
   const [locMo, setLocMo] = useState(false)
