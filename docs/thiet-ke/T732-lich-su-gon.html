@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lịch sử phiếu bản gọn</title>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+/* Bản mẫu một giao diện (sáng), lấy đúng biến :root của app.css. Bố cục: khung web bên trái, khung app bên phải, ghi chú thay đổi ở đầu. */
+:root {
+  --ink: #1f2225; --body: #363636; --muted: #6b7280; --faint: #9ca3af;
+  --line: #e5e7eb; --line-2: #eeeeee; --soft: #f5f5f5; --white: #fff;
+  --blue: #0560a6; --blue-t: #e6eff7; --hdb: #f4f7fa;
+  --red: #c2362b; --red-t: #fcebea; --amber: #a86a0c; --amber-t: #fcf1de;
+  --green: #138a52; --green-t: #e3f4ea; --orange: #d0650a; --orange-t: #fff5ea;
+  --font: 'Be Vietnam Pro', -apple-system, 'Segoe UI', Roboto, sans-serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: #e9ecef; color: var(--ink); font-family: var(--font); }
+.page { max-width: 1440px; margin: 0 auto; padding: 24px 20px 48px; display: flex; flex-direction: column; gap: 20px; }
+.intro h1 { margin: 0 0 6px; font-size: 20px; text-wrap: balance; }
+.intro ul { margin: 0; padding-left: 18px; font-size: 13.5px; line-height: 1.7; color: var(--body); max-width: 900px; }
+.intro .so { font-variant-numeric: tabular-nums; font-weight: 600; }
+.boards { display: flex; gap: 24px; align-items: flex-start; flex-wrap: wrap; }
+.board { display: flex; flex-direction: column; gap: 8px; }
+.board > h2 { margin: 0; font-size: 12.5px; font-weight: 600; color: var(--muted); }
+.frame { background: var(--white); border-radius: 10px; box-shadow: 0 1px 3px rgba(0,0,0,.08); overflow: hidden; }
+.num { font-variant-numeric: tabular-nums; }
+svg { display: block; }
+
+/* ── Web ── */
+.web { width: 900px; max-width: calc(100vw - 40px); }
+.tabs { display: flex; gap: 4px; padding: 0 12px; border-bottom: 1px solid var(--line); }
+.tabs span { padding: 11px 10px; font-size: 13.5px; color: var(--muted); }
+.tabs .on { color: var(--blue); font-weight: 600; border-bottom: 2px solid var(--blue); }
+.w-body { padding: 14px 24px 24px; }
+.sum { margin: 0 0 10px 38px; font-size: 13px; color: var(--muted); }
+.day { margin: 14px 0 6px 38px; font-size: 12px; font-weight: 600; color: var(--muted); text-transform: none; }
+.ev { display: flex; gap: 10px; }
+.rail { width: 28px; flex: none; display: flex; flex-direction: column; align-items: center; }
+.dot { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex: none; margin-top: 6px; }
+.dot.g { background: var(--green-t); color: var(--green); }
+.dot.b { background: var(--blue-t); color: var(--blue); }
+.dot.o { background: var(--orange-t); color: var(--orange); }
+.rail .ln { flex: 1; width: 2px; background: var(--line); margin-top: 4px; }
+.ev-main { flex: 1; min-width: 0; padding: 6px 0 14px; display: flex; flex-direction: column; gap: 6px; }
+.head { display: flex; align-items: baseline; gap: 8px; font-size: 13.5px; line-height: 24px; }
+.head b { font-weight: 700; }
+.head .who { color: var(--body); }
+.head .who::before { content: "·"; color: var(--faint); margin-right: 8px; }
+.head .time { margin-left: auto; color: var(--muted); font-size: 12.5px; font-variant-numeric: tabular-nums; }
+.facts { display: flex; flex-wrap: wrap; gap: 2px 0; font-size: 12.5px; color: var(--muted); line-height: 1.5; }
+.facts span + span::before { content: "·"; margin: 0 7px; color: var(--faint); }
+.facts .strong { color: var(--body); font-weight: 600; font-variant-numeric: tabular-nums; }
+
+.diff { border: 1px solid var(--line); border-radius: 8px; font-size: 13px; }
+.diff .r { display: grid; grid-template-columns: 170px minmax(0, 1fr) auto; gap: 12px; align-items: baseline; padding: 7px 12px; }
+.diff .r + .r { border-top: 1px solid var(--line-2); }
+.diff .k { color: var(--muted); }
+.diff .v { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px; font-variant-numeric: tabular-nums; }
+.diff s { color: var(--faint); }
+.diff .to { color: var(--faint); font-size: 12px; }
+.diff .v b { font-weight: 600; }
+.diff .d { font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; text-align: right; }
+.up { color: var(--green); } .down { color: var(--red); }
+.tag-x { font-size: 11.5px; font-weight: 600; color: var(--red); background: var(--red-t); border-radius: 4px; padding: 1px 7px; }
+.diff .tot { background: var(--hdb); border-radius: 0 0 8px 8px; }
+.diff .tot .k { color: var(--body); font-weight: 600; }
+.why { margin: 0; font-size: 13px; line-height: 1.5; color: var(--body); border-left: 3px solid var(--amber); background: var(--amber-t); border-radius: 0 6px 6px 0; padding: 6px 10px; }
+.why b { color: var(--amber); font-weight: 600; margin-right: 4px; }
+
+/* ── App ── */
+.app { width: 390px; background: var(--soft); }
+.a-top { background: var(--white); display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--line); }
+.a-top b { font-size: 16px; }
+.a-body { padding: 12px 14px 20px; display: flex; flex-direction: column; gap: 8px; }
+.seg { display: grid; grid-template-columns: 1fr 1fr; background: var(--line); border-radius: 10px; padding: 3px; }
+.seg span { text-align: center; padding: 8px; font-size: 14px; color: var(--muted); }
+.seg .on { color: var(--blue); font-weight: 600; background: var(--white); border-radius: 8px; }
+.a-sum { font-size: 12.5px; color: var(--muted); padding: 2px 2px 0; }
+.a-day { margin: 6px 2px 0; font-size: 12.5px; font-weight: 600; color: var(--muted); }
+.card { background: var(--white); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+.c-head { display: grid; grid-template-columns: 24px minmax(0, 1fr) auto; gap: 2px 10px; align-items: center; }
+.c-head .dot { margin: 0; grid-row: span 2; align-self: start; margin-top: 1px; }
+.c-head b { font-size: 14.5px; }
+.c-head .time { font-size: 12.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.c-head .who { grid-column: 2 / 4; font-size: 12.5px; color: var(--muted); }
+.card .facts { padding-left: 34px; }
+.a-diff { display: flex; flex-direction: column; border-top: 1px solid var(--line-2); }
+.a-diff .r { padding: 8px 0; display: flex; flex-direction: column; gap: 2px; font-size: 13.5px; }
+.a-diff .r + .r { border-top: 1px solid var(--line-2); }
+.a-diff .k { font-size: 12px; color: var(--muted); }
+.a-diff .v { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px; font-variant-numeric: tabular-nums; }
+.a-diff s { color: var(--faint); }
+.a-diff .to { color: var(--faint); font-size: 12px; }
+.a-diff .v b { font-weight: 600; }
+.a-diff .d { margin-left: auto; font-size: 12px; font-weight: 600; }
+.a-diff .tot .k { color: var(--body); font-weight: 600; }
+</style>
+</head>
+<body>
+<main class="page">
+
+  <section class="intro">
+    <h1>Lịch sử phiếu, bản gọn (đề xuất thay bản E của T715)</h1>
+    <ul>
+      <li>Cùng 3 thao tác mẫu: web từ <span class="so">262</span> còn <span class="so">132</span> chữ, app từ <span class="so">260</span> còn <span class="so">121</span> chữ.</li>
+      <li>Bỏ khung nhãn <i>Thao tác / Người làm / Thời điểm / Nội dung</i>. Gộp thành một dòng đầu: tên thao tác · người làm · giờ.</li>
+      <li>Bỏ ngày đầy đủ trong thẻ, vì đầu nhóm đã ghi ngày. Thẻ chỉ còn giờ.</li>
+      <li>Câu "Nội dung" dài đổi thành một dòng dữ kiện ngắn: đối tượng · hoá đơn · kho · số dòng · tổng tiền · ảnh hưởng sổ. Đủ thông tin cũ, ít chữ hơn.</li>
+      <li>Thẻ Sửa bỏ câu tóm tắt (bảng đã nói). Bảng 3 cột Trước | Sau đổi thành một hàng mỗi chỗ sửa: <s>cũ</s> → <b>mới</b>, cột phải ghi số chênh.</li>
+      <li>Dòng hàng sửa số lượng chỉ ghi phần đổi (10 kg → 14 kg), không chép lại cả công thức.</li>
+      <li>Lý do sửa còn một dải vàng mảnh, một dòng.</li>
+      <li>Thẻ Lưu, Tạo không có viền khung, chỉ thẻ Sửa có bảng mới nổi lên.</li>
+    </ul>
+  </section>
+
+  <div class="boards">
+
+    <!-- ══════════ WEB ══════════ -->
+    <section class="board">
+      <h2>Web · tab Lịch sử trong form chứng từ</h2>
+      <div class="frame web">
+        <nav class="tabs" aria-label="Các phần của phiếu">
+          <span>Phiếu nhập</span><span class="on">Lịch sử</span>
+        </nav>
+        <div class="w-body">
+          <p class="sum">3 thao tác, 2 người · sửa gần nhất 07/10 09:58</p>
+
+          <h3 class="day">07/10/2026</h3>
+
+          <!-- Lưu -->
+          <div class="ev">
+            <div class="rail">
+              <span class="dot g"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg></span>
+              <span class="ln"></span>
+            </div>
+            <div class="ev-main">
+              <div class="head"><b>Lưu chứng từ</b><span class="who">Lê Quốc Bảo</span><span class="time">10:05</span></div>
+              <div class="facts" title="Lưu phiếu mua hàng MH2610-0022 của Công ty Điện lực Sài Gòn, hoá đơn 0027159 ký hiệu 1C26TMM. Nhập Kho bếp Nguyễn Trãi 12 dòng hàng, tổng tiền 4.778.550 đ. Ghi công nợ phải trả nhà cung cấp 4.778.550 đ.">
+                <span>Công ty Điện lực Sài Gòn</span><span>HĐ 0027159</span><span>Kho bếp Nguyễn Trãi</span><span>12 dòng</span><span class="strong">4.778.550 đ</span><span>Ghi nợ phải trả</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sửa -->
+          <div class="ev">
+            <div class="rail">
+              <span class="dot b"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></span>
+              <span class="ln"></span>
+            </div>
+            <div class="ev-main">
+              <div class="head"><b>Sửa chứng từ</b><span class="who">Lê Quốc Bảo</span><span class="time">09:58</span></div>
+              <div class="diff">
+                <div class="r"><span class="k">Diễn giải</span><span class="v"><s>Chi mua rau</s><span class="to">→</span><b>Chi mua rau củ bếp Q1</b></span><span class="d"></span></div>
+                <div class="r"><span class="k">Dòng 3 · Rau cải ngọt</span><span class="v"><s>10 kg</s><span class="to">→</span><b>14 kg</b></span><span class="d up">+80.000</span></div>
+                <div class="r"><span class="k">Dòng 7 · Hành tây</span><span class="v"><span class="tag-x">Đã xoá</span><s>2 kg × 25.000</s></span><span class="d down">−50.000</span></div>
+                <div class="r tot"><span class="k">Tổng tiền</span><span class="v"><s>4.748.550</s><span class="to">→</span><b>4.778.550 đ</b></span><span class="d up">+30.000</span></div>
+              </div>
+              <p class="why"><b>Lý do</b>NCC giao thêm 4 kg rau cải ngọt, hết hành tây. Theo HĐ 0027159.</p>
+            </div>
+          </div>
+
+          <h3 class="day">06/10/2026</h3>
+
+          <!-- Tạo -->
+          <div class="ev">
+            <div class="rail">
+              <span class="dot o"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 0 1-15.5 6.2L3 16"/><path d="M3 12a9 9 0 0 1 15.5-6.2L21 8"/><path d="M21 3v5h-5"/><path d="M3 21v-5h5"/></svg></span>
+            </div>
+            <div class="ev-main">
+              <div class="head"><b>Tạo chứng từ</b><span class="who">Đồng bộ FABi</span><span class="time">23:30</span></div>
+              <div class="facts" title="Tạo từ dữ liệu đồng bộ FABi, phiếu nhập hàng của cửa hàng Phố Mây Nguyễn Trãi ngày 06/10/2026. Nhà cung cấp Công ty Điện lực Sài Gòn, 13 dòng hàng, tổng tiền 4.748.550 đ.">
+                <span>Phố Mây Nguyễn Trãi</span><span>Công ty Điện lực Sài Gòn</span><span>13 dòng</span><span class="strong">4.748.550 đ</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════ APP ══════════ -->
+    <section class="board">
+      <h2>App điện thoại · 390 px</h2>
+      <div class="frame app">
+        <header class="a-top">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+          <b>Phiếu mua hàng MH2610-0022</b>
+        </header>
+        <div class="a-body">
+          <div class="seg"><span>Chi tiết</span><span class="on">Lịch sử</span></div>
+          <div class="a-sum">3 thao tác, 2 người · sửa gần nhất 07/10 09:58</div>
+
+          <h3 class="a-day">07/10/2026</h3>
+
+          <article class="card">
+            <div class="c-head">
+              <span class="dot g"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg></span>
+              <b>Lưu chứng từ</b><span class="time">10:05</span>
+              <span class="who">Lê Quốc Bảo</span>
+            </div>
+            <div class="facts"><span>Điện lực Sài Gòn</span><span>HĐ 0027159</span><span>12 dòng</span><span class="strong">4.778.550 đ</span><span>Ghi nợ phải trả</span></div>
+          </article>
+
+          <article class="card">
+            <div class="c-head">
+              <span class="dot b"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></span>
+              <b>Sửa chứng từ</b><span class="time">09:58</span>
+              <span class="who">Lê Quốc Bảo</span>
+            </div>
+            <div class="a-diff">
+              <div class="r"><span class="k">Diễn giải</span><span class="v"><s>Chi mua rau</s><span class="to">→</span><b>Chi mua rau củ bếp Q1</b></span></div>
+              <div class="r"><span class="k">Dòng 3 · Rau cải ngọt</span><span class="v"><s>10 kg</s><span class="to">→</span><b>14 kg</b><span class="d up">+80.000</span></span></div>
+              <div class="r"><span class="k">Dòng 7 · Hành tây</span><span class="v"><span class="tag-x">Đã xoá</span><s>2 kg × 25.000</s><span class="d down">−50.000</span></span></div>
+              <div class="r tot"><span class="k">Tổng tiền</span><span class="v"><s>4.748.550</s><span class="to">→</span><b>4.778.550 đ</b><span class="d up">+30.000</span></span></div>
+            </div>
+            <p class="why"><b>Lý do</b>NCC giao thêm 4 kg rau cải ngọt, hết hành tây.</p>
+          </article>
+
+          <h3 class="a-day">06/10/2026</h3>
+
+          <article class="card">
+            <div class="c-head">
+              <span class="dot o"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 0 1-15.5 6.2L3 16"/><path d="M3 12a9 9 0 0 1 15.5-6.2L21 8"/><path d="M21 3v5h-5"/><path d="M3 21v-5h5"/></svg></span>
+              <b>Tạo chứng từ</b><span class="time">23:30</span>
+              <span class="who">Đồng bộ FABi</span>
+            </div>
+            <div class="facts"><span>Phố Mây Nguyễn Trãi</span><span>13 dòng</span><span class="strong">4.748.550 đ</span></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</main>
+</body>
+</html>

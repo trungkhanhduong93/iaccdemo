@@ -1689,12 +1689,12 @@ export function HachToan({
   )
 }
 
-/** Nhật ký từng phiếu ghi nhận ở mọi gói, kể cả Free: dòng thời gian bản E không cột lọc (T715) */
+/** Nhật ký từng phiếu ghi nhận ở mọi gói, kể cả Free: dòng thời gian bản gọn (T732) */
 export function LichSu({ goi, moi, man, id }: { goi: Goi; moi: boolean; man: string; id: string }) {
   const tatCa = useDongLichSu(goi, man, id)
 
   if (moi) return <div className="empty"><b>Chứng từ chưa lưu</b></div>
-  if (tatCa.length === 0) return <div className="ls-e"><p className="ls-e-trong">Chưa có thao tác nào.</p></div>
+  if (tatCa.length === 0) return <div className="ls-g"><p className="ls-g-trong">Chưa có thao tác nào.</p></div>
 
   const soThaoTac = tatCa.length
   const soNguoi = new Set(tatCa.map(x => x.ai)).size
@@ -1704,89 +1704,106 @@ export function LichSu({ goi, moi, man, id }: { goi: Goi; moi: boolean; man: str
   const nhom = nhomTheoNgay(tatCa)
 
   return (
-    <div className="ls-e">
+    <div className="ls-g">
       {/* Dòng tóm tắt duy nhất */}
-      <p className="ls-e-tom-tat">
+      <p className="ls-g-tom-tat">
         {soThaoTac} thao tác, {soNguoi} người{thoiGianSua ? ` · sửa gần nhất ${thoiGianSua}` : ''}
       </p>
 
-      {nhom.map(g => (
+      {nhom.map((g, gIdx) => (
         <Fragment key={g.ngay}>
-          <h3 className="ls-e-ngay-tieu-de">{g.ngay}</h3>
+          <h3 className="ls-g-ngay">{g.ngay}</h3>
           {g.items.map((item, idx) => {
-            const laHangCuoi = idx === g.items.length - 1
+            const laHangCuoiTatCa = gIdx === nhom.length - 1 && idx === g.items.length - 1
+            const gioPart = item.luc.includes(' ') ? item.luc.split(' ')[1] : item.luc
             const noiDung = item.noiDung ?? item.ghiChu ?? ''
             const coDoi = (item.doi && item.doi.length > 0) || (item.tongCu !== undefined && item.tongMoi !== undefined)
-            const chenh = item.tongCu !== undefined && item.tongMoi !== undefined ? item.tongMoi - item.tongCu : 0
-            const nhanLyDo = item.loai === 'xoa' ? 'Lý do xoá' : item.loai === 'sua' ? 'Lý do sửa' : 'Lý do huỷ'
+            const chenhTong = item.tongCu !== undefined && item.tongMoi !== undefined ? item.tongMoi - item.tongCu : 0
 
             return (
-              <div key={`${item.luc}-${item.ai}-${idx}`} className="ls-e-hang">
-                <div className="ls-e-cot-moc">
-                  <span className={`ls-e-moc ${item.loai}`}>
+              <div key={`${item.luc}-${item.ai}-${idx}`} className="ls-g-ev">
+                <div className="ls-g-rail">
+                  <span className={`ls-g-dot ${item.loai}`}>
                     <IconLoai loai={item.loai} />
                   </span>
-                  {!laHangCuoi && <span className="ls-e-duong" />}
+                  {!laHangCuoiTatCa && <span className="ls-g-ln" />}
                 </div>
 
-                <article className="ls-e-the">
-                  <div className="ls-e-thong-tin">
-                    <span className="ls-e-nhan">Thao tác</span>
-                    <b className="ls-e-thao-tac">{item.tenViec}</b>
-                    <span className="ls-e-nhan">Người làm</span>
-                    <span>{item.ai}</span>
-                    <span className="ls-e-nhan">Thời điểm</span>
-                    <span className="ls-e-thoi-diem">{item.luc}</span>
-                    <span className="ls-e-nhan">Nội dung</span>
-                    <span className="ls-e-noi-dung">{noiDung}</span>
+                <div className="ls-g-main">
+                  <div className="ls-g-head">
+                    <b>{item.tenViec}</b>
+                    <span className="ls-g-who">{item.ai}</span>
+                    <span className="ls-g-time">{gioPart}</span>
                   </div>
 
-                  {/* Bảng Trước - Sau (3 cột: Chỗ sửa | Trước khi sửa | Sau khi sửa) */}
+                  {!coDoi && (
+                    <div className="ls-g-facts" title={noiDung}>
+                      {item.duKien && item.duKien.length > 0 ? (
+                        item.duKien.map((dk, dkIdx) => (
+                          <span key={dkIdx} className={dk.endsWith(' đ') ? 'strong' : undefined}>
+                            {dk}
+                          </span>
+                        ))
+                      ) : (
+                        <span>{noiDung}</span>
+                      )}
+                    </div>
+                  )}
+
                   {coDoi && (
-                    <div className="ls-e-bang">
-                      <div className="ls-e-bang-hang ls-e-bang-dau">
-                        <span>Chỗ sửa</span>
-                        <span>Trước khi sửa</span>
-                        <span>Sau khi sửa</span>
-                      </div>
+                    <div className="ls-g-diff">
                       {item.doi && item.doi.map((d, dIdx) => (
-                        <div key={dIdx} className="ls-e-bang-hang">
-                          <span className="ls-e-cho">{d.ten}</span>
-                          <span className="ls-e-truoc">{d.cu ? <s>{d.cu}</s> : '—'}</span>
-                          <span className="ls-e-sau">
+                        <div key={dIdx} className="ls-g-r">
+                          <span className="ls-g-k">{d.ten}</span>
+                          <span className="ls-g-v">
                             {d.xoa ? (
-                              <span className="ls-e-nhan-xoa">Đã xoá dòng</span>
+                              <>
+                                <span className="ls-g-tag-x">Đã xoá</span>
+                                {d.cu && <s>{d.cu}</s>}
+                              </>
                             ) : (
-                              <b>{d.moi ?? 'Đã cập nhật'}</b>
+                              <>
+                                {d.cu && <s>{d.cu}</s>}
+                                {d.cu && <span className="ls-g-to">→</span>}
+                                <b>{d.moi ?? 'Đã cập nhật'}</b>
+                              </>
                             )}
                           </span>
+                          {d.chenh !== undefined && d.chenh !== 0 ? (
+                            <span className={`ls-g-d ${d.chenh > 0 ? 'up' : 'down'}`}>
+                              {d.chenh > 0 ? `+${money(d.chenh)}` : `\u2212${money(Math.abs(d.chenh))}`}
+                            </span>
+                          ) : (
+                            <span className="ls-g-d" />
+                          )}
                         </div>
                       ))}
                       {item.tongCu !== undefined && item.tongMoi !== undefined && (
-                        <div className="ls-e-bang-hang ls-e-bang-tong">
-                          <span className="ls-e-cho">Tổng tiền</span>
-                          <span className="ls-e-truoc"><s>{money(item.tongCu)} đ</s></span>
-                          <span className="ls-e-sau">
-                            {money(item.tongMoi)} đ{' '}
-                            {chenh !== 0 && (
-                              <span className={chenh > 0 ? 'ls-e-chenh-duong' : 'ls-e-chenh-am'}>
-                                {chenh > 0 ? `+${money(chenh)} đ` : `−${money(Math.abs(chenh))} đ`}
-                              </span>
-                            )}
+                        <div className="ls-g-r ls-g-tot">
+                          <span className="ls-g-k">Tổng tiền</span>
+                          <span className="ls-g-v">
+                            <s>{money(item.tongCu)}</s>
+                            <span className="ls-g-to">→</span>
+                            <b>{money(item.tongMoi)} đ</b>
                           </span>
+                          {chenhTong !== 0 ? (
+                            <span className={`ls-g-d ${chenhTong > 0 ? 'up' : 'down'}`}>
+                              {chenhTong > 0 ? `+${money(chenhTong)}` : `\u2212${money(Math.abs(chenhTong))}`}
+                            </span>
+                          ) : (
+                            <span className="ls-g-d" />
+                          )}
                         </div>
                       )}
                     </div>
                   )}
 
-                  {/* Khối Lý do */}
                   {item.lyDo && (
-                    <div className="ls-e-ly-do">
-                      <span className="ls-e-ly-do-nhan">{nhanLyDo}</span>
-                      <span className="ls-e-ly-do-chu">{item.lyDo}</span>
-                    </div>
+                    <p className="ls-g-why">
+                      <b>Lý do</b> {item.lyDo}
+                    </p>
                   )}
-                </article>
+                </div>
               </div>
             )
           })}

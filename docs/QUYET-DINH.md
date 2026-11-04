@@ -1026,4 +1026,14 @@ Trum chốt 31/10/2026 (T703).
 
 Lý do: PhuongXT gửi bảng TT58 ngày 03/11/2026, chọn tách file riêng cho khỏi lẫn với hộ kinh doanh (T720). Bảng cũ dùng nhầm tỷ lệ TNCN của hộ kinh doanh làm TNDN.
 
-## QD94. Lịch sử phiếu bản gọn (đang soạn)
+## QD94. Lịch sử phiếu bản gọn (04/11/2026)
+
+Trum chốt 04/11/2026 (T732). Thay điều 2 của bản E (T715, `docs/ke-hoach-lich-su-ban-e.md`): Nội dung không còn là câu đầy đủ.
+
+- Dòng đầu thẻ: tên thao tác · người làm · giờ. Bỏ nhãn Thao tác, Người làm, Thời điểm, Nội dung. Thẻ không ghi ngày vì đầu nhóm đã có.
+- Dòng dữ kiện ngắn thay câu Nội dung: đối tượng · hoá đơn · kho · số dòng · tổng tiền · ảnh hưởng sổ, lưu ở `duKien`. Câu đầy đủ `noiDung` vẫn giữ, web hiện khi rê chuột. Nhật ký thật trong phiên chưa có `duKien` thì in `noiDung`.
+- Thẻ sửa bỏ dòng dữ kiện. Mỗi chỗ sửa một hàng: cũ gạch ngang → mới đậm, số chênh ở mé phải (+ xanh lá, − đỏ). Dòng hàng sửa số lượng chỉ ghi phần đổi. Dòng bị xoá có nhãn "Đã xoá". Hàng cuối Tổng tiền.
+- Lý do: một dải vàng, chữ "Lý do" rồi nội dung.
+- Thiết kế: `docs/thiet-ke/T732-lich-su-gon.html`.
+
+Lý do: bản E nhiều chữ, cùng 3 thao tác mẫu web 262 chữ, app 260 chữ. Bản gọn còn 132 và 121 chữ, giữ đủ thông tin.
