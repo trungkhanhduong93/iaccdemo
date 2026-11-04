@@ -13,7 +13,6 @@ export const quyTrinh: QuyTrinhDef = {
       ] },
       { ten: 'Hoá đơn, trả lại', tone: 'info', nut: [
         { ten: 'Hoá đơn mua hàng', icon: 'doc', di: 'mua-hang/4-1-2/moi' },
-        { ten: 'Nhận hoá đơn đầu vào', icon: 'mail', di: 'tien-ich/11-4' },
         { ten: 'Bổ sung hoá đơn', icon: 'filein', di: 'mua-hang/4-1-6/moi' },
         { ten: 'Trả lại hàng mua', icon: 'back', di: 'mua-hang/4-1-4/moi' },
       ] },
