@@ -83,6 +83,8 @@ export const quyTrinh: QuyTrinhDef = {
     },
   ],
   baoCao: ['2-2-1', '2-2-3', '2-2-5', '2-2-2', '2-2-4'],
+  // Gói Plus: tab Báo cáo Thu chi thêm Công nợ khách hàng, Công nợ nhà cung cấp, bỏ Sổ công nợ, PhuongXT 04/11/2026 (T735)
+  baoCaoPlus: { them: ['ban-hang/3-2-9', 'mua-hang/4-2-3'], bo: ['2-2-5'] },
   danhMuc: ['danh-muc/1-12', 'danh-muc/1-5', 'danh-muc/1-16'],
   tienIch: ['tien-ich/11-8', 'tien-ich/11-10', 'tien-ich/11-11'],
 }

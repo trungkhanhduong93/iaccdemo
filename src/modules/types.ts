@@ -197,6 +197,7 @@ export interface QuyTrinhDef {
   luongStandard?: CotQT[]                     // gói Free dùng sơ đồ luồng theo cột thay sơ đồ chung: ô cột trước nối tới mọi ô cột sau, gộp và tách nhánh (T123)
   danhSo?: boolean                       // đánh số bước, kiểu màn Giá thành của AMIS
   baoCao?: string[]                      // khung Báo cáo bên phải: slug trong phân hệ hoặc 'phân hệ/slug'
+  baoCaoPlus?: { them: string[]; bo: string[] }  // gói Plus thêm, bỏ báo cáo ở tab Báo cáo phân hệ và khối báo cáo sơ đồ, dạng như baoCao (T735)
   khongLinkBaoCaoKy?: boolean            // sơ đồ bước theo kỳ gói Free không hiện nút Tất cả báo cáo ở bước cuối (T515)
   khongBaoCao?: boolean                  // phân hệ không có báo cáo, ẩn link Tất cả báo cáo ở khối đầu ra sơ đồ hội tụ (T146)
   ghiChu?: { tieuDe: string; dong: [string, string, string?][] }  // thay khung Báo cáo khi phân hệ không có báo cáo

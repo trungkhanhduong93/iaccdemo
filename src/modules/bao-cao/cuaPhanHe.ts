@@ -19,6 +19,7 @@ function diQuyTrinh(qt: QuyTrinhDef, goi: Goi): string[] {
     ...qt.buoc.flatMap(b => lay([b.chinh, ...(b.tren ?? []), ...(b.duoi ?? [])] as NutQT[])),
     ...(hoiTu ? [...hoiTu.lan.flatMap(l => lay(l.nut)), ...lay(ra?.nut)] : []),
     ...khung,
+    ...(goi === 'PL' ? qt.baoCaoPlus?.them ?? [] : []),
   ]
 }
 
@@ -32,7 +33,12 @@ export function baoCaoCuaPhanHe(mod: ModuleDef, s: Session): ScreenDef[] {
     const x = banSao.find(b => b.goc === m.key && b.slug === sc.slug)
     return x ? [x] : []
   }) : []
+  // Gói Plus bỏ báo cáo khai ở baoCaoPlus.bo, kể cả báo cáo có sẵn trong nhóm phân hệ (T735)
+  const bo = s.goi === 'PL' ? (mod.quyTrinh?.baoCaoPlus?.bo ?? []).map(di => dich(di, mod.key)) : []
   const ds: ScreenDef[] = []
-  for (const x of [...nhom, ...quyTrinh]) if (!ds.some(y => y.goc === x.goc && y.slug === x.slug)) ds.push(x)
+  for (const x of [...nhom, ...quyTrinh]) {
+    if (bo.some(d => d.mod?.key === x.goc && d.sc?.slug === x.slug)) continue
+    if (!ds.some(y => y.goc === x.goc && y.slug === x.slug)) ds.push(x)
+  }
   return ds
 }
