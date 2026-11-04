@@ -7,6 +7,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 - T721: Gói Plus không còn hiện màn, nhãn, ghi chú của gói Pro: bỏ màn khoá mời nâng cấp, phân hệ Chi phí, giá thành, việc và thẻ cảnh báo gói Pro ở Trang chủ, bước gói Pro ở Khoá sổ.
 - T721: Gói Plus gọn tiếp. Kho bỏ Xuất bán POS, Xuất bán hàng, Chuyển kho, Công thức chế biến, Tính giá thành đơn giản. Ẩn phân hệ Tài sản cố định, Tiện ích. Khoá sổ chuyển từ Tổng hợp sang Hệ thống như gói Standard.
 - T721: Kho gói Plus xếp tab theo luồng: Tồn kho ban đầu, Nhập khác, Điều chuyển, Xuất huỷ, Xuất khác, Kiểm kê, Tính giá vốn. Tab Điều chuyển có hai tab con Xuất điều chuyển, Nhập điều chuyển.
+- T721: Doanh nghiệp gói Plus, Pro nộp TNDN theo tỷ lệ trên doanh thu (trường hợp 1, 3 của TT58) không còn hiện Báo cáo kết quả kinh doanh B02-DNSN.
 
 ## 03/11/2026
 - T720: Doanh nghiệp gói Standard, Plus chọn ngành nghề tính thuế ở hàng hoá, nhóm hàng theo bảng TT58 riêng, không dùng chung danh sách hộ kinh doanh. Danh mục hàng hoá hiện cột Thuế GTGT, Thuế TNDN. Sổ S1, S3a-DNSN tính TNDN theo tỷ lệ mới: ăn uống 2%, bán lẻ 1% (trước ghi nhầm 1,5% và 0,5%). Thuế GTGT khấu trừ thì cột, ô Thuế GTGT là thuế suất người dùng tự chọn (KCT, 0, 5, 8, 10%), không theo ngành nghề; thuế TNDN trên thu nhập tính thuế thì ẩn cột, ô Thuế TNDN.

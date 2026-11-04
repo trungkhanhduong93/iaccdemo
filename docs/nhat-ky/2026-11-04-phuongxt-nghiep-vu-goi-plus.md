@@ -22,6 +22,7 @@
 - `BanLamViec.tsx`: gói Plus bỏ việc Hoá đơn đầu vào (thuộc Tiện ích). Việc lệch đối soát, bước Đối soát doanh thu trỏ về Đối soát bán hàng với POS 3.2.2.
 - Thanh tab Kho gói Plus xếp lại: Tồn kho ban đầu, Nhập khác, Điều chuyển, Xuất huỷ, Xuất khác, Kiểm kê, Tính giá vốn. Thêm `xepTab` ở `ModuleDef` (thứ tự tab theo gói), `tabCua(m, goi)` xếp theo đó.
 - Tab Điều chuyển gói Plus: Xuất điều chuyển đổi nhãn bằng `nganGoi`, Nhập điều chuyển không có tab riêng nhờ `tabChaGoi`. `PhieuDieuChuyen.tsx` thêm hàng tab con Xuất, Nhập điều chuyển kiểu gạch chân `.tabs` ở đầu bảng, trên thanh lọc, tách khỏi chip trạng thái (`tabCon` ở `KieuDs`, `PhieuSanXuat.tsx`; CSS cuối `app.css`). Bản đầu đặt tab con cạnh chip, PhuongXT thấy chưa hợp lý.
+- B02-DNSN 10.2.3: doanh nghiệp TT58 gói Plus, Pro chỉ hiện ở trường hợp 2, 4 (TNDN trên thu nhập tính thuế), ẩn ở trường hợp 1, 3 (`hienMan` ở `registry.ts`). Trước đây 10.2.3 nằm trong `MO_IFASTER` nên bỏ qua lọc trường hợp thuế. Gói Standard vẫn xem bản lãi lỗ đơn giản.
 
 ## Đã kiểm
 

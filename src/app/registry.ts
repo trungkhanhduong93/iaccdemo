@@ -157,6 +157,8 @@ export const hienMan = (sc: ScreenDef, goi: Goi, cheDo?: CheDo, session?: Pick<S
     if (!apDung(sc, cd, session)) return false
     if (cd === 'TT152' && anSoHkdGoiStandard(maBC(sc), goi, session as PhienBC)) return false
     if (cd === 'TT58' && anSoTT58GoiStandard(maBC(sc), goi)) return false
+    // B02-DNSN 10.2.3 mở mọi chế độ theo iFaster nhưng doanh nghiệp gói Plus, Pro chỉ có ở trường hợp 2, 4 (TNDN trên thu nhập tính thuế), PhuongXT 04/11/2026 (T721)
+    if (cd === 'TT58' && goi !== 'S' && maBC(sc) === '10.2.3' && !CAU_HINH_BC['10.2.3'].th?.includes(thTT58(session?.ppGtgt, session?.ppTndn))) return false
     return moDuoc(sc, goi) || !anNgoaiGoi(goi)
   }
   return moDuoc(sc, goi) || (!anNgoaiGoi(goi) && !khongApDung(sc, goi))
