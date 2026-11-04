@@ -94,7 +94,7 @@ export function ThemBangGia({ onDong }: { onDong: () => void }) {
   const dsMucHang = dsHang.map(h => ({ v: h.ma, t: h.ten, phu: `Mã: ${h.ma} · ${h.dvt}` }))
 
   return (
-    <FormToanMan icon="banggia" title="Thêm bảng giá" onClose={onDong}
+    <FormToanMan icon="banggia" title="Thêm bảng giá" chuaMenu onClose={onDong}
       meta={<span className="muted">Khai giá cho nhiều mặt hàng{laNhap ? ', nhiều nhà cung cấp' : ''} cùng một khoảng thời gian.</span>}
       foot={(
         <>

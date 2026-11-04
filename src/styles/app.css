@@ -44461,4 +44461,6 @@ a.hdn-chip:hover { border-color: var(--blue); color: var(--blue); }
 .bg-bang .c { text-align: center; }
 .bg-bang .r { text-align: right; }
 .bg-bang .inp { width: 100%; height: 30px; font-size: 13px; }
-.bg-bang tr.bg-loi td { background: var(--red-t); }
+.bg-bang tr.bg-loi td { background: var(--red-t); }/* Form chừa thanh menu bên trái: phủ phần nội dung, độ rộng theo menu mở rộng, thu gọn (T723) */
+.shell .fsf.fsf-chua-menu { left: 232px; min-width: 0; box-shadow: -1px 0 0 var(--line); }
+.shell.gon .fsf.fsf-chua-menu { left: 64px; }

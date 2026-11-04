@@ -11,6 +11,7 @@
 - Lưu: kiểm thiếu hàng, thiếu nhà cung cấp, đơn giá bằng 0, trùng nhà cung cấp + mặt hàng; mỗi dòng thành một dòng bảng giá (`addCatalogRow('1.14')`).
 - `CatalogCfg.formThem` (`src/modules/types.ts`): danh mục khai form thêm riêng thì nút Thêm mới, nút ở bảng trống, `?moi=` mở form đó; bấm dòng vẫn sửa bằng panel cũ (`CatalogScreen.tsx`).
 - CSS mục T723 cuối `src/styles/app.css`.
+- Form Thêm bảng giá chừa thanh menu bên trái: `FormToanMan` có thêm `chuaMenu` (class `fsf-chua-menu`, lề trái 232px, menu thu gọn 64px).
 
 ## Đã kiểm
 
