@@ -11,6 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T735 | Tab Báo cáo phân hệ Thu chi gói Standard: thêm Công nợ khách hàng, Công nợ nhà cung cấp, bỏ Sổ công nợ | PhuongXT | Đang làm | `src/modules/tien/quy-trinh.ts` |
 | T734 | Điện thoại, lập phiếu thu chi gói Plus như Standard (tiếp T733): lưu là ghi sổ luôn, bỏ khối hạch toán và `tkNo`, `tkCo`, có chi trả nợ nhà cung cấp | | Chờ | `MDtThuChiLap.tsx` đang trong T552 của Trum, hỏi Trum trước. Đổi `s.goi === 'S'` sang `tcNhuStandard(s.goi)`. Xem nhật ký `2026-11-04-phuongxt-thu-chi-plus-nhu-standard.md` |
 | T732 | Lịch sử phiếu bản gọn, web và app: thẻ một dòng đầu (thao tác · người làm · giờ), dòng dữ kiện ngắn thay câu Nội dung, mỗi chỗ sửa một hàng cũ → mới kèm số chênh, lý do một dải vàng (thay bản E của T715) | Trum | Đang làm | Sửa `ChungTuForm.tsx` (hàm `LichSu`), `MLichSu.tsx`, cuối `app.css` (mục T732). Thiết kế https://claude.ai/artifact/XkewnexXLw9FfnzK3STYuX |
 | T696 | `kiem_tra.py --dien-thoai` dừng ở đợt 5 (lập phiếu): chờ 30 giây không thấy `.m-xp-nut-menu` nên không chạy tới các đợt sau | | Chờ | Thấy lúc nghiệm thu T695. Nút có trong `src/ui/mobile/MDtThuChiXem.tsx:341`, xem `tools/kiem_tra.py:642`. Đợt 11A chạy riêng vẫn qua |
