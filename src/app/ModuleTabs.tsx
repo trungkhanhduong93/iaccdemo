@@ -20,7 +20,7 @@ export function ModuleTabs({ mod }: { mod: ModuleDef }) {
   const { s } = useSession()
   const loc = useLocation()
   const [thamSo] = useSearchParams()
-  const tabs = useMemo(() => tabCua(mod).filter(sc => !sc.tabCha && !sc.anTab?.includes(s.goi) && hienMan(sc, s.goi, s.cheDo, s)), [mod, s.goi, s.cheDo, s.ppGtgt, s.ppTndn])
+  const tabs = useMemo(() => tabCua(mod, s.goi).filter(sc => !sc.tabCha && !sc.tabChaGoi?.[s.goi] && !sc.anTab?.includes(s.goi) && hienMan(sc, s.goi, s.cheDo, s)), [mod, s.goi, s.cheDo, s.ppGtgt, s.ppTndn])
   // Màn chia nhóm loại phiếu (Thu chi: Tiền mặt, Ngân hàng, Chuyển quỹ, T386) thành mỗi nhóm một tab, cùng màn, khác ?nhom=
   const tachNhom = (ds: ScreenDef[]) => ds.flatMap(sc => sc.voucher?.nhomLoai?.map(n => ({ ...sc, slug: `${sc.slug}?nhom=${n.k}`, ngan: n.ten, ten: n.ten })) ?? [sc])
   const giua = tachNhom(tabs.filter(t => t.kind !== 'baocao'))
@@ -29,7 +29,7 @@ export function ModuleTabs({ mod }: { mod: ModuleDef }) {
   const cur = mod.screens.find(sc => sc.slug === slug)
   const ngoai = !cur && mod.key !== 'bao-cao' && baoCaoCuaPhanHe(mod, s).some(x => x.slug === slug)   // báo cáo phân hệ khác mở trong phân hệ (T385)
   const nhom = nhomDangMo(cur, thamSo)
-  const active = mod.key === 'bao-cao' ? 'tat-ca' : ((cur && laBaoCao(cur)) || ngoai ? 'bao-cao' : cur?.tabCha ?? (nhom ? `${slug}?nhom=${nhom.k}` : slug))
+  const active = mod.key === 'bao-cao' ? 'tat-ca' : ((cur && laBaoCao(cur)) || ngoai ? 'bao-cao' : cur?.tabCha ?? cur?.tabChaGoi?.[s.goi] ?? (nhom ? `${slug}?nhom=${nhom.k}` : slug))
 
   const wrap = useRef<HTMLDivElement>(null)
   const meas = useRef<HTMLDivElement>(null)
@@ -79,7 +79,7 @@ export function ModuleTabs({ mod }: { mod: ModuleDef }) {
       <Link key={sc.slug} to={duongDan(mod, sc)} className={`${sc.slug === active ? 'on' : ''} ${ok ? '' : 'lock'}`}
         title={ok ? undefined : `Có ở gói ${GOI[minGoi(ma!)].ten}`}>
         {sc.kind === 'quytrinh' && <Icon n="flow" className="ic sm" />}
-        {nhanTab(sc)}
+        {nhanTab(sc, s.goi)}
         {!ok && ma && <Pk g={minGoi(ma)} o />}
       </Link>
     )
@@ -98,7 +98,7 @@ export function ModuleTabs({ mod }: { mod: ModuleDef }) {
               const iconName = sc.icon ?? (sc.kind === 'voucher' ? 'doc' : sc.kind === 'catalog' ? 'folder' : sc.kind === 'tool' ? 'play' : mod.icon)
               return (
                 <MenuItem key={sc.slug} to={duongDan(mod, sc)} icon={<ONen n={iconName} kieu="nhat" co="sm" />}
-                  lock={!ok} right={!ok && ma ? <Pk g={minGoi(ma)} o /> : undefined}>{nhanTab(sc)}</MenuItem>
+                  lock={!ok} right={!ok && ma ? <Pk g={minGoi(ma)} o /> : undefined}>{nhanTab(sc, s.goi)}</MenuItem>
               )
             })}
           </Dropdown>
@@ -112,7 +112,7 @@ export function ModuleTabs({ mod }: { mod: ModuleDef }) {
         {[...giua, ...(bc ? [bc] : [])].map(sc => {
           const ma = maKhoa(sc)
           return (
-            <span key={sc.slug}>{sc.kind === 'quytrinh' && <Icon n="flow" className="ic sm" />}{nhanTab(sc)}{!moDuoc(sc, s.goi) && ma && <Pk g={minGoi(ma)} o />}</span>
+            <span key={sc.slug}>{sc.kind === 'quytrinh' && <Icon n="flow" className="ic sm" />}{nhanTab(sc, s.goi)}{!moDuoc(sc, s.goi) && ma && <Pk g={minGoi(ma)} o />}</span>
           )
         })}
       </div>

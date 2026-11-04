@@ -200,8 +200,14 @@ export function phanHeKhoa(m: ModuleDef, goi: Goi) {
 /** Phân hệ có hiện trên sidebar không: gói Free ẩn phân hệ không còn màn nào mở được, không tính màn Quy trình, Báo cáo (QD22) */
 export const hienPhanHe = (m: ModuleDef, goi: Goi) =>
   !anPhanHeGoi(m, goi) && (!anNgoaiGoi(goi) || m.screens.some(sc => sc.kind !== 'quytrinh' && sc.kind !== 'baocao' && moDuoc(sc, goi)))
-export const tabCua = (m: ModuleDef) => m.screens.filter(sc => !laBaoCao(sc))
-export const nhanTab = (sc: ScreenDef) => sc.ngan ?? tenMan(sc)
+export function tabCua(m: ModuleDef, goi?: Goi) {
+  const ds = m.screens.filter(sc => !laBaoCao(sc))
+  const xep = goi && m.xepTab?.[goi]
+  if (!xep) return ds
+  const vt = (sc: ScreenDef) => { const i = xep.indexOf(sc.slug); return i < 0 ? xep.length : i }
+  return ds.map((sc, i) => ({ sc, i })).sort((a, b) => vt(a.sc) - vt(b.sc) || a.i - b.i).map(x => x.sc)   // Quy trình vẫn đứng đầu nếu ghi đầu danh sách
+}
+export const nhanTab = (sc: ScreenDef, goi?: Goi) => (goi && sc.nganGoi?.[goi]) ?? sc.ngan ?? tenMan(sc)
 
 /** Màn chứng từ chia tab theo nhóm loại phiếu (T386): nhóm đang mở lấy theo ?nhom=, không có thì theo nhóm chứa ?loai=, không có nữa thì nhóm đầu */
 export function nhomDangMo(sc: ScreenDef | undefined, q: URLSearchParams) {

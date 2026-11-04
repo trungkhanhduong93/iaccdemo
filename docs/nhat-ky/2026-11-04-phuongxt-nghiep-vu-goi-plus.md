@@ -20,6 +20,8 @@
 - `src/app/registry.ts`, `AN_PHAN_HE`: gói Plus ẩn phân hệ Tài sản cố định, Tiện ích. Sổ TSCĐ S4b-DNSN vẫn ở phân hệ Báo cáo. `Screen.tsx`: mở hai phân hệ này bằng đường dẫn thì về Trang chủ.
 - Khoá sổ: Tổng hợp bỏ Khoá sổ 10.1.6 (`goi: ['PR']`), Hệ thống hiện Khoá sổ như gói Standard (`he-thong/index.ts`). Link Mở khoá sổ ở `ChungTuBanHang.tsx`, `DongBoThuChiFabi.tsx`, bước Khoá sổ ở Bàn làm việc trỏ về Hệ thống.
 - `BanLamViec.tsx`: gói Plus bỏ việc Hoá đơn đầu vào (thuộc Tiện ích). Việc lệch đối soát, bước Đối soát doanh thu trỏ về Đối soát bán hàng với POS 3.2.2.
+- Thanh tab Kho gói Plus xếp lại: Tồn kho ban đầu, Nhập khác, Điều chuyển, Xuất huỷ, Xuất khác, Kiểm kê, Tính giá vốn. Thêm `xepTab` ở `ModuleDef` (thứ tự tab theo gói), `tabCua(m, goi)` xếp theo đó.
+- Tab Điều chuyển gói Plus: Xuất điều chuyển đổi nhãn bằng `nganGoi`, Nhập điều chuyển không có tab riêng nhờ `tabChaGoi`. `PhieuDieuChuyen.tsx` thêm tab con Xuất, Nhập điều chuyển trước chip trạng thái (`tabCon` ở `KieuDs`, `PhieuSanXuat.tsx`).
 
 ## Đã kiểm
 
@@ -33,6 +35,7 @@
 - Không.
 - Roadmap ghi 3.1.2 là "Bán hàng"; đang mở theo mã là Hoá đơn bán hàng 3.1.2. Bán hàng lập tay 3.1.7 vẫn chỉ gói Pro. Cần thì PhuongXT chốt lại.
 - Tự động xuất kho định lượng 11.2 roadmap xếp Plus, chưa mở lại (vẫn bỏ theo T100).
+- Điện thoại gói Plus đã theo thứ tự tab mới, Nhập điều chuyển vẫn là một mục riêng, chưa gộp như web.
 - Gói Plus còn mở 8 màn roadmap không ghi "Mới ở Plus": 5.1.8, 10.1.1, 2.2.8, 2.2.9, 4.2.6, 10.4.3, 11.13, X3. Giữ nguyên vì chưa biết roadmap xếp gói Standard hay Pro.
 
 ## Bẫy, quyết định mới

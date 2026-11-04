@@ -126,6 +126,8 @@ export interface ScreenDef {
   cheDo?: CheDo[]          // màn chỉ áp dụng cho các thông tư này (T147)
   ten?: string
   ngan?: string            // nhãn ngắn trên thanh tab
+  tabChaGoi?: Partial<Record<Goi, string>>   // như tabCha nhưng chỉ ở gói này, vd Nhập điều chuyển nằm trong tab Điều chuyển gói Plus (T721)
+  nganGoi?: Partial<Record<Goi, string>>     // nhãn tab riêng theo gói, vd Xuất điều chuyển gói Plus gọi Điều chuyển (T721)
   tabCha?: string          // màn con không có tab riêng trên thanh tab; mở màn này thì tab có slug này sáng (T167)
   icon?: string   // biểu tượng riêng của màn (tên trong Icon.tsx); không có thì dùng biểu tượng theo loại màn hoặc của phân hệ
   nhom?: string            // nhóm Excel; nhóm có chữ "báo cáo" vào tab Báo cáo
@@ -148,6 +150,7 @@ export interface ModuleDef {
   mota?: string
   quyTrinh?: QuyTrinhDef    // có thì phân hệ có tab Quy trình đứng đầu
   screens: ScreenDef[]
+  xepTab?: Partial<Record<Goi, string[]>>   // thứ tự tab theo gói (slug), màn không ghi đứng sau theo thứ tự cũ (T721)
 }
 
 /** Ô trên sơ đồ quy trình. di là đường dẫn sau /app/, vd 'tien/2-1-1/moi?loai=thu' mở form phiếu thu mới; di rỗng là ô chỉ để xem, không bấm được (T100) */

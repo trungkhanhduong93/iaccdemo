@@ -57,7 +57,7 @@ export function MNghiepVu() {
     }
 
     // 2. Các phân hệ khác: lấy màn điện thoại từ tabCua(m) (bỏ Báo cáo)
-    const screens = tabCua(m).filter(
+    const screens = tabCua(m, s.goi).filter(
       sc =>
         sc.kind !== 'quytrinh' &&
         sc.kind !== 'baocao' &&

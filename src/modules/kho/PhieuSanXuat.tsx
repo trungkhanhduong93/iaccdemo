@@ -84,6 +84,7 @@ export interface KieuDs {
   cot: Col[]                 // cột giữa Tham chiếu và Tổng tiền
   coTien: boolean            // cột Tổng tiền
   dai?: ReactNode            // dải giải thích đầu màn
+  tabCon?: ReactNode         // tab con trước chip trạng thái, vd Xuất, Nhập điều chuyển trong tab Điều chuyển gói Plus (T721)
 }
 
 interface GtLoc { thoiGian: KhoangNgay; tim: string; kho: string }
@@ -207,6 +208,7 @@ export function DsPhieuTc({ sc, mod, kieu: t, rows: rowsGoc }: ScreenProps & { k
             </div>
           </div>
           <div className="ds-hang-trang-thai">
+            {t.tabCon}
             {t.chips && <ChipTrangThai ds={chips} chon={chip} onChon={k => { setChip(c => (c === k ? '' : k)); setTrang(1) }} />}
             <div className="ds-toolbar-phai ds-cong-cu-h2">
               <NutExcel onNhap={() => toast(`Nhập phiếu ${t.ten.toLowerCase()} từ Excel`)} onXuat={() => toast(`Đã xuất ${list.length} phiếu ra Excel`)} />
