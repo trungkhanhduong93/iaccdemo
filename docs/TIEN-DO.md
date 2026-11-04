@@ -11,6 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T724 | Danh mục Bảng giá chia 2 tab Giá nhập, Giá bán; bộ lọc thêm trạng thái (mặc định đang hoạt động), bỏ lọc loại giá, ĐVT, đơn giá, VAT. Công thức chế biến thêm bộ lọc kênh áp dụng | PhuongXT | Đang làm | File: `src/modules/danh-muc/index.ts`, `src/ui/generic/CatalogScreen.tsx`, màn công thức chế biến |
 | T696 | `kiem_tra.py --dien-thoai` dừng ở đợt 5 (lập phiếu): chờ 30 giây không thấy `.m-xp-nut-menu` nên không chạy tới các đợt sau | | Chờ | Thấy lúc nghiệm thu T695. Nút có trong `src/ui/mobile/MDtThuChiXem.tsx:341`, xem `tools/kiem_tra.py:642`. Đợt 11A chạy riêng vẫn qua |
 | T690 | `kiem_tra.py` đợt 11A (điện thoại) báo "Gói thuê bao: thiếu 4 thẻ gói dịch vụ dọc": màn Gói thuê bao điện thoại hoặc bài kiểm lệch nhau | | Chờ | Thấy lúc nghiệm thu T689, `--nhanh` không chạy đợt 11A. Xem `tools/kiem_tra.py` mục 4 Gói thuê bao và `src/ui/mobile/MHeThong.tsx` |
 | T688 | Điện thoại, Trang chủ gói Standard báo đang đồng bộ chứng từ FABi như web (T687): dòng Doanh thu, từng quỹ x / y chứng từ, biểu đồ làm mờ | | Chờ | Ghi lúc làm T687. Sửa `src/ui/mobile/MTrangChuStandard.tsx`, dùng `useDongBoFabi`, `DongDongBo` trong `NhacDonViMoi.tsx` |
