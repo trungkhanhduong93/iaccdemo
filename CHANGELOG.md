@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 04/11/2026
+- T731: Khối Sổ sách, báo cáo cuối sơ đồ Quy trình liệt kê đủ mọi báo cáo như tab Báo cáo của phân hệ.
 - T730: Mọi màn Quy trình bỏ cột Tiện ích liên quan và Thiết lập & Thao tác dưới sơ đồ, chỉ còn Danh mục liên quan. Sơ đồ Mua hàng bỏ ô Nhận hoá đơn đầu vào.
 - T729: Tab Báo cáo của phân hệ Mua hàng không còn Sổ công nợ S4a-DNSN. Sổ vẫn xem được ở phân hệ Tiền và màn Báo cáo.
 - T728: Phiếu trả lại hàng mua có thêm cột Giá trị xuất kho ở cuối bảng chi tiết.

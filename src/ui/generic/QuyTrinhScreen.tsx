@@ -12,6 +12,7 @@ import { Note, Pk } from '../Page'
 import { Dropdown, MenuHead, MenuItem } from '../Dropdown'
 import { heSoZoom } from '../zoom'
 import { kyHieuBC, type PhienBC } from '../../modules/bao-cao/danh-sach'
+import { baoCaoCuaPhanHe } from '../../modules/bao-cao/cuaPhanHe'
 
 const RH = 128        // chiều cao một hàng ô
 const TILE = 54       // cạnh ô biểu tượng
@@ -30,7 +31,13 @@ export function QuyTrinhScreen({ mod }: ScreenProps) {
   // Gói Free có sơ đồ hội tụ riêng thì thay sơ đồ chung (T98)
   const goc1: QuyTrinhDef = s.goi === 'S' && goc0.hoiTuStandard ? { ...goc0, buoc: [], hoiTu: goc0.hoiTuStandard } : goc0
   // Gói Free có khối báo cáo riêng thì thay khối báo cáo, giữ các làn (T262)
-  const goc: QuyTrinhDef = s.goi === 'S' && goc0.raStandard && goc1.hoiTu ? { ...goc1, hoiTu: { ...goc1.hoiTu, ra: goc0.raStandard } } : goc1
+  const goc2: QuyTrinhDef = s.goi === 'S' && goc0.raStandard && goc1.hoiTu ? { ...goc1, hoiTu: { ...goc1.hoiTu, ra: goc0.raStandard } } : goc1
+  // Khối Sổ sách, báo cáo liệt kê đủ báo cáo như tab Báo cáo của phân hệ, giữ biểu tượng ô đã khai, PhuongXT 04/11/2026 (T731)
+  const dsBc = goc2.hoiTu && !goc0.khongBaoCao ? baoCaoCuaPhanHe(mod, s) : []
+  const goc: QuyTrinhDef = goc2.hoiTu && dsBc.length ? { ...goc2, hoiTu: { ...goc2.hoiTu, ra: { ...goc2.hoiTu.ra, nut: dsBc.map(x => {
+    const di = `${x.goc ?? mod.key}/${x.slug}`
+    return { ten: tenMan(x), icon: goc2.hoiTu!.ra.nut.find(n => n.di === di)?.icon ?? (x.report?.kieu === 'so' ? 'book' : 'chart'), di }
+  }) } } } : goc2
   // Gói Free có sơ đồ luồng theo cột thì thay sơ đồ chung (T123)
   const luong = s.goi === 'S' && goc0.luongStandard ? goc0.luongStandard.map(c => ({ ...c, nut: c.nut.filter(hien) })).filter(c => c.nut.length) : null
   // Gói Free có sơ đồ bước theo kỳ (mẫu C, T366): ưu tiên trên hoiTuStandard, luongStandard
