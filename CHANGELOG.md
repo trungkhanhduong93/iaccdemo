@@ -2,6 +2,9 @@
 
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
+## 04/11/2026
+- T721: Gói Plus mở thêm theo roadmap: Hoá đơn bán hàng, Xuất hoá đơn điện tử, Hoá đơn điều chỉnh, thay thế, Xuất, nhập điều chuyển kho, Tự động đồng bộ dữ liệu kho, Nhận hoá đơn đầu vào, Đối soát bán hàng với POS, Đối chiếu xuất kho với định lượng. Báo cáo bán hàng, Báo cáo doanh thu có lại ở gói Plus, Pro. Gói Standard không đổi.
+
 ## 03/11/2026
 - T720: Doanh nghiệp gói Standard, Plus chọn ngành nghề tính thuế ở hàng hoá, nhóm hàng theo bảng TT58 riêng, không dùng chung danh sách hộ kinh doanh. Danh mục hàng hoá hiện cột Thuế GTGT, Thuế TNDN. Sổ S1, S3a-DNSN tính TNDN theo tỷ lệ mới: ăn uống 2%, bán lẻ 1% (trước ghi nhầm 1,5% và 0,5%). Thuế GTGT khấu trừ thì cột, ô Thuế GTGT là thuế suất người dùng tự chọn (KCT, 0, 5, 8, 10%), không theo ngành nghề; thuế TNDN trên thu nhập tính thuế thì ẩn cột, ô Thuế TNDN.
 - T719: Danh mục gói Plus giống gói Standard, thêm Đơn vị tính, Quy đổi ĐVT, Công thức chế biến, Bảng giá. Không còn hiện Mục chi phí, Công việc, Tiền tệ, Tỷ giá, Loại thuế, Bút toán tự động, Hệ thống tài khoản, Nhóm kho. Hàng hoá bỏ cột Giá bán, Kho bỏ cột Nhóm kho, Quỹ tiền có cột Số dư ban đầu. Form hàng hoá bỏ Giá mua, Giá bán, ĐVT phụ, Mã vạch, Hạch toán, Kho mặc định, Tồn tối thiểu, Tồn tối đa, Nhà cung cấp.

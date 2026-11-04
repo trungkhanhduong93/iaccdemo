@@ -53,6 +53,14 @@ const THEO_ROADMAP: Record<string, Goi[]> = {
   '2.2.5': ['S', 'PL', 'PR'],
   '5.2.1': ['S', 'PL', 'PR'],   // Thẻ kho mở cho gói Standard để bấm hàng hoá ở Xuất nhập tồn mở thẻ kho, PhuongXT chốt 14/10/2026 (T211)
   '10.1.3': ['PL', 'PR'],   // Số dư ban đầu mở cho Plus: tiền, công nợ, tồn kho, PhuongXT chốt 11/10/2026 (T141)
+  // Gói Plus theo tab Tính năng của roadmap, PhuongXT 04/11/2026 (T721): hoá đơn bán hàng, hoá đơn điện tử, hoá đơn điều chỉnh,
+  // điều chuyển kho, đồng bộ kho, hoá đơn đầu vào
+  '3.1.2': ['PL', 'PR'],
+  '3.1.5': ['PL', 'PR'],
+  '3.1.6': ['PL', 'PR'],
+  '5.1.4': ['PL', 'PR'],
+  '11.3': ['PL', 'PR'],
+  '11.4': ['PL', 'PR'],
 }
 
 /** Màn bổ sung theo thông tư chưa có trong Excel (T47, kế hoạch mục 7.3). Trum cập nhật Excel và chạy lại tools/xuat_tinh_nang.py có đủ mã thì xoá dòng tương ứng ở đây */
@@ -90,7 +98,6 @@ const CHEN_SAU: Record<string, string[]> = {
 
 /** Màn bỏ hẳn ở mọi gói dù có trong Excel. Trum cập nhật Excel bỏ mã rồi thì xoá dòng ở đây */
 const DA_BO = new Set([
-  '3.2.1', '3.2.3',   // Báo cáo bán hàng, Báo cáo doanh thu: bỏ ở mọi gói, dùng Sổ doanh thu bán hàng 3.2.5, PhuongXT chốt 10/10/2026 (T99)
   '5.2.2',            // Tổng hợp nhập xuất tồn tạm bỏ, trùng Báo cáo xuất nhập tồn 5.2.3, Trum chốt 22/10/2026 (T624)
   '11.1', '11.2',     // Tiện ích Đồng bộ bán hàng, Xuất kho theo định lượng: bỏ ở mọi gói, PhuongXT chốt 10/10/2026 (T100)
 ])

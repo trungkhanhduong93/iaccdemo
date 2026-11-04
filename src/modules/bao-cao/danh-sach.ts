@@ -176,7 +176,8 @@ const GIU_MOI_CHE_DO = ['2.2.1', '2.2.3']
 /** Báo cáo lấy theo danh sách iFaster, mở mọi gói, mọi chế độ, PhuongXT chốt 13/10/2026 (T185): quỹ tiền,
  *  công nợ nhà cung cấp 4.2.3, khách hàng 3.2.9, quản trị, kho, mua hàng, bán hàng. Sổ công nợ 2.2.5 bỏ (PhuongXT: thay bằng Công nợ nhà cung cấp, Công nợ khách hàng theo iFaster); TT58 vẫn giữ S4a-DNSN. Không lọc theo anTam, cheDo, trường hợp thuế; muốn ẩn ở gói nào thì bỏ mã khỏi đây hoặc lọc thêm */
 export const MO_IFASTER = ['2.2.8', '2.2.9', '4.2.3', '3.2.9', '4.2.7', '10.2.3', '10.4.3', '5.2.3', '5.2.11', '5.2.12', '5.2.9', '5.2.10', '4.2.2', '4.2.1', '4.2.6', '3.2.7', '3.2.8', '3.2.6',
-  '5.2.1', '5.2.15']   // Thẻ kho mở lại mọi gói để bấm hàng hoá ở Xuất nhập tồn mở thẻ kho, PhuongXT chốt 14/10/2026 (T211); Báo cáo kiểm kê mọi gói (T244)
+  '5.2.1', '5.2.15',   // Thẻ kho mở lại mọi gói để bấm hàng hoá ở Xuất nhập tồn mở thẻ kho, PhuongXT chốt 14/10/2026 (T211); Báo cáo kiểm kê mọi gói (T244)
+  '3.2.1', '3.2.2', '3.2.3', '5.2.5']   // gói Plus theo roadmap: Báo cáo bán hàng, Đối soát với POS, Báo cáo doanh thu, Đối chiếu xuất kho với định lượng, PhuongXT 04/11/2026 (T721)
 /** Nhóm báo cáo Công nợ riêng, đứng sau nhóm Mua hàng: công nợ nhà cung cấp, khách hàng rời nhóm phân hệ, PhuongXT chốt 14/10/2026 (T217) */
 export const NHOM_CONG_NO = { key: 'cong-no', ten: 'Công nợ', ngan: 'Công nợ', icon: 'users', mota: 'Công nợ nhà cung cấp, công nợ khách hàng', sau: 'mua-hang', ma: ['4.2.3', '3.2.9'] }
 /** Nhóm báo cáo (khoá phân hệ) ẩn hẳn theo gói ở màn Báo cáo và tab Báo cáo của phân hệ: gói Free ẩn Kê khai thuế (T218); nhóm Bán hàng mở lại 19/10/2026 (T452) */
