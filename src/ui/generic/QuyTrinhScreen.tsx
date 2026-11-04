@@ -3,7 +3,7 @@
 import { Fragment, useLayoutEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import type { BuocKyQT, CotQT, LanQT, NutKyQT, NutQT, QuyTrinhDef, ScreenProps } from '../../modules/types'
-import { MODULES, anPhanHeGoi, dich, hienMan, laBaoCao, maKhoa, moDuoc, nhanTab, phanHeKhoa, tenMan } from '../../app/registry'
+import { MODULES, dich, hienMan, laBaoCao, maKhoa, moDuoc, nhanTab, phanHeKhoa, tenMan } from '../../app/registry'
 import { useSession, type Session } from '../../app/session'
 import { GOI, GOIS, anNgoaiGoi, minGoi, type Goi } from '../../app/plan'
 import type { CheDo } from '../../app/che-do'
@@ -405,7 +405,7 @@ function BenPhai({ qt, modKey, goi, cheDo, session }: { qt: QuyTrinhDef; modKey:
   )
 }
 
-/** Khu vực bổ trợ dưới sơ đồ: Danh mục liên quan, Tiện ích phân hệ, Thiết lập & Hướng dẫn (T45) */
+/** Khu vực bổ trợ dưới sơ đồ: chỉ còn Danh mục liên quan (T45); bỏ cột Tiện ích liên quan, Thiết lập & Thao tác ở mọi gói, PhuongXT 04/11/2026 (T730) */
 function HangDuoi({ qt, modKey, goi, cheDo, session }: { qt: QuyTrinhDef; modKey: string; goi: Goi; cheDo?: CheDo; session?: Pick<Session, 'ppGtgt' | 'ppTndn'> }) {
   const muc = (di: string) => {
     const d = dich(di, modKey)
@@ -424,17 +424,8 @@ function HangDuoi({ qt, modKey, goi, cheDo, session }: { qt: QuyTrinhDef; modKey
   }
 
   const dsDanhMuc = (qt.danhMuc ?? []).map(muc).filter(Boolean)
-  const tienIchNguon = (qt.tienIch && qt.tienIch.length > 0) ? qt.tienIch : ['tien-ich/11-7', 'tien-ich/X2', 'tien-ich/11-6']
-  const dsTienIch = tienIchNguon.map(muc).filter(Boolean)
-  // Gói ẩn phân hệ Tiện ích (gói Free, T100) thì bỏ cột Tiện ích liên quan
-  const modTi = MODULES.find(m => m.key === 'tien-ich')
-  const coTienIch = !modTi || !anPhanHeGoi(modTi, goi)
-  // Gói Free bỏ cột Thiết lập & Thao tác, chỉ còn Danh mục liên quan (T121)
-  const coThietLap = goi !== 'S'
-  const soCot = 1 + Number(coTienIch) + Number(coThietLap)
-
   return (
-    <section className={`qt-hub-grid${soCot === 2 ? ' hai-cot' : soCot === 1 ? ' mot-cot' : ''}`} aria-label="Tiện ích và danh mục liên quan">
+    <section className="qt-hub-grid mot-cot" aria-label="Danh mục liên quan">
       {/* Cột 1: Danh mục liên quan */}
       <div className="card qt-hub-col">
         <div className="qt-hub-h">
@@ -464,64 +455,6 @@ function HangDuoi({ qt, modKey, goi, cheDo, session }: { qt: QuyTrinhDef; modKey
         </Link>
       </div>
 
-      {/* Cột 2: Tiện ích & Tự động hoá */}
-      {coTienIch && <div className="card qt-hub-col">
-        <div className="qt-hub-h">
-          <span className="qt-hub-ic orange"><Icon n="tienich" className="ic sm" /></span>
-          <div className="qt-hub-t-wrap">
-            <h2 className="qt-hub-title">Tiện ích liên quan</h2>
-            <span className="qt-hub-sub">Đồng bộ, đối soát & công cụ</span>
-          </div>
-        </div>
-        <div className="qt-hub-items">
-          {dsTienIch.map((m, idx) => m && (
-            <Link key={m.d.path || idx} to={m.d.path} className={`qt-hub-link${m.ok ? '' : ' lock'}`}>
-              <ONen n={m.icon} kieu="nhat" co="sm" />
-              <div className="qt-hub-item-info">
-                <span className="qt-hub-item-name">{m.tenDayDu}</span>
-                {m.code && <span className="qt-hub-item-code">Mã {m.code}</span>}
-              </div>
-              {!m.ok && m.ma && <Pk g={minGoi(m.ma)} o />}
-              <Icon n="chevr" className="ic sm qt-hub-arr" />
-            </Link>
-          ))}
-        </div>
-        <Link to="/app/tien-ich" className="qt-hub-more">
-          <span>Trung tâm tiện ích</span>
-          <Icon n="arrow" className="ic sm" />
-        </Link>
-      </div>}
-
-      {/* Cột 3: Thiết lập & Thao tác nhanh */}
-      {coThietLap && <div className="card qt-hub-col">
-        <div className="qt-hub-h">
-          <span className="qt-hub-ic purple"><Icon n="cog" className="ic sm" /></span>
-          <div className="qt-hub-t-wrap">
-            <h2 className="qt-hub-title">Thiết lập & Thao tác</h2>
-            <span className="qt-hub-sub">Cấu hình tham số & phím tắt</span>
-          </div>
-        </div>
-        <div className="qt-hub-setting-card">
-          <Link to="/app/he-thong/cau-hinh" className="qt-hub-setting-link">
-            <ONen n="chinh" kieu="nhat" co="sm" />
-            <div style={{ minWidth: 0, flex: '1 1 auto' }}>
-              <b className="qt-hub-setting-title">Tuỳ chọn hệ thống</b>
-              <p className="qt-hub-setting-desc">Thiết lập tài khoản ngầm định, phương pháp ghi sổ, ngày khoá số liệu</p>
-            </div>
-            <Icon n="chevr" className="ic sm qt-hub-arr" />
-          </Link>
-        </div>
-        <div className="qt-hub-tips">
-          <div className="qt-tip-row">
-            <kbd className="qt-kbd">Ctrl+K</kbd>
-            <span>Tìm kiếm nhanh chứng từ & báo cáo</span>
-          </div>
-          <div className="qt-tip-row">
-            <span className="qt-tip-badge">Sơ đồ</span>
-            <span>Bấm vào ô để mở form lập chứng từ mới</span>
-          </div>
-        </div>
-      </div>}
     </section>
   )
 }
