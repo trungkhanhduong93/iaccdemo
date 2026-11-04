@@ -14,6 +14,8 @@
 - `src/ui/generic/daXoa.ts`: `dsTraCon`, `MAN_TRA_MUA`. `ttThamChieu` tính cả phiếu trả, nên phiếu mua còn phiếu trả thì không xoá được.
 - `src/ui/generic/VoucherScreen.tsx`: cột Tham chiếu ở danh sách phiếu mua hiện mã phiếu trả.
 
+- T728: thêm cột Giá trị xuất kho cuối bảng chi tiết phiếu trả lại (`BangSua.tsx` prop `xuatKho`, `cotTuyChon` có `coXuatKho`). Cách tính như Giá trị nhập kho: tiền sau chiết khấu, hộ kinh doanh cộng thêm tiền thuế.
+
 ## Đã kiểm
 
 - `npm run typecheck`, `npm run build`: không lỗi.
