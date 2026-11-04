@@ -23,7 +23,7 @@ import { dangLoc, dsGiaTri, khopLoc, type GiaTriLoc, type KieuLoc } from '../Loc
 import {
   BoLoc, ChipTrangThai, NutHangLoat, NutTuyChinhCot, cotChon, dsChipTT, khopChipTT, useCauHinhLoc, useCotDs, useLocNhap, type OLocDef,
 } from '../LocNangCao'
-import { ctTtCon, dsDcCon, dsTtCon, soDaTra, ttTienTheoTra, useDaXoa, xoaPhieu } from './daXoa'
+import { ctTtCon, dsDcCon, dsTraCon, dsTtCon, MAN_TRA_MUA, soDaTra, ttTienTheoTra, useDaXoa, xoaPhieu } from './daXoa'
 import { MAN_DC, MAN_KK, TEN_DC } from '../../modules/kho/dieu-chinh'
 
 import { CUA_HANG, HANG, NHAN_VIEN, NVL } from '../../data/mock'
@@ -55,6 +55,7 @@ function thamChieuCua(r: Row): { so: string; to?: string }[] {
     ...(ct ? [{ so: ct.so, to: `/app/tien/2-1-1/${ct.id}` }] : []),
     ...dsTtCon(r).map(c => ({ so: c.so, to: `/app/tien/2-1-1/${c.id}` })),
     ...dsDcCon(r).map(c => ({ so: c.so, to: `/app/${MAN_DC}/${c.id}` })),
+    ...dsTraCon(r).map(c => ({ so: c.so, to: `/app/${MAN_TRA_MUA}/${c.id}` })),   // phiếu trả lại hàng mua của phiếu mua (T727)
     ...(r._thamChieu ? [{ so: String(r._thamChieu), to: r._thamChieuDi ? String(r._thamChieuDi) : undefined }] : []),
   ]
 }

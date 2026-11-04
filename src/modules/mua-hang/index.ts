@@ -21,7 +21,7 @@ const muaHang: ModuleDef = {
       noCo: [['152', '331', 'Giá trị hàng mua'], ['1331', '331', 'Thuế GTGT được khấu trừ']] } },
     '4.1.3': { voucher: { prefix: 'MSC', doiTuong: 'ncc', nhan: 'Nhà cung cấp', them: 'Thêm phiếu mua qua sơ chế', dong: 'nvl', tien: [0, 0], nguon: 'excel',
       dienGiai: ['Mua thịt bò nguyên tảng, sơ chế thành thịt tái', 'Mua tôm sú, sơ chế bóc vỏ'], noCo: [['152', '331', 'Nhập kho nguyên liệu đã sơ chế'], ['1331', '331', 'Thuế GTGT được khấu trừ']] } },
-    '4.1.4': { voucher: { prefix: 'TLN', doiTuong: 'ncc', nhan: 'Nhà cung cấp', them: 'Thêm phiếu trả lại', dong: 'nvl', tien: [0, 0], nguon: 'excel',
+    '4.1.4': { voucher: { prefix: 'TLN', doiTuong: 'ncc', nhan: 'Nhà cung cấp', them: 'Thêm phiếu trả lại hàng mua', dong: 'nvl', tien: [0, 0], nguon: 'excel',
       dienGiai: ['Trả lại thịt bò không đạt chất lượng', 'Trả lại bánh phở giao trễ'], noCo: [['331', '152', 'Trả lại hàng'], ['331', '1331', 'Giảm thuế GTGT được khấu trừ']] } },
     '4.1.5': { voucher: { prefix: 'CPM', doiTuong: 'ncc', nhan: 'Nhà cung cấp dịch vụ', them: 'Thêm chi phí mua hàng', dong: 'tien', tien: [400_000, 6_000_000], thue: 8,
       dienGiai: ['Phí vận chuyển lô hàng đông lạnh', 'Phí bốc xếp', 'Phí kiểm định an toàn thực phẩm'], noCo: [['152', '331', 'Phân bổ chi phí mua vào giá nhập'], ['1331', '331', 'Thuế GTGT được khấu trừ']] } },

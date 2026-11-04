@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 04/11/2026
+- T727: Phiếu trả lại đổi tên thành Phiếu trả lại hàng mua, đáy form chỉ còn Tổng tiền, ô tích đổi thành Xuất kèm hoá đơn. Chi tiết phiếu mua có Tiện ích, Trả hàng: mở phiếu trả lại điền sẵn nhà cung cấp, kho, dòng hàng. Hai phiếu hiện mã của nhau ở Tham chiếu.
 - T726: Màn xem chi tiết, thêm mới, sửa chứng từ bỏ tab Ghi sổ. Gói Pro vẫn có tab Hạch toán.
 - T725: Gói Plus không còn Hoá đơn bán hàng ở phân hệ Bán hàng, chỉ gói Pro có.
 - T725: Mọi màn chứng từ bỏ tab Tất cả, Chưa ghi sổ, Đã ghi sổ, Lỗi hạch toán; danh sách luôn hiện tất cả phiếu. Trên điện thoại, mục Chứng từ chưa ghi sổ ở trang chủ mở danh sách tất cả phiếu.
