@@ -44464,3 +44464,7 @@ a.hdn-chip:hover { border-color: var(--blue); color: var(--blue); }
 .bg-bang tr.bg-loi td { background: var(--red-t); }/* Form chừa thanh menu bên trái: phủ phần nội dung, độ rộng theo menu mở rộng, thu gọn (T723) */
 .shell .fsf.fsf-chua-menu { left: 232px; min-width: 0; box-shadow: -1px 0 0 var(--line); }
 .shell.gon .fsf.fsf-chua-menu { left: 64px; }
+
+/* ── Panel công thức chế biến, sơ chế chừa thanh menu bên trái như form Thêm bảng giá (T723) ── */
+.shell .pn-hop.sx-ct-pn { left: 232px; width: auto; min-width: 0; max-width: none; box-shadow: -1px 0 0 var(--line); }
+.shell.gon .pn-hop.sx-ct-pn { left: 64px; }

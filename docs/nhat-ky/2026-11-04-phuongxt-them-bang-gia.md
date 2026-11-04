@@ -21,6 +21,7 @@
 - `python tools/kiem_van.py src/modules/danh-muc/ThemBangGia.tsx`: Sạch.
 - Mở thử gói Plus (cổng 5185): chọn nhà cung cấp mặc định, chọn 3 nguyên vật liệu, Lưu, danh sách từ 17 lên 20 dòng.
 - Chưa làm bản điện thoại.
+- Panel Thêm, sửa công thức chế biến, sơ chế (`sx-ct-pn`) chừa menu trái như form Thêm bảng giá; mở thử cổng 5180 thấy đúng.
 
 ## Dở dang, việc tiếp theo
 
