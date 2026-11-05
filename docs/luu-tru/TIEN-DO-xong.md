@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T740 | Danh sách Phiếu nhập khác (5.1.1) đổi tên cột Diễn giải thành Ghi chú | PhuongXT | 05/11/2026 | `2026-11-05-phuongxt-nhap-khac-ghi-chu.md` |
 | T739 | Danh sách Phiếu nhập khác (5.1.1) bỏ cột Tiền thuế | PhuongXT | 05/11/2026 | `2026-11-05-phuongxt-nhap-khac-bo-thue.md` |
 | T738 | Danh sách Phiếu nhập khác (5.1.1) thêm bộ lọc Kho, Hàng hoá, Nhóm hàng hoá như kiểm kê | PhuongXT | 05/11/2026 | `2026-11-05-phuongxt-loc-nhap-khac.md` |
 | T737 | Phiếu nhập khác (5.1.1) trên web: bỏ đối tượng, người giao nhận, địa chỉ, mã số thuế; thêm Kho nhập bắt buộc ở đầu phiếu; chi tiết chỉ số lượng, đơn giá, thành tiền, đáy form chỉ Tổng tiền. Điện thoại chưa đổi | PhuongXT | 05/11/2026 | `2026-11-05-phuongxt-nhap-khac-gon.md` |

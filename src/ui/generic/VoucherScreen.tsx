@@ -496,7 +496,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
     ...(cfg.loai && !cfg.dieuChinh ? [{ k: 'tenLoai', t: 'Loại', w: 130 } as Col] : []),   // điều chỉnh kho: loại đã là tab (T126)
     // Mua, bán (T286): Diễn giải là tên hàng trong phiếu, diễn giải đầu phiếu đổi tên Ghi chú
     ...(muaBan ? [{ k: 'tenHang', t: 'Diễn giải', w: 260, r: (r: Row) => <span title={String(r._tenHangDu ?? '')}>{r.tenHang}</span> } as Col] : []),
-    { k: 'dienGiai', t: cfg.kiemKe || cfg.dieuChinh || muaBan ? 'Ghi chú' : 'Diễn giải' },   // phiếu kiểm kê ghi Ghi chú như đầu phiếu (T124)
+    { k: 'dienGiai', t: cfg.kiemKe || cfg.dieuChinh || muaBan || laNk ? 'Ghi chú' : 'Diễn giải' },   // phiếu kiểm kê, nhập khác ghi Ghi chú như đầu phiếu (T124, T740)
     ...(mod.key === 'tien' ? [{ k: 'lyDo', t: 'Lý do', w: 170 } as Col] : []),   // T96; tên cột ngắn Lý do (T168)
     ...(cfg.doiTuong !== 'none' ? [{ k: 'doiTuong', t: cfg.nhan ?? 'Đối tượng' } as Col] : []),
     // Đang chọn một cửa hàng trên thanh trên thì cột cửa hàng thừa
