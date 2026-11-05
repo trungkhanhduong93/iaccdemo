@@ -44370,3 +44370,5 @@ a.hdn-chip:hover { border-color: var(--blue); color: var(--blue); }
 .qp-cn-ten { display: flex; flex-direction: column; gap: 1px; min-width: 0; }   /* số phương thức xuống dưới tên cửa hàng */
 .qp-cn-ten small { margin-left: 0; }
 .qp-goi-y b { color: var(--ink); font-weight: 600; }
+.qp-pt.khoa small { margin-left: 0; }   /* tên quỹ đã giữ phương thức nằm sát ngay sau tên phương thức, không trôi sang cột bên */
+.qp-pt.khoa small::before { content: "· "; }
