@@ -61,7 +61,9 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
   const tuFabi = mod.key === 'tien' && row?.nguon === 'FABi'
   const khoaKy = !moi && !!row && daKhoaSo(row.ngay, row.cn)   // phiếu thuộc tháng đã khoá sổ của cửa hàng (T19): chỉ xem, không sửa, không xoá (T315)
   const khoaDc = dsDcCon(row).length > 0   // phiếu kiểm kê đã sinh phiếu Xuất, Nhập điều chỉnh: không sửa, vẫn xoá được (T657)
-  const [dangSua, setDangSua] = useState(moi || (sp.get('sua') === '1' && !tuFabi && !khoaKy && !khoaDc))
+  // Phiếu nhập điều chuyển chờ nhập (T748): mở ra là sửa được thực nhận, bấm Nhập kho; không có nút Sửa, Huỷ
+  const ndcCho = cfgMan.dieuChuyen === 'ndc' && row?.ttSx === 'cho'
+  const [dangSua, setDangSua] = useState(moi || (ndcCho && !khoaKy) || (sp.get('sua') === '1' && !tuFabi && !khoaKy && !khoaDc))
   const [tab, setTab] = useState('ct')
   const [moLoc, setMoLoc] = useState(false)   // hàng lọc của bảng chi tiết, bấm nút Lọc mới hiện (T383)
   const [hienTk, setHienTk] = useState(false)
@@ -485,8 +487,9 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
       } : {}),
       // Điều chuyển (T155): phiếu xuất mới chờ nhập, phiếu nhập lưu là đã nhập; chuyển kho không có trạng thái
       ...(laDcn ? {
-        // Phiếu nhập chờ (sinh kèm phiếu xuất, T748) lưu vẫn chờ; bấm Nhập kho mới thành Đã nhập
-        ...(dcn !== 'ck' ? { ttSx: row?.ttSx ?? (dcn === 'ndc' ? 'da' : 'cho') } : {}),
+        // Phiếu nhập chờ (sinh kèm phiếu xuất, T748): Nhập kho thì Đã nhập, ghi sổ
+        ...(dcn !== 'ck' ? { ttSx: dcn === 'ndc' ? (row?.ttSx === 'huy' ? 'huy' : 'da') : row?.ttSx ?? 'cho' } : {}),
+        ...(ndcCho ? { tt: 'ghi' } : {}),
         ...(moi ? {} : { _ngayCapNhat: bayGio(), _nguoiCapNhat: s.ten }),
         ...(dcn === 'xdc' ? { doiTuong: cnNhan, _cnNhan: cnNhan } : {}),
         ...(dcn === 'ndc' ? { doiTuong: nguonDc.cn, _cnXuat: nguonDc.cn, _khoXuat: nguonDc.kho,
@@ -511,7 +514,8 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
       const doi = ([['ngay', 'Ngày chứng từ'], ['doiTuong', 'Đối tượng'], ['quy', 'Quỹ'], ['kho', 'Kho'], ['lyDo', 'Lý do'], ['dienGiai', 'Diễn giải'], ['ghiChu', 'Ghi chú'], ['dong', 'Dòng chi tiết']] as const)
         .filter(([k]) => g[k] !== m[k]).map(([, ten]): string => ten)
       if (g.tong !== m.tong) doi.push(`Tổng tiền ${money(g.tong)} → ${money(m.tong)}`)
-      if (doi.length) ghiNhatKy(man, String(row.id), soCt, s.ten, `Sửa chứng từ: ${doi.join(', ')}`)
+      if (ndcCho) ghiNhatKy(man, String(row.id), soCt, s.ten, doi.length ? `Nhập kho, sửa: ${doi.join(', ')}` : 'Nhập kho')
+      else if (doi.length) ghiNhatKy(man, String(row.id), soCt, s.ten, `Sửa chứng từ: ${doi.join(', ')}`)
     }
     // Phiếu mua được trả ghi thêm phiếu chi này vào phần đã thanh toán; bỏ chọn hoặc đổi lý do thì gỡ ra (T718)
     if (laTien && (traNoNcc || row?._traNo)) {
@@ -534,12 +538,12 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
       }
     }
     // Lưu phiếu nhập sản xuất: phiếu xuất tham chiếu chuyển Đã nhập; đổi tham chiếu thì phiếu xuất cũ về Chờ nhập (T152). Nhập điều chuyển cũng vậy (T155)
-    if (coTcNhap && !(dcn === 'ndc' && row?.ttSx === 'cho')) {   // phiếu nhập điều chuyển còn chờ: phiếu xuất giữ Chờ nhập (T748)
+    if (coTcNhap) {
       const manXuat = manDoi, cu = String(row?._thamChieuId ?? '')
       if (cu && cu !== thamChieuSx.id) suaPhieu(manXuat, cu, { ttSx: 'cho', _phieuNhap: undefined })
       suaPhieu(manXuat, thamChieuSx.id, { ttSx: 'da', _phieuNhap: { id: moi ? idMoi : String(row?.id), so: soCt } })
     }
-    toast(moi ? `Đã lưu ${soCt}` : `Đã lưu thay đổi ${soCt}`)
+    toast(moi ? `Đã lưu ${soCt}` : ndcCho ? `Đã nhập kho ${soCt}` : `Đã lưu thay đổi ${soCt}`)
     if (moi) baoDaLuu({ man, id: idMoi, so: soCt })   // tour Hướng dẫn nhanh ghi lại phiếu mẫu để xoá khi tắt tour (T681)
     // Phiếu chi mới lý do Chi phí chờ phân bổ: báo rồi mở màn tạo thẻ chi phí phân bổ, điền sẵn từ phiếu (T419: thông báo, không hỏi)
     // Mỗi dòng phiếu có lý do Chi phí chờ phân bổ thành một dòng chi tiết của thẻ (tên = diễn giải, số tiền = thành tiền)
@@ -571,16 +575,6 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
     } else {
       setDangSua(false)
     }
-  }
-
-  // Nhập kho phiếu nhập điều chuyển đang chờ (T748): phiếu nhập Đã nhập, ghi sổ; phiếu xuất tham chiếu Đã nhập
-  function nhapKhoDcn() {
-    if (!row) return
-    const man = `${mod.key}/${sc.slug}`
-    suaPhieu(man, String(row.id), { ttSx: 'da', tt: 'ghi', _ngayCapNhat: bayGio(), _nguoiCapNhat: s.ten })
-    if (row._thamChieuId) suaPhieu(manDoi, String(row._thamChieuId), { ttSx: 'da', _phieuNhap: { id: String(row.id), so: soCt } })
-    ghiNhatKy(man, String(row.id), soCt, s.ten, 'Nhập kho')
-    toast(`Đã nhập kho ${soCt}`)
   }
 
   // Xoá chứng từ (Tiện ích, Ctrl+Delete): cùng luật xoá với danh sách (QD32): kỳ đã khoá sổ không xoá, gói có ghi sổ chỉ xoá phiếu chưa ghi
@@ -620,15 +614,15 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
         else luu(false)
       } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'e') {
         e.preventDefault()
-        if (!khoaSua && !khoaDc) batSuaRef.current()   // phiếu điều chỉnh, phiếu FABi chỉ xem (T129, T283); phiếu có thẻ chi phí thì báo (T439)
+        if (!khoaSua && !khoaDc && dcn !== 'ndc') batSuaRef.current()   // phiếu nhập điều chuyển không có Sửa (T748)   // phiếu điều chỉnh, phiếu FABi chỉ xem (T129, T283); phiếu có thẻ chi phí thì báo (T439)
       } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'q') {
         // Huỷ thay đổi như nút Huỷ (T297)
         e.preventDefault()
-        if (dangSua) { if (moi) setHoiDong(true); else setDangSua(false) }
+        if (dangSua && !ndcCho) { if (moi) setHoiDong(true); else setDangSua(false) }
       } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'o') {
         // Sao chép chứng từ như mục Sao chép ở Tiện ích (T297)
         e.preventDefault()
-        if (!dangSua && row && !laDc) toast('Đã sao chép chứng từ')
+        if (!dangSua && row && !laDc && dcn !== 'ndc') toast('Đã sao chép chứng từ')
       } else if ((e.ctrlKey || e.metaKey) && e.key === 'Delete' && !dangSua) {
         // Ctrl+Delete xoá chứng từ khi đang xem, hỏi lại trước (T297)
         e.preventDefault()
@@ -834,13 +828,15 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
       foot={
         dangSua ? (
           <>
-            <button
-              type="button"
-              className="xp-btn-outline"
-              onClick={() => { if (moi) setHoiDong(true); else { setDangSua(false); if (khoaLyDtStandard) setDsDong(dongGoc); } }}
-            >
-              Huỷ
-            </button>
+            {!ndcCho && (   // phiếu nhập điều chuyển chờ: không có Huỷ, đóng form bằng nút đóng (T748)
+              <button
+                type="button"
+                className="xp-btn-outline"
+                onClick={() => { if (moi) setHoiDong(true); else { setDangSua(false); if (khoaLyDtStandard) setDsDong(dongGoc); } }}
+              >
+                Huỷ
+              </button>
+            )}
             <span className="grow" />
             {coTkGoi && dcn !== 'ck' && (   // chuyển kho không hạch toán (T155)
               <button
@@ -859,9 +855,13 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
               <HopCotPhieu dsDau={dsDau} dsChan={dsChan} ds={laKk ? COT_KK : laSx ? cotSx(sx!) : laDcn ? cotDcn(dcn!) : cotTuyChon(cfg, { coNhomHhdv: nhom === 'mua' && nhanKemHd && s.goi === 'PR', coKho: Boolean(bo.kho) && !khoDau && !laDc && !khoGon, giaVon, coLo: nhom === 'mua' && s.goi === 'PR', coCk: Boolean(bo.ck), coKm: kieu !== 'khong', coLy: Boolean(oLy), coNhapKho: truocThue, coXuatKho: nhom === 'mua' && traLai, coGiamThue: giamGtgt }).filter(([k]) => !anDc.includes(k))}
                 an={anCot} onDoi={doiAnCot} onDong={() => setHopCot(false)} />
             )}
-            <button type="button" className="xp-btn-outline" onClick={() => luu(false)} data-hd="luu">
-              Lưu (Ctrl+S)
-            </button>
+            {ndcCho ? (   // phiếu nhập điều chuyển chờ: sửa thực nhận rồi Nhập kho (T748)
+              <button type="button" className="xp-btn-sua" onClick={() => luu(false)}>Nhập kho (Ctrl+S)</button>
+            ) : (
+              <button type="button" className="xp-btn-outline" onClick={() => luu(false)} data-hd="luu">
+                Lưu (Ctrl+S)
+              </button>
+            )}
             {dcn !== 'ndc' && (   // phiếu nhập điều chuyển chỉ sinh từ phiếu xuất, không thêm mới (T748)
               <button type="button" className="xp-btn-sua" onClick={() => luu(true)}>
                 Lưu và thêm (Ctrl+Shift+S)
@@ -897,7 +897,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
               >
                 {dong => (
                   <>
-                    {!laDc && (
+                    {!laDc && dcn !== 'ndc' && (   // phiếu nhập điều chuyển không sao chép (T748)
                       <MenuItem icon="copy" onClick={() => toast('Đã sao chép chứng từ')}>
                         Sao chép
                       </MenuItem>
@@ -941,11 +941,8 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
               )}
             </div>
             <div className="xp-footer-phai">
-              {/* Phiếu nhập điều chuyển chờ nhập: Nhập kho chuyển Đã nhập, ghi sổ, phiếu xuất cũng Đã nhập (T748) */}
-              {dcn === 'ndc' && row?.ttSx === 'cho' && !khoaSua && (
-                <button type="button" className="xp-btn-outline" onClick={nhapKhoDcn}>Nhập kho</button>
-              )}
-              {!khoaSua && !khoaDc && (
+              {/* Phiếu nhập điều chuyển không có Sửa: phiếu chờ mở ra là sửa thực nhận, Nhập kho (T748) */}
+              {!khoaSua && !khoaDc && dcn !== 'ndc' && (
                 <button
                   type="button"
                   className="xp-btn-sua"
