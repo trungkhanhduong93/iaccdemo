@@ -20,7 +20,7 @@ export const DCN: Record<LoaiDcn, ThongTinDcn> = {
 
 /** Kho của một cửa hàng, cửa hàng của một kho */
 export const khoCuaCn = (cn: string) => CUA_HANG.find(c => c.ten === cn)?.kho ?? []
-const cnCuaKho = (kho: string) => CUA_HANG.find(c => c.kho.includes(kho))?.ten ?? ''
+export const cnCuaKho = (kho: string) => CUA_HANG.find(c => c.kho.includes(kho))?.ten ?? ''
 
 /** Dòng hàng theo mã nguyên vật liệu, giá xuất kho lấy giá danh mục */
 export function dongDcn(ma: string, sl: number, coGia = true): DongDcn {
@@ -68,6 +68,9 @@ const NDC: (Omit<Mau, 'kho' | 'khoNhan' | 'dong'> & { kho: string; hao?: [number
   { so: 252, ngay: '28/09/2026 16:00', kho: 'Kho bar Lê Lợi', gc: 'Nhận cà phê hạt, sữa đặc từ Thảo Điền', tt: 'da', nv: 0, ref: 252 },
   { so: 253, ngay: '03/10/2026 11:20', kho: 'Kho bếp Nguyễn Trãi', gc: 'Nhận bánh phở, rau thơm từ Lê Lợi', tt: 'da', nv: 2, ref: 253, hao: [1, 4.8] },
   { so: 254, ngay: '06/10/2026 17:30', kho: 'Kho bếp Thảo Điền', gc: 'Nhập sai kho, lập lại sau', tt: 'huy', nv: 1, ref: 255, capNhat: '06/10/2026 17:45' },
+  // Phiếu nhập sinh kèm phiếu xuất, chờ cửa hàng nhận xác nhận (T748)
+  { so: 255, ngay: '07/10/2026 08:00', kho: 'Kho bếp Thảo Điền', gc: 'Chuyển sườn heo, gạo tấm cho Thảo Điền', tt: 'cho', nv: 0, ref: 255 },
+  { so: 256, ngay: '07/10/2026 08:10', kho: 'Kho bếp Lê Lợi', gc: 'Trả lại tôm sú dư cho Lê Lợi', tt: 'cho', nv: 1, ref: 256 },
 ]
 
 const CK: Mau[] = [

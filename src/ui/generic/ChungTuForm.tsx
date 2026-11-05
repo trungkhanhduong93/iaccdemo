@@ -457,7 +457,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
     // Điều chuyển (T155): đủ kho, cửa hàng hai đầu; chuyển kho thì kho nhận khác kho xuất
     if (laDcn) {
       const thieu = dcn === 'ndc' && !thamChieuSx.id ? 'Chọn phiếu tham chiếu' : !kho ? `Chọn ${dcn === 'ndc' ? 'Kho nhận' : 'Kho xuất'}`
-        : dcn === 'xdc' && !cnNhan ? 'Chọn Cửa hàng nhận' : dcn !== 'ndc' && !khoNhan ? 'Chọn Kho nhận'
+        : dcn !== 'ndc' && !khoNhan ? 'Chọn Kho nhận'
           : dcn === 'ck' && khoNhan === kho ? 'Kho nhận phải khác kho xuất' : !dsDong.length ? 'Phiếu chưa có dòng hàng nào' : ''
       if (thieu) { toast(thieu); return }
     }
@@ -485,7 +485,9 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
       } : {}),
       // Điều chuyển (T155): phiếu xuất mới chờ nhập, phiếu nhập lưu là đã nhập; chuyển kho không có trạng thái
       ...(laDcn ? {
-        ...(dcn !== 'ck' ? { ttSx: row?.ttSx ?? (dcn === 'ndc' ? 'da' : 'cho') } : {}),
+        // Phiếu nhập chờ (sinh kèm phiếu xuất, T748) lưu lại là đã nhập, ghi sổ
+        ...(dcn !== 'ck' ? { ttSx: dcn === 'ndc' ? (row?.ttSx === 'huy' ? 'huy' : 'da') : row?.ttSx ?? 'cho' } : {}),
+        ...(dcn === 'ndc' && row?.ttSx === 'cho' ? { tt: 'ghi' } : {}),
         ...(moi ? {} : { _ngayCapNhat: bayGio(), _nguoiCapNhat: s.ten }),
         ...(dcn === 'xdc' ? { doiTuong: cnNhan, _cnNhan: cnNhan } : {}),
         ...(dcn === 'ndc' ? { doiTuong: nguonDc.cn, _cnXuat: nguonDc.cn, _khoXuat: nguonDc.kho,
@@ -515,6 +517,22 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
     // Phiếu mua được trả ghi thêm phiếu chi này vào phần đã thanh toán; bỏ chọn hoặc đổi lý do thì gỡ ra (T718)
     if (laTien && (traNoNcc || row?._traNo)) {
       ghiTraNo({ id: moi ? idMoi : String(row!.id), so: soCt, loai: String(loai?.k) }, (row?._traNo as TraNo[] | undefined) ?? [], traNoNcc ? traNo : [], s.ten)
+    }
+    // Xuất điều chuyển (T748): sinh phiếu nhập điều chuyển ở cửa hàng nhận, trạng thái Chờ nhập; sửa phiếu xuất khi phiếu nhập còn chờ thì phiếu nhập đổi theo
+    if (dcn === 'xdc' && (!row?._phieuNhap || row.ttSx === 'cho')) {
+      const idX = moi ? idMoi : String(row!.id), pn = row?._phieuNhap as { id: string; so: string } | undefined
+      const ndNhap = {
+        ngay: ngayCt, thang: Number(ngayCt.split('/')[1]) || 10, cn: cnNhan, doiTuong: cuaHang, _cnXuat: cuaHang, _khoXuat: kho, _kho: khoNhan,
+        _dong: dongNhapDc({ _dong: dsDong }), tien: tongTien, thue: 0, tong: tongTien, dienGiai: ghiChu, _ghiChu: ghiChu, ttSx: 'cho', tt: 'nhap',
+        _thamChieu: soCt, _thamChieuId: idX, _thamChieuDi: `/app/${DCN.xdc.man}/${idX}`,
+      }
+      if (pn) suaPhieu(DCN.ndc.man, pn.id, ndNhap)
+      else {
+        const idN = `${idMoi}-ndc`, soN = soKeTiep(DCN.ndc.man, `${DCN.ndc.prefix}2610-`)
+        themPhieu(DCN.ndc.man, { id: idN, so: soN, nguon: 'tay', ...ndNhap }, s.ten)
+        ghiNhatKy(DCN.ndc.man, idN, soN, s.ten, `Sinh từ phiếu xuất điều chuyển ${soCt}`)
+        suaPhieu(DCN.xdc.man, idX, { _phieuNhap: { id: idN, so: soN } })
+      }
     }
     // Lưu phiếu nhập sản xuất: phiếu xuất tham chiếu chuyển Đã nhập; đổi tham chiếu thì phiếu xuất cũ về Chờ nhập (T152). Nhập điều chuyển cũng vậy (T155)
     if (coTcNhap) {
@@ -563,7 +581,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
     else if (coGhiSo && row.tt !== 'nhap') toast(`${row.so} đã ghi sổ, bỏ ghi sổ rồi mới xoá`)
     else if (lyDoKhongXoaTheCuaPhieu(row)) toast(lyDoKhongXoaTheCuaPhieu(row)!)   // thẻ chi phí của phiếu thuộc kỳ đã khoá sổ (T439)
     else if (ttThamChieu(row)) toast(`${row.so} có phiếu ${ttThamChieu(row)!.so} tham chiếu, xoá ${ttThamChieu(row)!.so} trước`)   // T85, T91
-    else if (((laSx && !sxNhap) || dcn === 'xdc') && row._phieuNhap) toast(`${row.so} đã có phiếu nhập ${(row._phieuNhap as { so: string }).so}, xoá phiếu nhập trước`)   // T152
+    else if (((laSx && !sxNhap) || (dcn === 'xdc' && row.ttSx !== 'cho')) && row._phieuNhap) toast(`${row.so} đã có phiếu nhập ${(row._phieuNhap as { so: string }).so}, xoá phiếu nhập trước`)   // T152
     else setHoiXoa(true)
   }
 
@@ -936,7 +954,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
             )}
             {hoiXoa && row && (
               <HopXacNhan tieuDe={`Xoá ${row.so}?`} nut="Xoá phiếu" onDong={() => setHoiXoa(false)}
-                onDongY={() => { setHoiXoa(false); xoaPhieu(`${mod.key}/${sc.slug}`, [{ id: String(row.id), so: soCt }], s.ten); xoaTheCuaPhieu([row], s.ten); if (coTcNhap && row._thamChieuId) suaPhieu(manDoi, String(row._thamChieuId), { ttSx: 'cho', _phieuNhap: undefined }); if (laKk) xoaPhieu(MAN_DC, dsDcCon(row).map(c => ({ id: c.id, so: c.so })), s.ten); toast(`Đã xoá ${row.so}`); dongForm() }}>
+                onDongY={() => { setHoiXoa(false); xoaPhieu(`${mod.key}/${sc.slug}`, [{ id: String(row.id), so: soCt }], s.ten); xoaTheCuaPhieu([row], s.ten); if (coTcNhap && row._thamChieuId) suaPhieu(manDoi, String(row._thamChieuId), { ttSx: 'cho', _phieuNhap: undefined }); if (laKk) xoaPhieu(MAN_DC, dsDcCon(row).map(c => ({ id: c.id, so: c.so })), s.ten); if (dcn === 'xdc' && row._phieuNhap) xoaPhieu(DCN.ndc.man, [row._phieuNhap as CtTt], s.ten); toast(`Đã xoá ${row.so}`); dongForm() }}>
                 {theCuaPhieu(row).length > 0 ? 'Xoá phiếu chi này sẽ xoá thẻ chi phí đã tạo. Bạn có muốn thực hiện không? ' : ''}Phiếu đã xoá không lấy lại được.{laKk && dsDcCon(row).length > 0 && <> Phiếu điều chỉnh {dsDcCon(row).map(c => c.so).join(', ')} cũng bị xoá theo.</>}
               </HopXacNhan>
             )}
@@ -1138,7 +1156,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
               {/* Điều chuyển (T155): xuất có kho xuất, cửa hàng nhận, kho nhận; nhập có tham chiếu, kho nhận; chuyển kho có kho xuất, kho nhận */}
               {laDcn && (
                 <DauDieuChuyen loai={dcn!} sua={dangSua} cuaHang={cuaHang} kho={kho} setKho={setKho} khoNhan={khoNhan} setKhoNhan={setKhoNhan}
-                  cnNhan={cnNhan} setCnNhan={setCnNhan} nguon={nguonDc} thamChieu={thamChieuSx} onChonTc={chonThamChieuSx} />
+                  setCnNhan={setCnNhan} nguon={nguonDc} thamChieu={thamChieuSx} onChonTc={chonThamChieuSx} />
               )}
               {/* Phiếu nhập sản xuất: tham chiếu bắt buộc, chọn phiếu xuất cùng loại đang chờ nhập (T152) */}
               {sxNhap && (

@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 05/11/2026
+- T748: Phiếu xuất điều chuyển bỏ ô Cửa hàng nhận, chọn thẳng Kho nhận của cửa hàng khác; cột Đơn giá, Thành tiền đổi thành Giá vốn, Tiền vốn. Lưu phiếu xuất thì tự có phiếu nhập điều chuyển ở cửa hàng nhận, trạng thái Chờ nhập.
 - T747: Phiếu Xuất điều chỉnh, Nhập điều chỉnh đổi tên cột Đơn giá, Thành tiền thành Giá vốn, Tiền vốn.
 - T746: Form chứng từ bỏ nút Ghi sổ, Bỏ ghi sổ ở chân form, mọi phiếu.
 - T745: Phiếu xuất khác làm như Phiếu xuất huỷ: bỏ người nhận, địa chỉ, mã số thuế; đầu phiếu có Kho xuất bắt buộc chọn. Bảng chi tiết chỉ còn Mã hàng, Tên hàng, ĐVT, Số lượng, Giá vốn, Tiền vốn; đáy form chỉ Tổng tiền. Danh sách bỏ cột Người nhận, Tiền thuế, đổi Diễn giải thành Ghi chú, có thêm lọc Kho, Hàng hoá, Nhóm hàng hoá.

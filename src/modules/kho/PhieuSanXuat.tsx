@@ -98,7 +98,7 @@ export function DsPhieuTc({ sc, mod, kieu: t, rows: rowsGoc }: ScreenProps & { k
   const nav = useNavigate()
   const path = duongDan(mod, sc)
   const cnChon = cuaHangHienTai(s)
-  const [chip, setChip] = useState(t.chips ? (t.nhap ? 'da' : 'cho') : '')
+  const [chip, setChip] = useState(t.chips ? (t.chips.includes('cho') ? 'cho' : 'da') : '')
   const [locCot, setLocCot] = useState<Record<string, GiaTriLoc>>({})
   const [trang, setTrang] = useState(1)
   const [coTrang, setCoTrang] = useState(50)
