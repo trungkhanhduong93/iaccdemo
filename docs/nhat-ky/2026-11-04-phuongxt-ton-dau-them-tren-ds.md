@@ -8,7 +8,7 @@
 
 - Lần 1 làm dòng nhập đầu bảng trên màn danh mục chung (`themTaiCho`). PhuongXT góp ý muốn đơn giản hơn nên bỏ hẳn cách đó, trả `CatalogScreen.tsx`, `Table.tsx`, `types.ts` về như cũ.
 - `src/modules/kho/TonKhoBanDau.tsx` (mới): màn riêng cho 5.1.12, mọi dòng là ô sửa: Kho, Mặt hàng (nguyên vật liệu và hàng có tồn kho, chọn có tìm), ĐVT, Số lượng, Đơn giá, Thành tiền tự tính.
-  - Nút + ở mỗi dòng chèn dòng trống ngay dưới (cùng kho), con trỏ vào ô Mặt hàng. Nút + ở tiêu đề cột thêm dòng cuối bảng.
+  - Một nút + xanh (kiểu nút Thêm mới) ở tiêu đề cột cuối: thêm dòng trống cuối bảng, cùng kho với dòng cuối, con trỏ vào ô Mặt hàng. PhuongXT bỏ nút + ở từng dòng (05/11/2026).
   - Nút thùng rác ở mỗi dòng xoá dòng. Bỏ cột Trạng thái, bỏ panel thêm, sửa.
   - ĐVT chọn được đơn vị quy đổi của mặt hàng (lấy từ danh mục Quy đổi ĐVT, `quyDoiTuDanhMuc`). Đổi ĐVT thì đơn giá đổi theo, dưới số lượng hiện số ĐVT chính, vd "= 0,012 kg".
   - Thanh trên: tìm theo mã, tên; lọc kho; số dòng; Nhập, Xuất Excel. Chân bảng: tổng thành tiền.

@@ -1,5 +1,5 @@
 // Tồn kho ban đầu sửa ngay trên bảng (T736): mỗi dòng chọn kho, mặt hàng, ĐVT (kể cả ĐVT quy đổi), gõ số lượng, đơn giá;
-// nút + ở dòng chèn dòng trống ngay dưới, nút thùng rác xoá dòng; không có panel thêm, sửa. Dữ liệu giữ trong phiên làm việc
+// một nút + xanh ở tiêu đề cột thêm dòng trống cuối bảng, nút thùng rác ở dòng xoá dòng; không có panel thêm, sửa. Dữ liệu giữ trong phiên làm việc
 import { useMemo, useRef, useState } from 'react'
 import type { ScreenProps } from '../types'
 import { HANG, KHO, NVL } from '../../data/mock'
@@ -113,8 +113,8 @@ export function TonKhoBanDau({ sc }: ScreenProps) {
                 <th className="num" style={{ width: 120 }}>Số lượng</th>
                 <th className="num" style={{ width: 130 }}>Đơn giá</th>
                 <th className="num" style={{ width: 140 }}>Thành tiền</th>
-                <th className="c" style={{ width: 76 }}>
-                  <button type="button" className="icon-btn sm" title="Thêm dòng cuối bảng" aria-label="Thêm dòng" onClick={() => chen(dong[dong.length - 1] ?? null)}>
+                <th className="c" style={{ width: 56 }}>
+                  <button type="button" className="btn pri sm tkbd-them" title="Thêm dòng cuối bảng" aria-label="Thêm dòng" onClick={() => chen(dong[dong.length - 1] ?? null)}>
                     <Icon n="plus" className="ic sm" />
                   </button>
                 </th>
@@ -143,14 +143,9 @@ export function TonKhoBanDau({ sc }: ScreenProps) {
                     <td className="num"><OSoDong key={`${d.ma}|${d.dvt}`} val={d.gia} onDoi={gia => sua(d.id, { gia })} nhan="Đơn giá" /></td>
                     <td className="num">{d.sl && d.gia ? money(d.sl * d.gia) : ''}</td>
                     <td className="c">
-                      <span className="tkbd-nut">
-                        <button type="button" className="icon-btn sm" title="Thêm dòng ngay dưới" aria-label="Thêm dòng dưới" onClick={() => chen(d)}>
-                          <Icon n="plus" className="ic sm" />
-                        </button>
-                        <button type="button" className="icon-btn sm" title="Xoá dòng" aria-label="Xoá dòng" onClick={() => xoa(d)}>
-                          <Icon n="trash" className="ic sm" />
-                        </button>
-                      </span>
+                      <button type="button" className="icon-btn sm" title="Xoá dòng" aria-label="Xoá dòng" onClick={() => xoa(d)}>
+                        <Icon n="trash" className="ic sm" />
+                      </button>
                     </td>
                   </tr>
                 )

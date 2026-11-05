@@ -44392,4 +44392,4 @@ a.hdn-chip:hover { border-color: var(--blue); color: var(--blue); }
 .tkbd-bang .tkbd-so { text-align: right; }
 .tkbd-bang .tkbd-dvt { padding-left: 8px; }
 .tkbd-bang .tkbd-qd { display: block; font-size: 11px; margin-top: 2px; }
-.tkbd-bang .tkbd-nut { display: inline-flex; gap: 2px; }
+.tkbd-bang .tkbd-them { width: 28px; height: 28px; padding: 0; justify-content: center; }
