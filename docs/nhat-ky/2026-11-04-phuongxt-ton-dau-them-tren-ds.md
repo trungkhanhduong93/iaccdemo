@@ -12,6 +12,7 @@
   - Nút thùng rác ở mỗi dòng xoá dòng. Bỏ cột Trạng thái, bỏ panel thêm, sửa.
   - ĐVT chọn được đơn vị quy đổi của mặt hàng (lấy từ danh mục Quy đổi ĐVT, `quyDoiTuDanhMuc`). Đổi ĐVT thì đơn giá đổi theo, dưới số lượng hiện số ĐVT chính, vd "= 0,012 kg".
   - Thanh trên: tìm theo mã, tên; lọc kho; số dòng; Nhập, Xuất Excel. Chân bảng: tổng thành tiền.
+  - Nút Tiện ích (05/11/2026): Thêm hàng loạt mở hộp tích nhiều mặt hàng (dùng lại `ThemHangLoat`), đổ vào kho đang lọc, không lọc thì kho của dòng cuối; hàng đã có ở kho đó tích sẵn, nhãn "Đã có ở <kho>" (thêm prop `nhanDaCo`, mặc định vẫn "Đã có trong phiếu"). Xoá hàng loạt hiện ô tích ở cột STT (ô tiêu đề tích hết dòng đang hiện), thanh đỏ báo số dòng chọn, nút Xoá hỏi lại rồi xoá.
   - Dòng giữ trong phiên (biến `luuPhien`), rời màn quay lại vẫn còn; tải lại trang thì về dữ liệu mẫu.
 - `src/modules/kho/data.ts`: bỏ `tonBanDau` (cấu hình danh mục), thêm `tonBanDauMau()` sinh dòng mẫu như cũ.
 - `src/modules/kho/index.ts`: 5.1.12 đổi sang `kind: 'custom'`, `comp: TonKhoBanDau`.
@@ -22,6 +23,7 @@
 - `npm run typecheck`, `npm run build`: không lỗi.
 - `python tools/kiem_tra.py --nhanh`: lần đầu báo 5.1.12 không có tiêu đề màn, thêm `h1.sr-only`, chạy lại `Không có lỗi.`
 - `python tools/kiem_van.py src/modules/kho/TonKhoBanDau.tsx`: sạch.
+- 05/11/2026 chạy thử Tiện ích: Thêm hàng loạt tích Cà phê hạt Robusta, dòng vào cuối bảng kèm đơn giá; Xoá hàng loạt tích 2 dòng, hỏi lại, 18 còn 16 dòng, tổng tính lại. Typecheck, build, `kiem_tra.py --nhanh`, `kiem_van.py` đều qua.
 - Chạy thử gói Plus: dòng Thịt bò thăn đổi ĐVT kg sang g, đơn giá 320.000 thành 320, hiện "= 0,012 kg"; bấm + ra dòng trống ngay dưới; bấm xoá thì dòng mất, tổng cộng tính lại.
 
 ## Dở dang, việc tiếp theo

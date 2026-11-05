@@ -1,10 +1,12 @@
 // Tồn kho ban đầu sửa ngay trên bảng (T736): mỗi dòng chọn kho, mặt hàng, ĐVT (kể cả ĐVT quy đổi), gõ số lượng, đơn giá;
-// một nút + xanh ở tiêu đề cột thêm dòng trống cuối bảng, nút thùng rác ở dòng xoá dòng; không có panel thêm, sửa. Dữ liệu giữ trong phiên làm việc
+// một nút + xanh ở tiêu đề cột thêm dòng trống cuối bảng, nút thùng rác ở dòng xoá dòng; Tiện ích: Thêm hàng loạt, Xoá hàng loạt; không có panel thêm, sửa. Dữ liệu giữ trong phiên làm việc
 import { useMemo, useRef, useState } from 'react'
 import type { ScreenProps } from '../types'
 import { HANG, KHO, NVL } from '../../data/mock'
 import { ChonCoTim, quyDoiTuDanhMuc, type MucTim } from '../danh-muc/QuyDoiDvt'
-import { Select } from '../../ui/Dropdown'
+import { Dropdown, MenuItem, Select } from '../../ui/Dropdown'
+import { HopXacNhan } from '../../ui/LocNangCao'
+import { ThemHangLoat, type HangChon } from '../../ui/generic/ThemHangLoat'
 import { Icon } from '../../ui/Icon'
 import { IconFigmaSearch } from '../../ui/IconFigma'
 import { NutExcel } from '../../ui/CongCuDs'
@@ -17,6 +19,7 @@ import { tonBanDauMau } from './data'
 const MAT_HANG = [...NVL, ...HANG.filter(h => h.tonKho)]
 const DS_HANG: MucTim[] = MAT_HANG.map(h => ({ v: h.ma, t: h.ten, phu: `${h.ma} · ${h.dvt}` }))
 const DS_KHO = KHO.map(k => ({ v: k, t: k }))
+const DS_LOAT: HangChon[] = MAT_HANG.map(h => ({ ma: h.ma, ten: h.ten, dvt: h.dvt, nhom: h.nhom, loai: h.ma.startsWith('NVL') ? 'Nguyên vật liệu' : 'Hàng hoá' }))
 
 interface Dong { id: number; kho: string; ma: string; dvt: string; sl: number; gia: number }
 
@@ -81,6 +84,26 @@ export function TonKhoBanDau({ sc }: ScreenProps) {
   }
   const xoa = (d: Dong) => setDong(ds => ds.filter(x => x.id !== d.id))
 
+  // Tiện ích Thêm hàng loạt: tích nhiều mặt hàng, đổ vào kho đang lọc (không lọc thì kho của dòng cuối); hàng đã có ở kho đó tích sẵn, mờ
+  const [moThemLoat, setMoThemLoat] = useState(false)
+  const khoThem = kho || dong[dong.length - 1]?.kho || KHO[0]
+  const themLoat = (ds: HangChon[]) => {
+    if (!ds.length) return
+    setDong(d => [...d, ...ds.map(x => ({ ...dongTrong(khoThem), ma: x.ma, dvt: x.dvt, gia: MAT_HANG.find(h => h.ma === x.ma)?.gia ?? 0 }))])
+    toast(`Đã thêm ${ds.length} dòng vào ${khoThem}, gõ số lượng cho từng dòng`)
+  }
+  // Tiện ích Xoá hàng loạt: hiện ô tích ở cột STT, tích dòng rồi bấm Xoá; null là đang không chọn để xoá
+  const [chonXoa, setChonXoa] = useState<Set<number> | null>(null)
+  const [hoiXoa, setHoiXoa] = useState(false)
+  const tichHet = chonXoa !== null && hien.length > 0 && hien.every(d => chonXoa.has(d.id))
+  const tich = (id: number) => setChonXoa(c => { const m = new Set(c); if (m.has(id)) m.delete(id); else m.add(id); return m })
+  const xoaLoat = () => {
+    const n = chonXoa?.size ?? 0
+    setDong(d => d.filter(x => !chonXoa?.has(x.id)))
+    setChonXoa(null); setHoiXoa(false)
+    toast(`Đã xoá ${n} dòng`)
+  }
+
   const tongTien = hien.reduce((a, d) => a + d.sl * d.gia, 0)
 
   return (
@@ -99,13 +122,31 @@ export function TonKhoBanDau({ sc }: ScreenProps) {
           <div className="ds-toolbar-phai">
             <span className="muted" style={{ fontSize: 12 }}>{hien.length}/{dong.length} dòng</span>
             <NutExcel onNhap={() => toast('Nhập tồn kho ban đầu từ Excel')} onXuat={() => toast(`Đã xuất ${hien.length} dòng ra Excel`)} />
+            <Dropdown btnClass="btn" align="end" width={180} label={<><Icon n="more" className="ic sm" />Tiện ích</>}>
+              {(dongMenu: () => void) => <>
+                <MenuItem icon="layers" onClick={() => { dongMenu(); setMoThemLoat(true) }}>Thêm hàng loạt</MenuItem>
+                <MenuItem icon="trash" danger onClick={() => { dongMenu(); setChonXoa(new Set()) }}>Xoá hàng loạt</MenuItem>
+              </>}
+            </Dropdown>
           </div>
         </div>
+        {chonXoa && (
+          <div className="tkbd-xoa-loat">
+            <span>Tích các dòng cần xoá. Đã chọn <b>{chonXoa.size}</b> dòng</span>
+            <button type="button" className="btn sm tkbd-nut-xoa" disabled={!chonXoa.size} onClick={() => setHoiXoa(true)}>
+              <Icon n="trash" className="ic sm" />Xoá {chonXoa.size || ''} dòng
+            </button>
+            <button type="button" className="btn sm ghost" onClick={() => setChonXoa(null)}>Huỷ</button>
+          </div>
+        )}
         <div className="tbl-wrap">
           <table className="tbl bang-sua tkbd-bang">
             <thead>
               <tr>
-                <th className="c" style={{ width: 44 }}>STT</th>
+                <th className="c" style={{ width: 44 }}>
+                  {chonXoa ? <input type="checkbox" aria-label="Chọn tất cả dòng đang hiện" checked={tichHet}
+                    onChange={() => setChonXoa(tichHet ? new Set() : new Set(hien.map(d => d.id)))} /> : 'STT'}
+                </th>
                 <th style={{ width: 170 }}>Kho</th>
                 <th style={{ width: 90 }}>Mã</th>
                 <th>Tên hàng</th>
@@ -126,8 +167,10 @@ export function TonKhoBanDau({ sc }: ScreenProps) {
                 const dsDvt = h ? [h.dvt, ...quyDoiTuDanhMuc(h.ten, h.dvt).map(x => x.dv)] : []
                 const hs = heSo(d.ma, d.dvt)
                 return (
-                  <tr key={d.id} data-id={d.id}>
-                    <td className="c muted">{i + 1}</td>
+                  <tr key={d.id} data-id={d.id} className={chonXoa?.has(d.id) ? 'dang-chon' : undefined}>
+                    <td className="c muted">
+                      {chonXoa ? <input type="checkbox" aria-label={`Chọn dòng ${i + 1}`} checked={chonXoa.has(d.id)} onChange={() => tich(d.id)} /> : i + 1}
+                    </td>
                     <td><Select className="inp sm" value={d.kho} onChange={e => sua(d.id, { kho: e.target.value })} ds={DS_KHO} aria-label="Kho" /></td>
                     <td className="code muted">{d.ma}</td>
                     <td><ChonCoTim ds={DS_HANG} value={d.ma} onChange={v => chonHang(d, v)} nhan="Mặt hàng" className="inp sm tkbd-hang" /></td>
@@ -169,6 +212,15 @@ export function TonKhoBanDau({ sc }: ScreenProps) {
           </table>
         </div>
       </section>
+      {moThemLoat && (
+        <ThemHangLoat ds={DS_LOAT} daCo={dong.filter(d => d.kho === khoThem).map(d => d.ma)} nhanDaCo={`Đã có ở ${khoThem}`}
+          onDong={() => setMoThemLoat(false)} onXacNhan={themLoat} />
+      )}
+      {hoiXoa && chonXoa && (
+        <HopXacNhan tieuDe="Xoá hàng loạt?" nut={`Xoá ${chonXoa.size} dòng`} onDong={() => setHoiXoa(false)} onDongY={xoaLoat}>
+          Xoá {chonXoa.size} dòng tồn đầu đã chọn. Xoá xong không lấy lại được.
+        </HopXacNhan>
+      )}
     </div>
   )
 }

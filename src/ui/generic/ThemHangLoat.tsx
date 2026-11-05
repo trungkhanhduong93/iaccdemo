@@ -15,9 +15,10 @@ const COT: [keyof HangChon | 'hang', string, (h: HangChon) => string][] = [
   ['loai', 'Loại', h => h.loai],
 ]
 
-export function ThemHangLoat({ ds, daCo, onDong, onXacNhan }: {
+export function ThemHangLoat({ ds, daCo, nhanDaCo = 'Đã có trong phiếu', onDong, onXacNhan }: {
   ds: HangChon[]
   daCo: string[]                         // mã hàng đã có trong phiếu: tích sẵn, mờ, không chọn lại để khỏi trùng dòng
+  nhanDaCo?: string                      // nhãn cạnh hàng đã có, vd Tồn kho ban đầu ghi "Đã có ở <kho>" (T736)
   onDong: () => void
   onXacNhan: (ds: HangChon[]) => void
 }) {
@@ -77,7 +78,7 @@ export function ThemHangLoat({ ds, daCo, onDong, onXacNhan }: {
                         <input type="checkbox" checked={co || chon.has(h.ma)} disabled={co} onChange={e => bat(h.ma, e.target.checked)} aria-label={`Chọn ${h.ten}`} />
                       </td>
                       <td className="dim">{dau + i + 1}</td>
-                      <td>{h.ten} <span className="muted">- {h.ma}</span>{co && <span className="thl-nhan">Đã có trong phiếu</span>}</td>
+                      <td>{h.ten} <span className="muted">- {h.ma}</span>{co && <span className="thl-nhan">{nhanDaCo}</span>}</td>
                       <td>{h.dvt}</td>
                       <td>{h.nhom}</td>
                       <td>{h.loai}</td>
