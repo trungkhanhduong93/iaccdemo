@@ -7,8 +7,10 @@
 ## Đã làm
 
 - `src/modules/danh-muc/ChiaSoDuQuy.tsx` (mới): hàm chia số dư. Quỹ áp dụng từ 2 cửa hàng thì tổng tự chia đều, tròn nghìn, lẻ dồn cửa hàng chưa sửa cuối. Sửa tay một cửa hàng thì cửa hàng đó giữ, phần còn lại chia cho cửa hàng chưa sửa.
-- Bố cục theo cách B PhuongXT chọn: bản đầu là một khối bảng riêng, form dài nên bỏ. Gói Standard, Plus đổi khối "Phương thức thanh toán từ FABi" thành "Theo cửa hàng" (`QuyPttt.tsx`): đầu mỗi nhóm cửa hàng có ô Số dư cạnh số phương thức, cuối khối là dòng Tổng số dư đã chia, báo đỏ khi lệch, nút Chia đều lại. Gói Pro giữ khối cũ.
-- `truong-dm.ts`: tách khối theo gói ở 1.12 và `loi: loiChiaSoDu` chặn lưu khi tổng chia không khớp hoặc có cửa hàng bị âm.
+- Bố cục theo cách B PhuongXT chọn: bản đầu là một khối bảng riêng, form dài nên bỏ. Gói Standard, Plus đổi khối "Phương thức thanh toán từ FABi" thành "Theo cửa hàng" (`QuyPttt.tsx`): đầu mỗi nhóm cửa hàng có ô Số dư. Gói Pro giữ khối cũ.
+- Logic cuối theo PhuongXT: gõ ô tổng (hoặc đổi cửa hàng áp dụng) thì chia đều lại; gõ ô một cửa hàng thì giữ số mọi cửa hàng, ô tổng tự cộng lại. Làm bằng hook `doi` của 1.12 vì form chỉ nhận một lần `doi` mỗi lần gõ. Bỏ dòng tổng, nút Chia đều lại, nhãn "đã sửa". Câu hướng dẫn tách 2 dòng: Số dư, Phương thức thanh toán.
+- Gọn form theo góp ý PhuongXT: ô Tên quỹ bỏ `caHang`, Thông tin chung còn 2 hàng (Mã, Tên, Loại / Số tài khoản, Cửa hàng áp dụng, Số dư ban đầu). Chữ "2/4 phương thức" xuống dưới tên cửa hàng (`.qp-cn-ten`, mọi gói).
+- `truong-dm.ts`: tách khối theo gói ở 1.12 và `loi: loiChiaSoDu` chặn lưu khi có cửa hàng bị âm (giờ tổng luôn khớp).
 - `danh-muc/index.ts`: lưu phần chia (`cn`) và cửa hàng sửa tay (`sua`) cùng số dư quỹ; mở lại thì dòng đã sửa vẫn là đã sửa.
 - `session.tsx`, `SoDuBanDau.tsx`: kiểu `soDuQuy` thêm `cn`, `sua`; `datSoDuQuy` nhận thêm phần chia.
 - Cuối `app.css`: mục T750.

@@ -4,7 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
-| T750 | Danh mục Quỹ tiền (web): quỹ nhiều cửa hàng thì số dư ban đầu tổng tự chia đều cho từng cửa hàng, ô số dư ở đầu mỗi nhóm cửa hàng trong khối Theo cửa hàng, sửa tay được, Chia đều lại, báo lệch và chặn lưu khi không khớp. Biểu đồ, sổ quỹ theo cửa hàng chưa đọc phần chia; điện thoại chưa có | PhuongXT | 05/11/2026 | `2026-11-05-phuongxt-chia-so-du-quy.md` |
+| T750 | Danh mục Quỹ tiền (web): quỹ nhiều cửa hàng thì số dư ban đầu tổng tự chia đều cho từng cửa hàng, ô số dư ở đầu mỗi nhóm cửa hàng trong khối Theo cửa hàng; sửa số từng cửa hàng thì tổng tự cộng lại. Biểu đồ, sổ quỹ theo cửa hàng chưa đọc phần chia; điện thoại chưa có | PhuongXT | 05/11/2026 | `2026-11-05-phuongxt-chia-so-du-quy.md` |
 | T749 | Điện thoại, Danh mục cửa hàng: nút Đồng bộ FABi mở màn chọn cửa hàng FABi lên sổ như web, tích sẵn mọi cửa hàng, nút Lên sổ N cửa hàng; bỏ nút Thêm từ FABi và tuỳ chọn khai số dư; màn chọn mở thì ẩn nút nổi | PhuongXT | 05/11/2026 | `2026-11-05-phuongxt-dong-bo-cua-hang-dt.md` |
 | T748 | Xuất điều chuyển bỏ Cửa hàng nhận, cột Đơn giá, Thành tiền thành Giá vốn, Tiền vốn; lưu phiếu xuất tự sinh phiếu nhập điều chuyển Chờ nhập ở cửa hàng nhận; nhập điều chuyển bỏ Thêm mới, có nút Nhập kho | PhuongXT | 05/11/2026 | `2026-11-05-phuongxt-xuat-dieu-chuyen-gon.md` |
 | T747 | Phiếu Xuất điều chỉnh, Nhập điều chỉnh trên web đổi tên cột Đơn giá, Thành tiền thành Giá vốn, Tiền vốn (như T741, T745) | PhuongXT | 05/11/2026 | `2026-11-05-phuongxt-dieu-chinh-gia-von.md` |

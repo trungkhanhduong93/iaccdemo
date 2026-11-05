@@ -8,7 +8,7 @@ import { NGANH_NGHE_CON, timNganhNghe } from './nganh-nghe'
 import { DN_AN_UONG, NGANH_NGHE_DN, timNganhNgheDn } from './nganh-nghe-dn'
 import { KhoiQuyDoi } from './QuyDoiDvt'
 import { KhoiPtttQuy } from './QuyPttt'
-import { loiChiaSoDu } from './ChiaSoDuQuy'
+import { chiaTheoForm, loiChiaSoDu } from './ChiaSoDuQuy'
 
 import { createElement, type ReactNode } from 'react'
 import type { Col, Row } from '../types'
@@ -605,7 +605,7 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
         ten: 'Thông tin chung',
         truong: [
           { k: 'ma', nhan: 'Mã quỹ', kieu: 'chu', batBuoc: true },
-          { k: 'ten', nhan: 'Tên quỹ', kieu: 'chu', batBuoc: true, caHang: true },
+          { k: 'ten', nhan: 'Tên quỹ', kieu: 'chu', batBuoc: true },   // không chiếm cả hàng: 6 ô vừa 2 hàng, form gọn (T750)
           { k: 'loai', nhan: 'Loại quỹ', kieu: 'chon', ds: ['Tiền mặt', 'Ngân hàng'], batBuoc: true },
           { k: 'stk', nhan: 'Số tài khoản / Ngân hàng', kieu: 'chu', hien: v => v.loai !== 'Tiền mặt' },   // quỹ tiền mặt không có số tài khoản (T144)
           { k: 'cn', nhan: 'Cửa hàng áp dụng', kieu: 'chonNhieu', ds: CUA_HANG.map(c => c.ten), maDs: maCuaHang },   // một quỹ dùng cho nhiều cửa hàng (T144)
@@ -634,6 +634,9 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
       },
     ],
     loi: loiChiaSoDu,   // tổng chia cho cửa hàng phải khớp số dư ban đầu (T750)
+    // Gõ tổng hoặc đổi cửa hàng áp dụng thì chia đều lại; gõ số từng cửa hàng thì tổng tự cộng lại (T750)
+    doi: (k, v) => k === 'soDu' || k === 'cn' ? { _suaCn: {} }
+      : k === '_suaCn' && Object.keys(v._suaCn ?? {}).length ? { soDu: Object.values(chiaTheoForm(v) ?? {}).reduce((a, x) => a + x, 0) } : {},
   },
 
   // 1.13 Tài sản (ASSET)

@@ -44367,9 +44367,6 @@ a.hdn-chip:hover { border-color: var(--blue); color: var(--blue); }
 .qp-sd { display: flex; align-items: center; gap: 8px; padding-right: 10px; font-size: 12px; color: var(--muted); white-space: nowrap; }
 .qp-sd input { width: 140px; height: 30px; padding: 0 8px; text-align: right; border: 1px solid var(--line); border-radius: 6px; background: var(--white); font: inherit; font-size: 13px; color: var(--ink); font-variant-numeric: tabular-nums; }
 .qp-sd b { font-size: 13px; color: var(--ink); font-variant-numeric: tabular-nums; }
-.qp-sd.da-sua { color: var(--blue); }
-.qp-sd.da-sua input { border-color: var(--blue); }
-.qp-sd-tong { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 13px; color: var(--muted); }
-.qp-sd-tong b { color: var(--ink); font-variant-numeric: tabular-nums; }
-.qp-sd-tong.lech, .qp-sd-tong.lech b { color: var(--red); }
-.qp-chia-lai { border: 0; background: none; padding: 0; color: var(--blue); font: inherit; font-size: 12.5px; font-weight: 600; cursor: pointer; }
+.qp-cn-ten { display: flex; flex-direction: column; gap: 1px; min-width: 0; }   /* số phương thức xuống dưới tên cửa hàng */
+.qp-cn-ten small { margin-left: 0; }
+.qp-goi-y b { color: var(--ink); font-weight: 600; }

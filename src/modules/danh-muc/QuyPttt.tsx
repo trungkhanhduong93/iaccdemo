@@ -22,22 +22,16 @@ export function KhoiPtttQuy({ v, doi, xem = false, soDu = false }: { v: Record<s
 
   // Số dư ban đầu chia theo cửa hàng ở đầu mỗi nhóm (T750): chỉ khi quỹ dùng từ 2 cửa hàng
   const chia = soDu ? chiaTheoForm(v) : null
-  const sua: Record<string, number> = v._suaCn ?? {}
-  const tong = docTien(v.soDu)
-  const daChia = chia ? Object.values(chia).reduce((a, x) => a + x, 0) : 0
+  // Gõ số một cửa hàng: giữ số mọi cửa hàng, ô tổng tự cộng lại (hook doi của danh mục 1.12)
   const goSd = (id: string) => (e: ChangeEvent<HTMLInputElement>) => {
-    const raw = e.target.value.replace(/[^\d-]/g, '')
-    if (raw === '' || raw === '-') { const { [id]: _, ...con } = sua; doi('_suaCn', con); return }
-    doi('_suaCn', { ...sua, [id]: Number(raw) })
+    if (chia) doi('_suaCn', { ...chia, [id]: docTien(e.target.value) })
   }
 
   if (!dsCn.length) return <div className="qp-trong">Chọn cửa hàng áp dụng để gán phương thức thanh toán.</div>
   return (
     <div className="qp">
-      <p className="qp-goi-y">
-        {chia && 'Số dư ban đầu tự chia đều cho các cửa hàng; sửa số dư cửa hàng nào thì phần còn lại chia cho các cửa hàng khác. '}
-        Phiếu thu, chi lập trên FABi trả bằng phương thức đã tick sẽ vào quỹ này khi bật đồng bộ ở Cấu hình kế toán.
-      </p>
+      {chia && <p className="qp-goi-y"><b>Số dư:</b> nhập tổng ở trên thì tự chia đều; sửa số từng cửa hàng thì tổng tự cộng lại.</p>}
+      <p className="qp-goi-y"><b>Phương thức thanh toán:</b> phiếu thu, chi FABi trả bằng phương thức đã tick sẽ vào quỹ này.</p>
       {dsCn.map(c => {
         const khoa = DS_PTTT.map(p => khoaMap(c.id, p.ma))
         const duoc = khoa.filter(k => !quyKhac(k))
@@ -46,8 +40,10 @@ export function KhoiPtttQuy({ v, doi, xem = false, soDu = false }: { v: Record<s
           <label className="qp-cn-dau">
             <input type="checkbox" checked={tatCa} disabled={!duoc.length}
               onChange={() => dat(tatCa ? chon.filter(k => !duoc.includes(k)) : [...new Set([...chon, ...duoc])])} />
-            <b>{c.ten}</b>
-            <small>{khoa.filter(k => chon.includes(k)).length}/{DS_PTTT.length} phương thức</small>
+            <span className="qp-cn-ten">
+              <b>{c.ten}</b>
+              <small>{khoa.filter(k => chon.includes(k)).length}/{DS_PTTT.length} phương thức</small>
+            </span>
           </label>
         )
         return (
@@ -55,8 +51,8 @@ export function KhoiPtttQuy({ v, doi, xem = false, soDu = false }: { v: Record<s
             {chia ? (
               <div className="qp-cn-hang">
                 {dau}
-                <div className={`qp-sd${sua[c.id] !== undefined ? ' da-sua' : ''}`}>
-                  <span>{sua[c.id] !== undefined ? 'Số dư (đã sửa)' : 'Số dư'}</span>
+                <div className="qp-sd">
+                  <span>Số dư</span>
                   {xem ? <b>{money(chia[c.id])}</b>
                     : <input inputMode="numeric" value={money(chia[c.id])} onChange={goSd(c.id)} aria-label={`Số dư ban đầu ${c.ten}`} />}
                 </div>
@@ -78,12 +74,6 @@ export function KhoiPtttQuy({ v, doi, xem = false, soDu = false }: { v: Record<s
           </section>
         )
       })}
-      {chia && (
-        <div className={`qp-sd-tong${daChia !== tong ? ' lech' : ''}`}>
-          <span>Tổng số dư đã chia <b>{money(daChia)}</b>{daChia !== tong && ` · lệch ${money(daChia - tong)} đ so với số dư ban đầu`}</span>
-          {!xem && Object.keys(sua).length > 0 && <button type="button" className="qp-chia-lai" onClick={() => doi('_suaCn', {})}>Chia đều lại</button>}
-        </div>
-      )}
     </div>
   )
 }
