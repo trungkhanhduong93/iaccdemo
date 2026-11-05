@@ -13,7 +13,7 @@
 
 - Góp ý lần 2 của PhuongXT: phiếu nhập điều chuyển chỉ sinh từ phiếu xuất. Danh sách bỏ nút Thêm mới (`khongThem` trong `KieuDs`, `PhieuSanXuat.tsx`), đường `/moi` quay về danh sách (`PhieuDieuChuyen.tsx`), form bỏ Lưu và thêm, Ctrl+Shift+S; lối tắt ở Quy trình kho mở danh sách (`quy-trinh.ts`).
 - Đầu phiếu nhập: Tham chiếu chuyển xuống dưới Xuất từ, Kho nhận, chỉ còn link tới phiếu xuất, không chọn được (bỏ `OThamChieuDcn`).
-- Góp ý lần 3: phiếu nhập điều chuyển bỏ nút Sửa, Ctrl+E, mục Sao chép ở Tiện ích, Ctrl+O. Phiếu Chờ nhập mở ra là ở chế độ sửa (`ndcCho` trong `ChungTuForm.tsx`, trừ kỳ đã khoá sổ): sửa được Thực nhận, Kho nhận; không có Huỷ; nút Lưu đổi thành Nhập kho (Ctrl+S). Nhập kho thì phiếu nhập Đã nhập, ghi sổ, phiếu xuất tham chiếu Đã nhập, lịch sử ghi "Nhập kho". Phiếu Đã nhập chỉ xem.
+- Góp ý lần 3: phiếu nhập điều chuyển bỏ mục Sao chép ở Tiện ích, Ctrl+O. Phiếu Chờ nhập mở ra là ở chế độ sửa (`ndcCho` trong `ChungTuForm.tsx`, trừ kỳ đã khoá sổ): sửa được Thực nhận, Kho nhận; không có Huỷ; nút Lưu đổi thành Nhập kho (Ctrl+S). Nhập kho thì phiếu nhập Đã nhập, ghi sổ, phiếu xuất tham chiếu Đã nhập, lịch sử ghi "Nhập kho". - Góp ý lần 4: phiếu Đã nhập vẫn có nút Sửa (Ctrl+E), sửa được Thực nhận, Lưu thì giữ Đã nhập.
 
 ## Đã kiểm
 
@@ -21,7 +21,7 @@
 - `npm run build`: chạy xong, không lỗi.
 - `python tools/kiem_tra.py --nhanh`: Không có lỗi.
 - `python tools/kiem_van.py` 4 file đã sửa: 0 ĐỎ.
-- Thử trên trình duyệt gói Plus: lập phiếu xuất Lê Lợi sang Kho bếp Thảo Điền, lưu; đổi cửa hàng làm việc sang Thảo Điền thấy NDCK2610-0261 Chờ nhập; sửa, mở NDCK2610-0256 Chờ nhập, sửa Thực nhận, bấm Nhập kho thì phiếu thành Đã nhập, giữ số mới; phiếu xuất tham chiếu thành Đã nhập. Danh sách nhập điều chuyển không còn nút Thêm mới.
+- Thử trên trình duyệt gói Plus: lập phiếu xuất Lê Lợi sang Kho bếp Thảo Điền, lưu; đổi cửa hàng làm việc sang Thảo Điền thấy NDCK2610-0261 Chờ nhập; sửa, mở NDCK2610-0256 Chờ nhập, sửa Thực nhận, bấm Nhập kho thì phiếu thành Đã nhập, giữ số mới; phiếu xuất tham chiếu thành Đã nhập. Phiếu NDCK2610-0251 Đã nhập bấm Sửa, đổi Thực nhận 8 thành 7, Lưu vẫn Đã nhập. Danh sách nhập điều chuyển không còn nút Thêm mới.
 
 ## Dở dang, việc tiếp theo
 

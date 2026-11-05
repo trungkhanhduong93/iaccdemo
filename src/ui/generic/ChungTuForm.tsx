@@ -614,7 +614,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
         else luu(false)
       } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'e') {
         e.preventDefault()
-        if (!khoaSua && !khoaDc && dcn !== 'ndc') batSuaRef.current()   // phiếu nhập điều chuyển không có Sửa (T748)   // phiếu điều chỉnh, phiếu FABi chỉ xem (T129, T283); phiếu có thẻ chi phí thì báo (T439)
+        if (!khoaSua && !khoaDc) batSuaRef.current()   // phiếu điều chỉnh, phiếu FABi chỉ xem (T129, T283); phiếu có thẻ chi phí thì báo (T439)   // phiếu điều chỉnh, phiếu FABi chỉ xem (T129, T283); phiếu có thẻ chi phí thì báo (T439)
       } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'q') {
         // Huỷ thay đổi như nút Huỷ (T297)
         e.preventDefault()
@@ -941,8 +941,8 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
               )}
             </div>
             <div className="xp-footer-phai">
-              {/* Phiếu nhập điều chuyển không có Sửa: phiếu chờ mở ra là sửa thực nhận, Nhập kho (T748) */}
-              {!khoaSua && !khoaDc && dcn !== 'ndc' && (
+              {/* Phiếu nhập điều chuyển chờ mở ra là sửa thực nhận, Nhập kho; đã nhập vẫn Sửa được thực nhận (T748) */}
+              {!khoaSua && !khoaDc && (
                 <button
                   type="button"
                   className="xp-btn-sua"
