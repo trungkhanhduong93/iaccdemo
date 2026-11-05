@@ -1,18 +1,20 @@
 // Hệ thống: người dùng, phân quyền, gói thuê bao, cấu hình, thông tin đơn vị
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import type { Row, ScreenDef, ScreenProps } from '../types'
+import type { Col, Row, ScreenDef, ScreenProps } from '../types'
 import { MODULES, duongDan, hienMan, laBaoCao } from '../../app/registry'
 import { donViHienTai, dsCuaHang, dsDonVi, loaiHinhDv, useSession, cheDoHienTai, namTaiChinh, ngayDauNam, type PpGtgt, type PpTndn, type Session } from '../../app/session'
 import { ChonKenh, KENH_ONLINE, KENH_SAN, NHOM_HKD, type LoaiHinh, type PpHkd } from '../onboarding/OnboardFabi'
 import { FEATURE, FEATURES, GOI, GOIS, MODS, demTheoGoi, kieuGhiSo, type Goi } from '../../app/plan'
 import { CHE_DO, CHE_DO_HOP_LE, cheDoCuaGoi, type CheDo } from '../../app/che-do'
-import { CUA_HANG, KHO, NGUOI_DUNG } from '../../data/mock'
+import { CUA_HANG, KHO, NGUOI_DUNG, type Role } from '../../data/mock'
 import { Icon } from '../../ui/Icon'
 import { Card, Note, PageHead, Pk } from '../../ui/Page'
 import { St, Table } from '../../ui/Table'
 import { Select } from '../../ui/Dropdown'
-import { HopXacNhan } from '../../ui/LocNangCao'
+import { BoLoc, HopXacNhan, NutTuyChinhCot, useCauHinhLoc, useCotDs, useLocNhap, type OLocDef } from '../../ui/LocNangCao'
+import { IconFigmaSearch } from '../../ui/IconFigma'
+import { fold } from '../../ui/format'
 import { ONgay } from '../../ui/ChonNgay'
 import { thTT58, moTaBoSoTT58 } from '../bao-cao/tt58'
 import { CatalogPanel } from '../../ui/generic/CatalogScreen'
@@ -24,77 +26,398 @@ const PHAM_VI_DS = ['Tất cả cửa hàng', ...CUA_HANG.map(c => c.ten)]
 const KHO_DS = ['Tất cả kho', ...KHO]
 
 export const CAU_HINH_NGUOI_DUNG: CauHinhDM = {
-  ten: 'Người dùng',
+  ten: 'Người sử dụng',
+  haiCot: true,
   khoi: [
     {
       ten: 'Thông tin chung',
       truong: [
-        { k: 'username', nhan: 'Tên đăng nhập', kieu: 'chu', batBuoc: true },
         { k: 'ten', nhan: 'Họ tên', kieu: 'chu', caHang: true, batBuoc: true },
         { k: 'email', nhan: 'Email', kieu: 'chu', batBuoc: true },
         { k: 'sdt', nhan: 'Số điện thoại', kieu: 'chu' },
-        { k: 'bp', nhan: 'Bộ phận', kieu: 'chu' },
       ],
     },
     {
       ten: 'Phân quyền',
       truong: [
         { k: 'vaiTro', nhan: 'Chức vụ', kieu: 'chon', ds: VAI_TRO, batBuoc: true },
-        { k: 'pham', nhan: 'Cửa hàng được giao', kieu: 'chon', ds: PHAM_VI_DS },
-        { k: 'kho', nhan: 'Kho được giao', kieu: 'chon', ds: KHO_DS },
-        { k: 'otp2fa', nhan: 'Bắt buộc xác thực hai lớp', kieu: 'tich', caHang: false },
+        {
+          k: 'pham',
+          nhan: 'Cửa hàng',
+          kieu: 'chonHaiCot',
+          ds: CUA_HANG.map(c => c.ten),
+          maDs: (t: string) => CUA_HANG.find(c => c.ten === t)?.posId ?? '',
+          goiY: 'Tất cả cửa hàng',
+          caHang: true,
+        },
+        {
+          k: 'kho',
+          nhan: 'Kho',
+          kieu: 'chonHaiCot',
+          ds: KHO,
+          goiY: 'Tất cả kho',
+          caHang: true,
+        },
       ],
     },
     {
       ten: 'Trạng thái',
       truong: [
-        { k: 'hieuLucTu', nhan: 'Hiệu lực từ ngày', kieu: 'ngay' },
         { k: '_tt', nhan: 'Đang sử dụng', kieu: 'tich' },
-        { k: 'dongY', nhan: 'Đã đồng ý chia sẻ thông tin cá nhân', kieu: 'tich', caHang: true, batBuoc: true },
+        { k: 'xacThuc', nhan: 'Xác thực', kieu: 'tich' },
+        { k: 'lan', nhan: 'Đăng nhập gần nhất', kieu: 'chu', chiDoc: true },
+      ],
+    },
+    {
+      ten: 'Thông tin hệ thống',
+      truong: [
+        { k: 'nguoiTao', nhan: 'Người tạo', kieu: 'chu', chiDoc: true },
+        { k: 'ngayTao', nhan: 'Ngày tạo', kieu: 'chu', chiDoc: true },
+        { k: 'nguoiCapNhat', nhan: 'Người cập nhật', kieu: 'chu', chiDoc: true },
+        { k: 'ngayCapNhat', nhan: 'Ngày cập nhật', kieu: 'chu', chiDoc: true },
+      ],
+    },
+    {
+      ten: 'Đồng ý',
+      anDau: true,
+      truong: [
+        {
+          k: 'dongY',
+          nhan: 'Đồng ý chia sẻ thông tin cá nhân',
+          kieu: 'tich',
+          oVuong: true,
+          caHang: true,
+          batBuoc: true,
+        },
       ],
     },
   ],
-  moi: () => ({ _tt: 1, dongY: false, vaiTro: 'Kế toán viên', pham: 'Tất cả cửa hàng', kho: 'Tất cả kho' }),
+  moi: () => ({
+    _tt: 1,
+    xacThuc: false,
+    lan: 'Chưa đăng nhập',
+    vaiTro: 'Kế toán viên',
+    pham: '',
+    kho: '',
+    dongY: false,
+    nguoiTao: 'Tự ghi khi lưu',
+    ngayTao: 'Tự ghi khi lưu',
+    nguoiCapNhat: 'Tự ghi khi lưu',
+    ngayCapNhat: 'Tự ghi khi lưu',
+  }),
 }
 
+function gioHienTai(): string {
+  const d = new Date()
+  const ngay = String(d.getDate()).padStart(2, '0')
+  const thang = String(d.getMonth() + 1).padStart(2, '0')
+  const nam = d.getFullYear()
+  const gio = String(d.getHours()).padStart(2, '0')
+  const phut = String(d.getMinutes()).padStart(2, '0')
+  return `${ngay}/${thang}/${nam} ${gio}:${phut}`
+}
+
+const COT_CO_DINH = new Set(['x'])
+
 export function NguoiDung({ sc }: ScreenProps) {
-  const { toast } = useSession()
+  const { s, toast } = useSession()
+  const [rows, setRows] = useState<Row[]>(() => [...NGUOI_DUNG])
   const [editUser, setEditUser] = useState<Row | null>(null)
+
+  const colsGoc: Col[] = useMemo(() => [
+    {
+      k: 'ten',
+      t: 'Họ tên',
+      r: r => (
+        <span className="row">
+          <span className="avatar" style={{ width: 28, height: 28, fontSize: 11 }}>
+            {r.ten.split(' ').slice(-2).map((x: string) => x[0]).join('')}
+          </span>
+          <b style={{ color: 'var(--ink)' }}>{r.ten}</b>
+        </span>
+      ),
+    },
+    { k: 'email', t: 'Email', cls: 'dim' },
+    { k: 'vaiTro', t: 'Chức vụ' },
+    {
+      k: 'pham',
+      t: 'Cửa hàng',
+      r: r => {
+        const raw = (r.pham ?? '').trim()
+        if (!raw) return 'Tất cả cửa hàng'
+        const parts = raw.split(',').map((s: string) => s.trim()).filter(Boolean)
+        if (parts.length <= 1) return raw
+        return <span title={raw}>{parts[0]} +{parts.length - 1}</span>
+      },
+    },
+    { k: 'lan', t: 'Đăng nhập gần nhất', cls: 'dim' },
+    {
+      k: '_tt',
+      t: 'Trạng thái',
+      r: r => (r._tt ? <St k="ok">Đang sử dụng</St> : <St k="dim">Không hoạt động</St>),
+    },
+    {
+      k: 'xacThuc',
+      t: 'Xác thực',
+      an: true,
+      r: r => (r.xacThuc ? 'Đã xác thực' : 'Chưa xác thực'),
+    },
+    { k: 'nguoiTao', t: 'Người tạo', an: true },
+    { k: 'ngayTao', t: 'Ngày tạo', an: true },
+    { k: 'nguoiCapNhat', t: 'Người cập nhật', an: true },
+    { k: 'ngayCapNhat', t: 'Ngày cập nhật', an: true },
+    {
+      k: 'x',
+      t: 'Hành động',
+      c: true,
+      dinh: 'phai',
+      w: 60,
+      r: (r: Row) => (
+        <button
+          type="button"
+          className="icon-btn sm"
+          style={{ margin: '0 auto' }}
+          title="Sửa"
+          aria-label={`Sửa ${r.ten}`}
+          onClick={() => setEditUser(r)}
+        >
+          <Icon n="edit" className="ic sm" />
+        </button>
+      ),
+    },
+  ], [])
+
+  const cot = useCotDs('/he-thong/nguoi-dung', colsGoc, COT_CO_DINH)
+
+  const loc0 = useLocNhap(() => ({
+    tim: '',
+    vaiTro: '',
+    trangThai: '',
+    xacThuc: '',
+  }))
+  const { nhap, ap, dat } = loc0
+  const apLoc = () => loc0.loc()
+
+  const oLoc: OLocDef[] = useMemo(() => [
+    {
+      k: 'tim',
+      ten: 'Tìm kiếm',
+      coGiaTri: Boolean(nhap.tim.trim()),
+      o: (
+        <input
+          className="ds-o-inp"
+          value={nhap.tim}
+          placeholder="Tên, email"
+          onChange={e => dat('tim', e.target.value)}
+          onKeyDown={e => {
+            if (e.key === 'Enter') apLoc()
+          }}
+        />
+      ),
+    },
+    {
+      k: 'vaiTro',
+      ten: 'Chức vụ',
+      coGiaTri: Boolean(nhap.vaiTro),
+      o: (
+        <Select
+          className="ds-o-sel"
+          value={nhap.vaiTro}
+          aria-label="Chức vụ"
+          ds={[{ v: '', t: 'Tất cả' }, ...VAI_TRO.map(v => ({ v, t: v }))]}
+          onChange={e => dat('vaiTro', e.target.value)}
+        />
+      ),
+    },
+    {
+      k: 'trangThai',
+      ten: 'Trạng thái',
+      coGiaTri: nhap.trangThai !== '',
+      o: (
+        <Select
+          className="ds-o-sel"
+          value={nhap.trangThai}
+          aria-label="Trạng thái"
+          ds={[
+            { v: '', t: 'Tất cả' },
+            { v: '1', t: 'Đang sử dụng' },
+            { v: '0', t: 'Không hoạt động' },
+          ]}
+          onChange={e => dat('trangThai', e.target.value)}
+        />
+      ),
+    },
+    {
+      k: 'xacThuc',
+      ten: 'Xác thực',
+      coGiaTri: nhap.xacThuc !== '',
+      o: (
+        <Select
+          className="ds-o-sel"
+          value={nhap.xacThuc}
+          aria-label="Xác thực"
+          ds={[
+            { v: '', t: 'Tất cả' },
+            { v: '1', t: 'Đã xác thực' },
+            { v: '0', t: 'Chưa xác thực' },
+          ]}
+          onChange={e => dat('xacThuc', e.target.value)}
+        />
+      ),
+    },
+  ], [nhap, dat])
+
+  const [cauHinhLoc, datCauHinhLoc] = useCauHinhLoc(
+    '/he-thong/nguoi-dung',
+    ['tim', 'vaiTro', 'trangThai', 'xacThuc'],
+    ['tim']
+  )
+
+  const rowsLoc = useMemo(() => {
+    return rows.filter(r => {
+      if (ap.tim.trim()) {
+        const q = fold(ap.tim.trim())
+        const ten = fold(r.ten ?? '')
+        const email = fold(r.email ?? '')
+        if (!ten.includes(q) && !email.includes(q)) return false
+      }
+      if (ap.vaiTro && r.vaiTro !== ap.vaiTro) return false
+      if (ap.trangThai !== '') {
+        const bat = r._tt !== 0 && r._tt !== false
+        if (ap.trangThai === '1' && !bat) return false
+        if (ap.trangThai === '0' && bat) return false
+      }
+      if (ap.xacThuc !== '') {
+        const xt = Boolean(r.xacThuc)
+        if (ap.xacThuc === '1' && !xt) return false
+        if (ap.xacThuc === '0' && xt) return false
+      }
+      return true
+    })
+  }, [rows, ap])
 
   return (
     <div className="page">
-      <PageHead crumb={['Hệ thống']} title={sc.ten!} meta={<span className="chip" data-hd="tong">{NGUOI_DUNG.length}/10 người dùng của gói</span>}>
-        <button type="button" className="btn pri" data-hd="them" onClick={() => setEditUser({})}><Icon n="mail" className="ic sm" />Mời người dùng</button>
-      </PageHead>
-      <section className="card" data-hd="bang">
-        <Table
-          cols={[
-            { k: 'ten', t: 'Họ tên', r: r => <span className="row"><span className="avatar" style={{ width: 28, height: 28, fontSize: 11 }}>{r.ten.split(' ').slice(-2).map((x: string) => x[0]).join('')}</span><b style={{ color: 'var(--ink)' }}>{r.ten}</b></span> },
-            { k: 'email', t: 'Email', cls: 'dim' },
-            { k: 'vaiTro', t: 'Chức vụ' },
-            { k: 'pham', t: 'Phạm vi dữ liệu' },
-            { k: 'lan', t: 'Đăng nhập gần nhất', cls: 'dim' },
-            { k: 'tt', t: 'Trạng thái', r: r => r.tt === 'ok' ? <St k="ok">Đang dùng</St> : <St k="warn">Chưa nhận lời mời</St> },
-            { k: 'x', t: 'Hành động', r: (r: Row) => <button type="button" className="icon-btn sm" title="Sửa" aria-label={`Sửa ${r.ten}`} onClick={() => setEditUser(r)}><Icon n="edit" className="ic sm" /></button> },
-          ]}
-          rows={NGUOI_DUNG}
-          onRow={r => setEditUser(r)}
-        />
+      <PageHead
+        crumb={['Hệ thống']}
+        title={sc.ten!}
+        meta={<span className="chip" data-hd="tong">{rows.length}/10 người sử dụng của gói</span>}
+      />
+      <section className="card nd-bang" data-hd="bang">
+        <div className="ds-toolbar-figma">
+          <BoLoc
+            ds={oLoc}
+            cauHinh={cauHinhLoc}
+            datCauHinh={datCauHinhLoc}
+            dangLoc={loc0.dangLoc}
+            khacNhap={loc0.khacNhap}
+            onLoc={apLoc}
+            onXoaHet={loc0.xoaNhap}
+            chiNutPheu
+            ngoaiRieng={{
+              tim: (
+                <div key="tim" className="ds-tim-figma">
+                  <IconFigmaSearch size={16} />
+                  <input
+                    value={nhap.tim}
+                    placeholder="Tên, email"
+                    title="Tìm theo tên hoặc email"
+                    aria-label="Tìm kiếm"
+                    onChange={e => dat('tim', e.target.value)}
+                    onKeyDown={e => {
+                      if (e.key === 'Enter') apLoc()
+                    }}
+                  />
+                </div>
+              ),
+            }}
+          />
+          <div className="ds-toolbar-phai">
+            <NutTuyChinhCot
+              cols={cot.colsDu}
+              an={cot.an}
+              coDinh={COT_CO_DINH}
+              macDinh={cot.macDinh}
+              dongBang={cot.dongBang}
+              onLuu={cot.luu}
+              onDoRongTuDong={cot.datDoRongTuDong}
+            />
+            <button
+              type="button"
+              className="btn pri"
+              data-hd="them"
+              onClick={() => setEditUser({})}
+            >
+              <Icon n="plus" className="ic sm" />
+              Thêm mới
+            </button>
+          </div>
+        </div>
+
+        {rowsLoc.length > 0 ? (
+          <Table cols={cot.colsHien} rows={rowsLoc} />
+        ) : (
+          <div className="empty" style={{ padding: '40px 0' }}>
+            <b>Không có người sử dụng khớp điều kiện lọc.</b>
+          </div>
+        )}
       </section>
-      <Note icon="shield">Xác thực hai lớp bắt buộc với kế toán trưởng và chủ doanh nghiệp. Người dùng chỉ thấy dữ liệu cửa hàng, kho được giao.</Note>
+      <Note icon="shield">
+        Người sử dụng chỉ thấy dữ liệu của cửa hàng, kho được chọn. Để trống là được xem tất cả.
+      </Note>
 
       {editUser && (
         <CatalogPanel
+          rong={780}
           cauHinh={CAU_HINH_NGUOI_DUNG}
           edit={editUser}
-          all={NGUOI_DUNG}
-          ten="Người dùng"
-          tenNgan="Người dùng"
+          all={rows}
+          ten="Người sử dụng"
+          tenNgan="Người sử dụng"
           anNutThemTiep
           onDong={() => setEditUser(null)}
-          onLuu={(_val) => {
-            const isMoi = !editUser.ten
-            toast(isMoi ? 'Đã gửi lời mời tới email' : 'Đã lưu người dùng')
+          onLuu={val => {
+            const isMoi = !editUser.ten && !editUser.email
+            const now = gioHienTai()
+            const nguoiHienTai = s?.ten || 'Nguyễn Minh Anh'
+
+            if (isMoi) {
+              const dongMoi: Row = {
+                ...val,
+                ten: val.ten,
+                email: val.email,
+                username: val.username || (val.email ? String(val.email).split('@')[0] : 'user_' + Date.now()),
+                vaiTro: val.vaiTro || 'Kế toán viên',
+                role: (val.vaiTro === 'Chủ doanh nghiệp' ? 'owner' : val.vaiTro === 'Kế toán trưởng' ? 'ktt' : 'ktv') as Role,
+                pham: val.pham || '',
+                kho: val.kho || '',
+                _tt: 1,
+                xacThuc: false,
+                lan: 'Chưa đăng nhập',
+                dongY: Boolean(val.dongY),
+                nguoiTao: nguoiHienTai,
+                ngayTao: now,
+                nguoiCapNhat: nguoiHienTai,
+                ngayCapNhat: now,
+              }
+              setRows(prev => [dongMoi, ...prev])
+              toast('Đã thêm người sử dụng')
+            } else {
+              setRows(prev =>
+                prev.map(r => {
+                  if (r.email === editUser.email || (editUser.username && r.username === editUser.username)) {
+                    return {
+                      ...r,
+                      ...val,
+                      nguoiCapNhat: nguoiHienTai,
+                      ngayCapNhat: now,
+                    }
+                  }
+                  return r
+                })
+              )
+              toast('Đã lưu người sử dụng')
+            }
             setEditUser(null)
           }}
         />
@@ -102,6 +425,7 @@ export function NguoiDung({ sc }: ScreenProps) {
     </div>
   )
 }
+
 export const QUYEN = ['Xem', 'Thêm', 'Sửa', 'Xoá', 'Ghi sổ', 'Khoá sổ']
 export const MAC_DINH: Record<string, string[]> = {
   'Chủ doanh nghiệp': ['Xem'], 'Kế toán trưởng': QUYEN, 'Kế toán viên': ['Xem', 'Thêm', 'Sửa', 'Ghi sổ'], 'Quản lý cửa hàng': ['Xem', 'Thêm'], 'Thủ kho': ['Xem', 'Thêm', 'Sửa'],
@@ -283,7 +607,7 @@ export function PhanQuyen({ sc }: ScreenProps) {
           </div>
         </Card>
         <section className="card" data-hd="bang">
-          <div className="card-h"><h3>Quyền của {vt}</h3><span className="sub">Phạm vi dữ liệu đặt ở Người dùng</span></div>
+          <div className="card-h"><h3>Quyền của {vt}</h3><span className="sub">Cửa hàng, kho đặt ở Người sử dụng</span></div>
           <div className="pq-thanh">
             <div className="pq-chon" data-hd="phanHe">
               <b>Phân hệ</b>

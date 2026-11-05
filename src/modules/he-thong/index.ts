@@ -6,10 +6,10 @@ import { KhoaSoStandard } from '../tong-hop/KhoaSoStandard'
 
 const heThong: ModuleDef = {
   key: 'he-thong', ten: 'Hệ thống', ngan: 'Hệ thống', icon: 'cog',
-  mota: 'Người dùng, phân quyền, gói thuê bao, cấu hình',
+  mota: 'Người sử dụng, phân quyền, gói thuê bao, cấu hình',
   screens: [
-    // Gói Free ẩn Người dùng, Vai trò và phân quyền (T472)
-    { slug: 'nguoi-dung', ten: 'Người dùng', nhom: 'Quản trị', goi: ['PL', 'PR'], kind: 'custom', comp: NguoiDung },
+    // Gói Free ẩn Người sử dụng, Vai trò và phân quyền (T472)
+    { slug: 'nguoi-dung', ten: 'Người sử dụng', nhom: 'Quản trị', goi: ['PL', 'PR'], kind: 'custom', comp: NguoiDung },
     { slug: 'phan-quyen', ten: 'Chức vụ và phân quyền', nhom: 'Quản trị', goi: ['PL', 'PR'], kind: 'custom', comp: PhanQuyen },
     { slug: 'thong-tin', ten: 'Thông tin đơn vị', nhom: 'Cài đặt', kind: 'custom', comp: ThongTinDonVi },
     { slug: 'cau-hinh', ten: 'Cấu hình kế toán', nhom: 'Cài đặt', kind: 'custom', comp: CauHinh },

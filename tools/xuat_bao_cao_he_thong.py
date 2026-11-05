@@ -450,7 +450,7 @@ def main():
     he_thong_screens = [
         ('Hệ thống', 'HT-01', 'Thông tin đơn vị', 'thong-tin', 'Custom (Cài đặt)', 'Tab Cài đặt', 'Cấu hình MST, tên cty, địa chỉ, ngày bắt đầu năm tài chính'),
         ('Hệ thống', 'HT-02', 'Cấu hình kế toán', 'cau-hinh', 'Custom (Cài đặt)', 'Tab Cài đặt', 'Chọn thông tư áp dụng (TT58/133/99), phương pháp thuế GTGT, TNDN'),
-        ('Hệ thống', 'HT-03', 'Người dùng', 'nguoi-dung', 'Custom (Quản trị)', 'Tab Quản trị', 'Quản lý tài khoản kế toán, chủ quán, thu ngân, phân quyền'),
+        ('Hệ thống', 'HT-03', 'Người sử dụng', 'nguoi-dung', 'Custom (Quản trị)', 'Tab Quản trị', 'Quản lý tài khoản kế toán, chủ quán, thu ngân, phân quyền'),
         ('Hệ thống', 'HT-04', 'Chức vụ và phân quyền', 'phan-quyen', 'Custom (Quản trị)', 'Tab Quản trị', 'Phân quyền chi tiết xem/thêm/sửa/xoá/duyệt theo chức vụ'),
         ('Hệ thống', 'HT-05', 'Nhật ký thao tác', 'nhat-ky', 'Custom (Quản trị)', 'Tab Quản trị', 'Ghi log chi tiết ai thêm, sửa, xoá chứng từ lúc nào (từ gói S)'),
         ('Hệ thống', 'HT-06', 'Gói thuê bao', 'goi-thue-bao', 'Custom (Thuê bao)', 'Tab Thuê bao', 'Hiển thị gói Standard, Plus, Pro và nâng cấp gói'),

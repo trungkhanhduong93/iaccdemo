@@ -15,7 +15,7 @@ import type { Col, Row } from '../types'
 import type { Goi } from '../../app/plan'
 import type { CheDo } from '../../app/che-do'
 
-export type KieuTruong = 'chu' | 'so' | 'tien' | 'chon' | 'chonNhieu' | 'chonTim' | 'tich' | 'ngay' | 'khoangNgay' | 'nhieuDong'   // chonNhieu: chọn nhiều, lưu dạng "A, B", chọn đủ lưu "Tất cả" (T144); chonTim: chọn một có ô tìm, dòng hiện tên và mã (T151); khoangNgay: lưu "dd/mm/yyyy - dd/mm/yyyy" (T154)
+export type KieuTruong = 'chu' | 'so' | 'tien' | 'chon' | 'chonNhieu' | 'chonTim' | 'tich' | 'ngay' | 'khoangNgay' | 'nhieuDong' | 'chonHaiCot'   // chonNhieu: chọn nhiều, lưu dạng "A, B", chọn đủ lưu "Tất cả" (T144); chonTim: chọn một có ô tìm, dòng hiện tên và mã (T151); khoangNgay: lưu "dd/mm/yyyy - dd/mm/yyyy" (T154); chonHaiCot: chọn nhiều hai cột (T751)
 
 /** Đơn vị tính hiện mã và tên trong ô chọn, vd "KG - kg"; giá trị lưu vẫn là tên (T144) */
 const nhanDvt = (ten: string) => { const d = DON_VI_TINH.find(x => x[1] === ten); return d ? `${d[0]} - ${d[1]}` : ten }
@@ -80,6 +80,7 @@ export interface TruongDM {
   kieu: KieuTruong
   batBuoc?: boolean
   caHang?: boolean
+  oVuong?: boolean                             // kiểu tich vẽ ô vuông thay cho nút bật tắt (T751)
   ds?: string[]
   dsGoi?: Partial<Record<Goi, string[]>>       // danh sách chọn riêng theo gói, thay cho ds (T605)
   cot?: string

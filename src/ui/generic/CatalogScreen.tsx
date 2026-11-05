@@ -27,6 +27,7 @@ import { sinhCotBoSung } from './TuyChonCotDM'
 import { ChonKhoangNgay, ONgay, docNgay } from '../ChonNgay'
 import { ChonCoTim, ChonNhieu as ChonNhieuIf } from '../../modules/danh-muc/QuyDoiDvt'
 import { ChonHaiCot } from '../ChonHaiCot'
+import { useLaMobile } from '../mobile/useLaMobile'
 
 /** Mã mở form thêm hàng loạt trên đường dẫn: ?moi=hang-loat */
 const HANG_LOAT = 'hang-loat'
@@ -660,6 +661,7 @@ export interface CatalogPanelProps {
   onXoa?: (formVal: Record<string, any>) => void            // Tiện ích Xoá (T297)
   onSaoChep?: (kieu: string | undefined, dienSan: Record<string, any>) => void   // Tiện ích Sao chép: mở form thêm mới điền sẵn
   chiXem?: boolean                                           // chỉ xem: khoá mọi ô, không có nút Sửa, Lưu, Xoá (T328)
+  rong?: number                                              // độ rộng panel trên máy tính (T751)
 }
 
 /** Nhãn trong câu báo, ô chọn: hạ chữ đầu, giữ chữ viết tắt như MST, CCCD, GTGT (T471) */
@@ -683,9 +685,11 @@ export function CatalogPanel({
   onXoa,
   onSaoChep,
   chiXem = false,
+  rong,
 }: CatalogPanelProps) {
   const { s, set, toast } = useSession()
   const cnChon = cuaHangHienTai(s)
+  const laMobile = useLaMobile()
 
   const dangSua = Boolean(edit && (edit.ma || edit.ten || edit.username || Object.keys(edit).length > 1))
 
@@ -879,7 +883,7 @@ export function CatalogPanel({
         if (tr.batBuoc) {
           const val = formVal[tr.k]
           if (tr.kieu === 'tich') {
-            if (val === 0 || val === '0' || val === false || val === 'false') {
+            if (val === undefined || val === null || val === 0 || val === '0' || val === false || val === 'false') {
               errs[tr.k] = tr.k === 'dongY'
                 ? 'Cần tích xác nhận đã đồng ý chia sẻ thông tin cá nhân'
                 : `Cần tích ${thuongDau(tr.nhan)}`
@@ -1002,9 +1006,9 @@ export function CatalogPanel({
                       <label className="row pn-tich">
                         <input
                           type="checkbox"
-                          className="bat-tat"
+                          className={tr.oVuong ? 'o-vuong' : 'bat-tat'}
                           disabled={isChiDoc}
-                          checked={formVal[tr.k] !== 0 && formVal[tr.k] !== false}
+                          checked={tr.oVuong ? Boolean(formVal[tr.k] && formVal[tr.k] !== 0 && formVal[tr.k] !== '0') : (formVal[tr.k] !== 0 && formVal[tr.k] !== false)}
                           onChange={e => {
                             if (isChiDoc) return
                             doiO(tr.k, e.target.checked ? 1 : 0)
@@ -1043,6 +1047,15 @@ export function CatalogPanel({
                           setErrors(err => ({ ...err, [tr.k]: '' }))
                         }}
                       />
+                    ) : tr.kieu === 'chonHaiCot' ? (
+                      laMobile ? (
+                        <ChonNhieu ds={tr.ds ?? []} maDs={tr.maDs} giaTri={String(formVal[tr.k] ?? '')} nhan={tr.nhan} goiY={tr.goiY}
+                          onDoi={v => { doiO(tr.k, v); setErrors(err => ({ ...err, [tr.k]: '' })) }} />
+                      ) : (
+                        <OChonHaiCot ds={tr.ds ?? []} maDs={tr.maDs} giaTri={String(formVal[tr.k] ?? '')} nhan={tr.nhan} goiY={tr.goiY}
+                          disabled={isChiDoc}
+                          onDoi={v => { doiO(tr.k, v); setErrors(err => ({ ...err, [tr.k]: '' })) }} />
+                      )
                     ) : tr.kieu === 'chonNhieu' ? (
                       <ChonNhieu ds={tr.ds ?? []} maDs={tr.maDs} giaTri={String(formVal[tr.k] ?? '')} nhan={tr.nhan} goiY={tr.goiY}
                         onDoi={v => { doiO(tr.k, v); setErrors(err => ({ ...err, [tr.k]: '' })) }} />
@@ -1233,13 +1246,13 @@ export function CatalogPanel({
       {!cauHinh?.toanMan && (
         <>
           <div className="overlay" onClick={onDong} />
-          <aside className="pn-hop">
+          <aside className="pn-hop" style={rong ? { width: `min(${rong}px, 100vw)`, minWidth: `min(${rong}px, 100vw)` } : undefined}>
             <div className="pn-dau">
               <div>
                 <h3>{chiXem ? `Chi tiết ${tenNganHien}` : dangSua ? `Sửa ${tenNganHien}` : `Thêm ${tenNganHien}`}</h3>
                 <small className="muted">
                   {dangSua
-                    ? ([formVal.ma ?? formVal.username, formVal.ten].filter(Boolean).join(' - ') || tenNganHien)
+                    ? ([formVal.ma, formVal.ten].filter(Boolean).join(' - ') || tenNganHien)
                     : (cauHinh?.moTa ?? tenNganHien)}
                 </small>
               </div>
@@ -1299,6 +1312,31 @@ function docKhoang(v: string) {
   const hn = new Date(HOM_NAY.getFullYear(), HOM_NAY.getMonth(), HOM_NAY.getDate())
   const tuOk = tu && !isNaN(tu.getTime()) ? tu : hn
   return { tu: tuOk, den: den && !isNaN(den.getTime()) ? den : tuOk }
+}
+
+/** Ô chọn hai cột của form danh mục trên máy tính (T751): hiện thẻ tên đã chọn có nút x, để trống hiện goiY màu xám */
+function OChonHaiCot({ ds, maDs, giaTri, nhan, goiY, disabled, onDoi }: {
+  ds: string[]
+  maDs?: (v: string) => string
+  giaTri: string
+  nhan: string
+  goiY?: string
+  disabled?: boolean
+  onDoi: (v: string) => void
+}) {
+  const chon = !giaTri || giaTri === 'Tất cả' ? [] : giaTri.split(', ').map(s => s.trim()).filter(x => ds.includes(x))
+  return (
+    <ChonHaiCot
+      ds={ds}
+      maDs={maDs}
+      value={chon}
+      nhan={nhan}
+      goiY={goiY ?? 'Chọn...'}
+      the
+      disabled={disabled}
+      onChange={moi => onDoi(moi.join(', '))}
+    />
+  )
 }
 
 /** Ô chọn nhiều của form danh mục: lưu dạng "A, B"; chọn đủ lưu "Tất cả", bỏ hết cũng hiểu là tất cả (T144)

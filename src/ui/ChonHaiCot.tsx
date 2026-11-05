@@ -25,6 +25,8 @@ export interface ChonHaiCotProps {
   disabled?: boolean
   /** Ô lọc danh sách: giá trị hiện thành chip tên đầu + chip +N, có nút X xoá nhanh (T510) */
   chip?: boolean
+  /** Hiện thẻ tên đã chọn có nút x, để trống hiện goiY màu xám (T751) */
+  the?: boolean
 }
 
 export function ChonHaiCot({
@@ -39,6 +41,7 @@ export function ChonHaiCot({
   btnClass = '',
   disabled = false,
   chip = false,
+  the = false,
 }: ChonHaiCotProps) {
   const laMobile = useLaMobile()
   const [mo, setMo] = useState(false)
@@ -189,15 +192,17 @@ export function ChonHaiCot({
     <div className="chc-cot chc-cot-trai">
       <div className="chc-cot-dau">
         <span className="chc-cot-tieu-de">Chưa chọn</span>
-        <button
-          type="button"
-          className="icon-btn sm chc-lam-moi"
-          title="Làm mới danh sách"
-          aria-label="Làm mới danh sách"
-          onClick={lamMoi}
-        >
-          <Icon n="refresh" className="ic sm" />
-        </button>
+        {(onLamMoi || !the) && (
+          <button
+            type="button"
+            className="icon-btn sm chc-lam-moi"
+            title="Làm mới danh sách"
+            aria-label="Làm mới danh sách"
+            onClick={lamMoi}
+          >
+            <Icon n="refresh" className="ic sm" />
+          </button>
+        )}
       </div>
       <div className="chc-tim-khung">
         <Icon n="search" className="ic sm chc-tim-ic" />
@@ -260,10 +265,11 @@ export function ChonHaiCot({
     <div className="chc-cot chc-cot-phai">
       <div className="chc-cot-dau">
         <span className="chc-cot-tieu-de">{chip ? `Đã chọn (${giaTriHopLe.length})` : 'Đã chọn'}</span>
-        {chip && (
+        {(chip || the) && (
           <button
             type="button"
             className="chc-bo-tat-ca"
+            disabled={giaTriHopLe.length === 0}
             onClick={() => onChange([])}
           >
             Bỏ chọn tất cả
@@ -319,7 +325,7 @@ export function ChonHaiCot({
         aria-expanded={mo}
         aria-haspopup="dialog"
         aria-label={nhan}
-        className={`inp chc-o ${btnClass} ${className}${chip ? ' chc-chip-mode' : ''}${mo ? ' open' : ''}${disabled ? ' disabled' : ''}`}
+        className={`inp chc-o ${btnClass} ${className}${the ? ' chc-the-mode' : chip ? ' chc-chip-mode' : ''}${mo ? ' open' : ''}${disabled ? ' disabled' : ''}`}
         onClick={() => { if (!disabled) setMo(o => !o) }}
         onKeyDown={e => {
           if (!disabled && (e.key === 'Enter' || e.key === 'ArrowDown' || e.key === ' ')) {
@@ -328,7 +334,36 @@ export function ChonHaiCot({
           }
         }}
       >
-        {chip ? (
+        {the ? (
+          <>
+            {daChon.length === 0 ? (
+              <span className="chc-goi-y">{goiY}</span>
+            ) : (
+              <div className="chc-chips">
+                {daChon.map(x => (
+                  <span className="chc-chip" key={x.v}>
+                    <span className="chc-chip-ten" title={x.ma ? `${x.t} (${x.ma})` : x.t}>{x.t}</span>
+                    {!disabled && (
+                      <button
+                        type="button"
+                        className="chc-chip-x"
+                        title={`Bỏ chọn ${x.t}`}
+                        aria-label={`Bỏ chọn ${x.t}`}
+                        onClick={e => {
+                          e.stopPropagation()
+                          bo(x.v)
+                        }}
+                      >
+                        <Icon n="x" className="ic xs" />
+                      </button>
+                    )}
+                  </span>
+                ))}
+              </div>
+            )}
+            <Icon n="chevd" className="ic sm chc-mui-ten" />
+          </>
+        ) : chip ? (
           <>
             <span
               className="chc-gia-tri-wrap"

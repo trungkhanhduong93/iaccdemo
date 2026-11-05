@@ -4,6 +4,8 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T752 | Màn Người dùng đổi thành Người sử dụng: thanh lọc theo Thu chi, Tuỳ chỉnh cột, chỉ bấm icon bút mới mở panel, form bớt ô, thêm Xác thực, thông tin người tạo, người cập nhật | Trum | 05/11/2026 | 2026-11-05-trum-nguoi-su-dung.md |
+| T751 | Panel danh mục: ô chọn nhiều hai cột dạng thẻ, ô tích vuông, độ rộng panel theo màn, dùng cho màn Người sử dụng | Trum | 05/11/2026 | 2026-11-05-trum-nguoi-su-dung.md |
 | T750 | Danh mục Quỹ tiền (web): quỹ nhiều cửa hàng thì số dư ban đầu tổng tự chia đều cho từng cửa hàng, ô số dư ở đầu mỗi nhóm cửa hàng trong khối Theo cửa hàng; sửa số từng cửa hàng thì tổng tự cộng lại. Biểu đồ, sổ quỹ theo cửa hàng chưa đọc phần chia; điện thoại chưa có | PhuongXT | 05/11/2026 | `2026-11-05-phuongxt-chia-so-du-quy.md` |
 | T749 | Điện thoại, Danh mục cửa hàng: nút Đồng bộ FABi mở màn chọn cửa hàng FABi lên sổ như web, tích sẵn mọi cửa hàng, nút Lên sổ N cửa hàng; bỏ nút Thêm từ FABi và tuỳ chọn khai số dư; màn chọn mở thì ẩn nút nổi | PhuongXT | 05/11/2026 | `2026-11-05-phuongxt-dong-bo-cua-hang-dt.md` |
 | T748 | Xuất điều chuyển bỏ Cửa hàng nhận, cột Đơn giá, Thành tiền thành Giá vốn, Tiền vốn; lưu phiếu xuất tự sinh phiếu nhập điều chuyển Chờ nhập ở cửa hàng nhận; nhập điều chuyển bỏ Thêm mới, có nút Nhập kho | PhuongXT | 05/11/2026 | `2026-11-05-phuongxt-xuat-dieu-chuyen-gon.md` |

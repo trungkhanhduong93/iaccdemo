@@ -56,7 +56,7 @@ import { ChonKhoangNgay, ONgay, docNgay } from '../ChonNgay'
 import { MFormDm } from './MFormDm'
 import { MTrong } from './MTrong'
 
-// ── 1. Màn Người dùng ──
+// ── 1. Màn Người sử dụng ──
 export const MNguoiDung: FC<ScreenProps> = ({ sc }) => {
   const { toast } = useSession()
   const [editUser, setEditUser] = useState<Row | null>(null)
@@ -81,7 +81,7 @@ export const MNguoiDung: FC<ScreenProps> = ({ sc }) => {
               placeholder="Tìm tên, email, chức vụ..."
               value={q}
               onChange={e => setQ(e.target.value)}
-              aria-label="Tìm kiếm người dùng"
+              aria-label="Tìm kiếm người sử dụng"
             />
             {q ? (
               <button
@@ -99,12 +99,12 @@ export const MNguoiDung: FC<ScreenProps> = ({ sc }) => {
 
       <div className="m-ht-tom-tat">
         <span>
-          Tổng <b>{dsLoc.length}</b> / {NGUOI_DUNG.length} người dùng
+          Tổng <b>{dsLoc.length}</b> / {NGUOI_DUNG.length} người sử dụng
         </span>
       </div>
 
       {dsLoc.length === 0 ? (
-        <MTrong kieu="tim" tieuDe="Không tìm thấy người dùng" moTa="Thử tìm theo tên, email khác" />
+        <MTrong kieu="tim" tieuDe="Không tìm thấy người sử dụng" moTa="Thử tìm theo tên, email khác" />
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           {dsLoc.map((u, idx) => {
@@ -123,13 +123,13 @@ export const MNguoiDung: FC<ScreenProps> = ({ sc }) => {
                     <span className="m-ht-user-ten">{u.ten}</span>
                     <span className="m-ht-user-email">{u.email}</span>
                     <span className="m-ht-user-phu">
-                      {u.vaiTro} · {u.pham}
+                      {u.vaiTro} · {u.pham || 'Tất cả cửa hàng'}
                     </span>
                   </div>
                 </div>
                 <div className="m-ht-user-phai">
-                  <span className={`chip ${u.tt === 'ok' ? 'ok' : 'warn'}`}>
-                    {u.tt === 'ok' ? 'Đang dùng' : 'Chưa nhận lời'}
+                  <span className={`chip ${u._tt ? 'ok' : ''}`}>
+                    {u._tt ? 'Đang sử dụng' : 'Không hoạt động'}
                   </span>
                 </div>
               </div>
@@ -143,10 +143,10 @@ export const MNguoiDung: FC<ScreenProps> = ({ sc }) => {
         type="button"
         className="m-nut-them-fab"
         onClick={() => setEditUser({})}
-        aria-label="Mời người dùng"
+        aria-label="Thêm mới người sử dụng"
       >
-        <Icon n="mail" className="ic sm" />
-        <span>Mời người dùng</span>
+        <Icon n="plus" className="ic sm" />
+        <span>Thêm mới</span>
       </button>
 
       {/* Tấm nổi từ đáy sửa/thêm người dùng */}
@@ -156,12 +156,12 @@ export const MNguoiDung: FC<ScreenProps> = ({ sc }) => {
           cauHinh={CAU_HINH_NGUOI_DUNG}
           edit={editUser}
           all={NGUOI_DUNG}
-          ten="Người dùng"
-          tenNgan="Người dùng"
+          ten="Người sử dụng"
+          tenNgan="Người sử dụng"
           onDong={() => setEditUser(null)}
           onLuu={() => {
             const isMoi = !editUser.ten
-            toast(isMoi ? 'Đã gửi lời mời tới email' : 'Đã lưu người dùng')
+            toast(isMoi ? 'Đã thêm người sử dụng' : 'Đã lưu người sử dụng')
             setEditUser(null)
           }}
         />

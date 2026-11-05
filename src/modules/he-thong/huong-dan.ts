@@ -5,18 +5,18 @@ export const huongDan: Record<string, HuongDanMan> = {
   'nguoi-dung': {
     muc: 'Quản lý danh sách tài khoản, chức vụ và phạm vi cửa hàng phân công cho từng nhân viên.',
     buoc: [
-      { chu: 'Xem số lượng người dùng đang có trên tổng số tài khoản cho phép của gói.', o: 'tong' },
-      { chu: 'Bấm Mời người dùng để gửi thư mời kích hoạt tài khoản qua email cho nhân viên.', o: 'them' },
-      { chu: 'Xem họ tên, email, chức vụ, phạm vi cửa hàng và trạng thái kích hoạt của từng người dùng.', o: 'bang' },
-      { chu: 'Bấm một dòng hoặc icon cây bút ở cột Hành động để chỉnh sửa chức vụ hoặc phạm vi dữ liệu.', o: 'bang' },
+      { chu: 'Xem số lượng người sử dụng đang có trên tổng số tài khoản cho phép của gói.', o: 'tong' },
+      { chu: 'Bấm Thêm mới để tạo tài khoản người sử dụng cho nhân viên.', o: 'them' },
+      { chu: 'Xem họ tên, email, chức vụ, cửa hàng và trạng thái của từng người sử dụng.', o: 'bang' },
+      { chu: 'Bấm icon cây bút ở cột Hành động để chỉnh sửa chức vụ hoặc cửa hàng, kho.', o: 'bang' },
     ],
     luuY: [
-      'Người dùng chỉ xem và thao tác trên dữ liệu các cửa hàng, kho được phân công.',
+      'Người sử dụng chỉ xem và thao tác trên dữ liệu các cửa hàng, kho được phân công.',
       'Xác thực hai lớp áp dụng cho chức vụ Kế toán trưởng và Chủ doanh nghiệp.',
     ],
     soDo: [
-      [{ k: 'tong', ten: 'Số người dùng của gói', rong: 3 }, { k: 'them', ten: 'Mời người dùng', kieu: 'nut' }],
-      [{ k: 'bang', ten: 'Danh sách: họ tên, email, chức vụ, phạm vi, trạng thái', kieu: 'bang' }],
+      [{ k: 'tong', ten: 'Số người sử dụng của gói', rong: 3 }, { k: 'them', ten: 'Thêm mới', kieu: 'nut' }],
+      [{ k: 'bang', ten: 'Danh sách: họ tên, email, chức vụ, cửa hàng, trạng thái', kieu: 'bang' }],
     ],
   },
 

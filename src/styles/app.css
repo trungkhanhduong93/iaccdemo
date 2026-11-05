@@ -44372,3 +44372,96 @@ a.hdn-chip:hover { border-color: var(--blue); color: var(--blue); }
 .qp-goi-y b { color: var(--ink); font-weight: 600; }
 .qp-pt.khoa small { margin-left: 0; }   /* tên quỹ đã giữ phương thức nằm sát ngay sau tên phương thức, không trôi sang cột bên */
 .qp-pt.khoa small::before { content: "· "; }
+
+/* ── Ô chọn nhiều hai cột và panel tuỳ chỉnh (T751) ── */
+.pn-hop .pn-tich input.o-vuong {
+  appearance: auto;
+  -webkit-appearance: auto;
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  accent-color: var(--blue);
+  cursor: pointer;
+  background: none;
+}
+.pn-hop .pn-tich input.o-vuong::after {
+  display: none;
+}
+.m-form-dm .pn-tich input.o-vuong {
+  appearance: auto;
+  -webkit-appearance: auto;
+  width: 18px;
+  height: 18px;
+  border-radius: 3px;
+  accent-color: var(--blue);
+  cursor: pointer;
+  background: none;
+}
+.m-form-dm .pn-tich input.o-vuong::after {
+  display: none;
+}
+.pn-hop .inp.chc-o {
+  height: auto;
+  min-height: 36px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  padding: 4px 10px;
+}
+.pn-hop .inp.chc-o:hover {
+  border-color: #c5cfdb;
+}
+.pn-hop .inp.chc-o.open {
+  outline: none;
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(5, 96, 166, .15);
+}
+.chc-o.chc-the-mode {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  min-height: 36px;
+}
+.chc-the-mode .chc-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+}
+.pop-chc .chc-bo-tat-ca {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--blue, #0560a6);
+  background: none;
+  border: 0;
+  cursor: pointer;
+  padding: 0;
+}
+.pop-chc .chc-bo-tat-ca:hover {
+  text-decoration: underline;
+  color: var(--blue-d, #044a80);
+}
+.pop-chc .chc-bo-tat-ca:disabled {
+  opacity: 0.5;
+  cursor: default;
+  text-decoration: none;
+}
+.chc-the-mode .chc-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  max-width: 100%;
+  min-width: 0;
+  margin-right: 0;
+}
+.chc-the-mode .chc-chip-ten {
+  min-width: 0;
+}
+.chc-the-mode .chc-chip-x {
+  flex: none;
+}
+.nd-bang .tbl thead th[data-k="x"] {
+  text-align: center;
+}
