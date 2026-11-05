@@ -7,6 +7,7 @@ import { ChonCoTim, quyDoiTuDanhMuc, type MucTim } from '../danh-muc/QuyDoiDvt'
 import { Dropdown, MenuItem, Select } from '../../ui/Dropdown'
 import { HopXacNhan } from '../../ui/LocNangCao'
 import { ThemHangLoat, type HangChon } from '../../ui/generic/ThemHangLoat'
+import { OLoc, dangLoc, dsGiaTri, khopLoc, type GiaTriLoc, type KieuLoc, type LocCot } from '../../ui/LocCot'
 import { Icon } from '../../ui/Icon'
 import { IconFigmaSearch } from '../../ui/IconFigma'
 import { NutExcel } from '../../ui/CongCuDs'
@@ -22,6 +23,19 @@ const DS_KHO = KHO.map(k => ({ v: k, t: k }))
 const DS_LOAT: HangChon[] = MAT_HANG.map(h => ({ ma: h.ma, ten: h.ten, dvt: h.dvt, nhom: h.nhom, loai: h.ma.startsWith('NVL') ? 'Nguyên vật liệu' : 'Hàng hoá' }))
 
 interface Dong { id: number; kho: string; ma: string; dvt: string; sl: number; gia: number }
+
+const DS_NHOM = [...new Set(MAT_HANG.map(h => h.nhom))].map(v => ({ v, t: v }))
+const tenHang = (d: Dong) => MAT_HANG.find(x => x.ma === d.ma)?.ten ?? ''
+// Cột có ô lọc: kiểu lọc, chữ để so, số để so (cột số)
+const COT_LOC: { k: string; t: string; kieu: KieuLoc; chu: (d: Dong) => string; so?: (d: Dong) => number }[] = [
+  { k: 'kho', t: 'Kho', kieu: 'chon', chu: d => d.kho },
+  { k: 'ma', t: 'Mã', kieu: 'chu', chu: d => d.ma },
+  { k: 'ten', t: 'Tên hàng', kieu: 'chu', chu: tenHang },
+  { k: 'dvt', t: 'ĐVT', kieu: 'chon', chu: d => d.dvt },
+  { k: 'sl', t: 'Số lượng', kieu: 'so', chu: d => String(d.sl), so: d => d.sl },
+  { k: 'gia', t: 'Đơn giá', kieu: 'so', chu: d => String(d.gia), so: d => d.gia },
+  { k: 'tien', t: 'Thành tiền', kieu: 'so', chu: d => String(d.sl * d.gia), so: d => d.sl * d.gia },
+]
 
 let soId = 0
 // Giữ trong phiên: rời màn quay lại vẫn còn dòng đã sửa
@@ -54,12 +68,24 @@ export function TonKhoBanDau({ sc }: ScreenProps) {
   const [kho, setKho] = useState('')
   const bang = useRef<HTMLTableSectionElement>(null)
 
+  const [nhom, setNhom] = useState('')
+  // Ô lọc dưới tiêu đề từng cột như iFaster: chữ, số, tích giá trị (T736)
+  const [gtLoc, setGtLoc] = useState<Record<string, GiaTriLoc>>({})
+  const loc: LocCot = { gt: gtLoc, dat: (k, g) => setGtLoc(t => ({ ...t, [k]: g })), kieu: c => COT_LOC.find(x => x.k === c.k)?.kieu ?? 'chu',
+    layLuaChon: k => { const c = COT_LOC.find(x => x.k === k); return c ? dsGiaTri(dong, c.chu) : [] } }
+  const dangLocCot = COT_LOC.some(c => dangLoc(gtLoc[c.k]))
+  // Ô lọc cột giữ chữ đang gõ riêng: Xoá lọc đổi khoá để vẽ lại hàng ô lọc trống
+  const [khoaLoc, setKhoaLoc] = useState(0)
+  const xoaLoc = () => { setQ(''); setKho(''); setNhom(''); setGtLoc({}); setKhoaLoc(k => k + 1) }
+
   const hien = useMemo(() => dong.filter(d => {
     if (kho && d.kho !== kho) return false
-    if (!q.trim()) return true
     const h = MAT_HANG.find(x => x.ma === d.ma)
+    if (nhom && h?.nhom !== nhom) return false
+    if (!COT_LOC.every(c => !dangLoc(gtLoc[c.k]) || khopLoc(c.kieu, gtLoc[c.k], c.chu(d), c.so?.(d)))) return false
+    if (!q.trim()) return true
     return fold(`${d.kho} ${d.ma} ${h?.ten ?? ''}`).includes(fold(q.trim()))
-  }), [dong, q, kho])
+  }), [dong, q, kho, nhom, gtLoc])
 
 
   const sua = (id: number, p: Partial<Dong>) => setDong(d => d.map(x => x.id === id ? { ...x, ...p } : x))
@@ -118,6 +144,9 @@ export function TonKhoBanDau({ sc }: ScreenProps) {
             </div>
             <Select className="inp tkbd-loc-kho" value={kho} onChange={e => setKho(e.target.value)} aria-label="Lọc kho"
               ds={[{ v: '', t: 'Tất cả kho' }, ...DS_KHO]} />
+            <Select className="inp tkbd-loc-kho" value={nhom} onChange={e => setNhom(e.target.value)} aria-label="Lọc nhóm hàng hoá"
+              ds={[{ v: '', t: 'Tất cả nhóm hàng hoá' }, ...DS_NHOM]} />
+            {(q || kho || nhom || dangLocCot) && <button type="button" className="btn sm ghost" onClick={xoaLoc}>Xoá lọc</button>}
           </div>
           <div className="ds-toolbar-phai">
             <span className="muted" style={{ fontSize: 12 }}>{hien.length}/{dong.length} dòng</span>
@@ -160,6 +189,11 @@ export function TonKhoBanDau({ sc }: ScreenProps) {
                   </button>
                 </th>
               </tr>
+              <tr className="loc-hang" key={khoaLoc}>
+                <th />
+                {COT_LOC.map(c => <th key={c.k} className={c.kieu === 'so' ? 'num' : ''}><OLoc c={{ k: c.k, t: c.t, num: c.kieu === 'so' }} loc={loc} /></th>)}
+                <th />
+              </tr>
             </thead>
             <tbody ref={bang}>
               {hien.map((d, i) => {
@@ -196,8 +230,8 @@ export function TonKhoBanDau({ sc }: ScreenProps) {
               {!hien.length && (
                 <tr>
                   <td colSpan={9} className="c muted" style={{ padding: 16 }}>
-                    {dong.length ? 'Không có dòng khớp bộ lọc. ' : 'Chưa có dòng tồn đầu. '}
-                    <button type="button" className="btn sm ghost" onClick={() => chen(null)}><Icon n="plus" className="ic sm" />Thêm dòng</button>
+                    {dong.length ? <>Không có dòng khớp bộ lọc. <button type="button" className="btn sm ghost" onClick={xoaLoc}>Xoá lọc</button></>
+                      : <>Chưa có dòng tồn đầu. <button type="button" className="btn sm ghost" onClick={() => chen(null)}><Icon n="plus" className="ic sm" />Thêm dòng</button></>}
                   </td>
                 </tr>
               )}
