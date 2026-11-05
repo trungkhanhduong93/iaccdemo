@@ -8,7 +8,7 @@ export const huongDan: Record<string, HuongDanMan> = {
       { chu: 'Xem số lượng người dùng đang có trên tổng số tài khoản cho phép của gói.', o: 'tong' },
       { chu: 'Bấm Mời người dùng để gửi thư mời kích hoạt tài khoản qua email cho nhân viên.', o: 'them' },
       { chu: 'Xem họ tên, email, chức vụ, phạm vi cửa hàng và trạng thái kích hoạt của từng người dùng.', o: 'bang' },
-      { chu: 'Bấm một dòng hoặc nút Sửa ở cuối dòng để chỉnh sửa chức vụ hoặc phạm vi dữ liệu.', o: 'bang' },
+      { chu: 'Bấm một dòng hoặc icon cây bút ở cột Hành động để chỉnh sửa chức vụ hoặc phạm vi dữ liệu.', o: 'bang' },
     ],
     luuY: [
       'Người dùng chỉ xem và thao tác trên dữ liệu các cửa hàng, kho được phân công.',

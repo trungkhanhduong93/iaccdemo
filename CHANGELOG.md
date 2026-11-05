@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 05/11/2026
+- T743: Bảng Người dùng có cột Hành động, nút Sửa đổi thành icon cây bút.
 - T742: Hệ thống, Vai trò đổi tên thành Chức vụ. Màn phân quyền web chọn phân hệ ở ô thả xuống, bảng hiện từng tính năng, ô không có thao tác thì mờ và không bật được. Form Người dùng bỏ ô tự gõ Chức vụ.
 - T740: Danh sách Phiếu nhập khác đổi tên cột Diễn giải thành Ghi chú.
 - T739: Danh sách Phiếu nhập khác bỏ cột Tiền thuế.

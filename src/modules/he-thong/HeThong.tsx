@@ -75,7 +75,7 @@ export function NguoiDung({ sc }: ScreenProps) {
             { k: 'pham', t: 'Phạm vi dữ liệu' },
             { k: 'lan', t: 'Đăng nhập gần nhất', cls: 'dim' },
             { k: 'tt', t: 'Trạng thái', r: r => r.tt === 'ok' ? <St k="ok">Đang dùng</St> : <St k="warn">Chưa nhận lời mời</St> },
-            { k: 'x', t: '', r: (r: Row) => <button type="button" className="btn sm ghost" onClick={() => setEditUser(r)}>Sửa</button> },
+            { k: 'x', t: 'Hành động', r: (r: Row) => <button type="button" className="icon-btn sm" title="Sửa" aria-label={`Sửa ${r.ten}`} onClick={() => setEditUser(r)}><Icon n="edit" className="ic sm" /></button> },
           ]}
           rows={NGUOI_DUNG}
           onRow={r => setEditUser(r)}
