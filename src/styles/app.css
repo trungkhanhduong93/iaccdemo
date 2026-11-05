@@ -25529,59 +25529,6 @@ button[class*="btn-"] .ic .l2 {
 }
 
 /* ── Phân quyền theo màn con (T375) ── */
-.tr-pq-cha {
-  font-weight: 600;
-  background: var(--surface, #fff);
-  transition: background .12s;
-}
-.tr-pq-cha:hover {
-  background: #f8fafc;
-}
-.td-pq-cha-ten {
-  user-select: none;
-}
-.pq-mod-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  color: var(--ink, #0f172a);
-}
-.pq-mod-btn:hover {
-  color: var(--blue, #2563eb);
-}
-.pq-mod-btn:focus-visible {
-  outline: 2px solid var(--blue, #2563eb);
-  outline-offset: 2px;
-  border-radius: 4px;
-}
-.pq-chevron {
-  color: var(--muted, #64748b);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 16px;
-  height: 16px;
-}
-.tr-pq-con {
-  background: #fafbfc;
-  transition: background .12s;
-}
-.tr-pq-con:hover {
-  background: #f1f5f9;
-}
-.td-pq-con-ten {
-  padding-left: 36px !important;
-  color: var(--ink, #334155);
-  font-size: 13.5px;
-  font-weight: 400;
-}
-.pq-khong-ap {
-  color: var(--muted, #94a3b8);
-  font-size: 14px;
-  font-weight: 500;
-  user-select: none;
-}
 /* Công tắc nửa (mixed / indeterminate) */
 input.bat-tat:indeterminate,
 input.bat-tat[aria-checked="mixed"],
@@ -44394,3 +44341,22 @@ a.hdn-chip:hover { border-color: var(--blue); color: var(--blue); }
 .tkbd-bang .tkbd-qd { display: block; font-size: 11px; margin-top: 2px; }
 .tkbd-bang .tkbd-them { width: 28px; height: 28px; padding: 0; justify-content: center; }
 .tkbd .tkbd-nut-xoa { color: var(--red); border-color: var(--red); }
+
+/* ── Phân quyền chọn phân hệ bằng dropdown (T742) ── */
+.pq-thanh { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 24px; padding: 12px 16px; }
+.pq-chon { display: flex; align-items: center; gap: 10px; flex: 1 1 320px; min-width: 0; }
+.pq-chon b { font-weight: 600; color: var(--ink); white-space: nowrap; }
+.pq-chon-sel { width: 360px; max-width: 100%; }
+.pq-chu-giai { display: flex; flex-wrap: wrap; gap: 8px 16px; font-size: 12px; color: var(--muted); }
+.pq-chu-giai label { display: inline-flex; align-items: center; gap: 6px; pointer-events: none; }
+.pq-khung { max-height: 620px; overflow: auto; border-top: 1px solid var(--line-2); border-radius: 0 0 var(--r) var(--r); }
+.pq-khung .matrix { min-width: 800px; }
+.pq-khung table.tbl.matrix thead tr.pq-tat-ca > td { padding: 8px 12px; background: var(--hdb-chan); font-weight: 600; color: var(--ink); border-bottom: 1px solid var(--line-2); }
+.pq-khung table.tbl.matrix tbody tr.pq-nhom > td { padding: 10px 12px 4px; font-size: 12px; font-weight: 600; color: var(--muted); }
+.pq-khung table.tbl.matrix tbody tr.pq-man > td:first-child { padding-left: 28px; }
+.matrix td.c input[type="checkbox"]:disabled, .m-pq-quyen-dong input[type="checkbox"]:disabled, .pq-chu-giai input[type="checkbox"]:disabled {
+  opacity: 1; background: #f3f5f8; box-shadow: inset 0 0 0 1px #dfe3e9; cursor: not-allowed;
+}
+.matrix td.c input[type="checkbox"]:disabled::after, .m-pq-quyen-dong input[type="checkbox"]:disabled::after, .pq-chu-giai input[type="checkbox"]:disabled::after {
+  background: #e3e7ec; box-shadow: none;
+}

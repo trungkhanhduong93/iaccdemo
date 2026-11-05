@@ -360,7 +360,7 @@ const FLYOUT_CONFIG: Record<string, FlyoutData> = {
       tieuDe: 'Quản trị & Người dùng',
       items: [
         { ten: 'Người dùng', di: '/app/he-thong/nguoi-dung' },
-        { ten: 'Vai trò & phân quyền', di: '/app/he-thong/phan-quyen' },
+        { ten: 'Chức vụ & phân quyền', di: '/app/he-thong/phan-quyen' },
         { ten: 'Gói thuê bao & bản quyền', di: '/app/he-thong/goi-thue-bao' },
         { ten: 'Nhật ký thao tác', di: '/app/he-thong/nhat-ky' },
       ],

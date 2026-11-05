@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T742 | Chức vụ và phân quyền: đổi chữ Vai trò thành Chức vụ, web chọn phân hệ bằng dropdown, ô không có thao tác thì readonly, chốt thao tác Tiện ích bổ sung, Kê khai thuế, Số dư ban đầu, Tính giá vốn (QD95) | Trum | 05/11/2026 | 2026-11-05-trum-phan-quyen-dropdown.md |
 | T740 | Danh sách Phiếu nhập khác (5.1.1) đổi tên cột Diễn giải thành Ghi chú | PhuongXT | 05/11/2026 | `2026-11-05-phuongxt-nhap-khac-ghi-chu.md` |
 | T739 | Danh sách Phiếu nhập khác (5.1.1) bỏ cột Tiền thuế | PhuongXT | 05/11/2026 | `2026-11-05-phuongxt-nhap-khac-bo-thue.md` |
 | T738 | Danh sách Phiếu nhập khác (5.1.1) thêm bộ lọc Kho, Hàng hoá, Nhóm hàng hoá như kiểm kê | PhuongXT | 05/11/2026 | `2026-11-05-phuongxt-loc-nhap-khac.md` |

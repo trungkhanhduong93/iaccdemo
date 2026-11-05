@@ -3,29 +3,30 @@ import type { HuongDanMan } from '../../ui/HuongDanNhanh'
 
 export const huongDan: Record<string, HuongDanMan> = {
   'nguoi-dung': {
-    muc: 'Quản lý danh sách tài khoản, vai trò và phạm vi cửa hàng phân công cho từng nhân viên.',
+    muc: 'Quản lý danh sách tài khoản, chức vụ và phạm vi cửa hàng phân công cho từng nhân viên.',
     buoc: [
       { chu: 'Xem số lượng người dùng đang có trên tổng số tài khoản cho phép của gói.', o: 'tong' },
       { chu: 'Bấm Mời người dùng để gửi thư mời kích hoạt tài khoản qua email cho nhân viên.', o: 'them' },
-      { chu: 'Xem họ tên, email, vai trò, phạm vi cửa hàng và trạng thái kích hoạt của từng người dùng.', o: 'bang' },
-      { chu: 'Bấm một dòng hoặc nút Sửa ở cuối dòng để chỉnh sửa vai trò hoặc phạm vi dữ liệu.', o: 'bang' },
+      { chu: 'Xem họ tên, email, chức vụ, phạm vi cửa hàng và trạng thái kích hoạt của từng người dùng.', o: 'bang' },
+      { chu: 'Bấm một dòng hoặc nút Sửa ở cuối dòng để chỉnh sửa chức vụ hoặc phạm vi dữ liệu.', o: 'bang' },
     ],
     luuY: [
       'Người dùng chỉ xem và thao tác trên dữ liệu các cửa hàng, kho được phân công.',
-      'Xác thực hai lớp áp dụng cho vai trò Kế toán trưởng và Chủ doanh nghiệp.',
+      'Xác thực hai lớp áp dụng cho chức vụ Kế toán trưởng và Chủ doanh nghiệp.',
     ],
     soDo: [
       [{ k: 'tong', ten: 'Số người dùng của gói', rong: 3 }, { k: 'them', ten: 'Mời người dùng', kieu: 'nut' }],
-      [{ k: 'bang', ten: 'Danh sách: họ tên, email, vai trò, phạm vi, trạng thái', kieu: 'bang' }],
+      [{ k: 'bang', ten: 'Danh sách: họ tên, email, chức vụ, phạm vi, trạng thái', kieu: 'bang' }],
     ],
   },
 
   'phan-quyen': {
-    muc: 'Thiết lập quyền Xem, Thêm, Sửa, Xoá, Ghi sổ và Khoá sổ cho từng vai trò nhân viên.',
+    muc: 'Thiết lập quyền Xem, Thêm, Sửa, Xoá, Ghi sổ và Khoá sổ cho từng chức vụ nhân viên.',
     buoc: [
-      { chu: 'Bấm một vai trò ở cột trái để xem và sửa quyền tương ứng.', o: 'vaiTro' },
-      { chu: 'Bấm tên phân hệ để mở rộng danh sách màn hình, bật tắt từng quyền của vai trò đó.', o: 'bang' },
-      { chu: 'Bấm Thêm mới để tạo thêm vai trò tuỳ chỉnh.', o: 'them' },
+      { chu: 'Bấm một chức vụ ở cột trái để xem và sửa quyền tương ứng.', o: 'vaiTro' },
+      { chu: 'Chọn phân hệ ở ô Phân hệ để xem các tính năng của phân hệ đó.', o: 'phanHe' },
+      { chu: 'Bật tắt từng quyền của chức vụ đó. Ô mờ là tính năng không có thao tác này, không bật được.', o: 'bang' },
+      { chu: 'Bấm Thêm mới để tạo thêm chức vụ tuỳ chỉnh.', o: 'them' },
       { chu: 'Bấm Lưu để áp dụng phân quyền vừa sửa.', o: 'luuQuyen' },
     ],
     luuY: [
@@ -33,8 +34,9 @@ export const huongDan: Record<string, HuongDanMan> = {
       'Chủ doanh nghiệp và Kế toán trưởng có sẵn bộ quyền mặc định của hệ thống.',
     ],
     soDo: [
-      [{ k: 'them', ten: 'Thêm mới vai trò', kieu: 'nut' }, { k: 'luuQuyen', ten: 'Lưu thay đổi', kieu: 'nut' }],
-      [{ k: 'vaiTro', ten: 'Danh sách vai trò', rong: 1 }, { k: 'bang', ten: 'Ma trận quyền theo phân hệ và màn hình', rong: 3, kieu: 'bang' }],
+      [{ k: 'them', ten: 'Thêm mới chức vụ', kieu: 'nut' }, { k: 'luuQuyen', ten: 'Lưu thay đổi', kieu: 'nut' }],
+      [{ k: 'vaiTro', ten: 'Danh sách chức vụ', rong: 1 }, { k: 'phanHe', ten: 'Chọn phân hệ', rong: 3 }],
+      [{ k: 'bang', ten: 'Quyền theo tính năng của phân hệ', kieu: 'bang' }],
     ],
   },
 

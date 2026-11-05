@@ -23,6 +23,8 @@ import {
   MAC_DINH,
   QUYEN,
   VAI_TRO,
+  apDungQuyen,
+  dsManPhanHe,
 } from '../../modules/he-thong/HeThong'
 import {
   ChonKenh,
@@ -76,7 +78,7 @@ export const MNguoiDung: FC<ScreenProps> = ({ sc }) => {
             <input
               type="text"
               className="m-ht-tim-inp"
-              placeholder="Tìm tên, email, vai trò..."
+              placeholder="Tìm tên, email, chức vụ..."
               value={q}
               onChange={e => setQ(e.target.value)}
               aria-label="Tìm kiếm người dùng"
@@ -170,7 +172,8 @@ export const MNguoiDung: FC<ScreenProps> = ({ sc }) => {
 
 // ── 2. Màn Vai trò và phân quyền ──
 export const MPhanQuyen: FC<ScreenProps> = () => {
-  const { toast } = useSession()
+  const { s, toast } = useSession()
+  const manPhanHe = useMemo(() => dsManPhanHe(s), [s])
   const [vt, setVt] = useState(VAI_TRO[2]) // Mặc định Kế toán viên
 
   // Trạng thái quyền: mod -> quyen -> boolean
@@ -234,7 +237,8 @@ export const MPhanQuyen: FC<ScreenProps> = () => {
             <div className="m-pq-mod-ten">{m}</div>
             <div className="m-pq-quyen-ds">
               {QUYEN.map(q => {
-                const bat = quyens[m]?.[q] ?? false
+                const coThaoTac = (manPhanHe[m] ?? []).some(sc => apDungQuyen(sc, q))
+                const bat = coThaoTac && (quyens[m]?.[q] ?? false)
                 return (
                   <label key={q} className="m-pq-quyen-dong">
                     <span className="m-pq-quyen-nhan">{q}</span>
@@ -242,6 +246,7 @@ export const MPhanQuyen: FC<ScreenProps> = () => {
                       type="checkbox"
                       className="bat-tat"
                       checked={bat}
+                      disabled={!coThaoTac}
                       onChange={() => toggleQuyen(m, q)}
                     />
                   </label>

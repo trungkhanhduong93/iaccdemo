@@ -3,7 +3,7 @@ import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import type { Row, ScreenDef, ScreenProps } from '../types'
 import { MODULES, duongDan, hienMan, laBaoCao } from '../../app/registry'
-import { donViHienTai, dsCuaHang, dsDonVi, loaiHinhDv, useSession, cheDoHienTai, namTaiChinh, ngayDauNam, type PpGtgt, type PpTndn } from '../../app/session'
+import { donViHienTai, dsCuaHang, dsDonVi, loaiHinhDv, useSession, cheDoHienTai, namTaiChinh, ngayDauNam, type PpGtgt, type PpTndn, type Session } from '../../app/session'
 import { ChonKenh, KENH_ONLINE, KENH_SAN, NHOM_HKD, type LoaiHinh, type PpHkd } from '../onboarding/OnboardFabi'
 import { FEATURE, FEATURES, GOI, GOIS, MODS, demTheoGoi, kieuGhiSo, type Goi } from '../../app/plan'
 import { CHE_DO, CHE_DO_HOP_LE, cheDoCuaGoi, type CheDo } from '../../app/che-do'
@@ -34,13 +34,12 @@ export const CAU_HINH_NGUOI_DUNG: CauHinhDM = {
         { k: 'email', nhan: 'Email', kieu: 'chu', batBuoc: true },
         { k: 'sdt', nhan: 'Số điện thoại', kieu: 'chu' },
         { k: 'bp', nhan: 'Bộ phận', kieu: 'chu' },
-        { k: 'cv', nhan: 'Chức vụ', kieu: 'chu' },
       ],
     },
     {
       ten: 'Phân quyền',
       truong: [
-        { k: 'vaiTro', nhan: 'Vai trò', kieu: 'chon', ds: VAI_TRO, batBuoc: true },
+        { k: 'vaiTro', nhan: 'Chức vụ', kieu: 'chon', ds: VAI_TRO, batBuoc: true },
         { k: 'pham', nhan: 'Cửa hàng được giao', kieu: 'chon', ds: PHAM_VI_DS },
         { k: 'kho', nhan: 'Kho được giao', kieu: 'chon', ds: KHO_DS },
         { k: 'otp2fa', nhan: 'Bắt buộc xác thực hai lớp', kieu: 'tich', caHang: false },
@@ -72,7 +71,7 @@ export function NguoiDung({ sc }: ScreenProps) {
           cols={[
             { k: 'ten', t: 'Họ tên', r: r => <span className="row"><span className="avatar" style={{ width: 28, height: 28, fontSize: 11 }}>{r.ten.split(' ').slice(-2).map((x: string) => x[0]).join('')}</span><b style={{ color: 'var(--ink)' }}>{r.ten}</b></span> },
             { k: 'email', t: 'Email', cls: 'dim' },
-            { k: 'vaiTro', t: 'Vai trò' },
+            { k: 'vaiTro', t: 'Chức vụ' },
             { k: 'pham', t: 'Phạm vi dữ liệu' },
             { k: 'lan', t: 'Đăng nhập gần nhất', cls: 'dim' },
             { k: 'tt', t: 'Trạng thái', r: r => r.tt === 'ok' ? <St k="ok">Đang dùng</St> : <St k="warn">Chưa nhận lời mời</St> },
@@ -135,6 +134,11 @@ function laDanhMuc(sc: ScreenDef): boolean {
 }
 
 export function apDungQuyen(sc: ScreenDef, q: string): boolean {
+  // Màn có bộ thao tác riêng, Trum chốt ở T742
+  if (sc.nhom === 'Tiện ích') return q === 'Xem' || q === 'Sửa'
+  if (sc.slug === 'to-khai') return q !== 'Ghi sổ' && q !== 'Khoá sổ'
+  if (sc.slug === 'so-du-ban-dau' || sc.code === '10.1.3') return q === 'Xem' || q === 'Sửa' || q === 'Ghi sổ'
+  if (sc.code === '5.1.7') return q === 'Xem' || q === 'Ghi sổ'
   if (laBaoCaoHoacSo(sc)) {
     return q === 'Xem'
   }
@@ -148,6 +152,28 @@ export function apDungQuyen(sc: ScreenDef, q: string): boolean {
     return q !== 'Khoá sổ'
   }
   return true
+}
+
+/** Các màn đang mở của từng phân hệ theo gói, chế độ; web và điện thoại dùng chung */
+export function dsManPhanHe(s: Session): Record<string, ScreenDef[]> {
+  const res: Record<string, ScreenDef[]> = {}
+  for (const mName of MODS) {
+    const key = MOD_KEYS[mName]
+    const mod = MODULES.find(m => m.key === key) || MODULES.find(m => m.ten === mName || m.ngan === mName)
+    res[mName] = mod ? mod.screens.filter(item => hienMan(item, s.goi, s.cheDo, s)) : []
+  }
+  return res
+}
+
+/** Gom màn theo nhóm, tab Báo cáo xếp chung nhóm Sổ sách, báo cáo */
+function nhomMan(scs: ScreenDef[]): [string, ScreenDef[]][] {
+  const coSo = scs.some(x => x.nhom === 'Sổ sách, báo cáo')
+  const kq = new Map<string, ScreenDef[]>()
+  for (const sc of scs) {
+    const ten = sc.kind === 'baocao' && coSo ? 'Sổ sách, báo cáo' : sc.nhom ?? ''
+    kq.set(ten, [...(kq.get(ten) ?? []), sc])
+  }
+  return [...kq]
 }
 
 function tenHienThiMan(sc: ScreenDef): string {
@@ -191,22 +217,10 @@ function CongTacCha({
 export function PhanQuyen({ sc }: ScreenProps) {
   const { s, toast } = useSession()
   const [vt, setVt] = useState('Kế toán viên')
-  const [moMods, setMoMods] = useState<Record<string, boolean>>({})
+  const [modChon, setModChon] = useState(MODS[0])
   const [quyenMap, setQuyenMap] = useState<Record<string, Record<string, boolean>>>({})
 
-  const layDanhSachMan = useMemo(() => {
-    const res: Record<string, ScreenDef[]> = {}
-    for (const mName of MODS) {
-      const key = MOD_KEYS[mName]
-      const mod = MODULES.find(m => m.key === key) || MODULES.find(m => m.ten === mName || m.ngan === mName)
-      res[mName] = mod ? mod.screens.filter(item => hienMan(item, s.goi, s.cheDo, s)) : []
-    }
-    return res
-  }, [s.goi, s.cheDo, s])
-
-  const toggleMod = (mName: string) => {
-    setMoMods(prev => ({ ...prev, [mName]: !prev[mName] }))
-  }
+  const layDanhSachMan = useMemo(() => dsManPhanHe(s), [s])
 
   const layQuyen = (mName: string, slug: string, q: string): boolean => {
     const k = `${mName}/${slug}/${q}`
@@ -242,6 +256,20 @@ export function PhanQuyen({ sc }: ScreenProps) {
     })
   }
 
+  const demQuyen = (mName: string) => {
+    let bat = 0, tong = 0
+    for (const item of layDanhSachMan[mName] ?? []) {
+      for (const q of QUYEN) {
+        if (!apDungQuyen(item, q)) continue
+        tong++
+        if (layQuyen(mName, item.slug, q)) bat++
+      }
+    }
+    return `${bat}/${tong} quyền bật`
+  }
+
+  const scsChon = layDanhSachMan[modChon] ?? []
+
   return (
     <div className="page">
       <PageHead crumb={['Hệ thống']} title={sc.ten!}>
@@ -249,78 +277,73 @@ export function PhanQuyen({ sc }: ScreenProps) {
         <button className="btn pri" data-hd="luuQuyen" onClick={() => toast(`Đã lưu quyền của ${vt}`)}>Lưu</button>
       </PageHead>
       <div className="grid" style={{ gridTemplateColumns: '240px minmax(0,1fr)', alignItems: 'start' }}>
-        <Card title="Vai trò" pad={false}>
+        <Card title="Chức vụ" pad={false}>
           <div className="panel-list" data-hd="vaiTro" style={{ padding: 8 }}>
             {VAI_TRO.map(v => <a key={v} className={v === vt ? 'on' : ''} onClick={() => setVt(v)} style={{ cursor: 'pointer' }}><span>{v}</span></a>)}
           </div>
         </Card>
         <section className="card" data-hd="bang">
-          <div className="card-h"><h3>Quyền của {vt}</h3><span className="sub">Theo phân hệ · phạm vi dữ liệu đặt ở Người dùng</span></div>
-          <table className="tbl matrix">
-            <thead><tr><th>Phân hệ</th>{QUYEN.map(q => <th key={q} className="c">{q}</th>)}</tr></thead>
-            <tbody>
-              {MODS.map(mName => {
-                const scs = layDanhSachMan[mName] ?? []
-                const isOpen = Boolean(moMods[mName])
-                return (
-                  <Fragment key={mName}>
-                    <tr className="tr-pq-cha">
-                      <td
-                        className="td-pq-cha-ten"
-                        onClick={() => toggleMod(mName)}
-                        style={{ cursor: 'pointer' }}
-                      >
-                        <div
-                          role="button"
-                          tabIndex={0}
-                          aria-expanded={isOpen}
-                          className="pq-mod-btn"
-                          onKeyDown={e => {
-                            if (e.key === 'Enter' || e.key === ' ') {
-                              e.preventDefault()
-                              toggleMod(mName)
-                            }
-                          }}
-                        >
-                          <Icon n={isOpen ? 'chevd' : 'chevr'} className="ic sm pq-chevron" />
-                          <span className="pq-mod-title">{mName}</span>
-                        </div>
+          <div className="card-h"><h3>Quyền của {vt}</h3><span className="sub">Phạm vi dữ liệu đặt ở Người dùng</span></div>
+          <div className="pq-thanh">
+            <div className="pq-chon" data-hd="phanHe">
+              <b>Phân hệ</b>
+              <Select
+                className="pq-chon-sel"
+                aria-label="Phân hệ"
+                value={modChon}
+                ds={MODS.map(m => ({ v: m, t: `${m} (${demQuyen(m)})` }))}
+                onChange={e => setModChon(e.target.value)}
+              />
+            </div>
+            <div className="pq-chu-giai" aria-hidden="true">
+              <label><input type="checkbox" className="bat-tat" checked readOnly tabIndex={-1} />Bật</label>
+              <label><input type="checkbox" className="bat-tat" checked={false} readOnly tabIndex={-1} />Tắt</label>
+              <label><input type="checkbox" className="bat-tat" disabled tabIndex={-1} />Không có thao tác này</label>
+            </div>
+          </div>
+          <div className="pq-khung">
+            <table className="tbl matrix">
+              <thead>
+                <tr><th>Tính năng</th>{QUYEN.map(q => <th key={q} className="c">{q}</th>)}</tr>
+                <tr className="pq-tat-ca">
+                  <td>Tất cả tính năng</td>
+                  {QUYEN.map(q => {
+                    const scsApDung = scsChon.filter(item => apDungQuyen(item, q))
+                    const batCount = scsApDung.filter(item => layQuyen(modChon, item.slug, q)).length
+                    const isAllChecked = scsApDung.length > 0 && batCount === scsApDung.length
+                    const isMixed = scsApDung.length > 0 && batCount > 0 && batCount < scsApDung.length
+                    return (
+                      <td key={q} className="c" title={scsApDung.length === 0 ? `Phân hệ này không có thao tác ${q}` : undefined}>
+                        <CongTacCha
+                          checked={isAllChecked}
+                          mixed={isMixed}
+                          disabled={scsApDung.length === 0}
+                          label={`Tất cả tính năng - ${q}`}
+                          onChange={() => toggleCha(modChon, q)}
+                        />
                       </td>
-                      {QUYEN.map(q => {
-                        const scsApDung = scs.filter(item => apDungQuyen(item, q))
-                        const batCount = scsApDung.filter(item => layQuyen(mName, item.slug, q)).length
-                        const isAllChecked = scsApDung.length > 0 && batCount === scsApDung.length
-                        const isMixed = scsApDung.length > 0 && batCount > 0 && batCount < scsApDung.length
-                        return (
-                          <td key={q} className="c">
-                            <CongTacCha
-                              checked={isAllChecked}
-                              mixed={isMixed}
-                              disabled={scsApDung.length === 0}
-                              label={`${mName} - ${q}`}
-                              onChange={() => toggleCha(mName, q)}
-                            />
-                          </td>
-                        )
-                      })}
-                    </tr>
-                    {isOpen && scs.map(item => {
+                    )
+                  })}
+                </tr>
+              </thead>
+              <tbody>
+                {nhomMan(scsChon).map(([nhom, ds]) => (
+                  <Fragment key={nhom}>
+                    {nhom && <tr className="pq-nhom"><td colSpan={QUYEN.length + 1}>{nhom}</td></tr>}
+                    {ds.map(item => {
                       const tenMan = tenHienThiMan(item)
                       return (
-                        <tr key={`${mName}-${item.slug}`} className="tr-pq-con">
-                          <td className="td-pq-con-ten">
-                            <span className="pq-con-ten">{tenMan}</span>
-                          </td>
+                        <tr key={item.slug} className="pq-man">
+                          <td>{tenMan}</td>
                           {QUYEN.map(q => {
-                            const apDung = apDungQuyen(item, q)
-                            if (!apDung) {
+                            if (!apDungQuyen(item, q)) {
                               return (
-                                <td key={q} className="c">
-                                  <span className="pq-khong-ap" aria-hidden="true">—</span>
+                                <td key={q} className="c" title={`${tenMan} không có thao tác ${q}`}>
+                                  <input type="checkbox" className="bat-tat" disabled aria-label={`${tenMan} - ${q}`} />
                                 </td>
                               )
                             }
-                            const isChecked = layQuyen(mName, item.slug, q)
+                            const isChecked = layQuyen(modChon, item.slug, q)
                             return (
                               <td key={q} className="c">
                                 <input
@@ -328,7 +351,7 @@ export function PhanQuyen({ sc }: ScreenProps) {
                                   className="bat-tat"
                                   checked={isChecked}
                                   aria-label={`${tenMan} - ${q}`}
-                                  onChange={() => datQuyen(mName, item.slug, q, !isChecked)}
+                                  onChange={() => datQuyen(modChon, item.slug, q, !isChecked)}
                                 />
                               </td>
                             )
@@ -337,10 +360,10 @@ export function PhanQuyen({ sc }: ScreenProps) {
                       )
                     })}
                   </Fragment>
-                )
-              })}
-            </tbody>
-          </table>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </section>
       </div>
     </div>

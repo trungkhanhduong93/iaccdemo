@@ -10,7 +10,7 @@ const heThong: ModuleDef = {
   screens: [
     // Gói Free ẩn Người dùng, Vai trò và phân quyền (T472)
     { slug: 'nguoi-dung', ten: 'Người dùng', nhom: 'Quản trị', goi: ['PL', 'PR'], kind: 'custom', comp: NguoiDung },
-    { slug: 'phan-quyen', ten: 'Vai trò và phân quyền', nhom: 'Quản trị', goi: ['PL', 'PR'], kind: 'custom', comp: PhanQuyen },
+    { slug: 'phan-quyen', ten: 'Chức vụ và phân quyền', nhom: 'Quản trị', goi: ['PL', 'PR'], kind: 'custom', comp: PhanQuyen },
     { slug: 'thong-tin', ten: 'Thông tin đơn vị', nhom: 'Cài đặt', kind: 'custom', comp: ThongTinDonVi },
     { slug: 'cau-hinh', ten: 'Cấu hình kế toán', nhom: 'Cài đặt', kind: 'custom', comp: CauHinh },
     // Gói Free: Khoá sổ là tab riêng trong Hệ thống, gói khác dùng Khoá sổ 10.1.6 ở Tổng hợp (T315)

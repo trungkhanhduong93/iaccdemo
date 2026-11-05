@@ -1559,17 +1559,17 @@ def kiem_tra_dot_11_a():
                 nut_dong.first.click()
                 pg.wait_for_timeout(200)
 
-        # ── 2. Vai trò và phân quyền (#/app/he-thong/phan-quyen) ──
+        # ── 2. Chức vụ và phân quyền (#/app/he-thong/phan-quyen) ──
         pg.goto(URL + '?goi=PR&p=phanquyen#/app/he-thong/phan-quyen')
         pg.wait_for_selector('.m-app')
         pg.wait_for_timeout(300)
         if pg.locator('.m-chi-mt').count() > 0:
-            loi.append('Vai trò và phân quyền: vẫn ra MChiMayTinh')
+            loi.append('Chức vụ và phân quyền: vẫn ra MChiMayTinh')
         if pg.locator('.m-pq-vt-btn').count() == 0:
-            loi.append('Vai trò và phân quyền: thiếu danh sách vai trò')
+            loi.append('Chức vụ và phân quyền: thiếu danh sách chức vụ')
         if pg.locator('.m-pq-mod-the').count() == 0:
-            loi.append('Vai trò và phân quyền: thiếu thẻ phân hệ quyền')
-        kiem_man('Vai trò và phân quyền')
+            loi.append('Chức vụ và phân quyền: thiếu thẻ phân hệ quyền')
+        kiem_man('Chức vụ và phân quyền')
         pg.screenshot(path=str(SHOTS / 'm-11-02-phan-quyen.png'))
 
         # ── 3. Nhật ký thao tác (#/app/he-thong/nhat-ky) ──
@@ -5347,6 +5347,59 @@ def kiem_tra_t675_tour_dien_thoai():
     return loi
 
 
+def kiem_tra_t742_phan_quyen():
+    """Kiểm tra T742: màn phân quyền web chọn phân hệ bằng dropdown, ô không có thao tác thì không bật được,
+    đổi phân hệ không mất quyền vừa sửa, không còn chữ Vai trò."""
+    loi = []
+    print('Kiểm tra T742: phân quyền chọn phân hệ bằng dropdown')
+    with sync_playwright() as p:
+        b = p.chromium.launch(channel='chrome')
+        pg = b.new_page(viewport={'width': 1440, 'height': 900})
+        con = []
+        pg.on('console', lambda m: con.append(m.text) if m.type == 'error' else None)
+        pg.on('pageerror', lambda e: con.append(str(e)))
+
+        def chon(ten):
+            pg.locator('.pq-chon .sel').click()
+            pg.locator('.pop-sel [role="option"]', has_text=ten).first.click()
+            pg.wait_for_timeout(100)
+
+        def o(man, cot):
+            return pg.locator('tr.pq-man', has_text=man).first.locator('input[type="checkbox"]').nth(cot)
+
+        pg.goto(URL + '#/dang-nhap')
+        pg.wait_for_selector('.auth-box')
+        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('PL'))})")
+        pg.goto(URL + '?goi=PL&p=t742#/app/he-thong/phan-quyen')
+        pg.wait_for_selector('.pq-chon .sel')
+        if 'Vai trò' in pg.locator('.page').inner_text():
+            loi.append('T742: màn phân quyền còn chữ Vai trò')
+        chon('Kế toán tiền')
+        if o('Sổ ngân hàng', 0).is_disabled():
+            loi.append('T742: Sổ ngân hàng, ô Xem bị khoá')
+        if not o('Sổ ngân hàng', 1).is_disabled():
+            loi.append('T742: Sổ ngân hàng, ô Thêm phải readonly')
+        if pg.locator('tr.pq-man', has_text='Hàng hoá').count() > 0:
+            loi.append('T742: Kế toán tiền hiện lẫn màn của phân hệ khác')
+        truoc = o('Thu chi', 1).is_checked()
+        o('Thu chi', 1).click()
+        chon('Tiện ích bổ sung')
+        if not o('Dashboard', 4).is_disabled():
+            loi.append('T742: Dashboard, ô Ghi sổ phải readonly')
+        if o('Dashboard', 2).is_disabled():
+            loi.append('T742: Dashboard, ô Sửa bị khoá')
+        chon('Kế toán tổng hợp')
+        if not o('Số dư ban đầu', 1).is_disabled() or o('Số dư ban đầu', 4).is_disabled():
+            loi.append('T742: Số dư ban đầu phải chỉ có Xem, Sửa, Ghi sổ')
+        chon('Kế toán tiền')
+        if o('Thu chi', 1).is_checked() == truoc:
+            loi.append('T742: đổi phân hệ làm mất quyền vừa sửa')
+        if con:
+            loi.append(f'T742: lỗi console: {con[0][:160]}')
+        b.close()
+    return loi
+
+
 def main():
     if DIEN_THOAI:
         kiem_tra_cac_khung_dt()
@@ -5507,6 +5560,7 @@ def main():
     loi += kiem_tra_dot_22_a()
     loi += kiem_tra_t274_web()
     loi += kiem_tra_t594_to_giay()
+    loi += kiem_tra_t742_phan_quyen()
     loi += kiem_tra_t681_tour_huong_dan()
     loi += kiem_tra_t675_tour_dien_thoai()
     if loi:

@@ -1038,4 +1038,13 @@ Trum chốt 04/11/2026 (T732). Thay điều 2 của bản E (T715, `docs/ke-hoac
 
 Lý do: bản E nhiều chữ, cùng 3 thao tác mẫu web 262 chữ, app 260 chữ. Bản gọn còn 132 và 121 chữ, giữ đủ thông tin.
 
-## QD95. Chức vụ thay Vai trò, chọn phân hệ bằng dropdown, thao tác theo tính năng (đang soạn)
+## QD95. Chức vụ thay Vai trò, chọn phân hệ bằng dropdown, thao tác theo tính năng (05/11/2026)
+
+Trum chốt 05/11/2026 (T742).
+
+- Chữ người dùng thấy đổi Vai trò thành Chức vụ. Code giữ `VAI_TRO`, `vaiTro`, slug `phan-quyen`.
+- Form Người dùng bỏ ô tự gõ Chức vụ (`cv`), chỉ còn ô chọn Chức vụ gắn với bộ quyền.
+- Màn phân quyền web chọn phân hệ bằng dropdown, bảng chỉ hiện tính năng của phân hệ đó. Điện thoại giữ bố cục cũ, dùng chung luật thao tác.
+- Tính năng không có thao tác thì công tắc readonly, không ẩn, không ghi dấu gạch.
+- Tiện ích bổ sung: Xem, Sửa. Kê khai thuế: Xem, Thêm, Sửa, Xoá. Số dư ban đầu: Xem, Sửa, Ghi sổ. Tính giá vốn: Xem, Ghi sổ. Luật nằm ở `apDungQuyen`.
+- Lưu quyền vẫn theo từng màn, không đổi cấu trúc dữ liệu.
