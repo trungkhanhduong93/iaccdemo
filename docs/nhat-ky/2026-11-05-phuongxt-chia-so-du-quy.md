@@ -14,7 +14,7 @@
 - `danh-muc/index.ts`: lưu phần chia (`cn`) và cửa hàng sửa tay (`sua`) cùng số dư quỹ; mở lại thì dòng đã sửa vẫn là đã sửa.
 - `session.tsx`, `SoDuBanDau.tsx`: kiểu `soDuQuy` thêm `cn`, `sua`; `datSoDuQuy` nhận thêm phần chia.
 - Cuối `app.css`: mục T750.
-- Ngoài việc, theo góp ý của PhuongXT giữa phiên: `MCuaHang.tsx` (T749) ẩn nút nổi Đồng bộ FABi khi màn chọn cửa hàng FABi đang mở, để không đè nút Lên sổ. Sửa này để chung với phần T749 chưa commit.
+- Ngoài việc, theo góp ý của PhuongXT giữa phiên: `MCuaHang.tsx` (T749) ẩn nút nổi Đồng bộ FABi khi màn chọn cửa hàng FABi đang mở, để không đè nút Lên sổ. Sửa này đã push trong commit T749.
 
 ## Đã kiểm
 
