@@ -36,7 +36,7 @@ export interface Session {
   ppGtgt: PpGtgt         // phương pháp tính thuế GTGT (TT58): 'tyLe' hoặc 'khauTru', mặc định 'tyLe'
   ppTndn: PpTndn         // phương pháp tính thuế TNDN (TT58): 'tyLe' hoặc 'thuNhap', mặc định 'thuNhap'
   dvMoi?: DonVi        // đơn vị mới tạo khi dùng thử từ FABi (T138): tên FABi, chưa có MST; 3 đơn vị mẫu giữ nguyên
-  soDuQuy?: Record<string, Record<string, { no: number; co: number }>>   // số dư ban đầu từng quỹ theo đơn vị, lưu ở màn Số dư ban đầu (T160)
+  soDuQuy?: Record<string, Record<string, { no: number; co: number; cn?: Record<string, number>; sua?: string[] }>>   // số dư ban đầu từng quỹ theo đơn vị, lưu ở màn Số dư ban đầu (T160); cn: phần chia theo mã cửa hàng, sua: cửa hàng sửa tay (T750)
   choKeKhai?: Record<string, boolean>   // đơn vị khởi tạo nhanh từ FABi, chưa chọn loại hình, gói, thông tin đơn vị; mở Kê khai thuế thì hỏi (T138)
   dongBoFabi?: Record<string, { bd: number; ct: number; tc: number }>   // chứng từ FABi còn đổ về sau khi Kết nối: lúc bắt đầu (ms), số chứng từ Xuất bán POS, số phiếu thu chi (T687)
   huongDan?: Record<string, boolean>   // hướng dẫn từng bước ở Trang chủ theo đơn vị: false là vừa khởi tạo xong, chờ hiện; true là đã xem hoặc bỏ qua (T138)

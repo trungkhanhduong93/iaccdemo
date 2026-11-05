@@ -13,6 +13,7 @@ import { tkTheoCheDo } from '../tong-hop/so-cai'
 import { Note } from '../../ui/Page'
 import { DanhMucCuaHang } from './DanhMucCuaHang'
 import { datSoDuQuy, soDuQuyBanDau } from '../tong-hop/SoDuBanDau'
+import { chiaTheoForm, docTien } from './ChiaSoDuQuy'
 import { luuPtttQuy, ptttCuaQuy, tomTatPttt } from '../tien/dong-bo-fabi'
 import { dauThap } from '../../ui/format'
 import { CongThucScreen } from '../kho/CongThuc'
@@ -291,14 +292,21 @@ const danhMuc: ModuleDef = {
       phien: {
         gan: (r, s) => {
           const pt = ptttCuaQuy(s, String(r.ma))
-          return { ...r, _pttt: pt, pttt: tomTatPttt(pt), ...(s.goi === 'S' || s.goi === 'PL' ? { soDu: soDuQuyBanDau(s, String(r.ma)) } : {}) }
+          if (s.goi !== 'S' && s.goi !== 'PL') return { ...r, _pttt: pt, pttt: tomTatPttt(pt) }
+          // Dòng cửa hàng sửa tay lúc lưu mở lại vẫn là đã sửa, dòng khác tự chia theo tổng (T750)
+          const luu = s.soDuQuy?.[s.donVi]?.[String(r.ma)]
+          const suaCn = Object.fromEntries((luu?.sua ?? []).filter(id => luu?.cn?.[id] !== undefined).map(id => [id, luu!.cn![id]]))
+          return { ...r, _pttt: pt, pttt: tomTatPttt(pt), soDu: soDuQuyBanDau(s, String(r.ma)), _suaCn: suaCn }
         },
         luu: (v, s) => {
           // Lưu map PTTT của quỹ (T264) cùng số dư ban đầu gói Free (T245)
           const map = v.ma && Array.isArray(v._pttt) ? luuPtttQuy(s, String(v.ma), v._pttt) : {}
           if ((s.goi !== 'S' && s.goi !== 'PL') || !v.ma || v.soDu === undefined || v.soDu === '') return map
-          const du = typeof v.soDu === 'number' ? v.soDu : Number(String(v.soDu).replace(/[^\d-]/g, '')) || 0
-          return { ...datSoDuQuy(s, String(v.ma), du), ...map }
+          const du = docTien(v.soDu)
+          // Lưu phần chia từng cửa hàng cùng tổng (T750)
+          const cn = chiaTheoForm(v)
+          const chia = cn ? { cn, sua: Object.keys(v._suaCn ?? {}).filter(id => id in cn) } : null
+          return { ...datSoDuQuy(s, String(v.ma), du, chia), ...map }
         },
       } } },
     // T154: bảng giá theo iFaster; giá nhập có nhà cung cấp, kho áp dụng để trống là mọi kho

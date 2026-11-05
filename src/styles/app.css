@@ -44360,3 +44360,17 @@ a.hdn-chip:hover { border-color: var(--blue); color: var(--blue); }
 .matrix td.c input[type="checkbox"]:disabled::after, .m-pq-quyen-dong input[type="checkbox"]:disabled::after, .pq-chu-giai input[type="checkbox"]:disabled::after {
   background: #e3e7ec; box-shadow: none;
 }
+
+/* ── Số dư quỹ theo cửa hàng ở form Quỹ tiền (T750) ── */
+.csd-goi-y, .csd-trong { margin: 0 0 8px; font-size: 12.5px; color: var(--muted); }
+.csd-bang { width: 100%; border-collapse: collapse; font-size: 13px; }
+.csd-bang th, .csd-bang td { padding: 6px 10px; border-bottom: 1px solid var(--line-2); text-align: left; }
+.csd-bang th { font-weight: 600; color: var(--muted); font-size: 12px; }
+.csd-bang .so { text-align: right; width: 180px; }
+.csd-bang tfoot td { font-weight: 600; border-bottom: 0; }
+.csd-bang tfoot tr.lech td { color: var(--red); }
+.csd-o { width: 100%; height: 30px; padding: 0 8px; text-align: right; border: 1px solid var(--line-2); border-radius: 6px; font: inherit; }
+.csd-bang tr.da-sua .csd-o { border-color: var(--blue); }
+.csd-nhan, .csd-lech { margin-left: 8px; font-size: 11px; font-weight: 500; color: var(--blue); }
+.csd-lech { color: var(--red); }
+.csd-chia-lai { margin-top: 8px; padding: 4px 10px; border: 1px solid var(--line-2); border-radius: 6px; background: #fff; color: var(--blue); font: inherit; font-size: 12.5px; cursor: pointer; }

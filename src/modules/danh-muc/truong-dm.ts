@@ -8,6 +8,7 @@ import { NGANH_NGHE_CON, timNganhNghe } from './nganh-nghe'
 import { DN_AN_UONG, NGANH_NGHE_DN, timNganhNgheDn } from './nganh-nghe-dn'
 import { KhoiQuyDoi } from './QuyDoiDvt'
 import { KhoiPtttQuy } from './QuyPttt'
+import { KhoiChiaSoDu, loiChiaSoDu } from './ChiaSoDuQuy'
 
 import { createElement, type ReactNode } from 'react'
 import type { Col, Row } from '../types'
@@ -612,6 +613,13 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
         ],
       },
       {
+        // Số dư ban đầu tổng tự chia cho từng cửa hàng áp dụng, sửa tay được (T750)
+        ten: 'Số dư theo cửa hàng',
+        goi: ['S', 'PL'],
+        truong: [],
+        ve: (v, doi, xem) => createElement(KhoiChiaSoDu, { v, doi, xem }),
+      },
+      {
         // Map PTTT FABi về quỹ theo cửa hàng, cho đồng bộ phiếu thu, chi từ FABi (T264)
         ten: 'Phương thức thanh toán từ FABi',
         truong: [],
@@ -624,6 +632,7 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
         ],
       },
     ],
+    loi: loiChiaSoDu,   // tổng chia cho cửa hàng phải khớp số dư ban đầu (T750)
   },
 
   // 1.13 Tài sản (ASSET)

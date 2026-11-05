@@ -16,7 +16,6 @@ import { Select } from '../../ui/Dropdown'
 import { HopXacNhan } from '../../ui/LocNangCao'
 import { CUA_HANG, DON_VI, KHACH, NCC, NVL } from '../../data/mock'
 import { TEN_TK, soCai } from './so-cai'
-
 export type TabKey = 'tk' | 'tien' | 'kh' | 'ncc' | 'kho'
 
 function tach(tong: number, tyLe: number[]) {
@@ -45,10 +44,9 @@ export function soDuQuyBanDau(s: Pick<Session, 'donVi' | 'soDuQuy'>, ma: string)
   const mau = soDuMau ??= Object.fromEntries(soDuRows().filter(r => r.loai === 'tien').map(r => [r.ma, Number(r.du) || 0]))
   return mau[ma] ?? 0
 }
-/** Ghi số dư ban đầu một quỹ vào phiên, cùng chỗ với màn Số dư ban đầu (T245) */
-export const datSoDuQuy = (s: Pick<Session, 'donVi' | 'soDuQuy'>, ma: string, du: number): Pick<Session, 'soDuQuy'> =>
-  ({ soDuQuy: { ...s.soDuQuy, [s.donVi]: { ...s.soDuQuy?.[s.donVi], [ma]: { no: Math.max(0, du), co: Math.max(0, -du) } } } })
-
+/** Ghi số dư ban đầu một quỹ vào phiên, cùng chỗ với màn Số dư ban đầu (T245); chia: phần của từng cửa hàng và các cửa hàng sửa tay (T750) */
+export const datSoDuQuy = (s: Pick<Session, 'donVi' | 'soDuQuy'>, ma: string, du: number, chia?: { cn: Record<string, number>; sua: string[] } | null): Pick<Session, 'soDuQuy'> =>
+  ({ soDuQuy: { ...s.soDuQuy, [s.donVi]: { ...s.soDuQuy?.[s.donVi], [ma]: { no: Math.max(0, du), co: Math.max(0, -du), ...(chia ?? {}) } } } })
 /** Đối tượng chọn được ở dòng thêm mới theo loại số dư; khoá trùng là ma (tài khoản là tk) */
 /** Quỹ tiền mặt của cửa hàng lên sổ thêm từ FABi (T142) */
 export const quyCua = (c: CnThem): Row => ({ ma: `TM-${c.id.toUpperCase()}`, ct: `Quỹ tiền mặt ${c.ten.replace(/^Phố Mây /, '')}`, kieu: 'Tiền mặt', cn: c.ten, tk: '1111' })
