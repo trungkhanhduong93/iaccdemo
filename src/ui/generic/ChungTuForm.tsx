@@ -79,7 +79,8 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
   const bo = boO(nhom, cfg)
   const laKk = Boolean(cfg.kiemKe)   // phiếu kiểm kê: bỏ đối tượng, kho ở đầu phiếu, bảng tồn hệ thống, tồn thực tế (T124)
   const laDc = Boolean(cfg.dieuChinh)   // phiếu xuất, nhập điều chỉnh sinh từ kiểm kê (T126)
-  const khoaSua = laDc || tuFabi || khoaKy   // không sửa, không xoá (T129, T283, T315)
+  const xdcDaNhap = cfgMan.dieuChuyen === 'xdc' && row?.ttSx === 'da'   // phiếu xuất điều chuyển đã nhập (T748)
+  const khoaSua = laDc || tuFabi || khoaKy || xdcDaNhap   // không sửa, không xoá (T129, T283, T315, T748)
   // Phiếu sản xuất theo iPOS Inventory (T152): đầu phiếu gọn như kiểm kê, bảng dòng riêng; phiếu nhập bắt buộc tham chiếu phiếu xuất
   const sx = cfg.sanXuat
   const laSx = Boolean(sx)
@@ -614,7 +615,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
         else luu(false)
       } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'e') {
         e.preventDefault()
-        if (!khoaSua && !khoaDc) batSuaRef.current()   // phiếu điều chỉnh, phiếu FABi chỉ xem (T129, T283); phiếu có thẻ chi phí thì báo (T439)   // phiếu điều chỉnh, phiếu FABi chỉ xem (T129, T283); phiếu có thẻ chi phí thì báo (T439)
+        if (!khoaSua && !khoaDc) batSuaRef.current()   // phiếu điều chỉnh, phiếu FABi chỉ xem (T129, T283); phiếu có thẻ chi phí thì báo (T439)
       } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'q') {
         // Huỷ thay đổi như nút Huỷ (T297)
         e.preventDefault()
