@@ -898,15 +898,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
                   </>
                 )}
               </Dropdown>
-              {coGhiSo && row && (
-                <button
-                  type="button"
-                  className="xp-btn-outline"
-                  onClick={() => toast(row.tt === 'ghi' ? 'Đã bỏ ghi sổ' : 'Đã ghi sổ')}
-                >
-                  {row.tt === 'ghi' ? 'Bỏ ghi sổ' : 'Ghi sổ'}
-                </button>
-              )}
+              {/* Bỏ nút Ghi sổ, Bỏ ghi sổ ở chân form, mọi phiếu (T746) */}
               {!anIn && (
                 <button type="button" className="xp-btn-in" onClick={moIn}>
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
