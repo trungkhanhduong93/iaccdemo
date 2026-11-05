@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T747 | Phiếu Xuất điều chỉnh, Nhập điều chỉnh trên web đổi tên cột Đơn giá, Thành tiền thành Giá vốn, Tiền vốn (như T741, T745) | PhuongXT | 05/11/2026 | `2026-11-05-phuongxt-dieu-chinh-gia-von.md` |
 | T743 | Người dùng: cột cuối đặt tên Hành động, nút Sửa đổi thành icon cây bút | Trum | 05/11/2026 | 2026-11-05-trum-nguoi-dung-icon-sua.md |
 | T742 | Chức vụ và phân quyền: đổi chữ Vai trò thành Chức vụ, web chọn phân hệ bằng dropdown, ô không có thao tác thì readonly, chốt thao tác Tiện ích bổ sung, Kê khai thuế, Số dư ban đầu, Tính giá vốn (QD95) | Trum | 05/11/2026 | 2026-11-05-trum-phan-quyen-dropdown.md |
 | T744 | Form chứng từ trên web bỏ nhãn trạng thái ghi sổ (Chưa ghi sổ, Đã ghi sổ, Lỗi hạch toán) ở đầu form, mọi phiếu. Điện thoại, form Xuất bán POS chưa đổi | PhuongXT | 05/11/2026 | `2026-11-05-phuongxt-bo-nhan-ghi-so.md` |
