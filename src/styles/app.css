@@ -44362,15 +44362,14 @@ a.hdn-chip:hover { border-color: var(--blue); color: var(--blue); }
 }
 
 /* ── Số dư quỹ theo cửa hàng ở form Quỹ tiền (T750) ── */
-.csd-goi-y, .csd-trong { margin: 0 0 8px; font-size: 12.5px; color: var(--muted); }
-.csd-bang { width: 100%; border-collapse: collapse; font-size: 13px; }
-.csd-bang th, .csd-bang td { padding: 6px 10px; border-bottom: 1px solid var(--line-2); text-align: left; }
-.csd-bang th { font-weight: 600; color: var(--muted); font-size: 12px; }
-.csd-bang .so { text-align: right; width: 180px; }
-.csd-bang tfoot td { font-weight: 600; border-bottom: 0; }
-.csd-bang tfoot tr.lech td { color: var(--red); }
-.csd-o { width: 100%; height: 30px; padding: 0 8px; text-align: right; border: 1px solid var(--line-2); border-radius: 6px; font: inherit; }
-.csd-bang tr.da-sua .csd-o { border-color: var(--blue); }
-.csd-nhan, .csd-lech { margin-left: 8px; font-size: 11px; font-weight: 500; color: var(--blue); }
-.csd-lech { color: var(--red); }
-.csd-chia-lai { margin-top: 8px; padding: 4px 10px; border: 1px solid var(--line-2); border-radius: 6px; background: #fff; color: var(--blue); font: inherit; font-size: 12.5px; cursor: pointer; }
+.qp-cn-hang { display: flex; align-items: center; background: var(--hdb-chan); border-bottom: 1px solid var(--line-2); }
+.qp-cn-hang .qp-cn-dau { flex: 1; min-width: 0; background: none; border-bottom: 0; }
+.qp-sd { display: flex; align-items: center; gap: 8px; padding-right: 10px; font-size: 12px; color: var(--muted); white-space: nowrap; }
+.qp-sd input { width: 140px; height: 30px; padding: 0 8px; text-align: right; border: 1px solid var(--line); border-radius: 6px; background: var(--white); font: inherit; font-size: 13px; color: var(--ink); font-variant-numeric: tabular-nums; }
+.qp-sd b { font-size: 13px; color: var(--ink); font-variant-numeric: tabular-nums; }
+.qp-sd.da-sua { color: var(--blue); }
+.qp-sd.da-sua input { border-color: var(--blue); }
+.qp-sd-tong { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 13px; color: var(--muted); }
+.qp-sd-tong b { color: var(--ink); font-variant-numeric: tabular-nums; }
+.qp-sd-tong.lech, .qp-sd-tong.lech b { color: var(--red); }
+.qp-chia-lai { border: 0; background: none; padding: 0; color: var(--blue); font: inherit; font-size: 12.5px; font-weight: 600; cursor: pointer; }

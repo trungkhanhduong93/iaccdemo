@@ -3,7 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 05/11/2026
-- T750: Danh mục Quỹ tiền gói Standard, Plus: quỹ dùng cho nhiều cửa hàng có thêm bảng Số dư theo cửa hàng. Nhập số dư ban đầu tổng thì hệ thống chia đều cho từng cửa hàng; sửa số cửa hàng nào thì phần còn lại chia cho các cửa hàng khác, có nút Chia đều lại, báo lệch và không cho lưu khi tổng không khớp.
+- T750: Danh mục Quỹ tiền gói Standard, Plus: quỹ dùng cho nhiều cửa hàng đổi khối Phương thức thanh toán từ FABi thành Theo cửa hàng, đầu mỗi cửa hàng có ô Số dư. Nhập số dư ban đầu tổng thì hệ thống chia đều cho từng cửa hàng; sửa số cửa hàng nào thì phần còn lại chia cho các cửa hàng khác, có nút Chia đều lại, báo lệch và không cho lưu khi tổng không khớp.
 - T749: Điện thoại, Danh mục cửa hàng: nút Đồng bộ FABi mở màn chọn cửa hàng FABi để lên sổ như web, tích sẵn mọi cửa hàng chưa dùng, nút Lên sổ N cửa hàng. Bỏ nút Thêm từ FABi riêng và tuỳ chọn khai số dư ngay sau khi lên sổ. Màn chọn đang mở thì ẩn nút Đồng bộ FABi để không đè nút Lên sổ.
 - T748: Phiếu xuất điều chuyển bỏ ô Cửa hàng nhận, chọn thẳng Kho nhận của cửa hàng khác; cột Đơn giá, Thành tiền đổi thành Giá vốn, Tiền vốn. Lưu phiếu xuất thì tự có phiếu nhập điều chuyển ở cửa hàng nhận, trạng thái Chờ nhập. Phiếu nhập điều chuyển bỏ nút Thêm mới, chỉ sinh từ phiếu xuất; Tham chiếu chuyển xuống dưới; mở phiếu Chờ nhập là sửa được số thực nhận rồi bấm Nhập kho để chuyển Đã nhập; phiếu đã nhập vẫn Sửa được số thực nhận; bỏ mục Sao chép. Phiếu xuất điều chuyển Đã nhập không sửa, không xoá được.
 - T747: Phiếu Xuất điều chỉnh, Nhập điều chỉnh đổi tên cột Đơn giá, Thành tiền thành Giá vốn, Tiền vốn.

@@ -6,8 +6,9 @@
 
 ## Đã làm
 
-- `src/modules/danh-muc/ChiaSoDuQuy.tsx` (mới): khối "Số dư theo cửa hàng" ở form Quỹ tiền gói Standard, Plus. Quỹ áp dụng từ 2 cửa hàng thì tổng tự chia đều, tròn nghìn, lẻ dồn cửa hàng chưa sửa cuối. Sửa tay một dòng thì dòng đó giữ, phần còn lại chia cho dòng chưa sửa. Có nút Chia đều lại, dòng Tổng đã chia báo đỏ khi lệch. Quỹ một cửa hàng chỉ hiện một câu.
-- `truong-dm.ts`: thêm khối vào 1.12 và `loi: loiChiaSoDu` chặn lưu khi tổng chia không khớp hoặc có cửa hàng bị âm.
+- `src/modules/danh-muc/ChiaSoDuQuy.tsx` (mới): hàm chia số dư. Quỹ áp dụng từ 2 cửa hàng thì tổng tự chia đều, tròn nghìn, lẻ dồn cửa hàng chưa sửa cuối. Sửa tay một cửa hàng thì cửa hàng đó giữ, phần còn lại chia cho cửa hàng chưa sửa.
+- Bố cục theo cách B PhuongXT chọn: bản đầu là một khối bảng riêng, form dài nên bỏ. Gói Standard, Plus đổi khối "Phương thức thanh toán từ FABi" thành "Theo cửa hàng" (`QuyPttt.tsx`): đầu mỗi nhóm cửa hàng có ô Số dư cạnh số phương thức, cuối khối là dòng Tổng số dư đã chia, báo đỏ khi lệch, nút Chia đều lại. Gói Pro giữ khối cũ.
+- `truong-dm.ts`: tách khối theo gói ở 1.12 và `loi: loiChiaSoDu` chặn lưu khi tổng chia không khớp hoặc có cửa hàng bị âm.
 - `danh-muc/index.ts`: lưu phần chia (`cn`) và cửa hàng sửa tay (`sua`) cùng số dư quỹ; mở lại thì dòng đã sửa vẫn là đã sửa.
 - `session.tsx`, `SoDuBanDau.tsx`: kiểu `soDuQuy` thêm `cn`, `sua`; `datSoDuQuy` nhận thêm phần chia.
 - Cuối `app.css`: mục T750.
@@ -18,7 +19,7 @@
 - `npm run typecheck`, `npm run build`: không lỗi.
 - `python tools/kiem_tra.py --nhanh`: Không có lỗi.
 - `python tools/kiem_van.py src/modules/danh-muc/ChiaSoDuQuy.tsx`: Sạch.
-- Mở NH01 trên bản chạy thử gói Plus: gõ 10 triệu cho Lê Lợi thì hai cửa hàng kia chia phần còn lại, tổng khớp; Lưu rồi mở lại vẫn giữ đúng.
+- Mở NH01 trên bản chạy thử gói Plus: gõ 10 triệu cho Lê Lợi thì hai cửa hàng kia chia phần còn lại, tổng khớp; Lưu rồi mở lại vẫn giữ đúng. Làm lại theo cách B: gõ 50 triệu cho Lê Lợi, hai cửa hàng kia còn 116.627.000 và 116.628.000, tổng khớp. Phần lưu không đổi so với bản đầu.
 - Chưa xem lại trên máy màn điện thoại cho phần ẩn nút Đồng bộ FABi.
 
 ## Dở dang, việc tiếp theo
