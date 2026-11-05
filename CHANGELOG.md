@@ -5,6 +5,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 ## 05/11/2026
 - T743: Bảng Người dùng có cột Hành động, nút Sửa đổi thành icon cây bút.
 - T742: Hệ thống, Vai trò đổi tên thành Chức vụ. Màn phân quyền web chọn phân hệ ở ô thả xuống, bảng hiện từng tính năng, ô không có thao tác thì mờ và không bật được. Form Người dùng bỏ ô tự gõ Chức vụ.
+- T741: Phiếu xuất huỷ làm như Phiếu nhập khác: bỏ đối tượng, người giao / nhận, địa chỉ, mã số thuế; đầu phiếu có Kho xuất bắt buộc chọn. Bảng chi tiết chỉ còn Mã hàng, Tên hàng, ĐVT, Số lượng, Giá vốn, Tiền vốn; đáy form chỉ Tổng tiền. Danh sách đổi cột Diễn giải thành Ghi chú, bỏ cột Tiền thuế, có thêm lọc Kho, Hàng hoá, Nhóm hàng hoá.
 - T740: Danh sách Phiếu nhập khác đổi tên cột Diễn giải thành Ghi chú.
 - T739: Danh sách Phiếu nhập khác bỏ cột Tiền thuế.
 - T738: Danh sách Phiếu nhập khác có thêm lọc Kho, Hàng hoá, Nhóm hàng hoá trong Bộ lọc nâng cao, ghim ra hàng lọc được.

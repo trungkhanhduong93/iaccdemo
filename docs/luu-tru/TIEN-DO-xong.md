@@ -6,6 +6,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 |---|---|---|---|---|
 | T743 | Người dùng: cột cuối đặt tên Hành động, nút Sửa đổi thành icon cây bút | Trum | 05/11/2026 | 2026-11-05-trum-nguoi-dung-icon-sua.md |
 | T742 | Chức vụ và phân quyền: đổi chữ Vai trò thành Chức vụ, web chọn phân hệ bằng dropdown, ô không có thao tác thì readonly, chốt thao tác Tiện ích bổ sung, Kê khai thuế, Số dư ban đầu, Tính giá vốn (QD95) | Trum | 05/11/2026 | 2026-11-05-trum-phan-quyen-dropdown.md |
+| T741 | Phiếu xuất huỷ (5.1.2-3) trên web như nhập khác: bỏ đối tượng, người giao nhận, địa chỉ, mã số thuế; thêm Kho xuất bắt buộc ở đầu phiếu; chi tiết chỉ Mã hàng, Tên hàng, ĐVT, Số lượng, Giá vốn, Tiền vốn. Danh sách đổi Diễn giải thành Ghi chú, bỏ Tiền thuế, lọc Kho, Hàng hoá, Nhóm hàng hoá. Điện thoại chưa đổi | PhuongXT | 05/11/2026 | `2026-11-05-phuongxt-xuat-huy-gon.md` |
 | T740 | Danh sách Phiếu nhập khác (5.1.1) đổi tên cột Diễn giải thành Ghi chú | PhuongXT | 05/11/2026 | `2026-11-05-phuongxt-nhap-khac-ghi-chu.md` |
 | T739 | Danh sách Phiếu nhập khác (5.1.1) bỏ cột Tiền thuế | PhuongXT | 05/11/2026 | `2026-11-05-phuongxt-nhap-khac-bo-thue.md` |
 | T738 | Danh sách Phiếu nhập khác (5.1.1) thêm bộ lọc Kho, Hàng hoá, Nhóm hàng hoá như kiểm kê | PhuongXT | 05/11/2026 | `2026-11-05-phuongxt-loc-nhap-khac.md` |

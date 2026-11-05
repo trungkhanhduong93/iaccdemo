@@ -48,10 +48,11 @@ export interface BangSuaProps {
   giamThue?: (tien: number) => number   // GTGT theo % doanh thu (T450): cột Giảm thuế GTGT tính từ tiền sau CK thay Thuế suất, Tiền thuế
   coThemHangLoat?: boolean     // nút Thêm hàng loạt chọn nhiều hàng một lần, phiếu mua hàng (T465)
   doRong?: DoRong              // kéo mép phải tiêu đề để giãn cột, chung cho chế độ xem và sửa (T618)
+  giaVon?: boolean             // phiếu xuất huỷ: cột Đơn giá, Thành tiền gọi là Giá vốn, Tiền vốn (T741)
 }
 
 /** Các cột ẩn hiện được của bảng chi tiết, theo loại phiếu (T49). Mỗi cột trên bảng là một mục, theo thứ tự trên bảng (T86) */
-export function cotTuyChon(cfg: VoucherCfg, o: { coKho?: boolean; coLo?: boolean; coCk?: boolean; coKm?: boolean; coLy?: boolean; coNhapKho?: boolean; coXuatKho?: boolean; coNhomHhdv?: boolean; coGiamThue?: boolean }): [string, string][] {
+export function cotTuyChon(cfg: VoucherCfg, o: { coKho?: boolean; coLo?: boolean; coCk?: boolean; coKm?: boolean; coLy?: boolean; coNhapKho?: boolean; coXuatKho?: boolean; coNhomHhdv?: boolean; coGiamThue?: boolean; giaVon?: boolean }): [string, string][] {
   const hang = cfg.dong === 'hang' || cfg.dong === 'nvl'
   const tien = cfg.dong === 'tien'
   const coThue = cfg.thue !== undefined || hang
@@ -60,7 +61,7 @@ export function cotTuyChon(cfg: VoucherCfg, o: { coKho?: boolean; coLo?: boolean
     ['lo', 'Số lô', hang && o.coLo], ['hsd', 'Hạn dùng', hang && o.coLo],
     ['ly', 'Lý do', tien && o.coLy], ['dt', 'Đối tượng', tien && cfg.doiTuong !== 'none'],
     ['km', 'Khoản mục', tien && o.coKm], ['cv', 'Công việc', tien && o.coKm],
-    ['sl', 'Số lượng', hang], ['gia', 'Đơn giá', hang], ['tien', 'Thành tiền', true],
+    ['sl', 'Số lượng', hang], ['gia', o.giaVon ? 'Giá vốn' : 'Đơn giá', hang], ['tien', o.giaVon ? 'Tiền vốn' : 'Thành tiền', true],
     ['ptCk', '% CK', o.coCk], ['ck', 'Tiền CK', o.coCk], ['truocThue', 'Tiền trước thuế', o.coNhapKho],
     ['ts', 'Thuế suất', coThue && !o.coGiamThue], ['thue', 'Tiền thuế', coThue && !o.coGiamThue], ['giamThue', 'Giảm thuế GTGT', o.coGiamThue], ['nhomHhdv', 'Nhóm HHDV mua vào', o.coNhomHhdv],
     ['gtnk', o.coXuatKho ? 'Giá trị xuất kho' : 'Giá trị nhập kho', o.coNhapKho || o.coXuatKho], ['tongTien', 'Tổng tiền', o.coNhapKho],
@@ -108,7 +109,9 @@ export function BangSua({
   giamThue,
   coThemHangLoat = false,
   doRong,
+  giaVon = false,
 }: BangSuaProps) {
+  const nhanGia = giaVon ? 'Giá vốn' : 'Đơn giá', nhanTien = giaVon ? 'Tiền vốn' : 'Thành tiền'
   const hang = cfg.dong === 'hang' || cfg.dong === 'nvl'
   const tienDong = cfg.dong === 'tien'
   // Cột người dùng đã ẩn qua Tuỳ chỉnh giao diện phiếu
@@ -288,8 +291,8 @@ export function BangSua({
     ['ly', lyDo?.nhan ?? 'Lý do', tienDong && lyDong, d => d.ly ?? ''], ['dt', 'Đối tượng', tienDong && dtDong, d => d.dt ?? ''],
     ['km', 'Khoản mục', tienDong && kmDong, d => d.km ? (KHOAN_MUC.find(x => x.ma === d.km)?.ten ?? d.km) : ''],
     ['cv', 'Công việc', tienDong && cvDong, d => d.cv ? (CONG_VIEC.find(x => x.ma === d.cv)?.ten ?? d.cv) : ''],
-    ['sl', 'Số lượng', slCot, d => money(d.sl), d => d.sl || 0], ['gia', 'Đơn giá', giaCot, d => money(d.gia), d => d.gia || 0],
-    ['tien', 'Thành tiền', tienCot, d => money(d.tien), d => d.tien || 0], ['ptCk', '% CK', ptCkCot, d => String(d.ptCk ?? 0), d => d.ptCk || 0],
+    ['sl', 'Số lượng', slCot, d => money(d.sl), d => d.sl || 0], ['gia', nhanGia, giaCot, d => money(d.gia), d => d.gia || 0],
+    ['tien', nhanTien, tienCot, d => money(d.tien), d => d.tien || 0], ['ptCk', '% CK', ptCkCot, d => String(d.ptCk ?? 0), d => d.ptCk || 0],
     ['ck', 'Tiền CK', ckCot, d => money(d.ck || 0), d => d.ck || 0], ['truocThue', 'Tiền trước thuế', truocThueCot, d => money(tienSauCk(d)), tienSauCk],
     ['ts', 'Thuế suất', tsCot, d => d.ts ? String(d.ts) : 'KCT'], ['thue', 'Tiền thuế', thueCot, d => money(d.thue), d => d.thue || 0],
     ['giamThue', 'Giảm thuế GTGT', giamCot, d => money(giamDong(d)), giamDong],
@@ -343,8 +346,8 @@ export function BangSua({
                 </>
               )}
               {slCot && <ThKeo k="sl" className="num" w={80} doRong={doRong}>Số lượng</ThKeo>}
-              {giaCot && <ThKeo k="gia" className="num" w={110} doRong={doRong}>Đơn giá</ThKeo>}
-              {tienCot && <ThKeo k="tien" className="num" w={tienDong ? '25%' : 120} doRong={doRong}>Thành tiền</ThKeo>}
+              {giaCot && <ThKeo k="gia" className="num" w={110} doRong={doRong}>{nhanGia}</ThKeo>}
+              {tienCot && <ThKeo k="tien" className="num" w={tienDong ? '25%' : 120} doRong={doRong}>{nhanTien}</ThKeo>}
               {ptCkCot && <ThKeo k="ptCk" className="num" w={65} doRong={doRong}>% CK</ThKeo>}
               {ckCot && <ThKeo k="ck" className="num" w={100} doRong={doRong}>Tiền CK</ThKeo>}
               {truocThueCot && <ThKeo k="truocThue" className="num" w={120} doRong={doRong}>Tiền trước thuế</ThKeo>}
@@ -447,9 +450,9 @@ export function BangSua({
                 </>
               )}
               {slCot && <ThKeo k="sl" className="num" w={85} doRong={doRong}>Số lượng</ThKeo>}
-              {giaCot && <ThKeo k="gia" className="num" w={110} doRong={doRong}>Đơn giá</ThKeo>}
+              {giaCot && <ThKeo k="gia" className="num" w={110} doRong={doRong}>{nhanGia}</ThKeo>}
               {/* T419: phiếu thu chi cột Thành tiền rộng 1/4 bảng */}
-              {tienCot && <ThKeo k="tien" className="num" w={tienDong ? '25%' : 120} doRong={doRong}>Thành tiền</ThKeo>}
+              {tienCot && <ThKeo k="tien" className="num" w={tienDong ? '25%' : 120} doRong={doRong}>{nhanTien}</ThKeo>}
               {ptCkCot && <ThKeo k="ptCk" className="num" w={65} doRong={doRong}>% CK</ThKeo>}
               {ckCot && <ThKeo k="ck" className="num" w={100} doRong={doRong}>Tiền CK</ThKeo>}
               {truocThueCot && <ThKeo k="truocThue" className="num" w={120} doRong={doRong}>Tiền trước thuế</ThKeo>}

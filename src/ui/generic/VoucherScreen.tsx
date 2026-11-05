@@ -301,7 +301,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
   // T94: kho, mã hàng trên dòng để lọc; gói dưới Pro một kho ở đầu phiếu (cột Kho), gói Pro kho trên từng dòng
   const coKhoDs = bo.kho === 'dong'
   const khoDong = s.goi === 'PR'
-  const laNk = sc.code === '5.1.1'   // phiếu nhập khác (T737, T738)
+  const laNk = sc.code === '5.1.1' || sc.code === '5.1.2-3'   // phiếu nhập khác (T737, T738), xuất huỷ (T741): kho ở đầu phiếu, Ghi chú, không thuế
   const locKhoHang = Boolean(cfg.kiemKe || cfg.dieuChinh || laNk)   // có lọc Kho, Hàng hoá, Nhóm hàng hoá
   // Thu chi (T96): lý do thu, chi của phiếu; phiếu chưa lưu lý do thì đoán theo diễn giải như form, chuyển quỹ không có
   // Phiếu kiểm kê (T124): kho kiểm kê và số mặt hàng của phiếu
