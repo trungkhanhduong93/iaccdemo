@@ -1,5 +1,5 @@
 // Màn xuất điều chuyển, nhập điều chuyển, chuyển kho (T155). Danh sách dùng chung với phiếu sản xuất, form phiếu dùng form chứng từ chung
-import { useLocation, useNavigate, useParams } from 'react-router-dom'
+import { Navigate, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { useSession } from '../../app/session'
 import type { Col, ScreenProps } from '../types'
 import { ChungTuForm } from '../../ui/generic/ChungTuForm'
@@ -13,7 +13,7 @@ const COT_NGUOI: Col[] = [{ k: 'ngay', t: 'Thời gian', w: 140 }, { k: 'ghiChu'
 const KIEU: Record<'xdc' | 'ndc' | 'ck', KieuDs> = {
   xdc: { ten: DCN.xdc.ten, nhap: false, manDoi: DCN.ndc.man, chips: ['cho', 'da', 'huy'], nhanKho: 'Kho xuất', coTien: true,
     cot: [{ k: 'kho', t: 'Kho xuất', w: 170 }, { k: 'khoNhan', t: 'Kho nhận', w: 170 }, ...COT_NGUOI] },
-  ndc: { ten: DCN.ndc.ten, nhap: true, manDoi: DCN.xdc.man, chips: ['cho', 'da', 'huy'], nhanKho: 'Kho nhận', coTien: true,
+  ndc: { ten: DCN.ndc.ten, nhap: true, manDoi: DCN.xdc.man, chips: ['cho', 'da', 'huy'], nhanKho: 'Kho nhận', coTien: true, khongThem: true,
     cot: [{ k: 'cnXuat', t: 'Cửa hàng xuất', w: 170 }, { k: 'khoXuat', t: 'Kho xuất', w: 170 }, { k: 'kho', t: 'Kho nhận', w: 170 }, ...COT_NGUOI] },
   ck: { ten: DCN.ck.ten, nhap: false, nhanKho: 'Kho xuất', coTien: false,
     cot: [{ k: 'kho', t: 'Kho xuất', w: 170 }, { k: 'khoNhan', t: 'Kho nhận', w: 170 }, ...COT_NGUOI] },
@@ -37,6 +37,7 @@ export function PhieuDieuChuyen({ sc, mod }: ScreenProps) {
     </div>
   ) : undefined
   if (id !== undefined) {
+    if (id === 'moi' && loai === 'ndc') return <Navigate to={`/app/${DCN.ndc.man}`} replace />   // phiếu nhập điều chuyển chỉ sinh từ phiếu xuất (T748)
     const row = id === 'moi' ? undefined : rows.find(r => r.id === id)
     return <ChungTuForm key={loc.key + loc.search} sc={sc} mod={mod} cfg={cfg} row={row} rows={rows} />
   }

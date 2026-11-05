@@ -84,6 +84,7 @@ export interface KieuDs {
   cot: Col[]                 // cột giữa Tham chiếu và Tổng tiền
   coTien: boolean            // cột Tổng tiền
   dai?: ReactNode            // dải giải thích đầu màn
+  khongThem?: boolean        // không có nút Thêm mới, vd nhập điều chuyển chỉ sinh từ phiếu xuất (T748)
   tabCon?: ReactNode         // hàng tab con đầu bảng, trên thanh lọc, vd Xuất, Nhập điều chuyển trong tab Điều chuyển gói Plus (T721)
 }
 
@@ -205,7 +206,7 @@ export function DsPhieuTc({ sc, mod, kieu: t, rows: rowsGoc }: ScreenProps & { k
               }}
             />
             <div className="ds-toolbar-phai">
-              <NutThemMoiSplit toMoi={`${path}/moi`} />
+              {!t.khongThem && <NutThemMoiSplit toMoi={`${path}/moi`} />}
             </div>
           </div>
           <div className="ds-hang-trang-thai">

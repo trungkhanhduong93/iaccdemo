@@ -7,7 +7,8 @@ export const quyTrinh: QuyTrinhDef = {
     { ten: 'Nhập kho', chinh: { ten: 'Nhập khác', icon: 'filein', di: 'kho/5-1-1/moi' },
       tren: [{ ten: 'Phiếu mua hàng', icon: 'truck', di: 'mua-hang/4-1-1/moi' }],
       // Điều chuyển tách ba phiếu (T155): nhập từ cửa hàng khác, chuyển giữa các kho cùng cửa hàng; xuất sang cửa hàng khác ở bước Xuất kho
-      duoi: [{ ten: 'Nhập điều chuyển', icon: 'filein', di: 'kho/5-1-4-2/moi' }, { ten: 'Chuyển kho', icon: 'swap', di: 'kho/5-1-4-3/moi' }] },
+      // Nhập điều chuyển chỉ sinh từ phiếu xuất nên mở danh sách, không mở phiếu mới (T748)
+      duoi: [{ ten: 'Nhập điều chuyển', icon: 'filein', di: 'kho/5-1-4-2' }, { ten: 'Chuyển kho', icon: 'swap', di: 'kho/5-1-4-3/moi' }] },
     // Sản xuất theo IVT (T152): sơ chế tách, chế biến gộp; phiếu nhập tham chiếu phiếu xuất. Hai màn công thức ở hàng Danh mục liên quan
     { ten: 'Sơ chế, chế biến', chinh: { ten: 'Xuất chế biến', icon: 'flask', di: 'kho/5-1-3/moi' },
       tren: [{ ten: 'Xuất sơ chế', icon: 'chef', di: 'kho/5-1-6/moi' }, { ten: 'Nhập sơ chế', icon: 'chef', di: 'kho/5-1-6-2/moi' }],

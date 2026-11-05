@@ -30,18 +30,6 @@ export function useDsPhieuDcn(loai: LoaiDcn): Row[] {
   return useMemo(() => [...phieuMoi, ...mau].filter(r => !laDaXoa(r.id)).map(apSua), [mau, ban])
 }
 
-/** Ô Tham chiếu của phiếu nhập: chọn phiếu xuất điều chuyển đang Chờ nhập gửi tới cửa hàng đang làm việc.
- *  Phiếu xuất đã có phiếu nhập chờ sinh kèm (T748) thì không chọn lại */
-function OThamChieuDcn({ cn, value, onChon }: { cn: string; value: string; onChon: (px: Row) => void }) {
-  const ds = useDsPhieuDcn('xdc')
-  const chon = ds.filter(r => (r.ttSx === 'cho' && !r._phieuNhap && (!cn || r._cnNhan === cn)) || r.id === value)
-  return (
-    <Select className="inp" value={value} aria-label="Phiếu tham chiếu" onChange={e => { const px = ds.find(r => r.id === e.target.value); if (px) onChon(px) }}
-      ds={[{ v: '', t: chon.length ? 'Chọn phiếu xuất điều chuyển đang chờ nhập' : 'Không có phiếu chờ nhập' },
-        ...chon.map(r => ({ v: String(r.id), t: `${r.so} · ${r.cn} · ${String(r.ngay).split(' ')[0]}` }))]} />
-  )
-}
-
 /** Ô chọn trong danh sách cố định; chế độ xem hiện chữ */
 function OChon({ nhan, value, ds, trong, sua, onChange }: { nhan: string; value: string; ds: string[]; trong: string; sua: boolean; onChange: (v: string) => void }) {
   return sua
@@ -50,13 +38,13 @@ function OChon({ nhan, value, ds, trong, sua, onChange }: { nhan: string; value:
     : <input className="inp" readOnly value={value} />
 }
 
-export function DauDieuChuyen({ loai, sua, cuaHang, kho, setKho, khoNhan, setKhoNhan, setCnNhan, nguon, thamChieu, onChonTc }: {
+export function DauDieuChuyen({ loai, sua, cuaHang, kho, setKho, khoNhan, setKhoNhan, setCnNhan, nguon, thamChieu }: {
   loai: LoaiDcn; sua: boolean; cuaHang: string
   kho: string; setKho: (v: string) => void                // xuất, chuyển kho: kho xuất; nhập: kho nhận
   khoNhan: string; setKhoNhan: (v: string) => void        // xuất, chuyển kho: kho nhận
   setCnNhan: (v: string) => void                          // xuất: cửa hàng nhận, theo kho nhận
   nguon: { cn: string; kho: string }                      // nhập: cửa hàng, kho của phiếu xuất
-  thamChieu: { id: string; so: string }; onChonTc: (px: Row) => void
+  thamChieu: { id: string; so: string }
 }) {
   const khoCn = khoCuaCn(cuaHang)
   const oKhoXuat = (
@@ -68,14 +56,11 @@ export function DauDieuChuyen({ loai, sua, cuaHang, kho, setKho, khoNhan, setKho
       ) : <input className="inp" readOnly value={kho} />}
     </div>
   )
+  // Phiếu nhập chỉ sinh từ phiếu xuất (T748): tham chiếu cố định, chuyển xuống dưới Xuất từ, Kho nhận
   if (loai === 'ndc') {
     return (
+      <>
       <div className="dcn-dau">
-        <div className="f">
-          <label>Tham chiếu <em>*</em></label>
-          {sua ? <OThamChieuDcn cn={cuaHang} value={thamChieu.id} onChon={onChonTc} />
-            : <div className="sx-tc-xem">{thamChieu.id ? <Link className="ds-link-so" to={`/app/${DCN.xdc.man}/${thamChieu.id}`}>{thamChieu.so}</Link> : <span className="dim">Chưa có</span>}</div>}
-        </div>
         <div className="f">
           <label>Xuất từ</label>
           <input className="inp" readOnly value={nguon.kho ? `${nguon.kho} · ${nguon.cn}` : ''} placeholder={sua ? 'Theo phiếu tham chiếu' : ''} />
@@ -85,6 +70,11 @@ export function DauDieuChuyen({ loai, sua, cuaHang, kho, setKho, khoNhan, setKho
           <OChon nhan="Kho nhận" value={kho} ds={khoCn} trong="Chọn kho nhận" sua={sua} onChange={setKho} />
         </div>
       </div>
+      <div className="f">
+        <label>Tham chiếu</label>
+        <div className="sx-tc-xem">{thamChieu.id ? <Link className="ds-link-so" to={`/app/${DCN.xdc.man}/${thamChieu.id}`}>{thamChieu.so}</Link> : <span className="dim">Chưa có</span>}</div>
+      </div>
+      </>
     )
   }
   if (loai === 'ck') {
