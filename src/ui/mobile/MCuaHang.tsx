@@ -73,20 +73,19 @@ export const MCuaHang: FC<ScreenProps> = () => {
           const text = `${r.ten} ${r.ma} ${r.posId} ${r.kho}`
           return fold(text).includes(fold(q))
         }}
-        nutTrai={
+        // Như web: một nút Đồng bộ FABi mở màn chọn cửa hàng FABi chưa dùng kế toán để lên sổ (T749); màn đó mở thì ẩn nút, khỏi đè nút Lên sổ
+        nutTrai={moThem ? undefined :
           <button
             type="button"
             className="m-nut-fabi-fab"
-            onClick={() => toast(`Đã đồng bộ ${rows.length} cửa hàng từ FABi`)}
-            aria-label="Đồng bộ FABi"
-            title="Đồng bộ FABi"
+            onClick={() => setMoThem(true)}
+            aria-label="Đồng bộ từ FABi"
+            title="Đồng bộ từ FABi"
           >
             <Icon n="refresh" className="ic sm" />
             <span>Đồng bộ FABi</span>
           </button>
         }
-        onThem={() => setMoThem(true)}
-        nhanThem="Thêm từ FABi"
         the={(r, i) => (
           <div
             key={`${String(r.ma)}_${i}`}

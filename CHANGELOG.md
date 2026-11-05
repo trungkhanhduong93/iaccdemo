@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 05/11/2026
+- T749: Điện thoại, Danh mục cửa hàng: nút Đồng bộ FABi mở màn chọn cửa hàng FABi để lên sổ như web, tích sẵn mọi cửa hàng chưa dùng, nút Lên sổ N cửa hàng. Bỏ nút Thêm từ FABi riêng và tuỳ chọn khai số dư ngay sau khi lên sổ. Màn chọn đang mở thì ẩn nút Đồng bộ FABi để không đè nút Lên sổ.
 - T748: Phiếu xuất điều chuyển bỏ ô Cửa hàng nhận, chọn thẳng Kho nhận của cửa hàng khác; cột Đơn giá, Thành tiền đổi thành Giá vốn, Tiền vốn. Lưu phiếu xuất thì tự có phiếu nhập điều chuyển ở cửa hàng nhận, trạng thái Chờ nhập. Phiếu nhập điều chuyển bỏ nút Thêm mới, chỉ sinh từ phiếu xuất; Tham chiếu chuyển xuống dưới; mở phiếu Chờ nhập là sửa được số thực nhận rồi bấm Nhập kho để chuyển Đã nhập; phiếu đã nhập vẫn Sửa được số thực nhận; bỏ mục Sao chép. Phiếu xuất điều chuyển Đã nhập không sửa, không xoá được.
 - T747: Phiếu Xuất điều chỉnh, Nhập điều chỉnh đổi tên cột Đơn giá, Thành tiền thành Giá vốn, Tiền vốn.
 - T746: Form chứng từ bỏ nút Ghi sổ, Bỏ ghi sổ ở chân form, mọi phiếu.

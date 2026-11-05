@@ -22,9 +22,8 @@ const DIA_CHI_CH: Record<string, string> = {
 export const MThemCuaHangFabi: FC<MThemCuaHangFabiProps> = ({ onDong, onLenSo }) => {
   const { s } = useSession()
   const ds = useMemo(() => cuaHangChuaDung(s), [s])
-  const [chon, setChon] = useState<string[]>([])
+  const [chon, setChon] = useState<string[]>(() => ds.map(c => c.id))   // như web: tích sẵn mọi cửa hàng FABi chưa dùng (T749)
   const [cauHinh, setCauHinh] = useState<Record<string, { dongBo: boolean; cach: CachNvl }>>({})
-  const [khaiSoDu, setKhaiSoDu] = useState(true)
 
   const chCua = (id: string) => cauHinh[id] ?? { dongBo: true, cach: cachNvlHienTai(s, id) }
   const doiCh = (id: string, p: Partial<{ dongBo: boolean; cach: CachNvl }>) =>
@@ -121,35 +120,25 @@ export const MThemCuaHangFabi: FC<MThemCuaHangFabiProps> = ({ onDong, onLenSo })
                 )
               })}
             </div>
-
-            <label className="m-ch-khai-so-du">
-              <input
-                type="checkbox"
-                className="bat-tat"
-                checked={khaiSoDu}
-                onChange={e => setKhaiSoDu(e.target.checked)}
-              />
-              <span>Khai số dư ban đầu cho cửa hàng mới ngay sau khi lên sổ</span>
-            </label>
           </>
         )}
       </main>
 
       <footer className="m-them-ch-chan">
-        <button
+        {ds.length > 0 && <button
           type="button"
           className="btn pri m-btn-day-full"
           disabled={!ok}
           onClick={() =>
             onLenSo(
               ds.filter(c => chon.includes(c.id)).map(c => ({ id: c.id, ten: c.ten, khuVuc: c.khuVuc, tuNgay })),
-              khaiSoDu,
+              false,   // app bỏ tuỳ chọn khai số dư ban đầu ngay sau khi lên sổ (T749)
               caiDat()
             )
           }
         >
-          {chon.length > 0 ? `Thêm ${chon.length} cửa hàng` : 'Thêm cửa hàng'}
-        </button>
+          Lên sổ {chon.length} cửa hàng
+        </button>}
       </footer>
     </div>
   )

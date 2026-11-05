@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T749 | Điện thoại, Danh mục cửa hàng: nút Đồng bộ FABi mở màn chọn cửa hàng FABi lên sổ như web, tích sẵn mọi cửa hàng, nút Lên sổ N cửa hàng; bỏ nút Thêm từ FABi và tuỳ chọn khai số dư; màn chọn mở thì ẩn nút nổi | PhuongXT | 05/11/2026 | `2026-11-05-phuongxt-dong-bo-cua-hang-dt.md` |
 | T748 | Xuất điều chuyển bỏ Cửa hàng nhận, cột Đơn giá, Thành tiền thành Giá vốn, Tiền vốn; lưu phiếu xuất tự sinh phiếu nhập điều chuyển Chờ nhập ở cửa hàng nhận; nhập điều chuyển bỏ Thêm mới, có nút Nhập kho | PhuongXT | 05/11/2026 | `2026-11-05-phuongxt-xuat-dieu-chuyen-gon.md` |
 | T747 | Phiếu Xuất điều chỉnh, Nhập điều chỉnh trên web đổi tên cột Đơn giá, Thành tiền thành Giá vốn, Tiền vốn (như T741, T745) | PhuongXT | 05/11/2026 | `2026-11-05-phuongxt-dieu-chinh-gia-von.md` |
 | T743 | Người dùng: cột cuối đặt tên Hành động, nút Sửa đổi thành icon cây bút | Trum | 05/11/2026 | 2026-11-05-trum-nguoi-dung-icon-sua.md |
