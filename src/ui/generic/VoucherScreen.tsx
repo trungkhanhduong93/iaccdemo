@@ -301,12 +301,17 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
   // T94: kho, mã hàng trên dòng để lọc; gói dưới Pro một kho ở đầu phiếu (cột Kho), gói Pro kho trên từng dòng
   const coKhoDs = bo.kho === 'dong'
   const khoDong = s.goi === 'PR'
+  const laNk = sc.code === '5.1.1'   // phiếu nhập khác (T737, T738)
+  const locKhoHang = Boolean(cfg.kiemKe || cfg.dieuChinh || laNk)   // có lọc Kho, Hàng hoá, Nhóm hàng hoá
   // Thu chi (T96): lý do thu, chi của phiếu; phiếu chưa lưu lý do thì đoán theo diễn giải như form, chuyển quỹ không có
   // Phiếu kiểm kê (T124): kho kiểm kê và số mặt hàng của phiếu
   // Kiểm kê, điều chỉnh kho (T387): mã hàng trên dòng để lọc Hàng hoá, Nhóm hàng hoá
-  const rows0 = useMemo(() => cfg.dieuChinh || cfg.kiemKe ? rowsGoc.map((r): Row => {
+  // Nhập khác (T738): kho nhập ở đầu phiếu (T737); phiếu mẫu chưa có thì lấy kho trên dòng, không có thì kho mặc định như form
+  const rows0 = useMemo(() => cfg.dieuChinh || cfg.kiemKe || laNk ? rowsGoc.map((r): Row => {
     const dsDong = (r._dong as Dong[] | undefined) ?? dongCua(cfg, `${sc.code ?? sc.slug}-${r.id}`)
-    return { ...r, kho: String(r._kho ?? ''), _khoDs: r._kho ? [String(r._kho)] : [], _maHang: dsDong.map(d => d.ma).filter(Boolean), ...(cfg.kiemKe ? { soMat: dsDong.length } : {}) }
+    const dsKhoCn = CUA_HANG.find(c => c.ten === r.cn)?.kho ?? []
+    const khoPhieu = String(r._kho ?? (laNk ? dsDong.find(d => d.kho)?.kho ?? dsKhoCn[0] ?? '' : ''))
+    return { ...r, kho: khoPhieu, _khoDs: khoPhieu ? [khoPhieu] : [], _maHang: dsDong.map(d => d.ma).filter(Boolean), ...(cfg.kiemKe ? { soMat: dsDong.length } : {}) }
   }) : mod.key === 'tien' ? rowsGoc.map((r): Row => ({ ...r, lyDo: lyDoThuChi(cfg, r) })) : nhom !== 'mua' && nhom !== 'ban' ? rowsGoc : rowsGoc.map((r): Row => {
     const dsDong = (r._dong as Dong[] | undefined) ?? dongCua(theoLoai(cfg, r.loai), `${sc.code ?? sc.slug}-${r.id}`)
     const dsKhoCn = CUA_HANG.find(c => c.ten === r.cn)?.kho ?? []
@@ -323,7 +328,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
       kho: coKhoDs && !khoDong ? khoDau : '', _khoDs, _maHang: dsDong.map(d => d.ma).filter(Boolean),
       tenHang: tomTatTenHang(dsDong.map(d => d.ten)), _tenHangDu: [...new Set(dsDong.map(d => d.ten).filter(Boolean))].join(', '),   // T286
     }
-  }), [rowsGoc, nhom, cfg, sc, coKhoDs, khoDong, mod.key])
+  }), [rowsGoc, nhom, cfg, sc, coKhoDs, khoDong, mod.key, laNk])
   // Cột Tham chiếu (T127): chữ để lọc, tìm theo cột
   const rows = useMemo(() => rows0.map((r): Row => ({ ...r, thamChieu: thamChieuCua(r).map(x => x.so).join(', '), ...taoCua(r) })), [rows0])
 
@@ -386,11 +391,11 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
     },
     ...(cfg.doiTuong !== 'none' && dsDoiTuong.length ? [{ k: 'doiTuong', ten: cfg.nhan ?? 'Đối tượng', coGiaTri: Boolean(nhap.doiTuong), o: chonMot('doiTuong', cfg.nhan ?? 'Đối tượng', dsDoiTuong.map(v => ({ v, t: v }))) }] : []),
     { k: 'nguon', ten: 'Nguồn', coGiaTri: nhap.nguon.length > 0, o: chonO('nguon', 'Nguồn', dsNguon.map(v => ({ v, t: (NGUON[v] ?? NGUON.tay)[1] }))) },
-    // Kiểm kê, điều chỉnh kho lọc theo kho của phiếu (T130)
-    ...((cfg.kiemKe || cfg.dieuChinh) && dsKhoLoc.length ? [{ k: 'kho', ten: 'Kho', coGiaTri: nhap.kho.length > 0, o: chonO('kho', 'Kho', dsKhoLoc.map(v => ({ v }))) }] : []),
-    // Kiểm kê, điều chỉnh kho lọc theo hàng hoá, nhóm hàng hoá trên dòng phiếu (T387)
-    ...((cfg.kiemKe || cfg.dieuChinh) && dsHangLoc.length ? [{ k: 'hang', ten: 'Hàng hoá', coGiaTri: nhap.hang.length > 0, o: chonO('hang', 'Hàng hoá', dsHangLoc) }] : []),
-    ...((cfg.kiemKe || cfg.dieuChinh) && dsNhomHangLoc.length ? [{ k: 'nhomHang', ten: 'Nhóm hàng hoá', coGiaTri: nhap.nhomHang.length > 0, o: chonO('nhomHang', 'Nhóm hàng hoá', dsNhomHangLoc.map(v => ({ v }))) }] : []),
+    // Kiểm kê, điều chỉnh kho, nhập khác lọc theo kho của phiếu (T130, T738)
+    ...(locKhoHang && dsKhoLoc.length ? [{ k: 'kho', ten: 'Kho', coGiaTri: nhap.kho.length > 0, o: chonO('kho', 'Kho', dsKhoLoc.map(v => ({ v }))) }] : []),
+    // Kiểm kê, điều chỉnh kho, nhập khác lọc theo hàng hoá, nhóm hàng hoá trên dòng phiếu (T387, T738)
+    ...(locKhoHang && dsHangLoc.length ? [{ k: 'hang', ten: 'Hàng hoá', coGiaTri: nhap.hang.length > 0, o: chonO('hang', 'Hàng hoá', dsHangLoc) }] : []),
+    ...(locKhoHang && dsNhomHangLoc.length ? [{ k: 'nhomHang', ten: 'Nhóm hàng hoá', coGiaTri: nhap.nhomHang.length > 0, o: chonO('nhomHang', 'Nhóm hàng hoá', dsNhomHangLoc.map(v => ({ v }))) }] : []),
     ...(coLyDo ? [{ k: 'lyDo', ten: 'Lý do nghiệp vụ', coGiaTri: nhap.lyDo.length > 0, o: chonO('lyDo', 'Lý do nghiệp vụ', dsLyDo.map(v => ({ v }))) }] : []),
     ...(cfg.loai && !cfg.dieuChinh ? [{ k: 'loai', ten: 'Loại phiếu', coGiaTri: nhap.loai.length > 0, o: chonO('loai', 'Loại phiếu', (loaiNhom ?? cfg.loai).map(v => ({ v: v.k, t: v.ten }))) }] : []),
     ...(muaBan ? [
