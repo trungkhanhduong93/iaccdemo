@@ -301,7 +301,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
   // T94: kho, mã hàng trên dòng để lọc; gói dưới Pro một kho ở đầu phiếu (cột Kho), gói Pro kho trên từng dòng
   const coKhoDs = bo.kho === 'dong'
   const khoDong = s.goi === 'PR'
-  const laNk = sc.code === '5.1.1' || sc.code === '5.1.2-3'   // phiếu nhập khác (T737, T738), xuất huỷ (T741): kho ở đầu phiếu, Ghi chú, không thuế
+  const laNk = ['5.1.1', '5.1.2-3', '5.1.2-4'].includes(sc.code ?? '')   // phiếu nhập khác (T737, T738), xuất huỷ (T741), xuất khác (T745): kho ở đầu phiếu, Ghi chú, không thuế
   const locKhoHang = Boolean(cfg.kiemKe || cfg.dieuChinh || laNk)   // có lọc Kho, Hàng hoá, Nhóm hàng hoá
   // Thu chi (T96): lý do thu, chi của phiếu; phiếu chưa lưu lý do thì đoán theo diễn giải như form, chuyển quỹ không có
   // Phiếu kiểm kê (T124): kho kiểm kê và số mặt hàng của phiếu
@@ -498,7 +498,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
     ...(muaBan ? [{ k: 'tenHang', t: 'Diễn giải', w: 260, r: (r: Row) => <span title={String(r._tenHangDu ?? '')}>{r.tenHang}</span> } as Col] : []),
     { k: 'dienGiai', t: cfg.kiemKe || cfg.dieuChinh || muaBan || laNk ? 'Ghi chú' : 'Diễn giải' },   // phiếu kiểm kê, nhập khác ghi Ghi chú như đầu phiếu (T124, T740)
     ...(mod.key === 'tien' ? [{ k: 'lyDo', t: 'Lý do', w: 170 } as Col] : []),   // T96; tên cột ngắn Lý do (T168)
-    ...(cfg.doiTuong !== 'none' ? [{ k: 'doiTuong', t: cfg.nhan ?? 'Đối tượng' } as Col] : []),
+    ...(cfg.doiTuong !== 'none' && !laNk ? [{ k: 'doiTuong', t: cfg.nhan ?? 'Đối tượng' } as Col] : []),
     // Đang chọn một cửa hàng trên thanh trên thì cột cửa hàng thừa
     ...(cnChon ? [] : [{ k: 'cn', t: 'Cửa hàng', cls: 'dim', w: 130 } as Col]),
     // Mua hàng gói dưới Pro: kho nhập ở đầu phiếu (T94); gói Pro kho trên từng dòng nên không có cột

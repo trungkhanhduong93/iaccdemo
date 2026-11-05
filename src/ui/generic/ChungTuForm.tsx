@@ -90,7 +90,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
   const manDoi = sx ? SX[SX[sx].doi!].man : dcn === 'ndc' ? DCN.xdc.man : ''
   const coTtXn = laSx || dcn === 'xdc' || dcn === 'ndc'   // có trạng thái Chờ nhập, Đã nhập, Đã huỷ
   const laNk = sc.code === '5.1.1'   // phiếu nhập khác: bỏ đối tượng, kho nhập ở đầu phiếu, chi tiết chỉ số lượng, đơn giá, thành tiền (T737)
-  const laXh = sc.code === '5.1.2-3'   // phiếu xuất huỷ như nhập khác, kho xuất ở đầu phiếu, chi tiết Giá vốn, Tiền vốn (T741)
+  const laXh = sc.code === '5.1.2-3' || sc.code === '5.1.2-4'   // phiếu xuất huỷ (T741), xuất khác (T745) như nhập khác, kho xuất ở đầu phiếu, chi tiết Giá vốn, Tiền vốn
   const khoGon = laNk || laXh   // một kho ở đầu phiếu, bỏ đối tượng, bỏ thuế
   const gonDau = laKk || laDc || laSx || laDcn || khoGon    // đầu phiếu gọn: Kho, Nhân viên thực hiện; Ghi chú
   // Phiếu điều chỉnh (T131), nhập khác (T737), xuất huỷ (T741): không có thuế; gói Free không hiện giá trị phiếu điều chỉnh (đơn giá, thành tiền, tổng tiền)
@@ -1307,7 +1307,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
               nhanTk={nhanTkDong}
               tkTheoLy={coTkTheoLy ? (ly => tkTheoLyDo(loaiPhieuTien, ly)) : undefined}
               coKho={Boolean(bo.kho) && !khoDau && !laDc && !khoGon}   // phiếu điều chỉnh, nhập khác, xuất huỷ: kho ở đầu phiếu (T126, T737, T741)
-              giaVon={laXh}   // xuất huỷ: Đơn giá, Thành tiền gọi là Giá vốn, Tiền vốn (T741)
+              giaVon={laXh}   // xuất huỷ, xuất khác: Đơn giá, Thành tiền gọi là Giá vốn, Tiền vốn (T741)
               khoMacDinh={khoMotCn || 'Kho tổng'}
               coNhapKho={nhom === 'mua' && Boolean(bo.tongNhap)}
               xuatKho={nhom === 'mua' && traLai}   // T728
