@@ -1037,3 +1037,5 @@ Trum chốt 04/11/2026 (T732). Thay điều 2 của bản E (T715, `docs/ke-hoac
 - Thiết kế: `docs/thiet-ke/T732-lich-su-gon.html`.
 
 Lý do: bản E nhiều chữ, cùng 3 thao tác mẫu web 262 chữ, app 260 chữ. Bản gọn còn 132 và 121 chữ, giữ đủ thông tin.
+
+## QD95. Chức vụ thay Vai trò, chọn phân hệ bằng dropdown, thao tác theo tính năng (đang soạn)
