@@ -2,6 +2,9 @@
 
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
+## 05/11/2026
+- T737: Phiếu nhập khác bỏ đối tượng, người giao / nhận, địa chỉ, mã số thuế; đầu phiếu có Kho nhập bắt buộc chọn. Bảng chi tiết bỏ cột Kho và thuế, chỉ còn số lượng, đơn giá, thành tiền; đáy form chỉ Tổng tiền.
+
 ## 04/11/2026
 - T736: Kho, Tồn kho ban đầu sửa ngay trên bảng, không còn màn thêm, sửa: nút + xanh ở tiêu đề bảng thêm dòng mới, mỗi dòng có nút xoá; ĐVT chọn được đơn vị quy đổi, đơn giá đổi theo. Nút Thêm hàng loạt tích nhiều mặt hàng một lần. Cột ô tích luôn ở đầu bảng, tích dòng thì hiện nút Xoá N dòng. Có lọc nhóm hàng hoá và ô lọc dưới tiêu đề mọi cột.
 - T735: Tab Báo cáo Thu chi gói Plus (và khối Sổ sách, báo cáo cuối sơ đồ Quy trình) thêm Công nợ khách hàng, Công nợ nhà cung cấp, bỏ Sổ công nợ S4a-DNSN.

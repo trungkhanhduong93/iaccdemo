@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T737 | Phiếu nhập khác (5.1.1) trên web: bỏ đối tượng, người giao nhận, địa chỉ, mã số thuế; thêm Kho nhập bắt buộc ở đầu phiếu; chi tiết chỉ số lượng, đơn giá, thành tiền, đáy form chỉ Tổng tiền. Điện thoại chưa đổi | PhuongXT | 05/11/2026 | `2026-11-05-phuongxt-nhap-khac-gon.md` |
 | T736 | Tồn kho ban đầu sửa ngay trên bảng: nút + xanh ở tiêu đề thêm dòng, nút xoá ở dòng thay chấm trạng thái, ĐVT chọn đơn vị quy đổi; nút Thêm hàng loạt, cột ô tích đầu bảng hiện nút Xoá N dòng; lọc nhóm hàng hoá, lọc mọi cột; bỏ panel thêm, sửa | PhuongXT | 04/11/2026 | `2026-11-04-phuongxt-ton-dau-them-tren-ds.md` |
 | T735 | Tab Báo cáo phân hệ Thu chi gói Plus (và khối báo cáo cuối sơ đồ) thêm Công nợ khách hàng, Công nợ nhà cung cấp, bỏ Sổ công nợ S4a-DNSN | PhuongXT | 04/11/2026 | `docs/nhat-ky/2026-11-04-phuongxt-bao-cao-cong-no-plus.md` |
 | T732 | Lịch sử phiếu bản gọn, web và app: thẻ một dòng đầu (thao tác · người làm · giờ), dòng dữ kiện ngắn thay câu Nội dung, mỗi chỗ sửa một hàng cũ → mới kèm số chênh, lý do một dải vàng (thay bản E của T715) | Trum | 04/11/2026 | 2026-11-04-trum-lich-su-gon.md |
