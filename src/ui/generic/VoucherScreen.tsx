@@ -537,7 +537,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
     // Phiếu kiểm kê không có tiền: thay Tiền thuế, Tổng tiền bằng Kho, Số mặt hàng (T124)
     ...(cfg.kiemKe ? [{ k: 'kho', t: 'Kho', w: 180 } as Col, { k: 'soMat', t: 'Số mặt hàng', num: true, w: 120 } as Col] : []),
     ...(cfg.dieuChinh ? [{ k: 'kho', t: 'Kho', w: 180 } as Col] : []),   // T126
-    ...(!cfg.kiemKe && !cfg.dieuChinh && (cfg.thue !== undefined || cfg.dong === 'hang') ? [giamGtgtCua(mod, cfg, s) ? { k: 'giamThue', t: 'Giảm thuế GTGT', num: true, w: 130 } as Col : { k: 'thue', t: 'Tiền thuế', num: true, w: 120 } as Col] : []),
+    ...(!cfg.kiemKe && !cfg.dieuChinh && !laNk && (cfg.thue !== undefined || cfg.dong === 'hang') ? [giamGtgtCua(mod, cfg, s) ? { k: 'giamThue', t: 'Giảm thuế GTGT', num: true, w: 130 } as Col : { k: 'thue', t: 'Tiền thuế', num: true, w: 120 } as Col] : []),
     // Tham chiếu (T127, T270): các phiếu liên quan, một dòng, mở tab mới hoặc mở popup chọn mã
     {
       k: 'thamChieu', t: 'Tham chiếu', w: 150,

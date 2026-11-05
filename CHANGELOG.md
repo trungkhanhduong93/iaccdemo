@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 05/11/2026
+- T739: Danh sách Phiếu nhập khác bỏ cột Tiền thuế.
 - T738: Danh sách Phiếu nhập khác có thêm lọc Kho, Hàng hoá, Nhóm hàng hoá trong Bộ lọc nâng cao, ghim ra hàng lọc được.
 - T737: Phiếu nhập khác bỏ đối tượng, người giao / nhận, địa chỉ, mã số thuế; đầu phiếu có Kho nhập bắt buộc chọn. Bảng chi tiết bỏ cột Kho và thuế, chỉ còn số lượng, đơn giá, thành tiền; đáy form chỉ Tổng tiền.
 
