@@ -11,6 +11,8 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T752 | Màn Người dùng đổi thành Người sử dụng: thanh lọc theo Thu chi, chọn cột, chỉ bấm icon bút mới mở panel, form bớt ô, thêm Xác thực, thông tin người tạo, người cập nhật | Trum | Đang làm | Spec `backup/spec-T751-T752.md`. Sửa `HeThong.tsx`, `he-thong/index.ts`, `he-thong/huong-dan.ts`, `mock.ts`, `SidebarFlyout.tsx`, `Topbar.tsx`, `CommandPalette.tsx`, `MHeThong.tsx`, `xuat_bao_cao_he_thong.py` |
+| T751 | Panel danh mục: ô chọn nhiều hai cột Chưa chọn, Đã chọn; ô tích dạng vuông; độ rộng panel theo màn, dùng cho màn Người sử dụng | Trum | Đang làm | Spec `backup/spec-T751-T752.md`. Sửa `CatalogScreen.tsx`, `truong-dm.ts`, `ChonHaiCot.tsx` (mới), cuối `app.css` |
 | T734 | Điện thoại, lập phiếu thu chi gói Plus như Standard (tiếp T733): lưu là ghi sổ luôn, bỏ khối hạch toán và `tkNo`, `tkCo`, có chi trả nợ nhà cung cấp | | Chờ | `MDtThuChiLap.tsx` đang trong T552 của Trum, hỏi Trum trước. Đổi `s.goi === 'S'` sang `tcNhuStandard(s.goi)`. Xem nhật ký `2026-11-04-phuongxt-thu-chi-plus-nhu-standard.md` |
 | T696 | `kiem_tra.py --dien-thoai` dừng ở đợt 5 (lập phiếu): chờ 30 giây không thấy `.m-xp-nut-menu` nên không chạy tới các đợt sau | | Chờ | Thấy lúc nghiệm thu T695. Nút có trong `src/ui/mobile/MDtThuChiXem.tsx:341`, xem `tools/kiem_tra.py:642`. Đợt 11A chạy riêng vẫn qua |
 | T690 | `kiem_tra.py` đợt 11A (điện thoại) báo "Gói thuê bao: thiếu 4 thẻ gói dịch vụ dọc": màn Gói thuê bao điện thoại hoặc bài kiểm lệch nhau | | Chờ | Thấy lúc nghiệm thu T689, `--nhanh` không chạy đợt 11A. Xem `tools/kiem_tra.py` mục 4 Gói thuê bao và `src/ui/mobile/MHeThong.tsx` |

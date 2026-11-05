@@ -1048,3 +1048,16 @@ Trum chốt 05/11/2026 (T742).
 - Tính năng không có thao tác thì công tắc readonly, không ẩn, không ghi dấu gạch.
 - Tiện ích bổ sung: Xem, Sửa. Kê khai thuế: Xem, Thêm, Sửa, Xoá. Số dư ban đầu: Xem, Sửa, Ghi sổ. Tính giá vốn: Xem, Ghi sổ. Luật nằm ở `apDungQuyen`.
 - Lưu quyền vẫn theo từng màn, không đổi cấu trúc dữ liệu.
+
+## QD96. Người sử dụng thay Người dùng, để trống cửa hàng, kho là xem tất cả (05/11/2026)
+
+Trum chốt 05/11/2026 (T751, T752).
+
+- Tên màn đổi thành Người sử dụng. Code giữ slug `nguoi-dung`, hằng `NGUOI_DUNG`.
+- Cửa hàng, Kho của người sử dụng chọn nhiều. Để trống nghĩa là được xem tất cả.
+- Nút Thêm mới tạo tài khoản luôn, không gửi thư mời. Bỏ trạng thái Chưa nhận lời mời.
+- Trạng thái chỉ còn Đang sử dụng, Không hoạt động. Xác thực là nút bật tắt riêng.
+- Bỏ Tên đăng nhập, Bộ phận, Bắt buộc xác thực hai lớp, Hiệu lực từ ngày khỏi form.
+- Chỉ bấm icon bút mới mở panel, bấm dòng không mở.
+- Panel giữ khung `CatalogPanel` chung. Ô chọn hai cột chỉ dùng trên máy tính, điện thoại dùng `ChonNhieu`.
+- Điện thoại chỉ đổi chữ và form, không có bộ lọc nâng cao, chọn cột.
