@@ -1,10 +1,10 @@
 // Tồn kho ban đầu sửa ngay trên bảng (T736): mỗi dòng chọn kho, mặt hàng, ĐVT (kể cả ĐVT quy đổi), gõ số lượng, đơn giá;
-// một nút + xanh ở tiêu đề cột thêm dòng trống cuối bảng, nút thùng rác ở dòng xoá dòng; Tiện ích: Thêm hàng loạt, Xoá hàng loạt; không có panel thêm, sửa. Dữ liệu giữ trong phiên làm việc
+// một nút + xanh ở tiêu đề cột thêm dòng trống cuối bảng, nút thùng rác ở dòng xoá dòng; cột ô tích đầu bảng, tích dòng thì hiện nút Xoá N dòng; nút Thêm hàng loạt; không có panel thêm, sửa. Dữ liệu giữ trong phiên làm việc
 import { useMemo, useRef, useState } from 'react'
 import type { ScreenProps } from '../types'
 import { HANG, KHO, NVL } from '../../data/mock'
 import { ChonCoTim, quyDoiTuDanhMuc, type MucTim } from '../danh-muc/QuyDoiDvt'
-import { Dropdown, MenuItem, Select } from '../../ui/Dropdown'
+import { Select } from '../../ui/Dropdown'
 import { HopXacNhan } from '../../ui/LocNangCao'
 import { ThemHangLoat, type HangChon } from '../../ui/generic/ThemHangLoat'
 import { OLoc, dangLoc, dsGiaTri, khopLoc, type GiaTriLoc, type KieuLoc, type LocCot } from '../../ui/LocCot'
@@ -110,7 +110,7 @@ export function TonKhoBanDau({ sc }: ScreenProps) {
   }
   const xoa = (d: Dong) => setDong(ds => ds.filter(x => x.id !== d.id))
 
-  // Tiện ích Thêm hàng loạt: tích nhiều mặt hàng, đổ vào kho đang lọc (không lọc thì kho của dòng cuối); hàng đã có ở kho đó tích sẵn, mờ
+  // Thêm hàng loạt: tích nhiều mặt hàng, đổ vào kho đang lọc (không lọc thì kho của dòng cuối); hàng đã có ở kho đó tích sẵn, mờ
   const [moThemLoat, setMoThemLoat] = useState(false)
   const khoThem = kho || dong[dong.length - 1]?.kho || KHO[0]
   const themLoat = (ds: HangChon[]) => {
@@ -118,15 +118,15 @@ export function TonKhoBanDau({ sc }: ScreenProps) {
     setDong(d => [...d, ...ds.map(x => ({ ...dongTrong(khoThem), ma: x.ma, dvt: x.dvt, gia: MAT_HANG.find(h => h.ma === x.ma)?.gia ?? 0 }))])
     toast(`Đã thêm ${ds.length} dòng vào ${khoThem}, gõ số lượng cho từng dòng`)
   }
-  // Tiện ích Xoá hàng loạt: hiện ô tích ở cột STT, tích dòng rồi bấm Xoá; null là đang không chọn để xoá
-  const [chonXoa, setChonXoa] = useState<Set<number> | null>(null)
+  // Cột ô tích luôn ở đầu bảng: tích dòng thì hiện nút Xoá N dòng trên thanh công cụ
+  const [chonXoa, setChonXoa] = useState<Set<number>>(new Set())
   const [hoiXoa, setHoiXoa] = useState(false)
-  const tichHet = chonXoa !== null && hien.length > 0 && hien.every(d => chonXoa.has(d.id))
+  const tichHet = hien.length > 0 && hien.every(d => chonXoa.has(d.id))
   const tich = (id: number) => setChonXoa(c => { const m = new Set(c); if (m.has(id)) m.delete(id); else m.add(id); return m })
   const xoaLoat = () => {
-    const n = chonXoa?.size ?? 0
-    setDong(d => d.filter(x => !chonXoa?.has(x.id)))
-    setChonXoa(null); setHoiXoa(false)
+    const n = chonXoa.size
+    setDong(d => d.filter(x => !chonXoa.has(x.id)))
+    setChonXoa(new Set()); setHoiXoa(false)
     toast(`Đã xoá ${n} dòng`)
   }
 
@@ -149,33 +149,25 @@ export function TonKhoBanDau({ sc }: ScreenProps) {
             {(q || kho || nhom || dangLocCot) && <button type="button" className="btn sm ghost" onClick={xoaLoc}>Xoá lọc</button>}
           </div>
           <div className="ds-toolbar-phai">
+            {chonXoa.size > 0 && (
+              <button type="button" className="btn tkbd-nut-xoa" onClick={() => setHoiXoa(true)}>
+                <Icon n="trash" className="ic sm" />Xoá {chonXoa.size} dòng
+              </button>
+            )}
             <span className="muted" style={{ fontSize: 12 }}>{hien.length}/{dong.length} dòng</span>
             <NutExcel onNhap={() => toast('Nhập tồn kho ban đầu từ Excel')} onXuat={() => toast(`Đã xuất ${hien.length} dòng ra Excel`)} />
-            <Dropdown btnClass="btn" align="end" width={180} label={<><Icon n="more" className="ic sm" />Tiện ích</>}>
-              {(dongMenu: () => void) => <>
-                <MenuItem icon="layers" onClick={() => { dongMenu(); setMoThemLoat(true) }}>Thêm hàng loạt</MenuItem>
-                <MenuItem icon="trash" danger onClick={() => { dongMenu(); setChonXoa(new Set()) }}>Xoá hàng loạt</MenuItem>
-              </>}
-            </Dropdown>
+            <button type="button" className="btn" onClick={() => setMoThemLoat(true)}><Icon n="layers" className="ic sm" />Thêm hàng loạt</button>
           </div>
         </div>
-        {chonXoa && (
-          <div className="tkbd-xoa-loat">
-            <span>Tích các dòng cần xoá. Đã chọn <b>{chonXoa.size}</b> dòng</span>
-            <button type="button" className="btn sm tkbd-nut-xoa" disabled={!chonXoa.size} onClick={() => setHoiXoa(true)}>
-              <Icon n="trash" className="ic sm" />Xoá {chonXoa.size || ''} dòng
-            </button>
-            <button type="button" className="btn sm ghost" onClick={() => setChonXoa(null)}>Huỷ</button>
-          </div>
-        )}
         <div className="tbl-wrap">
           <table className="tbl bang-sua tkbd-bang">
             <thead>
               <tr>
-                <th className="c" style={{ width: 44 }}>
-                  {chonXoa ? <input type="checkbox" aria-label="Chọn tất cả dòng đang hiện" checked={tichHet}
-                    onChange={() => setChonXoa(tichHet ? new Set() : new Set(hien.map(d => d.id)))} /> : 'STT'}
+                <th className="c" style={{ width: 36 }}>
+                  <input type="checkbox" aria-label="Chọn tất cả dòng đang hiện" checked={tichHet}
+                    onChange={() => setChonXoa(tichHet ? new Set() : new Set(hien.map(d => d.id)))} />
                 </th>
+                <th className="c" style={{ width: 44 }}>STT</th>
                 <th style={{ width: 170 }}>Kho</th>
                 <th style={{ width: 90 }}>Mã</th>
                 <th>Tên hàng</th>
@@ -191,6 +183,7 @@ export function TonKhoBanDau({ sc }: ScreenProps) {
               </tr>
               <tr className="loc-hang" key={khoaLoc}>
                 <th />
+                <th />
                 {COT_LOC.map(c => <th key={c.k} className={c.kieu === 'so' ? 'num' : ''}><OLoc c={{ k: c.k, t: c.t, num: c.kieu === 'so' }} loc={loc} /></th>)}
                 <th />
               </tr>
@@ -201,10 +194,9 @@ export function TonKhoBanDau({ sc }: ScreenProps) {
                 const dsDvt = h ? [h.dvt, ...quyDoiTuDanhMuc(h.ten, h.dvt).map(x => x.dv)] : []
                 const hs = heSo(d.ma, d.dvt)
                 return (
-                  <tr key={d.id} data-id={d.id} className={chonXoa?.has(d.id) ? 'dang-chon' : undefined}>
-                    <td className="c muted">
-                      {chonXoa ? <input type="checkbox" aria-label={`Chọn dòng ${i + 1}`} checked={chonXoa.has(d.id)} onChange={() => tich(d.id)} /> : i + 1}
-                    </td>
+                  <tr key={d.id} data-id={d.id} className={chonXoa.has(d.id) ? 'dang-chon' : undefined}>
+                    <td className="c"><input type="checkbox" aria-label={`Chọn dòng ${i + 1}`} checked={chonXoa.has(d.id)} onChange={() => tich(d.id)} /></td>
+                    <td className="c muted">{i + 1}</td>
                     <td><Select className="inp sm" value={d.kho} onChange={e => sua(d.id, { kho: e.target.value })} ds={DS_KHO} aria-label="Kho" /></td>
                     <td className="code muted">{d.ma}</td>
                     <td><ChonCoTim ds={DS_HANG} value={d.ma} onChange={v => chonHang(d, v)} nhan="Mặt hàng" className="inp sm tkbd-hang" /></td>
@@ -229,7 +221,7 @@ export function TonKhoBanDau({ sc }: ScreenProps) {
               })}
               {!hien.length && (
                 <tr>
-                  <td colSpan={9} className="c muted" style={{ padding: 16 }}>
+                  <td colSpan={10} className="c muted" style={{ padding: 16 }}>
                     {dong.length ? <>Không có dòng khớp bộ lọc. <button type="button" className="btn sm ghost" onClick={xoaLoc}>Xoá lọc</button></>
                       : <>Chưa có dòng tồn đầu. <button type="button" className="btn sm ghost" onClick={() => chen(null)}><Icon n="plus" className="ic sm" />Thêm dòng</button></>}
                   </td>
@@ -238,7 +230,7 @@ export function TonKhoBanDau({ sc }: ScreenProps) {
             </tbody>
             <tfoot>
               <tr className="sum">
-                <td colSpan={7}>Tổng cộng ({hien.length} dòng)</td>
+                <td colSpan={8}>Tổng cộng ({hien.length} dòng)</td>
                 <td className="num">{money(tongTien)}</td>
                 <td />
               </tr>
@@ -250,7 +242,7 @@ export function TonKhoBanDau({ sc }: ScreenProps) {
         <ThemHangLoat ds={DS_LOAT} daCo={dong.filter(d => d.kho === khoThem).map(d => d.ma)} nhanDaCo={`Đã có ở ${khoThem}`}
           onDong={() => setMoThemLoat(false)} onXacNhan={themLoat} />
       )}
-      {hoiXoa && chonXoa && (
+      {hoiXoa && chonXoa.size > 0 && (
         <HopXacNhan tieuDe="Xoá hàng loạt?" nut={`Xoá ${chonXoa.size} dòng`} onDong={() => setHoiXoa(false)} onDongY={xoaLoat}>
           Xoá {chonXoa.size} dòng tồn đầu đã chọn. Xoá xong không lấy lại được.
         </HopXacNhan>

@@ -4,7 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
-| T736 | Tồn kho ban đầu sửa ngay trên bảng: nút + xanh ở tiêu đề thêm dòng, nút xoá ở dòng thay chấm trạng thái, ĐVT chọn đơn vị quy đổi; Tiện ích Thêm hàng loạt, Xoá hàng loạt; lọc nhóm hàng hoá, lọc mọi cột; bỏ panel thêm, sửa | PhuongXT | 04/11/2026 | `2026-11-04-phuongxt-ton-dau-them-tren-ds.md` |
+| T736 | Tồn kho ban đầu sửa ngay trên bảng: nút + xanh ở tiêu đề thêm dòng, nút xoá ở dòng thay chấm trạng thái, ĐVT chọn đơn vị quy đổi; nút Thêm hàng loạt, cột ô tích đầu bảng hiện nút Xoá N dòng; lọc nhóm hàng hoá, lọc mọi cột; bỏ panel thêm, sửa | PhuongXT | 04/11/2026 | `2026-11-04-phuongxt-ton-dau-them-tren-ds.md` |
 | T735 | Tab Báo cáo phân hệ Thu chi gói Plus (và khối báo cáo cuối sơ đồ) thêm Công nợ khách hàng, Công nợ nhà cung cấp, bỏ Sổ công nợ S4a-DNSN | PhuongXT | 04/11/2026 | `docs/nhat-ky/2026-11-04-phuongxt-bao-cao-cong-no-plus.md` |
 | T732 | Lịch sử phiếu bản gọn, web và app: thẻ một dòng đầu (thao tác · người làm · giờ), dòng dữ kiện ngắn thay câu Nội dung, mỗi chỗ sửa một hàng cũ → mới kèm số chênh, lý do một dải vàng (thay bản E của T715) | Trum | 04/11/2026 | 2026-11-04-trum-lich-su-gon.md |
 | T733 | Màn thu chi gói Plus giống Standard, chỉ thêm tab Đính kèm (web, danh sách và xem phiếu điện thoại): lý do, đối tượng ở đầu phiếu, chi trả nợ NCC, tháng tính chi phí, không ghi sổ, không bút toán | PhuongXT | 04/11/2026 | `docs/nhat-ky/2026-11-04-phuongxt-thu-chi-plus-nhu-standard.md` |

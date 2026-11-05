@@ -44393,5 +44393,4 @@ a.hdn-chip:hover { border-color: var(--blue); color: var(--blue); }
 .tkbd-bang .tkbd-dvt { padding-left: 8px; }
 .tkbd-bang .tkbd-qd { display: block; font-size: 11px; margin-top: 2px; }
 .tkbd-bang .tkbd-them { width: 28px; height: 28px; padding: 0; justify-content: center; }
-.tkbd-xoa-loat { display: flex; align-items: center; gap: 10px; padding: 8px 16px; background: var(--redt); font-size: 13px; }
-.tkbd-xoa-loat .tkbd-nut-xoa { color: var(--red); border-color: var(--red); margin-left: auto; }
+.tkbd .tkbd-nut-xoa { color: var(--red); border-color: var(--red); }
