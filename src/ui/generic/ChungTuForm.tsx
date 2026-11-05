@@ -24,7 +24,7 @@ import { ChonDanhMuc } from '../ChonDanhMuc'
 import { heSoZoom } from '../zoom'
 import { BaoCaoDoRongCtx, St, Table, useDoRongCot } from '../Table'
 import { chuanKyHieuHd, chuanSoHd, fold, money, moneyD } from '../format'
-import { NGUON, TT_CT, dongCua, tkTheoLyDo, ttNghiepVu, type Dong } from './gen'
+import { NGUON, dongCua, tkTheoLyDo, ttNghiepVu, type Dong } from './gen'
 import { boO, nhomCua, theoLoai, TT_TIEN } from './nhom'
 import { BangKiemKe, COT_KK } from './BangKiemKe'
 import { MAN_DC, phieuDieuChinh, type LoaiDc } from '../../modules/kho/dieu-chinh'
@@ -788,11 +788,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
       meta={
         row ? (
           <>
-            {/* Gói Standard lưu là duyệt luôn, không có trạng thái ghi sổ (QD32) */}
-            {coGhiSo && (() => {
-              const [c, tx] = TT_CT[row.tt] ?? ['warn', 'Chưa ghi sổ']
-              return <St k={c}>{tx}</St>
-            })()}
+            {/* Đầu form bỏ nhãn trạng thái ghi sổ ở mọi phiếu, PhuongXT 05/11/2026 (T744) */}
             {/* Trạng thái xuất, nhập của phiếu sản xuất (T152) */}
             {coTtXn && TT_SX[String(row.ttSx)] && <St k={TT_SX[String(row.ttSx)][0]}>{TT_SX[String(row.ttSx)][1]}</St>}
             <span className={`src ${NGUON[row.nguon]?.[0] ?? 'tay'}`}>
