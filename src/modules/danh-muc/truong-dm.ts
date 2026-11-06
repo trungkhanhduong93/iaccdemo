@@ -6,6 +6,7 @@ import { CUA_HANG, HOM_NAY, KHACH, KHO, NCC, NHAN_VIEN, NHOM_LY_DO, nhomLyTuDong
 import { dmy } from '../../ui/format'
 import { NGANH_NGHE_CON, timNganhNghe } from './nganh-nghe'
 import { DN_AN_UONG, NGANH_NGHE_DN, timNganhNgheDn } from './nganh-nghe-dn'
+import { cauHinhGiamVat, type CauHinhGiamVat } from '../ban-hang/giam-thue'
 import { KhoiQuyDoi } from './QuyDoiDvt'
 import { KhoiPtttQuy } from './QuyPttt'
 import { chiaTheoForm, loiChiaSoDu } from './ChiaSoDuQuy'
@@ -100,8 +101,10 @@ export interface TruongDM {
 /** Ô, cột thuế theo tỷ lệ % trên doanh thu của doanh nghiệp TT58 (T720): GTGT khấu trừ thì ẩn ô GTGT,
  *  TNDN trên thu nhập tính thuế thì ẩn ô TNDN. Ngành nghề luôn hiện: vẫn cần để tạm tính TNDN theo tỷ lệ nộp hàng quý.
  *  gtgtKt: ô thuế suất GTGT người dùng tự chọn, chỉ hiện khi GTGT khấu trừ */
-export type PpThue = 'gtgt' | 'gtgtKt' | 'tndn'
-export function hopPp(pp: PpThue | undefined, s: { ppGtgt?: string; ppTndn?: string }): boolean {
+export type PpThue = 'gtgt' | 'gtgtKt' | 'tndn' | 'giamVat' | 'giamVatDn'
+/** giamVat: ô chỉ hiện khi Cấu hình kế toán bật giảm thuế GTGT theo nghị quyết (T754); giamVatDn: thêm điều kiện GTGT theo % doanh thu */
+export function hopPp(pp: PpThue | undefined, s: { ppGtgt?: string; ppTndn?: string; donVi?: string; giamVat?: Record<string, CauHinhGiamVat> }): boolean {
+  if (pp === 'giamVat' || pp === 'giamVatDn') return cauHinhGiamVat({ donVi: s.donVi ?? '', giamVat: s.giamVat }).bat && (pp === 'giamVat' || s.ppGtgt !== 'khauTru')
   return !pp || (pp === 'gtgt' ? s.ppGtgt !== 'khauTru' : pp === 'gtgtKt' ? s.ppGtgt === 'khauTru' : s.ppTndn !== 'thuNhap')
 }
 
@@ -177,6 +180,7 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
           // T154: 2 tỷ lệ chỉ đọc, tự điền theo ngành nghề con; chưa chọn ngành nghề thì trống
           { k: 'thueGtgt', nhan: 'Thuế GTGT (%)', kieu: 'so', chiDoc: true },
           { k: 'thueTn', nhan: 'Thuế TNCN (%)', kieu: 'so', chiDoc: true },
+          { k: 'giamVat', nhan: 'Giảm thuế theo quy định', kieu: 'tich', oVuong: true, pp: 'giamVat' },   // không bắt buộc tích (T754)
         ],
       },
       {
@@ -190,6 +194,7 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
           // GTGT khấu trừ: thuế suất không theo bảng ngành nghề, người dùng tự chọn
           { k: 'ts', nhan: 'Thuế suất GTGT (%)', kieu: 'chon', ds: ['KCT', '0', '5', '8', '10'], cot: 'VAT_TAX_ID', pp: 'gtgtKt' },
           { k: 'thueTndn', nhan: 'Thuế TNDN (%)', kieu: 'so', chiDoc: true, pp: 'tndn' },
+          { k: 'giamVat', nhan: 'Giảm thuế theo quy định', kieu: 'tich', oVuong: true, pp: 'giamVatDn' },   // T754
         ],
       },
       {

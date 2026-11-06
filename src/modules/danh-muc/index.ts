@@ -8,6 +8,7 @@ import { CCDC_HANG, CUA_HANG, HANG, KHACH, KHO, LY_DO, NCC, NHAN_VIEN, NHOM_LY_D
 import { DON_VI_TINH, tkCot, taiKhoan, NHOM_HANG, NHOM_DOI_TUONG, NHOM_MUC_CP, NHOM_CONG_VIEC, NHOM_KHO, DS_PTTT, QUY_DOI_DVT, DS_MUC_CHI_PHI_16, DS_CONG_VIEC_17, DS_QUY_TIEN_112, DS_HANG_HOA_12 } from './data'
 import { timNganhNghe } from './nganh-nghe'
 import { DN_AN_UONG, DN_BAN_LE, nhanTyLe, timNganhNgheDn } from './nganh-nghe-dn'
+import { BAN_THANG, hangDuocGiam } from '../ban-hang/giam-thue'
 import { HeThongTaiKhoan } from './HeThongTaiKhoan'
 import { tkTheoCheDo } from '../tong-hop/so-cai'
 import { Note } from '../../ui/Page'
@@ -139,8 +140,6 @@ const nganhNghe = (ma: string) => {
 }
 /** Tỷ lệ trong ô hàng hoá ("1,5") ra chữ theo dấu thập phân đang chọn; trống là "—" (T720) */
 const tyLeO = (v: unknown) => v === undefined || v === '' ? '—' : nhanTyLe(Number(String(v).replace(',', '.')), dauThap())
-/** Hàng bán thẳng mua về bán lại: bia, nước suối */
-const BAN_THANG = new Set(['BIA01', 'NS01'])
 /** Đồ uống pha chế bán dưới thương hiệu quầy cà phê */
 const PHA_CHE = new Set(['CF01', 'TRA01'])
 
@@ -220,6 +219,11 @@ const danhMuc: ModuleDef = {
         ...NVL.map(h => ({ ...h, loai: 'Nguyên vật liệu', gia: 0, tkDt: '', tkGv: '632', tkKho: '152', tonKho: true })),   // nguyên vật liệu luôn theo dõi tồn (T114)
         ...CCDC_HANG.map(h => ({ ...h, loai: 'Khác (Công cụ dụng cụ)', gia: 0, ts: 10, tkDt: '', tkGv: '', tkKho: '153', tonKho: false })),   // CCDC: thẻ chi phí phân bổ chọn mã từ đây
       ],
+      // Ô Giảm thuế theo quy định lưu theo đơn vị, màn bán hàng đọc để tính tiền giảm thuế GTGT từng dòng (T754)
+      phien: {
+        gan: (r, s) => ({ ...r, giamVat: hangDuocGiam(s, String(r.ma)) ? 1 : 0 }),
+        luu: (val, s) => ({ hangGiamVat: { ...s.hangGiamVat, [s.donVi]: { ...s.hangGiamVat?.[s.donVi], [String(val.ma)]: val.giamVat === 1 || val.giamVat === true || val.giamVat === '1' } } }),
+      },
     } },
     '1.3': { catalog: { them: 'Thêm đơn vị tính',
       nutPhu: { nhan: 'Đồng bộ FABi', bao: `Đã đồng bộ ${DON_VI_TINH.length} đơn vị tính từ FABi` },

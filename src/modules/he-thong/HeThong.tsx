@@ -3,7 +3,7 @@ import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import type { Col, Row, ScreenDef, ScreenProps } from '../types'
 import { MODULES, duongDan, hienMan, laBaoCao } from '../../app/registry'
-import { donViHienTai, dsCuaHang, dsDonVi, loaiHinhDv, useSession, cheDoHienTai, namTaiChinh, ngayDauNam, type PpGtgt, type PpTndn, type Session } from '../../app/session'
+import { donViHienTai, dsCuaHang, dsDonVi, gtgtTyLe, loaiHinhDv, useSession, cheDoHienTai, namTaiChinh, ngayDauNam, type PpGtgt, type PpTndn, type Session } from '../../app/session'
 import { ChonKenh, KENH_ONLINE, KENH_SAN, NHOM_HKD, type LoaiHinh, type PpHkd } from '../onboarding/OnboardFabi'
 import { FEATURE, FEATURES, GOI, GOIS, MODS, demTheoGoi, kieuGhiSo, type Goi } from '../../app/plan'
 import { CHE_DO, CHE_DO_HOP_LE, cheDoCuaGoi, type CheDo } from '../../app/che-do'
@@ -20,6 +20,7 @@ import { thTT58, moTaBoSoTT58 } from '../bao-cao/tt58'
 import { CatalogPanel } from '../../ui/generic/CatalogScreen'
 import type { CauHinhDM } from '../danh-muc/truong-dm'
 import type { KieuSo } from '../../ui/format'
+import { NGHI_QUYET_GIAM_VAT, cauHinhGiamVat, type CauHinhGiamVat } from '../ban-hang/giam-thue'
 
 export const VAI_TRO = ['Chủ doanh nghiệp', 'Kế toán trưởng', 'Kế toán viên', 'Quản lý cửa hàng', 'Thủ kho']
 const PHAM_VI_DS = ['Tất cả cửa hàng', ...CUA_HANG.map(c => c.ten)]
@@ -707,8 +708,15 @@ export function CauHinh({ sc }: ScreenProps) {
   const noco = kieuGhiSo(s.cheDo) === 'noco'
   const [kieu, setKieu] = useState<KieuSo>(s.kieuSo?.[s.donVi] ?? 'vn')
   const ks = KIEU_SO[kieu]
+  // Giảm thuế GTGT theo nghị quyết (T754): chỉ hộ kinh doanh, doanh nghiệp tính GTGT theo % doanh thu
+  const coGiamVat = gtgtTyLe(s)
+  const [gv, setGv] = useState<CauHinhGiamVat>(cauHinhGiamVat(s))
+  const nq = NGHI_QUYET_GIAM_VAT.find(n => n.ma === gv.nq)
   // Lưu thì chứng từ, danh sách, báo cáo, ô nhập số của đơn vị đổi theo kiểu đã chọn
-  const luu = () => { set({ kieuSo: { ...s.kieuSo, [s.donVi]: kieu } }); toast('Đã lưu cấu hình') }
+  const luu = () => {
+    if (coGiamVat && gv.bat && !(gv.pt > 0 && gv.pt <= 100)) { toast('% giảm phải lớn hơn 0 và không quá 100'); return }
+    set({ kieuSo: { ...s.kieuSo, [s.donVi]: kieu }, ...(coGiamVat ? { giamVat: { ...s.giamVat, [s.donVi]: gv } } : {}) }); toast('Đã lưu cấu hình')
+  }
   return (
     <div className="page">
       <PageHead crumb={['Hệ thống']} title={sc.ten!}><button className="btn pri" data-hd="luuCh" onClick={luu}>Lưu</button></PageHead>
@@ -725,6 +733,27 @@ export function CauHinh({ sc }: ScreenProps) {
           </div>
           <Note kind="gray">Áp dụng cho số hiện trên chứng từ, danh sách, báo cáo và cách gõ số ở mọi ô nhập của đơn vị này.</Note>
         </Card>
+        {coGiamVat && (
+          <Card title="Giảm thuế GTGT">
+            <div className="form-grid ch-gv" data-hd="giamVat">
+              <div className="f c2"><label className="ch-gv-bat"><input type="checkbox" className="bat-tat" checked={gv.bat} onChange={e => setGv({ ...gv, bat: e.target.checked })} />
+                Được giảm thuế GTGT theo nghị quyết của Quốc hội</label></div>
+              {gv.bat && <>
+                <div className="f c2"><label>Giảm theo nghị quyết</label>
+                  <Select className="inp" value={gv.nq} aria-label="Giảm theo nghị quyết"
+                    onChange={e => setGv({ ...gv, nq: e.target.value, pt: NGHI_QUYET_GIAM_VAT.find(n => n.ma === e.target.value)?.pt ?? gv.pt })}
+                    ds={NGHI_QUYET_GIAM_VAT.map(n => ({ v: n.ma, t: `${n.ten} (${n.hieuLuc})` }))} /></div>
+                <div className="f"><label>% giảm mức tỷ lệ tính thuế</label>
+                  <input className="inp num" inputMode="decimal" value={gv.pt} aria-label="% giảm mức tỷ lệ tính thuế"
+                    onChange={e => setGv({ ...gv, pt: Number(e.target.value.replace(',', '.')) || 0 })} /></div>
+                <div className="f"><label>Hiệu lực</label><input className="inp" readOnly value={nq?.hieuLuc ?? ''} /></div>
+              </>}
+            </div>
+            <Note kind="gray">{gv.bat
+              ? <>Hàng được giảm tích ô <b>Giảm thuế theo quy định</b> ở Danh mục hàng hoá. Tiền giảm = doanh thu tính thuế × tỷ lệ % thuế GTGT của hàng × {gv.pt}%.</>
+              : 'Không giảm thuế GTGT: chứng từ bán hàng không tính tiền giảm thuế.'}</Note>
+          </Card>
+        )}
         <Card title="Bộ định khoản tự động" act={noco ? <Link className="btn sm ghost" to="/app/danh-muc/1-15">Sửa bộ định khoản</Link> : undefined}>
           <div data-hd="dinhKhoan">{noco ? <Note icon="book">Thứ tự ưu tiên tài khoản: hàng hoá, rồi nhóm hàng, rồi mặc định của chế độ. Bộ mặc định ngành F&B đã nạp sẵn 7 bút toán.</Note>
             : <Note kind="gray">Chế độ {cheDoHienTai(s).ngan} không dùng tài khoản Nợ/Có nên không có bộ định khoản.</Note>}</div>

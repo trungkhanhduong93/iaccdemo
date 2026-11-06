@@ -247,7 +247,7 @@ export function CatalogScreen({ sc }: ScreenProps) {
   ], [cols0, sc, cfg.stt, cfg.chucNang])
   // Khối trường của danh mục: cấu hình riêng của màn, theo mã màn, hoặc dự phòng từ cột
   const cauHinh = cfg.truong ?? TRUONG_DM[sc.code ?? ''] ?? TRUONG_DM[sc.slug ?? '']
-  const cotBoSung = useMemo(() => sinhCotBoSung(cols, cauHinh, s.goi, s.cheDo, s), [cols, cauHinh, s.goi, s.cheDo, s.ppGtgt, s.ppTndn])
+  const cotBoSung = useMemo(() => sinhCotBoSung(cols, cauHinh, s.goi, s.cheDo, s), [cols, cauHinh, s.goi, s.cheDo, s.ppGtgt, s.ppTndn, s.donVi, s.giamVat])
   const tatCaCols = useMemo(() => [...cols, ...cotBoSung], [cols, cotBoSung])
   // Thứ tự, ẩn hiện, độ rộng cột lưu theo màn dùng chung useCotDs (T148)
   const cot = useCotDs(`/danh-muc/${sc.slug ?? sc.code ?? 'chung'}`, tatCaCols, COT_CO_DINH)

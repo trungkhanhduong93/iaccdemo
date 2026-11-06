@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 06/11/2026
+- T754: Cấu hình kế toán có thẻ Giảm thuế GTGT cho hộ kinh doanh, doanh nghiệp tính GTGT theo % doanh thu: bật tắt giảm thuế, chọn nghị quyết (mới nhất 204/2025/QH15), % giảm mức tỷ lệ. Bật thì Danh mục hàng hoá có ô tích Giảm thuế theo quy định, không bắt buộc. Chứng từ bán hàng tính tiền giảm từng dòng = doanh thu tính thuế × % thuế GTGT của hàng × % giảm, hàng không tích thì không giảm.
 - T753: Gói Plus, màn Xuất bán POS đổi tên Bán hàng. Danh sách có cột, ô lọc Nguồn: FABi, Thủ công, Excel, và nút Thêm mới. Chứng từ FABi vẫn chỉ xem như gói Standard. Chứng từ thêm tay có Thông tin chung như phiếu mua hàng, đổi sang khách hàng, kho xuất. Bảng hàng cùng cột với Xuất bán POS: giảm giá, % CK, % phí dịch vụ, doanh thu trước thuế, tiền thuế. Trên thanh tab có ô Chiết khấu, Phí dịch vụ (theo % hoặc số tiền), Thuế GTGT cho cả bill, áp xuống mọi dòng như phiếu mua hàng.
 - T753: Doanh nghiệp tính thuế GTGT theo % doanh thu ở mọi gói (trước đây gói Plus, Pro luôn coi là khấu trừ): chứng từ, báo cáo bán hàng ẩn Thuế suất, Tiền thuế, hiện Giảm thuế GTGT như hộ kinh doanh. Doanh nghiệp khấu trừ vẫn hiện Thuế suất, Tiền thuế.
 

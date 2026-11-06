@@ -6,7 +6,7 @@ import type { CheDo } from '../../app/che-do'
 import { locSo } from '../format'
 
 /** Sinh các cột bổ sung từ trường form truong-dm, lọc theo gói và thông tư, mặc định ẩn (T148) */
-export function sinhCotBoSung(cols: Col[], cauHinh: CauHinhDM | undefined, goi: Goi, cheDo: CheDo, pp: { ppGtgt?: string; ppTndn?: string } = {}): Col[] {
+export function sinhCotBoSung(cols: Col[], cauHinh: CauHinhDM | undefined, goi: Goi, cheDo: CheDo, pp: Parameters<typeof hopPp>[1] = {}): Col[] {
   if (!cauHinh?.khoi) return []
   const daCo = new Set(cols.map(c => c.k))
   // Bỏ khối có goi/cheDo không khớp session

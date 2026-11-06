@@ -4,7 +4,7 @@ import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-do
 import type { Row, ScreenProps, VoucherCfg } from '../../modules/types'
 import { duongDan, moDuoc, tenMan, timMan } from '../../app/registry'
 import { cuaHangHienTai, useSession, cheDoHienTai, ngayDauNam, truocDauNam, donViHienTai, loaiHinhDv, gtgtTyLe } from '../../app/session'
-import { giamThueHkd } from '../../modules/ban-hang/giam-thue'
+import { giamThueHang } from '../../modules/ban-hang/giam-thue'
 import { ApDauBangBan, BangHangBan, dongTuHang, dtDong } from '../../modules/ban-hang/BangHangBan'
 import { kieuGhiSo, type Goi, kieuGhiSoDv, tcNhuStandard } from '../../app/plan'
 import { CHE_DO, type CheDo } from '../../app/che-do'
@@ -317,9 +317,10 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
   const tongPhiDv = cfg.dongPos ? dsDong.reduce((a, d) => a + (d.phiDv || 0), 0) : 0
   const tongCk = dsDong.reduce((a, d) => a + (d.ck || 0), 0) + tongGiamGia - tongPhiDv
   // Chứng từ bán hàng khi GTGT theo % doanh thu (T450): không tiền thuế, trừ Giảm thuế GTGT tính trên tiền sau chiết khấu từng dòng
+  // theo % GTGT của hàng và cấu hình giảm thuế ở Cấu hình kế toán (T754)
   const giamGtgt = nhom === 'ban' && cfg.thue !== 0 && gtgtTyLe(s)
   const tongThue = giamGtgt ? 0 : dsDong.reduce((a, d) => a + (d.thue || 0), 0)
-  const tongGiam = giamGtgt ? dsDong.reduce((a, d) => a + giamThueHkd(cfg.dongPos ? dtDong(d) : (d.tien || 0) - (d.ck || 0)), 0) : 0
+  const tongGiam = giamGtgt ? dsDong.reduce((a, d) => a + giamThueHang(cfg.dongPos ? dtDong(d) : (d.tien || 0) - (d.ck || 0), d.ma), 0) : 0
   const tongThanhToan = tongTien - tongCk + tongThue - tongGiam
   // Hộ kinh doanh không khấu trừ thuế GTGT đầu vào: Giá trị nhập kho = tiền trước thuế + tiền thuế (T164)
   const hkd = loaiHinhDv(s, donViHienTai(s)) === 'hkd'
@@ -1329,7 +1330,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
             <BangTraNoNcc ncc={doiTuong} ds={dsTraNo} chon={traNo} onChange={setTraNo} cheDo={dangSua ? 'sua' : 'xem'} />
           )}
           {tab === 'ct' && cfg.dongPos && (
-            <BangHangBan dong={dsDong} onChange={setDsDong} cheDo={dangSua ? 'sua' : 'xem'} tyLe={Boolean(giamGtgt)} giamThue={giamThueHkd} />
+            <BangHangBan dong={dsDong} onChange={setDsDong} cheDo={dangSua ? 'sua' : 'xem'} tyLe={Boolean(giamGtgt)} giamThue={giamThueHang} />
           )}
           {tab === 'ct' && !cfg.dongPos && !laKk && !laSx && !laDcn && !hienTraNo && (
             <BangSua
@@ -1348,7 +1349,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
               themGon={nhom === 'mua'}
               coThemHangLoat={nhom === 'mua'}   // Thêm hàng loạt ở phiếu mua hàng (T465)
               gtnkCoThue={hkd}
-              giamThue={giamGtgt ? giamThueHkd : undefined}
+              giamThue={giamGtgt ? giamThueHang : undefined}
               coNhomHhdv={nhom === 'mua' && nhanKemHd && s.goi === 'PR'}   // T162
               coCk={Boolean(bo.ck)}
               coLo={nhom === 'mua' && s.goi === 'PR'}   // số lô, hạn dùng chỉ có ở gói Pro (T68)

@@ -132,7 +132,7 @@ export function BangHangBan({ dong, onChange, cheDo, tyLe, giamThue }: {
   onChange?: (d: Dong[]) => void
   cheDo: 'sua' | 'xem'
   tyLe: boolean                          // GTGT theo % doanh thu: bỏ Thuế suất, Tiền thuế; hiện Giảm thuế GTGT
-  giamThue?: (dt: number) => number
+  giamThue?: (dt: number, ma?: string) => number   // T754: theo % GTGT và ô Giảm thuế theo quy định của hàng
 }) {
   const sua = cheDo === 'sua' && Boolean(onChange)
   const dat = (i: number, p: Partial<Dong>) => onChange?.(dong.map((d, j) => (j === i ? tinhDong(d, p) : d)))
@@ -144,7 +144,7 @@ export function BangHangBan({ dong, onChange, cheDo, tyLe, giamThue }: {
   const them = () => onChange?.([...dong, dongTuHang(HANG[0])])
   const xoa = (i: number) => onChange?.(dong.filter((_, j) => j !== i))
   const tonKho = (ma: string) => Boolean(HANG.find(h => h.ma === ma)?.tonKho)
-  const gt = (d: Dong) => (tyLe && giamThue ? giamThue(dtDong(d)) : 0)
+  const gt = (d: Dong) => (tyLe && giamThue ? giamThue(dtDong(d), d.ma) : 0)
 
   const o = (v: number, f: (x: number) => void, laPt = false) => sua
     ? <OSoGo val={v} onChange={f} hien={laPt ? String : money} max={laPt ? 100 : undefined} />

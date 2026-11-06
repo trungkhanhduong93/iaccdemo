@@ -44465,3 +44465,7 @@ a.hdn-chip:hover { border-color: var(--blue); color: var(--blue); }
 .nd-bang .tbl thead th[data-k="x"] {
   text-align: center;
 }
+
+/* ── Giảm thuế GTGT theo nghị quyết ở Cấu hình kế toán (T754) ── */
+.ch-gv + .note { margin-top: 12px; }
+.ch-gv .ch-gv-bat { display: flex; align-items: center; gap: 10px; font-weight: 500; color: var(--ink); cursor: pointer; }

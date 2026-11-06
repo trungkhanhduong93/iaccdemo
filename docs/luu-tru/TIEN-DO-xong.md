@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T754 | Cấu hình kế toán thêm mục giảm thuế GTGT cho hộ kinh doanh, doanh nghiệp GTGT theo % doanh thu: có giảm không, theo nghị quyết nào, % giảm. Bật thì Danh mục hàng hoá có ô tích Giảm thuế theo quy định, màn bán hàng tự tính tiền giảm = doanh thu tính thuế × % GTGT của hàng × % giảm | PhuongXT | Xong | 06/11/2026: cấu hình bật tắt, nghị quyết, % giảm; ô tích ở hàng hoá; form bán hàng tính giảm từng dòng. Danh sách, báo cáo vẫn tính trên tổng |
 | T753 | Gói Plus: màn Xuất bán POS đổi tên Bán hàng, lưu chứng từ nguồn FABi, Thủ công, Excel; nút Thêm mới lập tay, thông tin chung theo phiếu mua hàng chỉnh cho bán, chi tiết hàng như Xuất bán POS có % CK, % phí dịch vụ | PhuongXT | 06/11/2026 | 2026-11-06-phuongxt-ban-hang-plus.md |
 | T752 | Màn Người dùng đổi thành Người sử dụng: thanh lọc theo Thu chi, Tuỳ chỉnh cột, chỉ bấm icon bút mới mở panel, form bớt ô, thêm Xác thực, thông tin người tạo, người cập nhật | Trum | 05/11/2026 | 2026-11-05-trum-nguoi-su-dung.md |
 | T751 | Panel danh mục: ô chọn nhiều hai cột dạng thẻ, ô tích vuông, độ rộng panel theo màn, dùng cho màn Người sử dụng | Trum | 05/11/2026 | 2026-11-05-trum-nguoi-su-dung.md |

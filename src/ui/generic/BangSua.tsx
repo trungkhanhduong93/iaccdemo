@@ -45,7 +45,7 @@ export interface BangSuaProps {
   coNhomHhdv?: boolean         // phiếu mua có hoá đơn, gói Plus, Pro: cột Nhóm HHDV mua vào sau Tiền thuế (T162)
   chiXemLy?: boolean           // cột lý do chỉ xem, không cho chọn
   chiXemDt?: boolean           // cột đối tượng chỉ xem, không cho chọn
-  giamThue?: (tien: number) => number   // GTGT theo % doanh thu (T450): cột Giảm thuế GTGT tính từ tiền sau CK thay Thuế suất, Tiền thuế
+  giamThue?: (tien: number, ma?: string) => number   // GTGT theo % doanh thu (T450): cột Giảm thuế GTGT tính từ tiền sau CK thay Thuế suất, Tiền thuế
   coThemHangLoat?: boolean     // nút Thêm hàng loạt chọn nhiều hàng một lần, phiếu mua hàng (T465)
   doRong?: DoRong              // kéo mép phải tiêu đề để giãn cột, chung cho chế độ xem và sửa (T618)
   giaVon?: boolean             // phiếu xuất huỷ: cột Đơn giá, Thành tiền gọi là Giá vốn, Tiền vốn (T741)
@@ -281,7 +281,7 @@ export function BangSua({
   const [gtLoc, setGtLoc] = useState<Record<string, GiaTriLoc>>({})
   useEffect(() => { if (!hienLoc) setGtLoc({}) }, [hienLoc])
   const tienSauCk = (d: Dong) => (d.tien || 0) - (d.ck || 0)
-  const giamDong = (d: Dong) => giamThue ? giamThue(tienSauCk(d)) : 0
+  const giamDong = (d: Dong) => giamThue ? giamThue(tienSauCk(d), d.ma) : 0
   // [khoá, tên cột, có hiện, chữ của dòng, số của dòng (cột số)]
   const cotLoc: [string, string, boolean, (d: Dong) => string, ((d: Dong) => number)?][] = [
     ['ma', 'Mã hàng', maCot, d => d.ma ?? ''], ['ten', hang ? 'Tên hàng hoá, dịch vụ' : 'Diễn giải', true, d => d.ten ?? ''],

@@ -4,6 +4,7 @@ import type { Goi } from './plan'
 import { CHE_DO, CHE_DO_DN_STANDARD, CHE_DO_HOP_LE, CHE_DO_MAC_DINH, chuanHoaCheDo, type CheDo } from './che-do'
 import { CUA_HANG, DON_VI, HOM_NAY, type DonVi, type Role } from '../data/mock'
 import { datKieuSo, dmy, type KieuSo } from '../ui/format'
+import { datGiamVat, type CauHinhGiamVat } from '../modules/ban-hang/giam-thue'
 import type { LichCachNvl } from '../modules/home/chi-phi-nvl'
 import { thangLamViec } from './thangLamViec'
 
@@ -50,6 +51,8 @@ export interface Session {
   mapPttt?: Record<string, Record<string, string>>   // map PTTT FABi về quỹ theo đơn vị; khoá 'mã cửa hàng|mã PTTT', giá trị mã quỹ (T264)
   kieuSo?: Record<string, KieuSo>   // quy định chữ số và dấu phân cách theo đơn vị, chọn ở Cấu hình kế toán: 'vn' 1.234.567,89 (mặc định), 'qt' 1,234,567.89 (T710)
   lyDoGhiDe?: Record<string, Record<string, { chiPhi: number; phanBo: number; nhomCp: string }>>   // lý do nghiệp vụ có sẵn sửa tích Là chi phí, Chi phí phân bổ nhiều kỳ, nhóm lý do theo đơn vị; khoá mã lý do (T700)
+  giamVat?: Record<string, CauHinhGiamVat>   // giảm thuế GTGT theo nghị quyết theo đơn vị, chọn ở Cấu hình kế toán; chưa đặt là giảm 20% theo nghị quyết mới nhất (T754)
+  hangGiamVat?: Record<string, Record<string, boolean>>   // ô tích Giảm thuế theo quy định của hàng hoá theo đơn vị; khoá mã hàng (T754)
 }
 
 /** Mã gói từ link ?goi=: nhận mã mới ('S', 'PL', 'PR'); mã Excel cũ 'M', 'A' (Plus, Pro cũ) đều thành Pro (QD80, T649) */
@@ -142,6 +145,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   // Kiểu chữ số của đơn vị đặt trước khi vẽ; đổi kiểu thì vẽ lại toàn bộ để mọi số hiện theo kiểu mới (T710)
   const kieu = s.kieuSo?.[s.donVi] ?? 'vn'
   datKieuSo(kieu)
+  datGiamVat(s, loaiHinhDv(s, donViHienTai(s)) !== 'hkd')   // T754
   return (
     <Ctx.Provider value={{ s, set, toast: setMsg }}>
       <Fragment key={kieu}>{children}</Fragment>

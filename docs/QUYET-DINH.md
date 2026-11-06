@@ -1062,4 +1062,10 @@ Trum chốt 05/11/2026 (T751, T752).
 - Panel giữ khung `CatalogPanel` chung. Ô chọn hai cột chỉ dùng trên máy tính, điện thoại dùng `ChonNhieu`.
 - Điện thoại chỉ đổi chữ và form, không có bộ lọc nâng cao, chọn cột.
 
-## QD97. Giảm thuế GTGT theo nghị quyết ở Cấu hình kế toán (đang soạn)
+## QD97. Giảm thuế GTGT theo nghị quyết ở Cấu hình kế toán (06/11/2026)
+
+PhuongXT yêu cầu, T754.
+
+- Hộ kinh doanh, doanh nghiệp tính GTGT theo % doanh thu khai ở Cấu hình kế toán: có giảm thuế GTGT không, theo nghị quyết nào, % giảm mức tỷ lệ. Chưa khai thì hiểu là giảm 20% theo nghị quyết mới nhất.
+- Bật giảm thì Danh mục hàng hoá có ô tích Giảm thuế theo quy định, không bắt buộc tích. Tắt thì ô ẩn, không tính giảm.
+- Tiền giảm của một dòng bán = doanh thu tính thuế × tỷ lệ % GTGT ngầm định của hàng (theo ngành nghề) × % giảm. Hàng không tích thì 0.
