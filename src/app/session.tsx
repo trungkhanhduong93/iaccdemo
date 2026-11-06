@@ -185,9 +185,10 @@ export const congTyCn = (s: Session, cn: string) => {
 export const cheDoHienTai = (s: Session) => CHE_DO[s.cheDo]
 /** Nhãn Bổ sung MST: gói có màn Kê khai thuế mở hộp Thông tin kê khai ở màn đó, gói khác mở Thông tin đơn vị */
 export const denBoMst = (goi: Goi) => goi === 'S' || goi === 'PL' ? '/app/thue/to-khai?thongtin=1' : '/app/he-thong/thong-tin'
-/** Thuế GTGT tính theo % doanh thu (T450): hộ kinh doanh luôn vậy; doanh nghiệp gói Plus, Pro cố định khấu trừ; còn lại theo Thông tin đơn vị.
+/** Thuế GTGT tính theo % doanh thu (T450): hộ kinh doanh luôn vậy; doanh nghiệp theo phương pháp GTGT ở Thông tin đơn vị, mọi gói
+ *  (T753, PhuongXT 06/11/2026: bỏ cố định khấu trừ cho doanh nghiệp gói Plus, Pro).
  *  Chứng từ, báo cáo bán hàng: theo % doanh thu thì hiện Giảm thuế GTGT, ẩn Thuế suất, Tiền thuế; khấu trừ thì ngược lại */
-export const gtgtTyLe = (s: Session) => loaiHinhDv(s, donViHienTai(s)) === 'hkd' || (s.goi !== 'PL' && s.goi !== 'PR' && s.ppGtgt === 'tyLe')
+export const gtgtTyLe = (s: Session) => loaiHinhDv(s, donViHienTai(s)) === 'hkd' || s.ppGtgt === 'tyLe'
 /** Cửa hàng đang chọn trên thanh trên; undefined khi đang xem tất cả cửa hàng */
 export const cuaHangHienTai = (s: Session) => CUA_HANG.find(c => c.id === s.cuaHang)
 /** Cửa hàng của đơn vị đang làm việc: đơn vị mẫu có 3 cửa hàng mẫu; đơn vị mới từ FABi chỉ có cửa hàng đã chọn; cộng cửa hàng lên sổ thêm (T142) */
