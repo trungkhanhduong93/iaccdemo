@@ -1077,3 +1077,5 @@ Trum chốt khi nghiệm thu T756.
 
 - Công thức sơ chế 5.1.5, chế biến 9.1.3 là danh mục, có ô Cửa hàng áp dụng riêng, để trống là áp dụng toàn bộ. Đang xem Tất cả cửa hàng thì vào thêm mới không hỏi chọn cửa hàng, cả web lẫn điện thoại.
 - Các màn chứng từ khác vẫn hỏi như T526.
+
+## QD99. Công thức chế biến web gói Plus theo itax (đang soạn)
