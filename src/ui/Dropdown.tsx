@@ -54,8 +54,10 @@ export function Popover({ anchor, open, onClose, align = 'start', className = ''
       if (ref.current?.contains(t) || anchor.current?.contains(t)) return
       // bấm vào chữ của label bọc nút: để label tự chuyển cú bấm sang nút, nút sẽ đóng menu
       if (anchor.current && t.closest?.('label')?.contains(anchor.current)) return
-      // bấm trong menu con (vd ô chọn trong khung Bộ lọc) cũng gắn vào body: không tính là bấm ra ngoài
-      if (t.closest?.('.pop')) return
+      // bấm trong menu con (vd ô chọn trong khung Bộ lọc) cũng gắn vào body: không tính là bấm ra ngoài.
+      // Menu con mở sau nên nằm sau trong DOM; bấm vào khung cha (nằm trước) thì vẫn đóng, kẻo hai ô chọn cùng mở đè nhau
+      const popBam = t.closest?.('.pop')
+      if (popBam && ref.current && ref.current.compareDocumentPosition(popBam) & Node.DOCUMENT_POSITION_FOLLOWING) return
       onClose()
     }
     const key = (e: KeyboardEvent) => {

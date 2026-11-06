@@ -45566,7 +45566,7 @@ body:has(.ctpl-form) .overlay {
   grid-template-columns: 148px minmax(0, 1fr) 100px 190px;
 }
 .ctpl-khoi-phai {
-  grid-template-columns: 130px minmax(0, 1fr) 110px minmax(0, 1fr);
+  grid-template-columns: 130px minmax(0, 1fr) 130px minmax(0, 1fr);
 }
 .ctpl-khoi .ctpl-nhan {
   width: auto;
@@ -45620,6 +45620,10 @@ body:has(.ctpl-form) .overlay {
   padding: 0 2px 0 6px;
   font-size: 13px;
   font-weight: 400;
+}
+/* Panel thêm hàng mở từ form nổi trên lớp nền z-index 70 của form, không bị phủ tối */
+body:has(.ctpl-form) .pn-hop {
+  z-index: 71;
 }
 /* Lịch chọn một ngày: 4 nút chân rộng theo chữ, Đầu tháng không lấn viền */
 .dp-chan {

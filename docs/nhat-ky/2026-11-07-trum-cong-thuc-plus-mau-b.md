@@ -12,6 +12,7 @@
 - Bỏ trạng thái Nháp của công thức ở mọi gói và điện thoại, dòng đã lưu còn Nháp đọc thành Không hoạt động: `san-xuat.ts`, `CongThuc.tsx`, `MCongThuc.tsx`.
 - Sau lần push đầu: phễu danh sách đổi sang `BoLoc` dùng chung; khối phải của form đổi thành Sản phẩm, Đơn vị tính + Ngày áp dụng, Mô tả; đơn vị tính hiện cả mã và tên qua `maDvt`, nguyên vật liệu 1 đơn vị không khoá; dòng mới bỏ `chiMa`.
 - Bộ lọc nâng cao thêm Nguyên vật liệu, Kênh áp dụng; 4 ô chọn dùng `ChonHaiCot` có tìm kiếm. Đơn vị tính sản phẩm 1 đơn vị không khoá. Dòng mới có ô chọn ở cả cột mã và tên, thêm prop `goiYTim` cho `ChonDanhMuc`.
+- Sửa `Popover` dùng chung: chỉ bỏ qua cú bấm trong `.pop` nằm sau nó trong DOM, nên hai ô chọn trong Bộ lọc không còn cùng mở. Panel Thêm hàng hoá nổi trên lớp nền của form. Nhãn thứ hai khối phải rộng 130px.
 - Lịch chọn ngày: 4 nút chân rộng theo chữ, Đầu tháng không lấn viền: cuối `app.css`.
 
 ## Đã kiểm
@@ -28,4 +29,5 @@
 ## Bẫy, quyết định mới
 
 - `docs/QUYET-DINH.md`: QD100.
+- `docs/BAY.md`: cập nhật mục khung bật ra lồng nhau.
 - CSS còn sót lớp không dùng `.ctpl-dong-o`, `.ctpl-dong-doi` của T759, chưa xoá.
