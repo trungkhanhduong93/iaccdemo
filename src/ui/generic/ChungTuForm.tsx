@@ -673,6 +673,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
 
   const tabs: [string, string][] = [
     ['ct', bo.tabDau ?? 'Chi tiết'],
+    ...(coCpMua ? [['cpm', dsCp.length ? `Chi phí mua hàng (${dsCp.length})` : 'Chi phí mua hàng'] as [string, string]] : []),   // T757
     // Mua hàng: thông tin hoá đơn nằm ở đầu phiếu khi tích Nhận kèm hoá đơn, không có tab Hoá đơn (T62)
     ...(bo.hd && nhom !== 'mua' && nhom !== 'ban' ? [['hd', 'Hoá đơn'] as [string, string]] : []),   // mua, bán: hoá đơn ở đầu phiếu khi tích kèm hoá đơn (T83)
     // Phiếu thu chi bỏ tab hạch toán (T49); bỏ tab Ghi sổ ở mọi gói, chỉ chế độ Nợ/Có còn tab Hạch toán (T726, như T640)
@@ -1370,7 +1371,8 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
               doRong={doRongCt}
             />
           )}
-          {tab === 'ct' && coCpMua && !moLoc && (
+          {/* Tab Chi phí mua hàng (T757) */}
+          {tab === 'cpm' && coCpMua && (
             <ChiPhiMuaHang ds={dsCp} onChange={setDsCp} dong={dsDong} onPhanBo={setDsDong} cheDo={dangSua ? 'sua' : 'xem'} />
           )}
 

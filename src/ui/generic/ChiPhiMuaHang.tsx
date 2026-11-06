@@ -1,4 +1,4 @@
-// Phiếu mua hàng: khối Chi phí mua hàng ngay dưới lưới hàng, nút Phân bổ chia vào từng mặt hàng theo giá trị hàng (T757)
+// Phiếu mua hàng: tab Chi phí mua hàng, nút Phân bổ chia vào từng mặt hàng theo giá trị hàng (T757)
 import { Icon } from '../Icon'
 import { money } from '../format'
 import { OSoGo } from '../OSoGo'
@@ -34,13 +34,10 @@ export function ChiPhiMuaHang({ ds, onChange, dong, onPhanBo, cheDo }: {
     : daChia ? 'Hàng hoặc chi phí đã đổi, ấn Phân bổ để chia lại.' : 'Chưa phân bổ, ấn Phân bổ để chia vào từng mặt hàng.'
   const doi = (i: number, patch: Partial<KhoanCp>) => onChange(ds.map((c, k) => k === i ? { ...c, ...patch } : c))
 
-  if (!sua && !ds.length) return null
+  if (!sua && !ds.length) return <div className="empty" style={{ padding: 32 }}>Phiếu không có chi phí mua hàng</div>
   return (
     <div className="ct-cpm">
-      <div className="ct-cpm-dau">
-        <b>Chi phí mua hàng</b>
-        <span>Vận chuyển, bốc xếp… cộng vào giá trị nhập kho</span>
-      </div>
+      <div className="ct-cpm-dau">Vận chuyển, bốc xếp… ấn Phân bổ để chia vào giá trị nhập kho từng mặt hàng ở tab Chi tiết.</div>
       {ds.length > 0 && (
         <div className="tbl-wrap">
           <table className={`tbl${sua ? ' bang-sua' : ''}`}>
