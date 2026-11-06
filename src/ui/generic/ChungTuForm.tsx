@@ -5,7 +5,7 @@ import type { Row, ScreenProps, VoucherCfg } from '../../modules/types'
 import { duongDan, moDuoc, tenMan, timMan } from '../../app/registry'
 import { cuaHangHienTai, useSession, cheDoHienTai, ngayDauNam, truocDauNam, donViHienTai, loaiHinhDv, gtgtTyLe } from '../../app/session'
 import { giamThueHkd } from '../../modules/ban-hang/giam-thue'
-import { BangHangBan, dongTuHang, dtDong } from '../../modules/ban-hang/BangHangBan'
+import { ApDauBangBan, BangHangBan, dongTuHang, dtDong } from '../../modules/ban-hang/BangHangBan'
 import { kieuGhiSo, type Goi, kieuGhiSoDv, tcNhuStandard } from '../../app/plan'
 import { CHE_DO, type CheDo } from '../../app/che-do'
 import { tkTheoCheDo } from '../../modules/tong-hop/so-cai'
@@ -1309,6 +1309,8 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
             {nhom === 'mua' && dangSua && !laKk && !laSx && !laDcn && (   // giữ ô khi sang tab khác để nhớ mức đã chọn
               <ApDauBang dong={dsDong} onChange={setDsDong} an={tab !== 'ct'} coThue={cfg.thue !== 0 && !anCot.includes('ts')} coCk={Boolean(bo.ck)} />
             )}
+            {/* Chứng từ bán hàng kiểu Xuất bán POS: Chiết khấu, Phí dịch vụ, Thuế GTGT cả bill áp xuống mọi dòng (T753) */}
+            {cfg.dongPos && dangSua && <ApDauBangBan dong={dsDong} onChange={setDsDong} an={tab !== 'ct'} coThue={!giamGtgt} />}
           </div>
 
           <div className="ct-than" data-hd="chi-tiet">
