@@ -281,8 +281,8 @@ export function FormCongThucPlus({ sc, mod, ct, soCt }: ScreenProps & { ct?: Row
               <div className="ctpl-nhan">
                 Đơn vị tính <em>*</em>
               </div>
-              <div className={`ctpl-o${dsDvt.length <= 1 ? ' khoa' : ''}`} data-o="dvt" aria-disabled={dsDvt.length <= 1 ? 'true' : undefined}>
-                {dsDvt.length > 1 ? (
+              <div className={`ctpl-o${dsDvt.length ? '' : ' khoa'}`} data-o="dvt" aria-disabled={dsDvt.length ? undefined : 'true'}>
+                {dsDvt.length > 0 ? (
                   <Select
                     className="inp"
                     aria-label="Đơn vị tính"
@@ -295,7 +295,7 @@ export function FormCongThucPlus({ sc, mod, ct, soCt }: ScreenProps & { ct?: Row
                     type="text"
                     disabled
                     readOnly
-                    value={dvtHien && nhanDvt(dvtHien)}
+                    value=""
                     placeholder="Theo hàng đã chọn"
                   />
                 )}
@@ -409,23 +409,26 @@ export function FormCongThucPlus({ sc, mod, ct, soCt }: ScreenProps & { ct?: Row
                   dsNvlHien.map(({ item, index }) => {
                     const h = hangCua(item.ma)
                     const dsDvtNvl = dvtCuaNvl(item.ma)
+                    // Dòng mới: cả ô mã và ô tên đều chọn được, tìm theo mã hoặc tên
+                    const oChonHang = (
+                      <ChonDanhMuc
+                        dm="nvl"
+                        nhan="nguyên vật liệu"
+                        goiYTim="Tìm mã, tên nguyên vật liệu"
+                        coMa
+                        className="inp sm"
+                        trong="Chọn"
+                        value={item.ma}
+                        ds={mucHang(DS_NVL.filter(x => x.ma !== sp && !nvl.some(n => n.ma === x.ma)))}
+                        onChange={v => doiNvl(index, { ma: v, dvt: undefined })}
+                      />
+                    )
                     return (
                       <tr key={index}>
                         <td className="ctpl-nvl-ma">
-                          {item.ma || (
-                            <ChonDanhMuc
-                              dm="nvl"
-                              nhan="nguyên vật liệu"
-                              coMa
-                              className="inp sm"
-                              trong="Chọn"
-                              value={item.ma}
-                              ds={mucHang(DS_NVL.filter(x => x.ma !== sp && !nvl.some(n => n.ma === x.ma)))}
-                              onChange={v => doiNvl(index, { ma: v, dvt: undefined })}
-                            />
-                          )}
+                          {item.ma || oChonHang}
                         </td>
-                        <td className="ctpl-nvl-ten">{h?.ten ?? ''}</td>
+                        <td className="ctpl-nvl-ten">{item.ma ? h?.ten ?? '' : oChonHang}</td>
                         <td className="ctpl-nvl-dvt">
                           {dsDvtNvl.length > 0 && (
                             <Select

@@ -33,7 +33,7 @@ export function useMucDaThem(dm: string): MucDm[] {
   return daThem.get(dm) ?? []
 }
 
-export function ChonDanhMuc({ dm, nhan, value, onChange, ds, className = 'inp', style, coMa, chiMa, trong, khongThem: khongThemGoc, gon, tabs }: {
+export function ChonDanhMuc({ dm, nhan, value, onChange, ds, className = 'inp', style, coMa, chiMa, trong, khongThem: khongThemGoc, gon, tabs, goiYTim }: {
   dm: string                         // khoá danh mục, vd ncc, kh, nhanVien, kho, hang
   nhan: string                       // tên danh mục hiện trên nút thêm mới, vd "nhà cung cấp"
   value: string
@@ -47,6 +47,7 @@ export function ChonDanhMuc({ dm, nhan, value, onChange, ds, className = 'inp', 
   khongThem?: boolean                // không cho thêm mới tại form, vd quỹ tiền chỉ khai ở danh mục Quỹ tiền
   gon?: boolean                      // thêm hàng hoá bằng hộp nhỏ 4 ô Mã, Tên, ĐVT, Loại hàng hoá, vd phiếu mua hàng, kiểm kê (T388)
   tabs?: TabDm[]                     // chia danh sách thành tab, thay cho ds (T705)
+  goiYTim?: string                   // chữ gợi ý ô tìm, mặc định theo nhan (T760)
 }) {
   const them = useMucDaThem(dm)
   const doiMuc = (x: string | MucDm): MucDm => typeof x === 'string' ? { v: x, t: x } : x
@@ -134,7 +135,7 @@ export function ChonDanhMuc({ dm, nhan, value, onChange, ds, className = 'inp', 
           <>
             <div className="dm-tim">
               <Icon n="search" className="ic sm" />
-              <input ref={oTim} value={tim} placeholder={tabs ? 'Tìm mã, tên hàng' : `Tìm ${nhan}`} onChange={e => setTim(chiMa ? e.target.value.toUpperCase() : e.target.value)}
+              <input ref={oTim} value={tim} placeholder={goiYTim ?? (tabs ? 'Tìm mã, tên hàng' : `Tìm ${nhan}`)} onChange={e => setTim(chiMa ? e.target.value.toUpperCase() : e.target.value)}
                 onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); if (loc[0]) chon(loc[0].v); else if (tim.trim() && !khongThem) { setMo(false); setHop(true) } } }} />
             </div>
             <div className="dm-ds">

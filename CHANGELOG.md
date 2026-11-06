@@ -4,7 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 07/11/2026
 - T760: Web gói Plus, Công thức chế biến: danh sách hiện mỗi nguyên vật liệu một dòng, lọc nhanh bằng chip trạng thái, thanh lọc giống danh mục hàng hoá. Form dùng hết bề rộng màn hình, hai khối thông tin; nguyên vật liệu có quy đổi đổi được đơn vị tính; có nút Thêm dòng, Thêm hàng loạt.
-- T760: Web gói Plus, Công thức chế biến: phễu mở Bộ lọc nâng cao giống danh mục hàng hoá. Form xếp Đơn vị tính cùng dòng Ngày áp dụng, đơn vị tính hiện cả mã và tên; dòng mới tìm được nguyên vật liệu theo mã hoặc tên.
+- T760: Web gói Plus, Công thức chế biến: phễu mở Bộ lọc nâng cao giống danh mục hàng hoá, có thêm Nguyên vật liệu, Kênh áp dụng; các ô chọn gõ tìm được. Form xếp Đơn vị tính cùng dòng Ngày áp dụng, đơn vị tính hiện cả mã và tên; dòng mới tìm được nguyên vật liệu theo mã hoặc tên.
 - T760: Công thức chế biến, sơ chế bỏ trạng thái Nháp ở mọi gói và điện thoại, chỉ còn Đang hoạt động, Không hoạt động.
 - T760: Lịch chọn ngày: chữ nút Đầu tháng không còn lấn viền.
 

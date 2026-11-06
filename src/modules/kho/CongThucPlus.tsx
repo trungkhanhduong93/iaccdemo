@@ -5,14 +5,14 @@ import { duongDan, tenMan } from '../../app/registry'
 import { useSession } from '../../app/session'
 import { CUA_HANG } from '../../data/mock'
 import { IconFigmaSearch } from '../../ui/IconFigma'
-import { Select } from '../../ui/Dropdown'
+import { ChonHaiCot, type MucHaiCot } from '../../ui/ChonHaiCot'
 import { CO_TRANG_DM, PhanTrang } from '../../ui/PhanTrang'
 import { ONgay, docNgay } from '../../ui/ChonNgay'
 import { NutExcel, NutThemMoiSplit } from '../../ui/CongCuDs'
 import { BoLoc, ChipTrangThai, NutTuyChinhCot, useCauHinhLoc, useCotDs, useLocNhap, type Chip, type OLocDef } from '../../ui/LocNangCao'
 import { fold } from '../../ui/format'
 import { hangCua, apDungCuaHang, TT_CONG_THUC, soLuong, type NvlCongThuc } from './san-xuat'
-import { nvlCua, useDsCongThuc } from './CongThuc'
+import { KENH, nvlCua, useDsCongThuc } from './CongThuc'
 import { FormCongThucPlus } from './CongThucPlusForm'
 
 export function CongThucPlusScreen({ sc, mod }: ScreenProps) {
@@ -92,17 +92,14 @@ function DsCongThucPlus({ sc, mod, ds }: ScreenProps & { ds: Row[] }) {
   const path = duongDan(mod, sc)
 
   const [chip, setChip] = useState<string>('on')
-  const locCt = useLocNhap(() => ({ q: '', ngay: '', sp: '', cuaHang: '' }))
+  const locCt = useLocNhap(() => ({ q: '', ngay: '', sp: [] as string[], nvl: [] as string[], cuaHang: [] as string[], kenh: [] as string[] }))
 
   const [trang, setTrang] = useState(1)
   const [coTrang, setCoTrang] = useState(50)
 
-  const dsSp = useMemo(() => {
-    return [...new Set(ds.map(c => String(c.spMa)))].map(ma => ({
-      v: ma,
-      t: `${hangCua(ma)?.ten ?? ma} - ${ma}`,
-    }))
-  }, [ds])
+  const mucHang = (ma: string): MucHaiCot => ({ v: ma, t: hangCua(ma)?.ten ?? ma, ma })
+  const dsSp = useMemo(() => [...new Set(ds.map(c => String(c.spMa)))].map(mucHang), [ds])
+  const dsNvl = useMemo(() => [...new Set(ds.flatMap(c => nvlCua(c).map(n => n.ma)))].map(mucHang), [ds])
 
   const apLoc = () => {
     locCt.loc()
@@ -116,6 +113,9 @@ function DsCongThucPlus({ sc, mod, ds }: ScreenProps & { ds: Row[] }) {
   }
 
   // Bộ lọc nâng cao dùng chung như danh mục hàng hoá (T760)
+  const chonO = (k: 'sp' | 'nvl' | 'cuaHang' | 'kenh', ten: string, dsMuc: MucHaiCot[]) => (
+    <ChonHaiCot chip ds={dsMuc} value={locCt.nhap[k]} onChange={v => locCt.dat(k, v)} nhan={ten} goiY={`Chọn ${ten.toLowerCase()}`} btnClass="ds-o-sel" />
+  )
   const oNgay = <ONgay value={locCt.nhap.ngay} placeholder="Áp dụng từ ngày" onChange={v => locCt.dat('ngay', v)} />
   const oLoc: OLocDef[] = [
     {
@@ -124,19 +124,15 @@ function DsCongThucPlus({ sc, mod, ds }: ScreenProps & { ds: Row[] }) {
         onKeyDown={e => { if (e.key === 'Enter') apLoc() }} />,
     },
     { k: 'ngay', ten: 'Áp dụng từ ngày', coGiaTri: Boolean(locCt.nhap.ngay), o: oNgay },
-    {
-      k: 'sp', ten: 'Sản phẩm', coGiaTri: Boolean(locCt.nhap.sp),
-      o: <Select className="ds-o-sel" aria-label="Sản phẩm" value={locCt.nhap.sp} onChange={e => locCt.dat('sp', e.target.value)} ds={[{ v: '', t: 'Tất cả' }, ...dsSp]} />,
-    },
-    {
-      k: 'cuaHang', ten: 'Cửa hàng', coGiaTri: Boolean(locCt.nhap.cuaHang),
-      o: <Select className="ds-o-sel" aria-label="Cửa hàng" value={locCt.nhap.cuaHang} onChange={e => locCt.dat('cuaHang', e.target.value)} ds={[{ v: '', t: 'Tất cả' }, ...CUA_HANG.map(c => ({ v: c.ten, t: c.ten }))]} />,
-    },
+    { k: 'sp', ten: 'Sản phẩm', coGiaTri: locCt.nhap.sp.length > 0, o: chonO('sp', 'Sản phẩm', dsSp) },
+    { k: 'nvl', ten: 'Nguyên vật liệu', coGiaTri: locCt.nhap.nvl.length > 0, o: chonO('nvl', 'Nguyên vật liệu', dsNvl) },
+    { k: 'cuaHang', ten: 'Cửa hàng áp dụng', coGiaTri: locCt.nhap.cuaHang.length > 0, o: chonO('cuaHang', 'Cửa hàng áp dụng', CUA_HANG.map(c => ({ v: c.ten, t: c.ten }))) },
+    { k: 'kenh', ten: 'Kênh áp dụng', coGiaTri: locCt.nhap.kenh.length > 0, o: chonO('kenh', 'Kênh áp dụng', KENH.map(k => ({ v: k, t: k }))) },
   ]
   const [cauHinhLoc, datCauHinhLoc] = useCauHinhLoc(path, oLoc.map(o => o.k), ['tim', 'ngay'])
 
   const truocChip = useMemo(() => {
-    const { q: tim, ngay, sp, cuaHang } = locCt.ap
+    const { q: tim, ngay, sp, nvl, cuaHang, kenh } = locCt.ap
     const q = fold(tim.trim())
     const tuNgay = ngay ? docNgay(ngay) : null
 
@@ -151,8 +147,12 @@ function DsCongThucPlus({ sc, mod, ds }: ScreenProps & { ds: Row[] }) {
         const d = docNgay(String(c.ngay))
         if (d.getTime() < tuNgay.getTime()) return false
       }
-      if (sp && c.spMa !== sp) return false
-      if (cuaHang && !apDungCuaHang(c.cuaHang as string[], cuaHang)) return false
+      if (sp.length && !sp.includes(String(c.spMa))) return false
+      if (nvl.length && !nvlCua(c).some(n => nvl.includes(n.ma))) return false
+      if (cuaHang.length && !cuaHang.some(k => apDungCuaHang(c.cuaHang as string[], k))) return false
+      // Công thức để trống kênh là áp dụng mọi kênh (T724)
+      const kenhCt = (c.kenh ?? []) as string[]
+      if (kenh.length && kenhCt.length && !kenh.some(k => kenhCt.includes(k))) return false
       return true
     })
   }, [ds, locCt.ap])
