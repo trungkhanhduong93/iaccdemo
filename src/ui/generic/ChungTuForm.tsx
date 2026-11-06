@@ -100,7 +100,9 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
   const giaVon = laXh || laDc   // xuất huỷ, xuất khác, xuất và nhập điều chỉnh: Đơn giá, Thành tiền gọi là Giá vốn, Tiền vốn (T741, T747)
   const gonDau = laKk || laDc || laSx || laDcn || khoGon    // đầu phiếu gọn: Kho, Nhân viên thực hiện; Ghi chú
   // Phiếu điều chỉnh (T131), nhập khác (T737), xuất huỷ (T741): không có thuế; gói Free không hiện giá trị phiếu điều chỉnh (đơn giá, thành tiền, tổng tiền)
-  const anDc = laDc ? ['ts', 'thue', ...(s.goi === 'S' ? ['gia', 'tien'] : [])] : khoGon ? ['ts', 'thue'] : []
+  // Hàng bán trả lại (T758): chi tiết chỉ Mã, Tên, ĐVT, Số lượng, Đơn giá, Thành tiền; không chiết khấu, không thuế, kho ở đầu phiếu
+  const laTlBan = sc.code === '3.1.4'
+  const anDc = laTlBan ? ['kho', 'lo', 'hsd', 'ptCk', 'ck', 'truocThue', 'ts', 'thue', 'giamThue', 'nhomHhdv', 'cpMua', 'gtnk', 'tongTien'] : laDc ? ['ts', 'thue', ...(s.goi === 'S' ? ['gia', 'tien'] : [])] : khoGon ? ['ts', 'thue'] : []
   const nv = useMemo(() => (row ? ttNghiepVu(row) : null), [row])
   // Phiếu trả lại hàng mua lập từ Tiện ích Trả hàng của phiếu mua (T727): điền sẵn nhà cung cấp, kho, dòng hàng, tham chiếu phiếu mua
   const traTu = moi ? (loc.state as { traTu?: TraTu } | null)?.traTu : undefined
@@ -287,7 +289,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
   // Cửa hàng chỉ có một kho thì phiếu mới lấy luôn kho đó
   const dsKhoCn = CUA_HANG.find(c => c.ten === cuaHang)?.kho ?? KHO
   const khoMotCn = dsKhoCn.length === 1 ? dsKhoCn[0] : ''
-  const khoDau = bo.kho === 'dong' && (nhom === 'mua' || nhom === 'ban') && s.goi !== 'PR'
+  const khoDau = bo.kho === 'dong' && ((nhom === 'mua' || nhom === 'ban') && s.goi !== 'PR' || laTlBan)   // hàng bán trả lại: kho nhập ở đầu phiếu cả gói Pro (T758)
   const [kho, setKho] = useState(() => luuCu('kho') ?? (moi ? traTu?.kho || khoMotCn : dongGoc.find(d => d.kho)?.kho ?? dsKhoCn[0] ?? ''))
   useEffect(() => {
     if (khoDau || khoGon) setDsDong(ds => ds.map(d => ({ ...d, kho })))
@@ -321,11 +323,11 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
   // Dòng kiểu Xuất bán POS (T753): giảm giá gộp vào phần trừ cùng chiết khấu, phí dịch vụ cộng vào doanh thu
   const tongGiamGia = cfg.dongPos ? dsDong.reduce((a, d) => a + (d.giam || 0), 0) : 0
   const tongPhiDv = cfg.dongPos ? dsDong.reduce((a, d) => a + (d.phiDv || 0), 0) : 0
-  const tongCk = dsDong.reduce((a, d) => a + (d.ck || 0), 0) + tongGiamGia - tongPhiDv
+  const tongCk = laTlBan ? 0 : dsDong.reduce((a, d) => a + (d.ck || 0), 0) + tongGiamGia - tongPhiDv
   // Chứng từ bán hàng khi GTGT theo % doanh thu (T450): không tiền thuế, trừ Giảm thuế GTGT tính trên tiền sau chiết khấu từng dòng
   // theo % GTGT của hàng và cấu hình giảm thuế ở Cấu hình kế toán (T754)
-  const giamGtgt = nhom === 'ban' && cfg.thue !== 0 && gtgtTyLe(s)
-  const tongThue = giamGtgt ? 0 : dsDong.reduce((a, d) => a + (d.thue || 0), 0)
+  const giamGtgt = nhom === 'ban' && !laTlBan && cfg.thue !== 0 && gtgtTyLe(s)
+  const tongThue = giamGtgt || laTlBan ? 0 : dsDong.reduce((a, d) => a + (d.thue || 0), 0)
   const tongGiam = giamGtgt ? dsDong.reduce((a, d) => a + giamThueHang(cfg.dongPos ? dtDong(d) : (d.tien || 0) - (d.ck || 0), d.ma), 0) : 0
   const tongThanhToan = tongTien - tongCk + tongThue - tongGiam
   // Hộ kinh doanh không khấu trừ thuế GTGT đầu vào: Giá trị nhập kho = tiền trước thuế + tiền thuế (T164)
@@ -785,7 +787,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
           // Trả lại hàng mua chỉ Tổng tiền, bỏ Tiền hàng, Chiết khấu, Tiền thuế GTGT (T727)
           : <DaiTong tong={tongThanhToan}
             trai={cpCo ? <OChiPhiMua tien={cpMua} onTien={setCpMua} dong={dsDong} onPhanBo={setDsDong} sua={dangSua} /> : undefined}
-            muc={chiTien || truocThue || laDc || laSx || laDcn || khoGon || (nhom === 'mua' && traLai) ? [] : [
+            muc={chiTien || truocThue || laDc || laSx || laDcn || khoGon || traLai ? [] : [
             ...(cfg.dongPos ? [['Thành tiền', tongTien], ['Giảm giá', tongGiamGia ? -tongGiamGia : 0], ['Chiết khấu', tongCk - tongGiamGia + tongPhiDv ? -(tongCk - tongGiamGia + tongPhiDv) : 0],
               ['Phí dịch vụ', tongPhiDv]] as [string, number][] : [['Tiền hàng', tongTien] as [string, number],
               ...(bo.ck ? [['Chiết khấu', tongCk ? -tongCk : 0] as [string, number]] : [])]),
