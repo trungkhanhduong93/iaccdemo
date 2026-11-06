@@ -5,10 +5,11 @@ import type { Row, ScreenProps, VoucherCfg } from '../../modules/types'
 import { duongDan, moDuoc, tenMan, timMan } from '../../app/registry'
 import { cuaHangHienTai, useSession, cheDoHienTai, ngayDauNam, truocDauNam, donViHienTai, loaiHinhDv, gtgtTyLe } from '../../app/session'
 import { giamThueHkd } from '../../modules/ban-hang/giam-thue'
+import { BangHangBan, dongTuHang, dtDong } from '../../modules/ban-hang/BangHangBan'
 import { kieuGhiSo, type Goi, kieuGhiSoDv, tcNhuStandard } from '../../app/plan'
 import { CHE_DO, type CheDo } from '../../app/che-do'
 import { tkTheoCheDo } from '../../modules/tong-hop/so-cai'
-import { CUA_HANG, KHACH, KHO, LY_CAN_DOI_TUONG, LY_DO, NCC, NHAN_VIEN, TK_NGAN_HANG, daKhoaSo, khoaSoDenCua } from '../../data/mock'
+import { CUA_HANG, HANG, KHACH, KHO, LY_CAN_DOI_TUONG, LY_DO, NCC, NHAN_VIEN, TK_NGAN_HANG, daKhoaSo, khoaSoDenCua } from '../../data/mock'
 import { laLyChiPhi, laLyPhanBo } from './danhMucStore'
 import { DS_PTTT } from '../../modules/danh-muc/data'
 import { HopXacNhan } from '../LocNangCao'
@@ -127,7 +128,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
   // Dữ liệu dòng
   const idSeed = row ? `${sc.code ?? sc.slug}-${row.id}` : 'moi'
   const dongGoc = useMemo(() => (
-    moi ? traTu ? traTu.dong : (laSx || laDcn ? [] : dongCua(cfg, `mau-${loai?.k ?? ''}`).slice(0, 1)) : (row?._dong as Dong[] | undefined) ?? dongCua(cfg, idSeed)   // phiếu sản xuất mới chưa có dòng tới khi chọn kho, tham chiếu (T152)
+    moi ? traTu ? traTu.dong : (laSx || laDcn ? [] : cfg.dongPos ? [dongTuHang(HANG[0])] : dongCua(cfg, `mau-${loai?.k ?? ''}`).slice(0, 1)) : (row?._dong as Dong[] | undefined) ?? dongCua(cfg, idSeed)   // phiếu sản xuất mới chưa có dòng tới khi chọn kho, tham chiếu (T152)
   ), [idSeed, loai?.k, moi])
 
   const [dsDong, setDsDong] = useState<Dong[]>(dongGoc)
@@ -311,11 +312,14 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
 
   // Tính tổng
   const tongTien = dsDong.reduce((a, d) => a + (d.tien || 0), 0)
-  const tongCk = dsDong.reduce((a, d) => a + (d.ck || 0), 0)
+  // Dòng kiểu Xuất bán POS (T753): giảm giá gộp vào phần trừ cùng chiết khấu, phí dịch vụ cộng vào doanh thu
+  const tongGiamGia = cfg.dongPos ? dsDong.reduce((a, d) => a + (d.giam || 0), 0) : 0
+  const tongPhiDv = cfg.dongPos ? dsDong.reduce((a, d) => a + (d.phiDv || 0), 0) : 0
+  const tongCk = dsDong.reduce((a, d) => a + (d.ck || 0), 0) + tongGiamGia - tongPhiDv
   // Chứng từ bán hàng khi GTGT theo % doanh thu (T450): không tiền thuế, trừ Giảm thuế GTGT tính trên tiền sau chiết khấu từng dòng
   const giamGtgt = nhom === 'ban' && cfg.thue !== 0 && gtgtTyLe(s)
   const tongThue = giamGtgt ? 0 : dsDong.reduce((a, d) => a + (d.thue || 0), 0)
-  const tongGiam = giamGtgt ? dsDong.reduce((a, d) => a + giamThueHkd((d.tien || 0) - (d.ck || 0)), 0) : 0
+  const tongGiam = giamGtgt ? dsDong.reduce((a, d) => a + giamThueHkd(cfg.dongPos ? dtDong(d) : (d.tien || 0) - (d.ck || 0)), 0) : 0
   const tongThanhToan = tongTien - tongCk + tongThue - tongGiam
   // Hộ kinh doanh không khấu trừ thuế GTGT đầu vào: Giá trị nhập kho = tiền trước thuế + tiền thuế (T164)
   const hkd = loaiHinhDv(s, donViHienTai(s)) === 'hkd'
@@ -770,8 +774,9 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
           // Phần tổng thành dải cố định ở đáy form, cuộn bảng vẫn thấy (T105); phiếu mua chỉ Tổng tiền vì số khác đã có trên dòng (T84)
           // Trả lại hàng mua chỉ Tổng tiền, bỏ Tiền hàng, Chiết khấu, Tiền thuế GTGT (T727)
           : <DaiTong tong={tongThanhToan} muc={chiTien || truocThue || laDc || laSx || laDcn || khoGon || (nhom === 'mua' && traLai) ? [] : [
-            ['Tiền hàng', tongTien],
-            ...(bo.ck ? [['Chiết khấu', tongCk ? -tongCk : 0] as [string, number]] : []),
+            ...(cfg.dongPos ? [['Thành tiền', tongTien], ['Giảm giá', tongGiamGia ? -tongGiamGia : 0], ['Chiết khấu', tongCk - tongGiamGia + tongPhiDv ? -(tongCk - tongGiamGia + tongPhiDv) : 0],
+              ['Phí dịch vụ', tongPhiDv]] as [string, number][] : [['Tiền hàng', tongTien] as [string, number],
+              ...(bo.ck ? [['Chiết khấu', tongCk ? -tongCk : 0] as [string, number]] : [])]),
             giamGtgt ? ['Giảm thuế GTGT', tongGiam ? -tongGiam : 0] : ['Tiền thuế GTGT', tongThue],
             ...(bo.tongNhap ? [['Giá trị nhập kho', tongTien - tongCk + (hkd ? tongThue : 0)] as [string, number]] : []),
           ]} />}
@@ -1321,7 +1326,10 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
           {tab === 'ct' && hienTraNo && (
             <BangTraNoNcc ncc={doiTuong} ds={dsTraNo} chon={traNo} onChange={setTraNo} cheDo={dangSua ? 'sua' : 'xem'} />
           )}
-          {tab === 'ct' && !laKk && !laSx && !laDcn && !hienTraNo && (
+          {tab === 'ct' && cfg.dongPos && (
+            <BangHangBan dong={dsDong} onChange={setDsDong} cheDo={dangSua ? 'sua' : 'xem'} tyLe={Boolean(giamGtgt)} giamThue={giamThueHkd} />
+          )}
+          {tab === 'ct' && !cfg.dongPos && !laKk && !laSx && !laDcn && !hienTraNo && (
             <BangSua
               cfg={cfg}
               dong={dsDong}

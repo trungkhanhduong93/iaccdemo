@@ -1,12 +1,12 @@
 // Chứng từ bán hàng: mỗi cửa hàng một chứng từ mỗi ngày, gom từ đơn POS trên FABi. Số khớp KQKD, Tổng quan.
 import { useEffect, useMemo, useState } from 'react'
-import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
+import { Link, Navigate, useLocation, useNavigate, useParams } from 'react-router-dom'
 import type { Col, Row, ScreenProps, VoucherCfg } from '../types'
 import { duongDan, tenMan } from '../../app/registry'
 import { cuaHangHienTai, gtgtTyLe, useSession } from '../../app/session'
 import { kieuGhiSo, kieuGhiSoDv } from '../../app/plan'
 import { CHE_DO } from '../../app/che-do'
-import { CUA_HANG, DAILY, HANG, cnTen, soBH } from '../../data/mock'
+import { CUA_HANG, DAILY, HANG, KHACH, cnTen, soBH } from '../../data/mock'
 import { Icon } from '../../ui/Icon'
 import { NutPhimTat } from '../../ui/BangPhimTat'
 import { Card, Note, PageHead } from '../../ui/Page'
@@ -17,7 +17,7 @@ import { Select } from '../../ui/Dropdown'
 import { PhanTrang } from '../../ui/PhanTrang'
 import { useDaXoa } from '../../ui/generic/daXoa'
 import { ChonKhoangNgay, docNgay, thangMacDinh, trongKhoang, type KhoangNgay } from '../../ui/ChonNgay'
-import { NutDongBo, NutExcel } from '../../ui/CongCuDs'
+import { NutDongBo, NutExcel, NutThemMoiSplit } from '../../ui/CongCuDs'
 import { HopDongBo } from '../../ui/HopDongBo'
 import { IconFigmaSearch, IconFigmaSheet } from '../../ui/IconFigma'
 import { dangLoc, dsGiaTri, khopLoc, type GiaTriLoc, type KieuLoc, type LocCot } from '../../ui/LocCot'
@@ -25,7 +25,9 @@ import {
   BoLoc, ChipTrangThai, cotChon, NutTuyChinhCot, useCauHinhLoc, useCotDs, useLocNhap, type Chip, type OLocDef,
 } from '../../ui/LocNangCao'
 import { HopInChungTu, type PhieuIn } from '../../ui/bao-cao/InChungTu'
-import { TT_CT, tomTatTenHang } from '../../ui/generic/gen'
+import { NGUON, TT_CT, tomTatTenHang, type Dong } from '../../ui/generic/gen'
+import { ChungTuForm } from '../../ui/generic/ChungTuForm'
+import { dongTuHang, tinhDong } from './BangHangBan'
 import { HopCotPhieu } from '../../ui/generic/BangSua'
 import { DS_PTTT } from '../danh-muc/data'
 import { giamThueHkd } from './giam-thue'
@@ -34,6 +36,42 @@ import { giamThueHkd } from './giam-thue'
 export const NGOAI_POS: VoucherCfg = {
   prefix: 'BH', doiTuong: 'kh', nhan: 'Khách hàng', them: 'Thêm phiếu bán hàng', dong: 'hang', tien: [0, 0], nguon: 'tay', soPhieu: 80, soTT58: 'Sổ doanh thu bán hàng hoá, dịch vụ',
   dienGiai: ['Bán tiệc mang về cho khách công ty', 'Bán set quà Trung thu'], noCo: [['1111', '5111', 'Doanh thu'], ['1111', '33311', 'Thuế GTGT đầu ra'], ['632', '152', 'Giá vốn']],
+}
+
+/** Gói Plus (T753): màn Xuất bán POS gọi là Bán hàng, lưu chứng từ FABi, Thủ công, Excel; lập tay theo form chung,
+ *  dòng hàng như Xuất bán POS. Chứng từ FABi giữ như gói Standard: chỉ xem */
+export const BAN_TAY: VoucherCfg = { ...NGOAI_POS, them: 'Thêm chứng từ bán hàng', dongPos: true, dienGiai: ['Bán tiệc cho khách công ty', 'Bán set quà Trung thu', 'Bán suất ăn hội nghị'] }
+const laPlus = (goi: string) => goi === 'PL'
+/** Chứng từ mẫu lập tay, nhập từ Excel: số, số ngày lùi so với ngày cuối dữ liệu, giờ, cửa hàng thứ mấy, khách, diễn giải, nguồn,
+ *  dòng hàng [hàng thứ mấy, số lượng, % giảm giá, % CK, % phí dịch vụ] */
+const MAU_TAY: [string, number, string, number, number, string, string, [number, number, number, number, number][]][] = [
+  ['BH2610-0003', 1, '18:30', 0, 1, 'Bán tiệc cuối năm cho khách công ty', 'tay', [[1, 30, 0, 5, 5], [8, 30, 0, 5, 5]]],
+  ['BH2610-0002', 3, '11:00', 1, 2, 'Bán suất ăn hội nghị', 'excel', [[2, 40, 10, 0, 0], [6, 40, 0, 0, 0]]],
+  ['BH2610-0001', 6, '09:15', 0, 0, 'Bán set quà Trung thu', 'excel', [[3, 12, 0, 0, 0]]],
+  ['BH2609-0004', 9, '19:45', 0, 3, 'Đặt bàn sinh nhật, thu phí dịch vụ', 'tay', [[0, 15, 0, 0, 10], [5, 15, 0, 0, 10]]],
+]
+function mauTay(): Row[] {
+  const cuoi = DAILY.reduce((a, x) => (x.date > a ? x.date : a), DAILY[0].date)
+  return MAU_TAY.map(([so, lui, gio, cn, kh, dienGiai, nguon, ds], i) => {
+    const ngay = new Date(cuoi.getFullYear(), cuoi.getMonth(), cuoi.getDate() - lui)
+    const ch = CUA_HANG[cn % CUA_HANG.length]
+    const dong: Dong[] = ds.map(([h, sl, pt, ptCk, ptPhiDv]) => tinhDong(dongTuHang(HANG[h % HANG.length], sl), { pt, ptCk, ptPhiDv }))
+    return { id: `tay-${i}`, so, ngay: `${dmy(ngay)} ${gio}`, cn: ch.ten, doiTuong: KHACH[kh % KHACH.length].ten, dienGiai, nguon, tt: 'ghi', _dong: dong,
+      _httt: i % 2 ? 'congno' : 'tienmat', _ngayTao: `${dmy(ngay)} ${gio}`, _nguoiTao: nguon === 'excel' ? 'Nhập từ Excel' : 'Hồ Thị Mai' }
+  })
+}
+/** Chứng từ lập tay, nhập Excel đổi sang dòng danh sách: tiền tính lại từ dòng hàng, tên món ở cột Diễn giải */
+function hangTay(r: Row, tyLe: boolean): Row {
+  const dong = (r._dong as Dong[] | undefined) ?? []
+  const dt = dong.reduce((a, d) => a + (d.tien || 0) - (d.giam || 0) - (d.ck || 0) + (d.phiDv || 0), 0)
+  const thue = dong.reduce((a, d) => a + (d.thue || 0), 0)
+  const giam = tyLe ? giamThueHkd(dt) : 0
+  const ngay = String(r.ngay ?? '')
+  return { ...r, ngay: ngay.includes(' ') ? ngay : `${ngay} ${String(r._ngayTao ?? '').split(' ')[1] ?? ''}`.trim(),
+    _cnId: CUA_HANG.find(c => c.ten === r.cn)?.id ?? '', kenh: r.kenh ?? '',
+    tenHang: tomTatTenHang(dong.map(d => d.ten)), _tenHangDu: [...new Set(dong.map(d => d.ten))].join(', '),
+    tien: dt, thue: tyLe ? 0 : thue, giamThue: giam, tong: tyLe ? dt - giam : dt + thue,
+    ngayTao: r.ngayTao ?? r._ngayTao, nguoiTao: r.nguoiTao ?? r._nguoiTao }
 }
 
 const TY_LE = [0.21, 0.09, 0.12, 0.14, 0.07, 0.15, 0.1, 0.09, 0.03]   // cơ cấu doanh thu theo món trong HANG
@@ -191,8 +229,11 @@ export function theoDon(x: NgayPOS): XPos[] {
 export function ChungTuBanHang({ sc, mod }: ScreenProps) {
   const { id } = useParams()
   const { s } = useSession()
-  const { ban, laDaXoa } = useDaXoa(`${mod.key}/${sc.slug}`)
+  const loc = useLocation()
+  const { ban, laDaXoa, phieuMoi, apSua } = useDaXoa(`${mod.key}/${sc.slug}`)
   const tyLe = gtgtTyLe(s)
+  const plus = laPlus(s.goi)
+  const scHien = plus ? { ...sc, ten: 'Bán hàng' } : sc
   const tatCa = useMemo(() => DAILY.filter(x => x.date.getMonth() >= 8).slice().reverse().flatMap(x => theoDon(x).reverse())   // đồng bộ FABi chỉ kéo chi tiết, mỗi hoá đơn một chứng từ (T247)
    
     .map((x, i) => ({
@@ -204,10 +245,20 @@ export function ChungTuBanHang({ sc, mod }: ScreenProps) {
       tien: x.dt, thue: tyLe ? 0 : x.vat, giamThue: tyLe ? giamThueHkd(x.dt) : 0, tong: tyLe ? x.dt - giamThueHkd(x.dt) : x.dt + x.vat, nguon: 'FABi', tt: i < 3 ? 'nhap' : 'ghi',
       ngayTao: `${dmy(x.date)} 23:30`, nguoiTao: 'Hệ thống',   // tạo khi đồng bộ FABi cuối ngày (T132)
     })), [tyLe])
-  const rows = useMemo(() => tatCa.filter(r => !laDaXoa(r.id)), [tatCa, ban])
-  if (id === 'moi') return <Navigate to={duongDan(mod, sc)} replace />   // không lập tay Xuất bán POS (T52)
-  if (id) return <ChiTiet sc={sc} mod={mod} row={rows.find(r => r.id === id) ?? rows[0]} />
-  return <DanhSach sc={sc} mod={mod} rows={rows} />
+  // Gói Plus: thêm chứng từ lập tay, nhập Excel; xếp chung với chứng từ FABi theo ngày mới nhất trước (T753)
+  const rows = useMemo(() => {
+    const tay = plus ? [...phieuMoi, ...mauTay()].map(apSua).map(r => hangTay(r, tyLe)) : []
+    const ds = [...tay, ...tatCa].filter(r => !laDaXoa(r.id))
+    if (!tay.length) return ds
+    const t = (r: Row) => { const [d, g = ''] = String(r.ngay).split(' '); return docNgay(d).getTime() + (Number(g.slice(0, 2)) * 60 + Number(g.slice(3, 5)) || 0) * 60000 }
+    return ds.map((r, i) => ({ r, i, t: t(r) })).sort((a, b) => b.t - a.t || a.i - b.i).map(x => x.r)
+  }, [tatCa, ban, plus, tyLe])   // eslint-disable-line react-hooks/exhaustive-deps
+  const dongXem = id && id !== 'moi' ? rows.find(r => r.id === id) : undefined
+  if (id === 'moi') return plus ? <ChungTuForm key={loc.key} sc={scHien} mod={mod} cfg={BAN_TAY} rows={rows} />
+    : <Navigate to={duongDan(mod, sc)} replace />   // gói Standard không lập tay Xuất bán POS (T52)
+  if (dongXem && dongXem.nguon !== 'FABi') return <ChungTuForm key={loc.key} sc={scHien} mod={mod} cfg={BAN_TAY} row={dongXem} rows={rows} />
+  if (id) return <ChiTiet sc={scHien} mod={mod} row={dongXem ?? rows.find(r => r.x) ?? rows[0]} />
+  return <DanhSach sc={scHien} mod={mod} rows={rows} />
 }
 
 /** Cột cố định hai đầu, không ẩn, không kéo đổi thứ tự */
@@ -287,6 +338,11 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
   const ghi = kieu !== 'khong'   // gói Standard, Plus hộ kinh doanh đồng bộ là xong, không ghi sổ (QD81)
   // Cửa hàng chọn trên thanh trên (QD17): lọc theo cửa hàng đó, bỏ cột và ô lọc cửa hàng
   const cnChon = cuaHangHienTai(s)
+  const plus = laPlus(s.goi)
+  // Chứng từ lập tay, nhập Excel không có dữ liệu đơn POS: cửa hàng, món, phương thức lấy từ chứng từ (T753)
+  const cnCua = (r: Row) => String(r.x?.cn ?? r._cnId ?? '')
+  const monR = (r: Row) => r.x ? monCua(r.x) : ((r._dong as Dong[] | undefined) ?? []).map(d => ({ ma: d.ma, ten: d.ten, tonKho: Boolean(HANG.find(h => h.ma === d.ma)?.tonKho) }))
+  const ptttR = (r: Row) => r.x ? ptttCua(r.x) : r._pttt ? [String(r._pttt)] : []
 
   const tenTT = (r: Row) => r.tt === 'nhap' && ghi ? 'Chưa ghi sổ' : 'Đã ghi sổ'
   const cotSo = useMemo(() => {
@@ -297,6 +353,7 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
     k === 'ngay' ? 'ngay' : COT_CHON.has(k) || k === 'nguyenNhan' || k === 'pttt' || k === 'dvt' ? 'chon' : k === 'tien' || k === 'thue' || k === 'tong' || k === 'sl' || k === 'dt' || cotSo(k) ? 'so' : 'chon'
   const chuCot = (k: string, r: Row): string => {
     if (k === 'tt') return tenTT(r)
+    if (k === 'nguon') return (NGUON[String(r.nguon)] ?? NGUON.tay)[1]
     if (k === 'nguyenNhan') {
       const LY_TEN: Record<string, string> = {
         hang: 'Món chưa có trong danh mục',
@@ -326,6 +383,7 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
         onChange={e => dat('tim', e.target.value)} onKeyDown={e => { if (e.key === 'Enter') apLoc() }} />,
     },
     ...(cnChon ? [] : [{ k: 'cn', ten: 'Cửa hàng', coGiaTri: Boolean(nhap.cn), o: chonO('cn', 'Cửa hàng', CUA_HANG.map(c => [c.id, c.ten])) }]),
+    ...(plus ? [{ k: 'nguon', ten: 'Nguồn', coGiaTri: Boolean(nhap.nguon), o: chonO('nguon', 'Nguồn', [['FABi', 'FABi'], ['tay', 'Thủ công'], ['excel', 'Excel']]) }] : []),
     // Khách hàng, kênh bán, phương thức thanh toán; lựa chọn lấy từ chính các chứng từ (T116)
     { k: 'kh', ten: 'Khách hàng', coGiaTri: Boolean(nhap.kh), o: chonO('kh', 'Khách hàng', [...new Set(rows.map(r => String(r.doiTuong ?? '')).filter(Boolean))].map(v => [v, v])) },
     { k: 'kenh', ten: 'Kênh bán', coGiaTri: Boolean(nhap.kenh), o: chonO('kenh', 'Kênh bán', [...new Set(rows.map(r => String(r.kenh ?? '')).filter(Boolean))].map(v => [v, v])) },
@@ -339,16 +397,16 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
 
   // Lọc theo các ô đã áp dụng, cửa hàng trên thanh trên, hàng lọc từng cột; chip trạng thái lọc sau cùng để đếm số trên chip
   const truocTT = rows.filter(r => {
-    const d = r.x?.date instanceof Date ? r.x.date : docNgay(r.ngay)
+    const d = r.x?.date instanceof Date ? r.x.date : docNgay(String(r.ngay).split(' ')[0])   // chứng từ lập tay ghi cả giờ (T753)
     if (!trongKhoang(d, ap.thoiGian)) return false
-    if (cnChon && r.x?.cn !== cnChon.id) return false
-    if (ap.cn && r.x?.cn !== ap.cn) return false
+    if (cnChon && cnCua(r) !== cnChon.id) return false
+    if (ap.cn && cnCua(r) !== ap.cn) return false
     if (ap.nguon && r.nguon !== ap.nguon) return false
     if (ap.kh && r.doiTuong !== ap.kh) return false
     if (ap.kenh && r.kenh !== ap.kenh) return false
-    if (ap.hang && !monCua(r.x).some(m => m.ma === ap.hang)) return false
-    if (ap.tonKho && !monCua(r.x).some(m => m.tonKho === (ap.tonKho === 'co'))) return false
-    if (ap.pttt && !ptttCua(r.x).includes(ap.pttt)) return false
+    if (ap.hang && !monR(r).some(m => m.ma === ap.hang)) return false
+    if (ap.tonKho && !monR(r).some(m => m.tonKho === (ap.tonKho === 'co'))) return false
+    if (ap.pttt && !ptttR(r).includes(ap.pttt)) return false
     if (ap.tim.trim() && !fold(`${r.so} ${r.dienGiai} ${r._tenHangDu}`).includes(fold(ap.tim.trim()))) return false
     for (const [k, g] of Object.entries(locCot)) {
       if (dangLoc(g) && !khopLoc(kieuCot(k), g, chuCot(k, r), typeof r[k] === 'number' ? r[k] : undefined, k === 'ngay' ? d : undefined)) return false
@@ -586,7 +644,8 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
     ...(cnChon ? [] : [{ k: 'cn', t: 'Cửa hàng', cls: 'dim' } as Col]),
     { k: 'tien', t: 'Doanh thu trước thuế', num: true, w: 160 },
     tyLe ? { k: 'giamThue', t: 'Giảm thuế GTGT', num: true, w: 130 } : { k: 'thue', t: 'Tiền thuế', num: true, w: 120 },   // T163
-    // bỏ cột Nguồn: Xuất bán POS chỉ có nguồn FABi (T115)
+    // bỏ cột Nguồn: Xuất bán POS chỉ có nguồn FABi (T115); gói Plus có thêm chứng từ lập tay, nhập Excel nên hiện lại (T753)
+    ...(plus ? [{ k: 'nguon', t: 'Nguồn', w: 90, r: (r: Row) => { const [c, t] = NGUON[String(r.nguon)] ?? NGUON.tay; return <span className={`src ${c}`}>{t}</span> } } as Col] : []),
     { k: 'ngayTao', t: 'Ngày tạo', w: 140 }, { k: 'nguoiTao', t: 'Người tạo', w: 130 },   // T132
     { k: 'tong', t: 'Tổng tiền', num: true, w: 120, dinh: 'phai' },   // Tổng tiền là cột cuối (T48), cố định bên phải (T239)
   ]
@@ -629,6 +688,8 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
                 ),
               }}
             />
+            {/* Gói Plus lập tay chứng từ bán hàng (T753) */}
+            {plus && <div className="ds-toolbar-phai"><NutThemMoiSplit toMoi={`${path}/moi`} /></div>}
           </div>
           <div className="ds-hang-trang-thai">
             {/* Gói Standard chỉ hiện danh sách, không chia chip Đã, Chưa đồng bộ (T717) */}

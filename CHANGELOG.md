@@ -2,6 +2,9 @@
 
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
+## 06/11/2026
+- T753: Gói Plus, màn Xuất bán POS đổi tên Bán hàng. Danh sách có cột, ô lọc Nguồn: FABi, Thủ công, Excel, và nút Thêm mới. Chứng từ FABi vẫn chỉ xem như gói Standard. Chứng từ thêm tay có Thông tin chung như phiếu mua hàng, đổi sang khách hàng, kho xuất. Bảng hàng cùng cột với Xuất bán POS: giảm giá, % CK, % phí dịch vụ, doanh thu trước thuế, tiền thuế.
+
 ## 05/11/2026
 - T751, T752: Màn Người dùng đổi tên thành Người sử dụng. Bảng có thanh lọc như danh sách thu chi: nút phễu, ô tìm theo tên hoặc email, nút Lọc; bộ lọc nâng cao có Chức vụ, Trạng thái, Xác thực. Nút Tuỳ chỉnh cột nằm cạnh nút Thêm mới; Xác thực, Người tạo, Ngày tạo, Người cập nhật, Ngày cập nhật mặc định ẩn. Chỉ bấm icon cây bút mới mở chi tiết. Trong chi tiết, Cửa hàng, Kho chọn nhiều ở hộp hai ngăn, để trống là được xem tất cả; bỏ Tên đăng nhập, Bộ phận, Bắt buộc xác thực hai lớp, Hiệu lực từ ngày; thêm Xác thực, Đăng nhập gần nhất, thông tin người tạo, người cập nhật. Nút Thêm mới tạo tài khoản luôn, không gửi thư mời. Trạng thái còn Đang sử dụng, Không hoạt động. Điện thoại đổi tên, nút Thêm mới và form theo web.
 - T750: Danh mục Quỹ tiền gói Standard, Plus: quỹ dùng cho nhiều cửa hàng đổi khối Phương thức thanh toán từ FABi thành Theo cửa hàng, đầu mỗi cửa hàng có ô Số dư. Nhập số dư ban đầu tổng thì hệ thống chia đều cho từng cửa hàng; sửa số từng cửa hàng thì số dư tổng tự cộng lại. Thông tin chung gọn còn 2 hàng.

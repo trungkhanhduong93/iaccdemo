@@ -38,6 +38,10 @@ export interface Dong {
   thue: number
   ptCk?: number
   ck?: number
+  pt?: number                  // dòng hàng kiểu Xuất bán POS (T753): % giảm giá, tiền giảm giá, % phí dịch vụ, phí dịch vụ
+  giam?: number
+  ptPhiDv?: number
+  phiDv?: number
   kho?: string
   tkNo?: string
   tkCo?: string

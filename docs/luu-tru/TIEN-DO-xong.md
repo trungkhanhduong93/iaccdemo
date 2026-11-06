@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T753 | Gói Plus: màn Xuất bán POS đổi tên Bán hàng, lưu chứng từ nguồn FABi, Thủ công, Excel; nút Thêm mới lập tay, thông tin chung theo phiếu mua hàng chỉnh cho bán, chi tiết hàng như Xuất bán POS có % CK, % phí dịch vụ | PhuongXT | 06/11/2026 | 2026-11-06-phuongxt-ban-hang-plus.md |
 | T752 | Màn Người dùng đổi thành Người sử dụng: thanh lọc theo Thu chi, Tuỳ chỉnh cột, chỉ bấm icon bút mới mở panel, form bớt ô, thêm Xác thực, thông tin người tạo, người cập nhật | Trum | 05/11/2026 | 2026-11-05-trum-nguoi-su-dung.md |
 | T751 | Panel danh mục: ô chọn nhiều hai cột dạng thẻ, ô tích vuông, độ rộng panel theo màn, dùng cho màn Người sử dụng | Trum | 05/11/2026 | 2026-11-05-trum-nguoi-su-dung.md |
 | T750 | Danh mục Quỹ tiền (web): quỹ nhiều cửa hàng thì số dư ban đầu tổng tự chia đều cho từng cửa hàng, ô số dư ở đầu mỗi nhóm cửa hàng trong khối Theo cửa hàng; sửa số từng cửa hàng thì tổng tự cộng lại. Biểu đồ, sổ quỹ theo cửa hàng chưa đọc phần chia; điện thoại chưa có | PhuongXT | 05/11/2026 | `2026-11-05-phuongxt-chia-so-du-quy.md` |

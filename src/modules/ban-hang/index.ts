@@ -28,7 +28,7 @@ const banHang: ModuleDef = {
   quyTrinh,
   screens: [...tuExcel(2, {
     // Xuất bán POS: chứng từ chỉ đổ về từ phần mềm bán hàng, không lập tay (T52)
-    '3.1.1': { kind: 'custom', comp: ChungTuBanHang, ten: 'Xuất bán POS' },
+    '3.1.1': { kind: 'custom', comp: ChungTuBanHang, ten: 'Xuất bán POS', nganGoi: { PL: 'Bán hàng' } },   // gói Plus gọi Bán hàng, thêm lập tay, nhập Excel (T753)
     // Bán hàng lập tay ngoài POS: tiệc, khách công ty; từ gói Plus (T52)
     '3.1.7': { voucher: { ...NGOAI_POS, rowsMau: () => phieuGocCoTt('3.1.7') } },   // phiếu mẫu đã thu có phiếu thu tham chiếu (T586)
     '3.1.2': { voucher: { prefix: 'HDB', doiTuong: 'kh', nhan: 'Khách hàng', them: 'Thêm hoá đơn bán hàng', dong: 'hang', tien: [0, 0], nguon: 'HĐ', soTT58: 'Sổ doanh thu bán hàng hoá, dịch vụ',
