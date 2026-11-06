@@ -44479,11 +44479,9 @@ a.hdn-chip:hover { border-color: var(--blue); color: var(--blue); }
   .ch-gv-dau span:nth-child(3) { display: none; }
 }
 
-/* ── Phiếu mua hàng: tab Chi phí mua hàng, nút Phân bổ (T757) ── */
-.ct-cpm { display: flex; flex-direction: column; gap: 8px; padding: 12px 12px 14px; }
-.ct-cpm-dau { font-size: 12px; color: var(--muted); }
-.ct-cpm-chan { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
-.ct-cpm-tong { margin-left: auto; color: var(--muted); }
-.ct-cpm-tong > b { margin-left: 6px; color: var(--ink); font-variant-numeric: tabular-nums; }
-.ct-cpm-tt { font-size: 12px; color: var(--muted); text-align: right; }
-.ct-cpm-tt.lech { color: var(--red); }
+/* ── Phiếu mua hàng: ô Chi phí mua hàng, nút Phân bổ ở đầu dải đáy form (T757) ── */
+.ct-cpm { display: flex; align-items: center; gap: 8px; padding-right: 14px; margin-right: 14px; border-right: 1px solid var(--line-2); white-space: nowrap; }
+.ct-cpm > small { font-size: 12px; color: var(--muted); }
+.ct-cpm > b { font-size: 13.5px; font-variant-numeric: tabular-nums; color: var(--ink); }
+.ct-cpm .ct-cpm-o { width: 130px; }
+.ct-cpm-tt { font-size: 12px; color: var(--red); }

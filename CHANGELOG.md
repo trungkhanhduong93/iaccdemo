@@ -3,7 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 06/11/2026
-- T757: Phiếu mua hàng có tab Chi phí mua hàng cạnh tab chi tiết để điền các khoản vận chuyển, bốc xếp. Ấn Phân bổ để chia tổng chi phí vào từng mặt hàng theo giá trị hàng. Lưới hàng có cột Chi phí mua hàng, cộng vào Giá trị nhập kho.
+- T757: Phiếu mua hàng có nút tích Chi phí mua hàng cạnh Nhận kèm hoá đơn. Tích thì dải đáy form có ô số tiền và nút Phân bổ, chia chi phí vào từng mặt hàng theo giá trị hàng. Lưới hàng hiện cột Chi phí mua hàng, cộng vào Giá trị nhập kho.
 - T755: Các màn bán hàng đổi tên cột Doanh thu trước thuế thành Doanh thu tính thuế.
 - T754: Cấu hình kế toán có thẻ Giảm thuế GTGT cho hộ kinh doanh, doanh nghiệp tính GTGT theo % doanh thu: bật tắt giảm thuế, chọn nghị quyết (mới nhất 204/2025/QH15), % giảm mức tỷ lệ, hiệu lực từ ngày đến ngày. Hết hiệu lực thì không giảm. Bật thì Danh mục hàng hoá có ô tích Giảm thuế theo quy định, không bắt buộc. Chứng từ bán hàng tính tiền giảm từng dòng = doanh thu tính thuế × % thuế GTGT của hàng × % giảm, hàng không tích thì không giảm.
 - T753: Gói Plus, màn Xuất bán POS đổi tên Bán hàng. Danh sách có cột, ô lọc Nguồn: FABi, Thủ công, Excel, và nút Thêm mới. Chứng từ FABi vẫn chỉ xem như gói Standard. Chứng từ thêm tay có Thông tin chung như phiếu mua hàng, đổi sang khách hàng, kho xuất. Bảng hàng cùng cột với Xuất bán POS: giảm giá, % CK, % phí dịch vụ, doanh thu trước thuế, tiền thuế. Trên thanh tab có ô Chiết khấu, Phí dịch vụ (theo % hoặc số tiền), Thuế GTGT cho cả bill, áp xuống mọi dòng như phiếu mua hàng.
