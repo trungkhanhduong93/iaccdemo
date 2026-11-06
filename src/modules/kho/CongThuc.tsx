@@ -25,12 +25,12 @@ import {
 } from './san-xuat'
 
 type LoaiCt = 'cb' | 'sc'
-const MAN: Record<LoaiCt, string> = { cb: 'kho/9-1-3', sc: 'kho/5-1-5' }
+export const MAN: Record<LoaiCt, string> = { cb: 'kho/9-1-3', sc: 'kho/5-1-5' }
 export const KENH = ['Tại quán', 'Mang về', 'GrabFood', 'ShopeeFood']
 /** Hàng làm thành phẩm của công thức chế biến: món và bán thành phẩm; nguyên vật liệu chọn trong NVL và hàng sơ chế */
 export const DS_SP = [...HANG.filter(h => !h.tonKho), ...HANG_SX.filter(h => h.nhom === 'Bán thành phẩm' || h.nhom.startsWith('Món'))]
 export const DS_NVL = [...NVL, ...HANG_SX.filter(h => !h.nhom.startsWith('Món'))]
-const mucHang = (ds: { ma: string; ten: string }[]) => ds.map(h => ({ v: h.ma, t: `${h.ten} - ${h.ma}` }))
+export const mucHang = (ds: { ma: string; ten: string }[]) => ds.map(h => ({ v: h.ma, t: `${h.ten} - ${h.ma}` }))
 
 /** Công thức của màn: mẫu, công thức lưu trong phiên, áp nội dung đã sửa (bật tắt, sửa form) */
 export function useDsCongThuc(loai: LoaiCt): Row[] {
@@ -215,7 +215,7 @@ function DsCongThuc({ sc, mod, loai, ds }: ScreenProps & { loai: LoaiCt; ds: Row
 // ── Form chi tiết ──
 
 /** Ô số: gõ số thô, rời ô hiện kiểu Việt Nam */
-function OSo({ val, onChange, w }: { val: number; onChange: (v: number) => void; w?: number }) {
+export function OSo({ val, onChange, w }: { val: number; onChange: (v: number) => void; w?: number }) {
   const [focus, setFocus] = useState(false)
   const [str, setStr] = useState(String(val))
   useEffect(() => { if (!focus) setStr(String(val)) }, [val, focus])

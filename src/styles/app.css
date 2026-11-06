@@ -24831,7 +24831,7 @@ button[class*="btn-"] .ic .l2 {
   font-size: 12px;
   font-weight: 600;
   color: #0560a6;
-  background: #e6eff7;
+  background: var(--th);
   border-radius: 6px;
   padding: 3px 8px;
 }
@@ -33390,7 +33390,7 @@ a.tx-item:hover {
 }
 
 .m-bc-quick-chip {
-  background: #e6eff7;
+  background: var(--th);
   border: 1px solid #c2d9ee;
   color: var(--blue);
   border-radius: 16px;
@@ -33450,7 +33450,7 @@ a.tx-item:hover {
   width: 40px;
   height: 40px;
   border-radius: 10px;
-  background: #e6eff7;
+  background: var(--th);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -33871,7 +33871,7 @@ a.tx-item:hover {
 }
 
 .m-sq-card-cuoi {
-  background: #e6eff7;
+  background: var(--th);
   border: 1px solid #c2d9ee;
 }
 
@@ -36995,7 +36995,7 @@ body:has(.m-app) .m-thanh-duoi .m-tab.on .m-tab-ic .ic .l2 {
 }
 
 .m-ls-vong-tron.sua {
-  background: #e6eff7;
+  background: var(--th);
   color: var(--blue, #0560a6);
 }
 
@@ -42228,7 +42228,7 @@ textarea.m-tpb-inp { width: 100%; text-align: left; resize: vertical; }
   font-size: 12px;
 }
 .tl-bang-kq th {
-  background: #e6eff7;
+  background: var(--th);
   color: #1e293b;
   font-weight: 600;
   padding: 5px 6px;
@@ -45208,4 +45208,358 @@ a.hdn-chip:hover { border-color: var(--blue); color: var(--blue); }
 .m-ct-loc .m-loc-dong {
   width: 100%;
   text-align: left;
+}
+
+/* ── Công thức chế biến web gói Plus theo itax (T759) ── */
+.ctpl-tim {
+  width: 240px;
+}
+.ctpl-tim .inp {
+  width: 100%;
+}
+.ctpl-ngay {
+  width: 170px;
+}
+.ctpl-pheu-pop {
+  padding: 14px;
+  width: 320px;
+}
+.ctpl-loc-o {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.ctpl-loc-o span {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink);
+}
+.ctpl-loc-day {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 14px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+}
+.ctpl-tt {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13.5px;
+}
+.ctpl-tt-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex: none;
+}
+
+/* ── Màn 2: Form công thức chế biến web gói Plus theo itax (T759) ── */
+.ctpl-form {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.ctpl-dau {
+  background: var(--soft);
+  border-bottom: 1px solid var(--line);
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex: none;
+}
+
+.ctpl-dau h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.ctpl-dong {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  transition: background .12s, color .12s;
+}
+
+.ctpl-dong:hover {
+  background: rgba(0, 0, 0, .06);
+  color: var(--ink);
+}
+
+.ctpl-than {
+  flex: 1;
+  overflow-y: auto;
+  background: #fff;
+  padding: 24px 0 40px;
+}
+
+.ctpl-cot {
+  max-width: 736px;
+  width: calc(100% - 32px);
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.ctpl-tieu-khoi {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-top: 24px;
+  margin-bottom: 8px;
+}
+
+.ctpl-cot > .ctpl-tieu-khoi:first-child {
+  margin-top: 0;
+}
+
+.ctpl-dong-o {
+  display: flex;
+  align-items: stretch;
+  border: 1px solid var(--line);
+  margin-top: -1px;
+  background: #fff;
+}
+
+.ctpl-dong-o:first-of-type {
+  margin-top: 0;
+}
+
+.ctpl-nhan {
+  width: 155px;
+  min-width: 155px;
+  max-width: 155px;
+  box-sizing: border-box;
+  background: var(--soft);
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 500;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  border-right: 1px solid var(--line);
+}
+
+.ctpl-nhan em,
+.ctpl-nhan .sao {
+  color: var(--red);
+  font-style: normal;
+  margin-left: 3px;
+}
+
+.ctpl-o {
+  flex: 1;
+  min-width: 0;
+  box-sizing: border-box;
+  background: #fff;
+  padding: 6px 10px;
+  display: flex;
+  align-items: center;
+}
+
+.ctpl-o.khoa {
+  background: var(--soft);
+  color: var(--muted);
+}
+
+.ctpl-dong-doi .ctpl-o:first-of-type {
+  border-right: 1px solid var(--line);
+}
+
+.ctpl-o input,
+.ctpl-o textarea,
+.ctpl-o select {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--ink);
+  box-shadow: none;
+}
+
+.ctpl-o.khoa input {
+  color: var(--muted);
+  cursor: not-allowed;
+}
+
+.ctpl-o textarea {
+  resize: vertical;
+  min-height: 52px;
+  padding: 2px 0;
+}
+
+.ctpl-o .ct-ngay,
+.ctpl-o .cdm-hop,
+.ctpl-o .chc-o,
+.ctpl-o .chc-hop {
+  width: 100%;
+}
+
+.ctpl-o .ct-ngay .inp,
+.ctpl-o .cdm-hop .inp,
+.ctpl-o .chc-o .inp {
+  border: none;
+  background: transparent;
+  box-shadow: none;
+  padding-left: 0;
+}
+
+.ctpl-chan {
+  flex: none;
+  background: #fff;
+  border-top: 1px solid var(--line);
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.ctpl-them {
+  color: var(--blue);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.ctpl-them:hover {
+  text-decoration: underline;
+}
+
+.ctpl-nvl {
+  width: 100%;
+  border-collapse: collapse;
+  min-height: 280px;
+}
+
+.ctpl-nvl-wrap {
+  min-height: 280px;
+  border: 1px solid var(--line);
+  margin-top: 8px;
+  background: #fff;
+  overflow-x: auto;
+}
+
+.ctpl-nvl th {
+  background: var(--soft);
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  text-align: left;
+}
+
+.ctpl-nvl th.num {
+  text-align: right;
+}
+
+.ctpl-nvl td {
+  padding: 6px 10px;
+  border: 1px solid var(--line);
+  font-size: 13.5px;
+  color: var(--ink);
+}
+
+.ctpl-nvl td.num {
+  text-align: right;
+}
+
+.ctpl-nvl td.c {
+  text-align: center;
+}
+
+.ctpl-nvl td.ctpl-nvl-ma,
+.ctpl-nvl td.ctpl-nvl-ten {
+  background: var(--soft);
+}
+
+.ctpl-loc {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 2px 6px;
+}
+
+.ctpl-loc input {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 12px;
+  font-family: inherit;
+  color: var(--ink);
+}
+
+.ctpl-loc .ic {
+  color: var(--muted);
+  flex: none;
+}
+
+.ctpl-xoa {
+  color: var(--red);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ctpl-xoa:hover {
+  background: rgba(220, 38, 38, .08);
+}
+
+/* Ô chọn nằm trong ô của form, bỏ viền riêng của ô chọn để liền khối như itax */
+.ctpl-o > .inp {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.ctpl-dong-doi .ctpl-o + .ctpl-nhan {
+  border-left: 1px solid var(--line);
+}
+.ctpl-nvl thead tr:first-child th {
+  background: var(--th);
+}
+.ctpl-nvl .ctpl-loc-hang th {
+  background: #fff;
+}
+
+/* Form phủ z-index 60, hộp xác nhận và chọn hàng phải nổi lên trên */
+body:has(.ctpl-form) .overlay {
+  z-index: 70;
 }

@@ -11,7 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T759 | Web gói Plus, Công thức chế biến ở Danh mục theo màn Công thức định lượng của itax: danh sách 7 cột, form toàn trang một cột giữa. Giữ tên màn, giữ Cửa hàng và Kênh áp dụng, gói Pro không đổi | Trum | Đang làm | Thêm `src/modules/kho/CongThucPlus.tsx`, sửa `danh-muc/index.ts`, `CongThuc.tsx` (chỉ export), cuối `app.css` (mục T759) |
 | T758 | Phiếu hàng bán trả lại (3.1.4): bảng chi tiết chỉ còn Mã hàng, Tên hàng, ĐVT, Số lượng, Đơn giá, Thành tiền, bỏ các cột còn lại | PhuongXT | Đang làm | Sửa `ChungTuForm.tsx` (chỗ gọi `cotTuyChon`, `BangSua`) |
 | T734 | Điện thoại, lập phiếu thu chi gói Plus như Standard (tiếp T733): lưu là ghi sổ luôn, bỏ khối hạch toán và `tkNo`, `tkCo`, có chi trả nợ nhà cung cấp | | Chờ | `MDtThuChiLap.tsx` đang trong T552 của Trum, hỏi Trum trước. Đổi `s.goi === 'S'` sang `tcNhuStandard(s.goi)`. Xem nhật ký `2026-11-04-phuongxt-thu-chi-plus-nhu-standard.md` |
 | T696 | `kiem_tra.py --dien-thoai` dừng ở đợt 5 (lập phiếu): chờ 30 giây không thấy `.m-xp-nut-menu` nên không chạy tới các đợt sau | | Chờ | Thấy lúc nghiệm thu T695. Nút có trong `src/ui/mobile/MDtThuChiXem.tsx:341`, xem `tools/kiem_tra.py:642`. Đợt 11A chạy riêng vẫn qua |

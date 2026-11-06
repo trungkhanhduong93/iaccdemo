@@ -17,7 +17,7 @@ import { datSoDuQuy, soDuQuyBanDau } from '../tong-hop/SoDuBanDau'
 import { chiaTheoForm, docTien } from './ChiaSoDuQuy'
 import { luuPtttQuy, ptttCuaQuy, tomTatPttt } from '../tien/dong-bo-fabi'
 import { dauThap } from '../../ui/format'
-import { CongThucScreen } from '../kho/CongThuc'
+import { CongThucPlusScreen } from '../kho/CongThucPlus'
 import { ThemBangGia } from './ThemBangGia'
 
 /** Nhãn ngắn trên thanh tab */
@@ -180,7 +180,7 @@ const AN_GOI_PLUS = ['1.1', '1.6', '1.7', '1.9', '1.10', '1.11', '1.15']
 /** Công thức chế biến của Kho hiện thêm ở Danh mục gói Plus, cùng dữ liệu với tab ở Kho (T719) */
 const congThucCheBien: ScreenDef = {
   slug: 'cong-thuc-che-bien', ten: 'Công thức chế biến', ngan: 'Công thức chế biến', nhom: 'Danh mục', kind: 'custom', icon: 'book',
-  comp: CongThucScreen, can: ['9.1.3'], goi: ['PL'],
+  comp: CongThucPlusScreen, can: ['9.1.3'], goi: ['PL'],
 }
 
 const danhMuc: ModuleDef = {

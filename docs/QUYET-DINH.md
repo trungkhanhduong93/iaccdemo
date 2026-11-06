@@ -1078,4 +1078,12 @@ Trum chốt khi nghiệm thu T756.
 - Công thức sơ chế 5.1.5, chế biến 9.1.3 là danh mục, có ô Cửa hàng áp dụng riêng, để trống là áp dụng toàn bộ. Đang xem Tất cả cửa hàng thì vào thêm mới không hỏi chọn cửa hàng, cả web lẫn điện thoại.
 - Các màn chứng từ khác vẫn hỏi như T526.
 
-## QD99. Công thức chế biến web gói Plus theo itax (đang soạn)
+## QD99. Công thức chế biến web gói Plus theo itax (06/11/2026)
+
+Trum chốt khi làm T759:
+
+- Chỉ đổi màn `danh-muc/cong-thuc-che-bien` của gói Plus. Gói Pro giữ `CongThucScreen`.
+- Giữ tên "Công thức chế biến", không đổi sang "Công thức định lượng" như itax.
+- Giữ ô Cửa hàng áp dụng, Kênh áp dụng, không đổi sang Kho áp dụng.
+- Học bố cục, luồng thao tác của itax. Màu, phông, icon lấy của repo (QD12).
+- Chưa làm nút Xoá ở form dù itax có, vì T756 cấm nút Xoá công thức.
