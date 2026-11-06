@@ -11,6 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T760 | Công thức chế biến: web gói Plus có danh sách mỗi nguyên vật liệu một dòng, chip trạng thái và thanh lọc theo danh mục hàng hoá, form mẫu B hai khối, ĐVT nguyên vật liệu đổi được, Thêm dòng, Thêm hàng loạt; bỏ trạng thái Nháp ở mọi gói và điện thoại; sửa nút Đầu tháng tràn chữ | Trum | Đang làm | Sửa `CongThucPlus.tsx`, `CongThucPlusForm.tsx`, `CongThuc.tsx`, `san-xuat.ts`, `MCongThuc.tsx`, cuối `app.css` (mục T760). Spec `backup/spec-T760.md` |
 | T758 | Phiếu hàng bán trả lại (3.1.4): bảng chi tiết chỉ còn Mã hàng, Tên hàng, ĐVT, Số lượng, Đơn giá, Thành tiền, bỏ các cột còn lại | PhuongXT | Đang làm | Sửa `ChungTuForm.tsx` (chỗ gọi `cotTuyChon`, `BangSua`) |
 | T734 | Điện thoại, lập phiếu thu chi gói Plus như Standard (tiếp T733): lưu là ghi sổ luôn, bỏ khối hạch toán và `tkNo`, `tkCo`, có chi trả nợ nhà cung cấp | | Chờ | `MDtThuChiLap.tsx` đang trong T552 của Trum, hỏi Trum trước. Đổi `s.goi === 'S'` sang `tcNhuStandard(s.goi)`. Xem nhật ký `2026-11-04-phuongxt-thu-chi-plus-nhu-standard.md` |
 | T696 | `kiem_tra.py --dien-thoai` dừng ở đợt 5 (lập phiếu): chờ 30 giây không thấy `.m-xp-nut-menu` nên không chạy tới các đợt sau | | Chờ | Thấy lúc nghiệm thu T695. Nút có trong `src/ui/mobile/MDtThuChiXem.tsx:341`, xem `tools/kiem_tra.py:642`. Đợt 11A chạy riêng vẫn qua |

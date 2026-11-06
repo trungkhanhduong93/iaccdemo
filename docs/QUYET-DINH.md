@@ -1087,3 +1087,5 @@ Trum chốt khi làm T759:
 - Giữ ô Cửa hàng áp dụng, Kênh áp dụng, không đổi sang Kho áp dụng.
 - Học bố cục, luồng thao tác của itax. Màu, phông, icon lấy của repo (QD12).
 - Chưa làm nút Xoá ở form dù itax có, vì T756 cấm nút Xoá công thức.
+
+## QD100. Công thức chế biến: danh sách theo nguyên vật liệu, form mẫu B, bỏ Nháp (đang soạn)
