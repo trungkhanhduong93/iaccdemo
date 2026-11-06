@@ -102,7 +102,7 @@ function dongMonGiam(dt: number, vat: number) {
   const lon = ds.reduce((a, d) => (d.thue > a.thue ? d : a), ds[0])
   lon.thue += vat - ds.reduce((a, d) => a + d.thue, 0)
   // Các khoản của đơn POS theo từng món (T106); dữ liệu mẫu bằng 0. Bảng không có cột Tổng tiền, tổng ở dải đáy
-  // Doanh thu trước thuế = thành tiền − giảm giá − chiết khấu + phí dịch vụ + phí vận chuyển; cộng lại bằng doanh thu ngày
+  // Doanh thu tính thuế = thành tiền − giảm giá − chiết khấu + phí dịch vụ + phí vận chuyển; cộng lại bằng doanh thu ngày
   return ds.map(d => {
     const o = { ptCk: 0, ck: 0, ptPhiDv: 0, phiDv: 0, giamThue: 0, phiVc: 0 }
     return { ...d, ...o, dtTruocThue: d.thanh - d.giam - o.ck + o.phiDv + o.phiVc }
@@ -642,7 +642,7 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
     { k: 'dienGiai', t: 'Ghi chú' },
     { k: 'kenh', t: 'Kênh bán', w: 140 },   // T113
     ...(cnChon ? [] : [{ k: 'cn', t: 'Cửa hàng', cls: 'dim' } as Col]),
-    { k: 'tien', t: 'Doanh thu trước thuế', num: true, w: 160 },
+    { k: 'tien', t: 'Doanh thu tính thuế', num: true, w: 160 },
     tyLe ? { k: 'giamThue', t: 'Giảm thuế GTGT', num: true, w: 130 } : { k: 'thue', t: 'Tiền thuế', num: true, w: 120 },   // T163
     // bỏ cột Nguồn: Xuất bán POS chỉ có nguồn FABi (T115); gói Plus có thêm chứng từ lập tay, nhập Excel nên hiện lại (T753)
     ...(plus ? [{ k: 'nguon', t: 'Nguồn', w: 90, r: (r: Row) => { const [c, t] = NGUON[String(r.nguon)] ?? NGUON.tay; return <span className={`src ${c}`}>{t}</span> } } as Col] : []),
@@ -834,7 +834,7 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
 const COT_POS: [string, string][] = [
   ['ma', 'Mã hàng'], ['dvt', 'ĐVT'], ['sl', 'Số lượng'], ['gia', 'Đơn giá'], ['thanh', 'Thành tiền'], ['pt', 'Giảm giá (%)'], ['giam', 'Tiền giảm giá'],
   ['ptCk', '% CK'], ['ck', 'Tiền CK'], ['ptPhiDv', '% Phí dịch vụ'], ['phiDv', 'Phí dịch vụ'], ['giamThue', 'Giảm thuế GTGT'], ['phiVc', 'Phí vận chuyển'],
-  ['dtTruocThue', 'Doanh thu trước thuế'], ['ts', 'Thuế suất'], ['thue', 'Tiền thuế'], ['tonKho', 'Theo dõi tồn kho'],
+  ['dtTruocThue', 'Doanh thu tính thuế'], ['ts', 'Thuế suất'], ['thue', 'Tiền thuế'], ['tonKho', 'Theo dõi tồn kho'],
 ]
 const AN_POS_MAC_DINH = ['giamThue', 'phiVc']
 
@@ -842,7 +842,7 @@ function NoiDungTab({ x, tab, kieu, an: an0 = AN_POS_MAC_DINH, tyLe = false, hie
   const an = anTheoLoai(an0, tyLe)
   const dong0 = dongCuaPhieu(x)
   const doRong = useDoRongCot(`xuat-ban-pos:${tab}`)   // kéo giãn cột, nhớ riêng từng tab (T618)
-  // GTGT theo % doanh thu: giảm thuế GTGT của phiếu chia cho các món theo doanh thu trước thuế (T163)
+  // GTGT theo % doanh thu: giảm thuế GTGT của phiếu chia cho các món theo doanh thu tính thuế (T163)
   const giam = tyLe ? chiaTheo(giamThueHkd(x.dt), dong0.map(d => d.dtTruocThue), 1) : []
   const dong = tyLe ? dong0.map((d, i) => ({ ...d, giamThue: giam[i] })) : dong0
   const ht = [
@@ -875,7 +875,7 @@ function NoiDungTab({ x, tab, kieu, an: an0 = AN_POS_MAC_DINH, tyLe = false, hie
             { k: 'phiDv', t: 'Phí dịch vụ', num: true, w: 110 },
             { k: 'giamThue', t: 'Giảm thuế GTGT', num: true, w: 125 },
             { k: 'phiVc', t: 'Phí vận chuyển', num: true, w: 120 },
-            { k: 'dtTruocThue', t: 'Doanh thu trước thuế', num: true, w: 150 },
+            { k: 'dtTruocThue', t: 'Doanh thu tính thuế', num: true, w: 150 },
             { k: 'ts', t: 'Thuế suất', num: true, w: 80, r: r => `${r.ts}%` },
             { k: 'thue', t: 'Tiền thuế', num: true, w: 110 },
             // Theo danh mục hàng hoá: tích là mặt hàng theo dõi tồn kho, chỉ xem; cột cuối, cố định phải (T114)

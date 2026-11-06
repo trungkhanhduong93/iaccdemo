@@ -70,7 +70,7 @@ export interface VoucherCfg {
   dienGiai: string[]                     // mẫu diễn giải
   tien: [number, number]                 // khoảng số tiền giả
   dong?: 'hang' | 'nvl' | 'tien' | 'ts'  // dòng chi tiết
-  dongPos?: boolean                      // dòng hàng như Xuất bán POS: giảm giá, % CK, % phí dịch vụ, doanh thu trước thuế (T753)
+  dongPos?: boolean                      // dòng hàng như Xuất bán POS: giảm giá, % CK, % phí dịch vụ, doanh thu tính thuế (T753)
   noCo?: [string, string, string][]      // bút toán mẫu: Nợ, Có, diễn giải
   soTT58?: string                        // sổ ghi theo TT58 khi không dùng tài khoản
   nguon?: 'FABi' | 'IVT' | 'HĐ' | 'tay' | 'excel'  // nguồn chính của chứng từ; excel: nhập từ file Excel (T64)

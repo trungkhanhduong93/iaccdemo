@@ -590,7 +590,7 @@ export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
             <section className="m-xb651-the m-xb651-hang">
               {dsMonLoc.length === 0 && <div className="m-pos-b-trong">Không có hàng hoá khớp</div>}
               {dsMonLoc.map((m, idx) => {
-                // Tổng dòng = doanh thu trước thuế + thuế; GTGT theo % doanh thu thì trừ giảm thuế, không có VAT (T163, T450)
+                // Tổng dòng = doanh thu tính thuế + thuế; GTGT theo % doanh thu thì trừ giảm thuế, không có VAT (T163, T450)
                 const giamThue = Number(m.giamThue) || 0
                 const tong = m.dtTruocThue + (tyLe ? -giamThue : m.thue)
                 return (

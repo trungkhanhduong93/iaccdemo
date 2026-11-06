@@ -11,7 +11,7 @@ import { dauThap, money } from '../../ui/format'
 const tron = (v: number) => Math.round(v)
 const phanTram = (v: number) => (v ? `${v}%` : '0%')
 
-/** Doanh thu trước thuế của dòng = thành tiền − giảm giá − chiết khấu + phí dịch vụ, như Xuất bán POS */
+/** Doanh thu tính thuế của dòng = thành tiền − giảm giá − chiết khấu + phí dịch vụ, như Xuất bán POS */
 export const dtDong = (d: Dong) => (d.tien || 0) - (d.giam || 0) - (d.ck || 0) + (d.phiDv || 0)
 
 /** Tính lại một dòng: giảm giá tính trên thành tiền, chiết khấu trên tiền sau giảm giá, phí dịch vụ trên tiền sau chiết khấu */
@@ -171,7 +171,7 @@ export function BangHangBan({ dong, onChange, cheDo, tyLe, giamThue }: {
               <th className="num" style={{ width: 105 }}>% Phí dịch vụ</th>
               <th className="num" style={{ width: 105 }}>Phí dịch vụ</th>
               {tyLe && <th className="num" style={{ width: 120 }}>Giảm thuế GTGT</th>}
-              <th className="num" style={{ width: 140 }}>Doanh thu trước thuế</th>
+              <th className="num" style={{ width: 140 }}>Doanh thu tính thuế</th>
               {!tyLe && <th className="num" style={{ width: 80 }}>Thuế suất</th>}
               {!tyLe && <th className="num" style={{ width: 105 }}>Tiền thuế</th>}
               <th className="c" style={{ width: 110 }}>Theo dõi tồn kho</th>
