@@ -26,7 +26,7 @@ import {
 
 type LoaiCt = 'cb' | 'sc'
 const MAN: Record<LoaiCt, string> = { cb: 'kho/9-1-3', sc: 'kho/5-1-5' }
-const KENH = ['Tại quán', 'Mang về', 'GrabFood', 'ShopeeFood']
+export const KENH = ['Tại quán', 'Mang về', 'GrabFood', 'ShopeeFood']
 /** Hàng làm thành phẩm của công thức chế biến: món và bán thành phẩm; nguyên vật liệu chọn trong NVL và hàng sơ chế */
 export const DS_SP = [...HANG.filter(h => !h.tonKho), ...HANG_SX.filter(h => h.nhom === 'Bán thành phẩm' || h.nhom.startsWith('Món'))]
 export const DS_NVL = [...NVL, ...HANG_SX.filter(h => !h.nhom.startsWith('Món'))]

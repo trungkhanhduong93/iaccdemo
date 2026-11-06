@@ -122,3 +122,9 @@ Lỗi đã từng làm mất thời gian, kèm cách tránh. Đọc trước khi
 - Hiện tượng: mở màn có nút Hướng dẫn đang nhấp nháy (màn chưa bấm Hướng dẫn lần nào), cả trang rung theo nhịp 1,6 giây. Màn đã bấm Hướng dẫn thì không rung.
 - Nguyên nhân: vòng cam `::after` quanh nút dùng `transform: scale(1.25)`. Nút nằm cuối thanh tab, sát mép phải, nên vòng lố ra ngoài cửa sổ 1–6px. `scrollWidth` của trang đổi theo từng khung hình, thanh cuộn ngang hiện rồi mất liên tục.
 - Cách tránh: khung chứa phần tử có hiệu ứng phóng to sát mép cửa sổ phải cắt chiều ngang (`overflow-x: clip`, như `.mtabs`). Đừng dùng `overflow: hidden`, vì nó cắt cả vòng lan lên xuống. Bộ kiểm chỉ đo `.main`, không bắt được lỗi này: đo `document.scrollingElement.scrollWidth` mỗi khung hình trong 2 giây.
+
+## Form công thức điện thoại lặp vô hạn khi mở dòng đã sửa (T756)
+
+- Hiện tượng: bật tắt hoặc sửa một công thức, rồi bấm Sửa: console báo `Maximum update depth exceeded`, màn đứng. Công thức chưa sửa lần nào thì bình thường.
+- Nguyên nhân: `useDsCongThuc` qua `apSua` trả object mới mỗi lần vẽ với dòng đã sửa. Effect nạp form để object đó trong phụ thuộc nên chạy lại liên tục, đồng thời xoá chữ đang nhập.
+- Cách tránh: effect nạp form phụ thuộc vào `id` và `location.key`, không phụ thuộc vào object dòng lấy từ `useDsCongThuc` hay `useDaXoa`. Kiểm form sửa phải có ca sửa cùng một dòng 2 lần.

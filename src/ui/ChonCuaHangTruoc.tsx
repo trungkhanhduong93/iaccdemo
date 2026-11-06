@@ -27,6 +27,9 @@ export function laDuongDanTaoPhieu(pathname: string, search = ''): boolean {
     return false
   }
 
+  // Công thức sơ chế, chế biến là danh mục, có ô Cửa hàng áp dụng riêng, không phải phiếu (T756)
+  if (modKey === 'kho' && (slug === '5-1-5' || slug === '9-1-3')) return false
+
   // Danh mục trong các phân hệ khác (ví dụ kho/5-1-12, ccdc/8-1-1)
   if (slug) {
     const { sc } = timMan(modKey, slug)

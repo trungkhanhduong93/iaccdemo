@@ -79,8 +79,12 @@ export function manMobile(sc: ScreenDef, mod: ModuleDef): ComponentType<ScreenPr
     return MXuatBanPos
   }
 
-  // T188: Công thức sơ chế 5.1.5 và Công thức chế biến 9.1.3
-  if ((sc.code === '5.1.5' || sc.slug === '5-1-5' || sc.code === '9.1.3' || sc.slug === '9-1-3') && (mod.key === 'kho' || sc.comp === CongThucScreen)) {
+  // T188: Công thức sơ chế 5.1.5 và Công thức chế biến 9.1.3 (kể cả Danh mục gói Plus: cong-thuc-che-bien)
+  if (
+    sc.comp === CongThucScreen ||
+    sc.slug === 'cong-thuc-che-bien' ||
+    ((sc.code === '5.1.5' || sc.slug === '5-1-5' || sc.code === '9.1.3' || sc.slug === '9-1-3') && (mod.key === 'kho' || mod.key === 'danh-muc'))
+  ) {
     return MCongThuc
   }
 

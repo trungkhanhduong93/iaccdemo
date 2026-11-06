@@ -1070,3 +1070,10 @@ PhuongXT yêu cầu, T754.
 - Thẻ Giảm thuế GTGT: nút bật tắt trên cùng, dưới là một dòng 3 cột Giảm theo nghị quyết, % giảm, Hiệu lực (từ ngày, đến ngày chọn được). Chọn nghị quyết thì điền sẵn % giảm, hiệu lực. Không có nút thêm, xoá dòng: có nghị quyết mới thì dev thêm vào `NGHI_QUYET_GIAM_VAT` trong `giam-thue.ts`. Hết hiệu lực thì không tính giảm.
 - Bật giảm thì Danh mục hàng hoá có ô tích Giảm thuế theo quy định, không bắt buộc tích. Tắt thì ô ẩn, không tính giảm.
 - Tiền giảm của một dòng bán = doanh thu tính thuế × tỷ lệ % GTGT ngầm định của hàng (theo ngành nghề) × % giảm. Hàng không tích thì 0.
+
+## QD98. Công thức không hỏi cửa hàng trước khi thêm (06/11/2026)
+
+Trum chốt khi nghiệm thu T756.
+
+- Công thức sơ chế 5.1.5, chế biến 9.1.3 là danh mục, có ô Cửa hàng áp dụng riêng, để trống là áp dụng toàn bộ. Đang xem Tất cả cửa hàng thì vào thêm mới không hỏi chọn cửa hàng, cả web lẫn điện thoại.
+- Các màn chứng từ khác vẫn hỏi như T526.

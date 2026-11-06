@@ -44485,3 +44485,711 @@ a.hdn-chip:hover { border-color: var(--blue); color: var(--blue); }
 .ct-cpm > b { font-size: 13.5px; font-variant-numeric: tabular-nums; color: var(--ink); }
 .ct-cpm .ct-cpm-o { width: 130px; }
 .ct-cpm-tt { font-size: 12px; color: var(--red); }
+
+/* ── Công thức chế biến điện thoại theo app IVT (T756) ── */
+.m-ct-khung {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  background: var(--soft);
+  position: relative;
+  font-family: var(--fs);
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+.m-ct-tabs {
+  display: flex;
+  gap: 18px;
+  background: #fff;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--line);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.m-tc-tab-btn.m-ct-tab-btn {
+  border: 0;
+  background: none;
+  padding: 10px 0;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--muted);
+  white-space: nowrap;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+}
+.m-tc-tab-btn.m-ct-tab-btn.on {
+  color: var(--blue);
+  font-weight: 600;
+  border-bottom-color: var(--blue);
+}
+.m-ct-so {
+  display: inline-block;
+  min-width: 20px;
+  padding: 0 6px;
+  margin-left: 5px;
+  border-radius: 10px;
+  background: var(--tint);
+  color: var(--blue);
+  font-size: 10.5px;
+  line-height: 18px;
+  text-align: center;
+  font-weight: 600;
+}
+.m-ct-dau {
+  padding: 10px 12px;
+}
+.m-ct-tim {
+  height: 40px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px;
+  color: var(--faint);
+}
+.m-ct-tim-inp {
+  flex: 1;
+  border: 0;
+  background: none;
+  outline: 0;
+  font-size: 16px;
+  color: var(--ink);
+  padding: 0;
+  min-width: 0;
+}
+.m-ct-tim-inp::placeholder {
+  color: var(--faint);
+}
+.m-ct-tim-ic {
+  color: var(--faint);
+}
+.m-ct-tim-x {
+  border: 0;
+  background: none;
+  color: var(--faint);
+  display: grid;
+  place-items: center;
+  padding: 2px;
+  cursor: pointer;
+}
+.m-ct-ds {
+  padding: 0 12px 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.m-ct-the {
+  background: #fff;
+  border-radius: 12px;
+  padding: 12px 14px;
+  position: relative;
+  border: 0;
+  width: 100%;
+  text-align: left;
+  display: block;
+  font-size: 14px;
+  color: inherit;
+  box-sizing: border-box;
+  cursor: pointer;
+  padding-right: 34px;
+}
+.m-ct-the .ten {
+  line-height: 1.4;
+  color: var(--ink);
+}
+.m-ct-the .ten b {
+  font-weight: 600;
+}
+.m-ct-the .ten .mo {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 400;
+}
+.m-ct-the .dong-phu {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+.m-ct-the .dong-phu i {
+  font-style: normal;
+  color: var(--ink);
+}
+.m-ct-the .chev {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.m-ct-fab {
+  position: fixed;
+  right: 16px;
+  bottom: 24px;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 0;
+  background: var(--blue);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 4px 14px rgba(5,96,166,.35);
+  z-index: 10;
+  cursor: pointer;
+}
+.m-ct-fab svg {
+  width: 24px;
+  height: 24px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+/* Chi tiết & Form toàn trang (T756) */
+.m-ct-chi-tiet, .m-ct-form {
+  position: fixed;
+  inset: 0;
+  background: var(--soft);
+  z-index: 50;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+.m-ct-dau-trai {
+  height: 50px;
+  background: #fff;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  gap: 4px;
+  flex: none;
+}
+.m-ct-dau-trai h1 {
+  flex: 1;
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.2;
+  text-align: left;
+  color: var(--ink);
+}
+.m-ct-dau-trai h1 small {
+  display: block;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--muted);
+  margin-top: 2px;
+}
+.m-ct-dau-giua {
+  height: 50px;
+  background: #fff;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  gap: 4px;
+  flex: none;
+}
+.m-ct-dau-giua h1 {
+  flex: 1;
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  text-align: center;
+  color: var(--ink);
+}
+.m-ct-nut-ic {
+  width: 40px;
+  height: 40px;
+  border: 0;
+  background: none;
+  display: grid;
+  place-items: center;
+  color: var(--ink);
+  flex: none;
+  cursor: pointer;
+}
+.m-ct-nut-ic svg {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.m-ct-cuon {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 12px 12px 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.m-ct-the-khoi {
+  background: #fff;
+  border-radius: 12px;
+  padding: 12px 14px;
+  box-sizing: border-box;
+}
+.m-ct-tt-dong {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 14px;
+}
+.m-ct-tt-dong:last-child {
+  border-bottom: 0;
+  padding-bottom: 2px;
+}
+.m-ct-tt-dong:first-child {
+  padding-top: 2px;
+}
+.m-ct-tt-dong span:first-child {
+  color: var(--muted);
+}
+.m-ct-tt-dong b {
+  font-weight: 600;
+  text-align: right;
+  color: var(--ink);
+}
+.m-ct-cham {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--green);
+  margin-right: 8px;
+}
+.m-ct-cong {
+  width: 42px;
+  height: 24px;
+  border-radius: 12px;
+  border: 0;
+  background: #cbd5e1;
+  position: relative;
+  padding: 0;
+  flex: none;
+  cursor: pointer;
+}
+.m-ct-cong i {
+  position: absolute;
+  left: 3px;
+  top: 3px;
+  width: 18px;
+  height: 18px;
+  background: #fff;
+  border-radius: 50%;
+  transition: left .15s;
+}
+.m-ct-cong.on {
+  background: var(--blue);
+}
+.m-ct-cong.on i {
+  left: 21px;
+}
+.m-ct-tt-phai {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+  font-size: 13px;
+}
+.m-ct-tt-phai.on {
+  color: var(--green);
+}
+.m-ct-tt-phai.off {
+  color: var(--red);
+}
+.m-ct-tieu-khoi {
+  font-size: 15px;
+  font-weight: 700;
+  margin: 0 0 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--ink);
+}
+.m-ct-pv {
+  display: flex;
+  font-size: 13px;
+  margin-top: 6px;
+  gap: 6px;
+}
+.m-ct-pv span:first-child {
+  width: 130px;
+  color: var(--muted);
+  flex: none;
+}
+.m-ct-pv b {
+  color: var(--ink);
+  font-weight: 600;
+}
+.m-ct-nvl-dong {
+  padding: 10px 0;
+  border-bottom: 1px dashed #cbd5e1;
+}
+.m-ct-nvl-dong:first-of-type {
+  padding-top: 0;
+}
+.m-ct-nvl-dong:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+.m-ct-nvl-dong .ten {
+  line-height: 1.4;
+  color: var(--ink);
+}
+.m-ct-nvl-dong .ten b {
+  font-weight: 600;
+}
+.m-ct-nvl-dong .ten .mo {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 400;
+}
+.m-ct-nvl-dong .nvl-so {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 3px;
+}
+.m-ct-day {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 68px;
+  background: #fff;
+  border-top: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 16px;
+  z-index: 10;
+  box-sizing: border-box;
+}
+.m-ct-btn {
+  flex: 1;
+  height: 44px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  border: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+}
+.m-ct-btn.pri {
+  background: var(--blue);
+  color: #fff;
+}
+.m-ct-btn.phu {
+  background: #fff;
+  color: var(--blue);
+  border: 1px solid var(--blue);
+}
+.m-ct-btn.nho {
+  flex: 0 0 40%;
+}
+
+/* Ô nhập form thêm/sửa */
+.m-ct-o {
+  background: var(--soft);
+  border-radius: 10px;
+  padding: 7px 12px;
+  margin-bottom: 8px;
+  position: relative;
+  min-height: 52px;
+  box-sizing: border-box;
+}
+.m-ct-o label {
+  display: block;
+  font-size: 12px;
+  color: var(--muted);
+}
+.m-ct-o label em {
+  color: var(--red);
+  font-style: normal;
+}
+.m-ct-o .m-ct-gt, .m-ct-o .gt {
+  font-size: 14px;
+  color: var(--blue);
+  margin-top: 2px;
+  padding-right: 26px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.m-ct-o .m-ct-gt.trong, .m-ct-o .gt.trong {
+  color: var(--faint);
+}
+.m-ct-o .xuong {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  color: var(--blue);
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.m-ct-hai {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.m-ct-o-bam {
+  display: block;
+  width: 100%;
+  border: 0;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+.m-ct-o textarea {
+  width: 100%;
+  border: 0;
+  background: none;
+  outline: 0;
+  font: inherit;
+  font-size: 16px;
+  color: var(--blue);
+  padding: 0;
+  margin-top: 2px;
+  resize: none;
+  display: block;
+  box-sizing: border-box;
+}
+.m-ct-o input {
+  width: 100%;
+  border: 0;
+  background: none;
+  outline: 0;
+  font: inherit;
+  font-size: 16px;
+  color: var(--blue);
+  padding: 0;
+  margin-top: 2px;
+  box-sizing: border-box;
+}
+.m-ct-them {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--blue);
+  color: #fff;
+  border: 0;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  cursor: pointer;
+}
+.m-ct-them svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+}
+.m-ct-nvl-the {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  position: relative;
+  box-sizing: border-box;
+}
+.m-ct-nvl-the .ten {
+  padding-right: 60px;
+  line-height: 1.4;
+}
+.m-ct-nvl-the .ten b {
+  font-weight: 600;
+}
+.m-ct-nvl-the .ten .mo {
+  color: var(--muted);
+  font-size: 12px;
+}
+.m-ct-nvl-the .tg {
+  position: absolute;
+  right: 8px;
+  top: 6px;
+  display: flex;
+  gap: 2px;
+}
+.m-ct-nvl-the .tg button {
+  width: 28px;
+  height: 28px;
+  background: none;
+  border: 0;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  cursor: pointer;
+}
+.m-ct-nvl-the .tg svg {
+  width: 17px;
+  height: 17px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.m-ct-nvl-the .tg .sua {
+  color: var(--blue);
+}
+.m-ct-nvl-the .tg .xoa {
+  color: var(--red);
+}
+.m-ct-nvl-the .nvl-so {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 3px;
+}
+
+/* Tấm chọn nhiều & Tấm sửa NVL */
+.m-ct-phu-mo {
+  position: fixed;
+  inset: 0;
+  background: rgba(15,23,42,.45);
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+.m-ct-tam {
+  background: #fff;
+  border-radius: 16px 16px 0 0;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  width: 100%;
+  box-sizing: border-box;
+}
+.m-ct-keo {
+  width: 36px;
+  height: 4px;
+  border-radius: 2px;
+  background: #d1d5db;
+  margin: 8px auto 0;
+  flex: none;
+}
+.m-ct-tam-dau {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  flex: none;
+}
+.m-ct-tam-dau h2 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.m-ct-tam-than {
+  padding: 0 16px 8px;
+  overflow-y: auto;
+  flex: 1;
+}
+.m-ct-tam-day {
+  display: flex;
+  gap: 10px;
+  padding: 10px 16px 14px;
+  border-top: 1px solid var(--line);
+  flex: none;
+}
+.m-ct-muc {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 11px 0;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  background: none;
+  font-size: 14px;
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+}
+.m-ct-muc:last-child {
+  border-bottom: 0;
+}
+.m-ct-muc small {
+  display: block;
+  font-size: 12px;
+  color: var(--muted);
+}
+.m-ct-muc .tich {
+  color: var(--blue);
+  font-weight: 700;
+  visibility: hidden;
+}
+.m-ct-muc.on {
+  color: var(--blue);
+  font-weight: 600;
+}
+.m-ct-muc.on .tich {
+  visibility: visible;
+}
+
+/* T756: gỡ luật cũ của bản T188 và luật chung còn ăn vào màn mới */
+.m-ct-tabs.m-tc-tabs {
+  flex: none;
+  position: static;
+  scrollbar-width: none;
+}
+.m-ct-dau {
+  flex: none;
+}
+.m-ct-tim-ic {
+  position: static;
+  flex: none;
+}
+.m-ct-nvl-dong {
+  display: block;
+  background: none;
+  border-radius: 0;
+  margin: 0;
+}
+.m-ct-loc .m-loc-dong {
+  width: 100%;
+  text-align: left;
+}
