@@ -6,9 +6,10 @@
 
 ## Đã làm
 
-- `src/ui/generic/ChungTuForm.tsx`: thêm `laTlBan` (màn 3.1.4). Bảng chi tiết bỏ cột Kho, Số lô, Hạn dùng. Bỏ cả % CK, Tiền CK, Tiền trước thuế, Thuế suất, Tiền thuế, Giảm thuế GTGT, Giá trị nhập kho, Tổng tiền, chỉ còn Mã hàng, Tên hàng, ĐVT, Số lượng, Đơn giá, Thành tiền. Tuỳ chỉnh cột phiếu cũng bỏ các cột này.
-- Tổng chiết khấu, tiền thuế của phiếu trả lại tính bằng 0, không tính Giảm thuế GTGT. Dải đáy form chỉ còn Tổng tiền như phiếu trả lại hàng mua (T727).
-- Kho nhập chọn ở đầu phiếu ở mọi gói, kể cả gói Pro (trước đây gói Pro chọn kho trên từng dòng).
+- `src/ui/generic/ChungTuForm.tsx`: phiếu 3.1.4 có đủ cột như phiếu bán hàng. Mặc định chỉ hiện Mã hàng, Tên hàng, ĐVT, Số lượng, Đơn giá, Thành tiền.
+- Các cột khác (Kho, Số lô, Hạn dùng, % CK, Tiền CK, Thuế suất, Tiền thuế, Giảm thuế GTGT...) ẩn sẵn qua `anMacDinh`. Muốn hiện thì bật ở Tuỳ chỉnh giao diện phiếu.
+- Máy đã lưu tuỳ chỉnh cột cho màn này (`iacc-cot-phieu:...` trong localStorage) thì giữ tuỳ chỉnh đó, không áp mặc định.
+- Lần sửa đầu ép bỏ hẳn cột, tính thuế, chiết khấu bằng 0 và chuyển kho lên đầu phiếu. PhuongXT đổi ý trong phiên nên đã trả các phần đó về như cũ.
 
 ## Đã kiểm
 
