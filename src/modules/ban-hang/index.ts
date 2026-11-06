@@ -35,7 +35,8 @@ const banHang: ModuleDef = {
       dienGiai: ['Bán tiệc cho khách công ty', 'Bán suất ăn hội nghị', 'Bán set quà Trung thu'], noCo: [['131', '5111', 'Doanh thu'], ['131', '33311', 'Thuế GTGT đầu ra'], ['632', '152', 'Giá vốn']] } },
     '3.1.3': { voucher: { prefix: 'BNB', doiTuong: 'cn', nhan: 'Cửa hàng nhận', them: 'Thêm phiếu bán nội bộ', dong: 'nvl', tien: [0, 0], thue: 0,
       dienGiai: ['Bán nước dùng phở cho cửa hàng Nguyễn Trãi', 'Bán bán thành phẩm cho cửa hàng Thảo Điền'], noCo: [['136', '5111', 'Doanh thu nội bộ'], ['632', '152', 'Giá vốn']] } },
-    '3.1.4': { voucher: { prefix: 'TL', doiTuong: 'kh', nhan: 'Khách hàng', them: 'Thêm phiếu trả lại', dong: 'hang', tien: [0, 0], nguon: 'FABi', soTT58: 'Sổ doanh thu bán hàng hoá, dịch vụ',
+    '3.1.4': { voucher: { prefix: 'TL', doiTuong: 'kh', nhan: 'Khách hàng', them: 'Thêm phiếu trả lại', dong: 'hang', dongPos: true,   // cột như Bán hàng (T758)
+      tien: [0, 0], nguon: 'FABi', soTT58: 'Sổ doanh thu bán hàng hoá, dịch vụ',
       dienGiai: ['Khách trả lại món làm sai', 'Huỷ đơn sau khi chốt ca'], noCo: [['5111', '1111', 'Giảm doanh thu hàng bán trả lại'], ['33311', '1111', 'Giảm thuế GTGT đầu ra']] } },
     '3.1.5': { voucher: { prefix: 'C26T', doiTuong: 'kh', nhan: 'Người mua', them: 'Lập hoá đơn', dong: 'hang', tien: [0, 0], nguon: 'HĐ',
       dienGiai: ['Hoá đơn tổng hợp khách lẻ ngày', 'Hoá đơn khách công ty lấy hoá đơn', 'Hoá đơn tiệc hội nghị'], noCo: [['131', '5111', 'Doanh thu'], ['131', '33311', 'Thuế GTGT đầu ra']] } },

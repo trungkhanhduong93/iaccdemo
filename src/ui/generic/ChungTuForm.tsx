@@ -5,7 +5,7 @@ import type { Row, ScreenProps, VoucherCfg } from '../../modules/types'
 import { duongDan, moDuoc, tenMan, timMan } from '../../app/registry'
 import { cuaHangHienTai, useSession, cheDoHienTai, ngayDauNam, truocDauNam, donViHienTai, loaiHinhDv, gtgtTyLe } from '../../app/session'
 import { giamThueHang } from '../../modules/ban-hang/giam-thue'
-import { ApDauBangBan, BangHangBan, dongTuHang, dtDong } from '../../modules/ban-hang/BangHangBan'
+import { ApDauBangBan, BangHangBan, COT_BHB, dongTuHang, dtDong } from '../../modules/ban-hang/BangHangBan'
 import { kieuGhiSo, type Goi, kieuGhiSoDv, tcNhuStandard } from '../../app/plan'
 import { CHE_DO, type CheDo } from '../../app/che-do'
 import { tkTheoCheDo } from '../../modules/tong-hop/so-cai'
@@ -242,7 +242,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
   // Cột ẩn ở bảng chi tiết, nhớ theo màn trên máy người dùng
   const khoaCot = `iacc-cot-phieu:${mod.key}/${sc.slug}`
   // Hàng bán trả lại (T758): đủ cột như phiếu bán hàng, mặc định chỉ hiện Số lượng, Đơn giá, Thành tiền (kèm Mã, Tên, ĐVT); bật cột khác ở Tuỳ chỉnh giao diện
-  const anMacDinh = sc.code === '3.1.4' ? ['kho', 'lo', 'hsd', 'ptCk', 'ck', 'truocThue', 'ts', 'thue', 'giamThue', 'nhomHhdv', 'gtnk', 'tongTien'] : []
+  const anMacDinh = sc.code === '3.1.4' ? COT_BHB.map(([k]) => k).filter(k => !['ma', 'dvt', 'sl', 'gia', 'thanh'].includes(k)) : cfg.dongPos ? ['phiVc'] : []
   const [anCot, setAnCot] = useState<string[]>(() => {
     try { const g = localStorage.getItem(khoaCot); if (g === null) return anMacDinh; const v = JSON.parse(g); return Array.isArray(v) ? v : anMacDinh } catch { return anMacDinh }
   })
@@ -329,7 +329,8 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
   const giamGtgt = nhom === 'ban' && cfg.thue !== 0 && gtgtTyLe(s)
   const tongThue = giamGtgt ? 0 : dsDong.reduce((a, d) => a + (d.thue || 0), 0)
   const tongGiam = giamGtgt ? dsDong.reduce((a, d) => a + giamThueHang(cfg.dongPos ? dtDong(d) : (d.tien || 0) - (d.ck || 0), d.ma), 0) : 0
-  const tongThanhToan = tongTien - tongCk + tongThue - tongGiam
+  const tongPhiVc = cfg.dongPos ? dsDong.reduce((a, d) => a + (d.phiVc || 0), 0) : 0   // T758
+  const tongThanhToan = tongTien - tongCk + tongThue - tongGiam + tongPhiVc
   // Hộ kinh doanh không khấu trừ thuế GTGT đầu vào: Giá trị nhập kho = tiền trước thuế + tiền thuế (T164)
   const hkd = loaiHinhDv(s, donViHienTai(s)) === 'hkd'
   // Phiếu thu, chi không có thuế, chiết khấu: khối tổng chỉ cần một dòng
@@ -789,7 +790,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
             trai={cpCo ? <OChiPhiMua tien={cpMua} onTien={setCpMua} dong={dsDong} onPhanBo={setDsDong} sua={dangSua} /> : undefined}
             muc={chiTien || truocThue || laDc || laSx || laDcn || khoGon || (nhom === 'mua' && traLai) ? [] : [
             ...(cfg.dongPos ? [['Thành tiền', tongTien], ['Giảm giá', tongGiamGia ? -tongGiamGia : 0], ['Chiết khấu', tongCk - tongGiamGia + tongPhiDv ? -(tongCk - tongGiamGia + tongPhiDv) : 0],
-              ['Phí dịch vụ', tongPhiDv]] as [string, number][] : [['Tiền hàng', tongTien] as [string, number],
+              ['Phí dịch vụ', tongPhiDv], ...(tongPhiVc ? [['Phí vận chuyển', tongPhiVc]] : [])] as [string, number][] : [['Tiền hàng', tongTien] as [string, number],
               ...(bo.ck ? [['Chiết khấu', tongCk ? -tongCk : 0] as [string, number]] : [])]),
             giamGtgt ? ['Giảm thuế GTGT', tongGiam ? -tongGiam : 0] : ['Tiền thuế GTGT', tongThue],
             ...(bo.tongNhap ? [['Giá trị nhập kho', tongTien - tongCk + (hkd ? tongThue : 0)] as [string, number]] : []),
@@ -872,7 +873,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
             )}
             {/* Nút Tuỳ chỉnh giao diện ở góc trên phải đầu form (T297); hộp vẫn mở cả khi thêm mới, sửa (T161) */}
             {hopCot && (
-              <HopCotPhieu dsDau={dsDau} dsChan={dsChan} ds={laKk ? COT_KK : laSx ? cotSx(sx!) : laDcn ? cotDcn(dcn!) : cotTuyChon(cfg, { coNhomHhdv: nhom === 'mua' && nhanKemHd && s.goi === 'PR', coKho: Boolean(bo.kho) && !khoDau && !laDc && !khoGon, giaVon, coLo: nhom === 'mua' && s.goi === 'PR', coCk: Boolean(bo.ck), coKm: kieu !== 'khong', coLy: Boolean(oLy), coNhapKho: truocThue, coXuatKho: nhom === 'mua' && traLai, coGiamThue: giamGtgt, coCpMua: cpCo }).filter(([k]) => !anDc.includes(k))}
+              <HopCotPhieu dsDau={dsDau} dsChan={dsChan} ds={cfg.dongPos ? COT_BHB.filter(([k]) => (giamGtgt ? k !== 'ts' && k !== 'thue' : k !== 'giamThue')) : laKk ? COT_KK : laSx ? cotSx(sx!) : laDcn ? cotDcn(dcn!) : cotTuyChon(cfg, { coNhomHhdv: nhom === 'mua' && nhanKemHd && s.goi === 'PR', coKho: Boolean(bo.kho) && !khoDau && !laDc && !khoGon, giaVon, coLo: nhom === 'mua' && s.goi === 'PR', coCk: Boolean(bo.ck), coKm: kieu !== 'khong', coLy: Boolean(oLy), coNhapKho: truocThue, coXuatKho: nhom === 'mua' && traLai, coGiamThue: giamGtgt, coCpMua: cpCo }).filter(([k]) => !anDc.includes(k))}
                 an={anCot} onDoi={doiAnCot} onDong={() => setHopCot(false)} />
             )}
             {ndcCho ? (   // phiếu nhập điều chuyển chờ: sửa thực nhận rồi Nhập kho (T748)
@@ -977,7 +978,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
               )}
             </div>
             {hopCot && (
-              <HopCotPhieu dsDau={dsDau} dsChan={dsChan} ds={laKk ? COT_KK : laSx ? cotSx(sx!) : laDcn ? cotDcn(dcn!) : cotTuyChon(cfg, { coNhomHhdv: nhom === 'mua' && nhanKemHd && s.goi === 'PR', coKho: Boolean(bo.kho) && !khoDau && !laDc && !khoGon, giaVon, coLo: nhom === 'mua' && s.goi === 'PR', coCk: Boolean(bo.ck), coKm: kieu !== 'khong', coLy: Boolean(oLy), coNhapKho: truocThue, coXuatKho: nhom === 'mua' && traLai, coGiamThue: giamGtgt, coCpMua: cpCo }).filter(([k]) => !anDc.includes(k))}
+              <HopCotPhieu dsDau={dsDau} dsChan={dsChan} ds={cfg.dongPos ? COT_BHB.filter(([k]) => (giamGtgt ? k !== 'ts' && k !== 'thue' : k !== 'giamThue')) : laKk ? COT_KK : laSx ? cotSx(sx!) : laDcn ? cotDcn(dcn!) : cotTuyChon(cfg, { coNhomHhdv: nhom === 'mua' && nhanKemHd && s.goi === 'PR', coKho: Boolean(bo.kho) && !khoDau && !laDc && !khoGon, giaVon, coLo: nhom === 'mua' && s.goi === 'PR', coCk: Boolean(bo.ck), coKm: kieu !== 'khong', coLy: Boolean(oLy), coNhapKho: truocThue, coXuatKho: nhom === 'mua' && traLai, coGiamThue: giamGtgt, coCpMua: cpCo }).filter(([k]) => !anDc.includes(k))}
                 an={anCot} onDoi={doiAnCot} onDong={() => setHopCot(false)} />
             )}
             {hopTt && row && (
@@ -1356,7 +1357,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
             <BangTraNoNcc ncc={doiTuong} ds={dsTraNo} chon={traNo} onChange={setTraNo} cheDo={dangSua ? 'sua' : 'xem'} />
           )}
           {tab === 'ct' && cfg.dongPos && (
-            <BangHangBan dong={dsDong} onChange={setDsDong} cheDo={dangSua ? 'sua' : 'xem'} tyLe={Boolean(giamGtgt)} giamThue={giamThueHang} />
+            <BangHangBan dong={dsDong} onChange={setDsDong} cheDo={dangSua ? 'sua' : 'xem'} tyLe={Boolean(giamGtgt)} giamThue={giamThueHang} an={anCot} />
           )}
           {tab === 'ct' && !cfg.dongPos && !laKk && !laSx && !laDcn && !hienTraNo && (
             <BangSua

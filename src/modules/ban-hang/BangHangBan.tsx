@@ -1,5 +1,5 @@
 // Bảng hàng bán gõ tay của chứng từ Bán hàng gói Plus (T753): cùng cột như chi tiết Xuất bán POS, thêm ô gõ
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import type { Dong } from '../../ui/generic/gen'
 import { Select } from '../../ui/Dropdown'
 import { HANG } from '../../data/mock'
@@ -127,12 +127,20 @@ export function ApDauBangBan({ dong, onChange, an, coThue }: { dong: Dong[]; onC
   )
 }
 
-export function BangHangBan({ dong, onChange, cheDo, tyLe, giamThue }: {
+/** Cột bật tắt được ở Tuỳ chỉnh giao diện, như bảng Hàng bán Xuất bán POS (T758) */
+export const COT_BHB: [string, string][] = [
+  ['ma', 'Mã hàng'], ['dvt', 'ĐVT'], ['sl', 'Số lượng'], ['gia', 'Đơn giá'], ['thanh', 'Thành tiền'], ['pt', 'Giảm giá (%)'], ['giam', 'Tiền giảm giá'],
+  ['ptCk', '% CK'], ['ck', 'Tiền CK'], ['ptPhiDv', '% Phí dịch vụ'], ['phiDv', 'Phí dịch vụ'], ['giamThue', 'Giảm thuế GTGT'], ['phiVc', 'Phí vận chuyển'],
+  ['dtTruocThue', 'Doanh thu tính thuế'], ['ts', 'Thuế suất'], ['thue', 'Tiền thuế'], ['tonKho', 'Theo dõi tồn kho'],
+]
+
+export function BangHangBan({ dong, onChange, cheDo, tyLe, giamThue, an = [] }: {
   dong: Dong[]
   onChange?: (d: Dong[]) => void
   cheDo: 'sua' | 'xem'
   tyLe: boolean                          // GTGT theo % doanh thu: bỏ Thuế suất, Tiền thuế; hiện Giảm thuế GTGT
   giamThue?: (dt: number, ma?: string) => number   // T754: theo % GTGT và ô Giảm thuế theo quy định của hàng
+  an?: string[]                          // mã cột ẩn qua Tuỳ chỉnh giao diện (T758)
 }) {
   const sua = cheDo === 'sua' && Boolean(onChange)
   const dat = (i: number, p: Partial<Dong>) => onChange?.(dong.map((d, j) => (j === i ? tinhDong(d, p) : d)))
@@ -150,6 +158,31 @@ export function BangHangBan({ dong, onChange, cheDo, tyLe, giamThue }: {
     ? <OSoGo val={v} onChange={f} hien={laPt ? String : money} max={laPt ? 100 : undefined} />
     : <span className="num">{laPt ? phanTram(v) : money(v)}</span>
   const tong = (f: (d: Dong) => number) => dong.reduce((a, d) => a + f(d), 0)
+  const hien = (k: string) => !an.includes(k)
+  const cot: { k: string; t: string; w: number; o: (d: Dong, i: number) => ReactNode; tong?: (d: Dong) => number }[] = ([
+    { k: 'ma', t: 'Mã hàng', w: 110, o: (d: Dong, i: number) => sua ? (
+      <ChonDanhMuc dm="hang" nhan="hàng hoá" coMa chiMa className="inp sm" trong="Chọn" value={d.ma}
+        onChange={v => chonHang(i, v)} ds={HANG.map(h => ({ v: h.ma, t: `${h.ma} - ${h.ten}` }))} />
+    ) : d.ma },
+    { k: 'dvt', t: 'ĐVT', w: 65, o: (d: Dong) => d.dvt },
+    { k: 'sl', t: 'Số lượng', w: 85, o: (d: Dong, i: number) => o(d.sl, sl => dat(i, { sl })), tong: (d: Dong) => d.sl || 0 },
+    { k: 'gia', t: 'Đơn giá', w: 105, o: (d: Dong, i: number) => o(d.gia, gia => dat(i, { gia })) },
+    { k: 'thanh', t: 'Thành tiền', w: 115, o: (d: Dong) => money(d.tien), tong: (d: Dong) => d.tien || 0 },
+    { k: 'pt', t: 'Giảm giá (%)', w: 90, o: (d: Dong, i: number) => o(d.pt || 0, pt => dat(i, { pt }), true) },
+    { k: 'giam', t: 'Tiền giảm giá', w: 110, o: (d: Dong, i: number) => o(d.giam || 0, giam => dat(i, { giam })), tong: (d: Dong) => d.giam || 0 },
+    { k: 'ptCk', t: '% CK', w: 70, o: (d: Dong, i: number) => o(d.ptCk || 0, ptCk => dat(i, { ptCk }), true) },
+    { k: 'ck', t: 'Tiền CK', w: 105, o: (d: Dong, i: number) => o(d.ck || 0, ck => dat(i, { ck })), tong: (d: Dong) => d.ck || 0 },
+    { k: 'ptPhiDv', t: '% Phí dịch vụ', w: 105, o: (d: Dong, i: number) => o(d.ptPhiDv || 0, ptPhiDv => dat(i, { ptPhiDv }), true) },
+    { k: 'phiDv', t: 'Phí dịch vụ', w: 105, o: (d: Dong, i: number) => o(d.phiDv || 0, phiDv => dat(i, { phiDv })), tong: (d: Dong) => d.phiDv || 0 },
+    ...(tyLe ? [{ k: 'giamThue', t: 'Giảm thuế GTGT', w: 120, o: (d: Dong) => money(gt(d)), tong: gt }] : []),
+    { k: 'phiVc', t: 'Phí vận chuyển', w: 120, o: (d: Dong, i: number) => o(d.phiVc || 0, phiVc => onChange?.(dong.map((x, j) => (j === i ? { ...x, phiVc } : x)))), tong: (d: Dong) => d.phiVc || 0 },
+    { k: 'dtTruocThue', t: 'Doanh thu tính thuế', w: 140, o: (d: Dong) => money(dtDong(d)), tong: dtDong },
+    ...(tyLe ? [] : [
+      { k: 'ts', t: 'Thuế suất', w: 80, o: (d: Dong) => `${d.ts}%` },
+      { k: 'thue', t: 'Tiền thuế', w: 105, o: (d: Dong) => money(d.thue), tong: (d: Dong) => d.thue || 0 },
+    ]),
+    { k: 'tonKho', t: 'Theo dõi tồn kho', w: 110, o: (d: Dong) => <input type="checkbox" className="o-tich-xem" checked={tonKho(d.ma)} readOnly tabIndex={-1} aria-label="Theo dõi tồn kho" /> },
+  ]).filter(c => hien(c.k))
 
   return (
     <div className="bang-sua-wrap bhb">
@@ -158,23 +191,9 @@ export function BangHangBan({ dong, onChange, cheDo, tyLe, giamThue }: {
           <thead>
             <tr>
               <th className="dim" style={{ width: 36 }}>#</th>
-              <th style={{ width: 110 }}>Mã hàng</th>
+              {cot.filter(c => c.k === 'ma').map(c => <th key={c.k} style={{ width: c.w }}>{c.t}</th>)}
               <th style={{ minWidth: 180 }}>Hàng hoá</th>
-              <th style={{ width: 65 }}>ĐVT</th>
-              <th className="num" style={{ width: 85 }}>Số lượng</th>
-              <th className="num" style={{ width: 105 }}>Đơn giá</th>
-              <th className="num" style={{ width: 115 }}>Thành tiền</th>
-              <th className="num" style={{ width: 90 }}>Giảm giá (%)</th>
-              <th className="num" style={{ width: 110 }}>Tiền giảm giá</th>
-              <th className="num" style={{ width: 70 }}>% CK</th>
-              <th className="num" style={{ width: 105 }}>Tiền CK</th>
-              <th className="num" style={{ width: 105 }}>% Phí dịch vụ</th>
-              <th className="num" style={{ width: 105 }}>Phí dịch vụ</th>
-              {tyLe && <th className="num" style={{ width: 120 }}>Giảm thuế GTGT</th>}
-              <th className="num" style={{ width: 140 }}>Doanh thu tính thuế</th>
-              {!tyLe && <th className="num" style={{ width: 80 }}>Thuế suất</th>}
-              {!tyLe && <th className="num" style={{ width: 105 }}>Tiền thuế</th>}
-              <th className="c" style={{ width: 110 }}>Theo dõi tồn kho</th>
+              {cot.filter(c => c.k !== 'ma').map(c => <th key={c.k} className={c.k === 'tonKho' ? 'c' : c.k === 'dvt' ? undefined : 'num'} style={{ width: c.w }}>{c.t}</th>)}
               {sua && <th style={{ width: 44 }} />}
             </tr>
           </thead>
@@ -182,28 +201,9 @@ export function BangHangBan({ dong, onChange, cheDo, tyLe, giamThue }: {
             {dong.map((d, i) => (
               <tr key={i}>
                 <td className="dim c">{i + 1}</td>
-                <td className="code">
-                  {sua ? (
-                    <ChonDanhMuc dm="hang" nhan="hàng hoá" coMa chiMa className="inp sm" trong="Chọn" value={d.ma}
-                      onChange={v => chonHang(i, v)} ds={HANG.map(h => ({ v: h.ma, t: `${h.ma} - ${h.ten}` }))} />
-                  ) : d.ma}
-                </td>
+                {cot.filter(c => c.k === 'ma').map(c => <td key={c.k} className="code">{c.o(d, i)}</td>)}
                 <td>{sua ? <input className="inp sm" value={d.ten} placeholder="Tên hàng" onChange={e => dat(i, { ten: e.target.value })} /> : d.ten}</td>
-                <td>{d.dvt}</td>
-                <td className="num">{o(d.sl, sl => dat(i, { sl }))}</td>
-                <td className="num">{o(d.gia, gia => dat(i, { gia }))}</td>
-                <td className="num">{money(d.tien)}</td>
-                <td className="num">{o(d.pt || 0, pt => dat(i, { pt }), true)}</td>
-                <td className="num">{o(d.giam || 0, giam => dat(i, { giam }))}</td>
-                <td className="num">{o(d.ptCk || 0, ptCk => dat(i, { ptCk }), true)}</td>
-                <td className="num">{o(d.ck || 0, ck => dat(i, { ck }))}</td>
-                <td className="num">{o(d.ptPhiDv || 0, ptPhiDv => dat(i, { ptPhiDv }), true)}</td>
-                <td className="num">{o(d.phiDv || 0, phiDv => dat(i, { phiDv }))}</td>
-                {tyLe && <td className="num">{money(gt(d))}</td>}
-                <td className="num">{money(dtDong(d))}</td>
-                {!tyLe && <td className="num">{d.ts}%</td>}
-                {!tyLe && <td className="num">{money(d.thue)}</td>}
-                <td className="c"><input type="checkbox" className="o-tich-xem" checked={tonKho(d.ma)} readOnly tabIndex={-1} aria-label="Theo dõi tồn kho" /></td>
+                {cot.filter(c => c.k !== 'ma').map(c => <td key={c.k} className={c.k === 'tonKho' ? 'c' : c.k === 'dvt' ? undefined : 'num'}>{c.o(d, i)}</td>)}
                 {sua && (
                   <td className="c">
                     <button type="button" className="icon-btn sm" title="Xoá dòng" onClick={() => xoa(i)}><Icon n="trash" className="ic sm" /></button>
@@ -214,21 +214,8 @@ export function BangHangBan({ dong, onChange, cheDo, tyLe, giamThue }: {
           </tbody>
           <tfoot>
             <tr className="sum">
-              <td colSpan={4}>Tổng cộng ({dong.length} dòng)</td>
-              <td className="num">{money(tong(d => d.sl || 0))}</td>
-              <td />
-              <td className="num">{money(tong(d => d.tien || 0))}</td>
-              <td />
-              <td className="num">{money(tong(d => d.giam || 0))}</td>
-              <td />
-              <td className="num">{money(tong(d => d.ck || 0))}</td>
-              <td />
-              <td className="num">{money(tong(d => d.phiDv || 0))}</td>
-              {tyLe && <td className="num">{money(tong(gt))}</td>}
-              <td className="num">{money(tong(dtDong))}</td>
-              {!tyLe && <td />}
-              {!tyLe && <td className="num">{money(tong(d => d.thue || 0))}</td>}
-              <td />
+              <td colSpan={1 + (hien('ma') ? 1 : 0) + 1}>Tổng cộng ({dong.length} dòng)</td>
+              {cot.filter(c => c.k !== 'ma').map(c => <td key={c.k} className="num">{c.tong ? money(tong(c.tong)) : null}</td>)}
               {sua && <td />}
             </tr>
           </tfoot>

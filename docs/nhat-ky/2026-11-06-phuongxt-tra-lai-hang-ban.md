@@ -6,17 +6,19 @@
 
 ## Đã làm
 
-- `src/ui/generic/ChungTuForm.tsx`: phiếu 3.1.4 có đủ cột như phiếu bán hàng. Mặc định chỉ hiện Mã hàng, Tên hàng, ĐVT, Số lượng, Đơn giá, Thành tiền.
-- Các cột khác (Kho, Số lô, Hạn dùng, % CK, Tiền CK, Thuế suất, Tiền thuế, Giảm thuế GTGT...) ẩn sẵn qua `anMacDinh`. Muốn hiện thì bật ở Tuỳ chỉnh giao diện phiếu.
-- Máy đã lưu tuỳ chỉnh cột cho màn này (`iacc-cot-phieu:...` trong localStorage) thì giữ tuỳ chỉnh đó, không áp mặc định.
-- Lần sửa đầu ép bỏ hẳn cột, tính thuế, chiết khấu bằng 0 và chuyển kho lên đầu phiếu. PhuongXT đổi ý trong phiên nên đã trả các phần đó về như cũ.
+- `src/modules/ban-hang/index.ts`: phiếu 3.1.4 bật `dongPos`, dùng bảng `BangHangBan` như màn Bán hàng. Bảng có giảm giá, chiết khấu, phí dịch vụ, thuế suất hoặc giảm thuế GTGT.
+- `src/modules/ban-hang/BangHangBan.tsx`: bảng dựng theo danh sách cột `COT_BHB`, nhận `an` để ẩn cột. Thêm cột Phí vận chuyển (`phiVc` trong `Dong`, `gen.ts`).
+- `src/ui/generic/ChungTuForm.tsx`: Tuỳ chỉnh giao diện của phiếu `dongPos` liệt kê cột `COT_BHB`. Phí vận chuyển cộng vào tổng thanh toán và hiện ở dải đáy.
+- Mặc định (`anMacDinh`): phiếu trả lại chỉ hiện Mã hàng, Tên hàng, ĐVT, Số lượng, Đơn giá, Thành tiền. Phiếu Bán hàng gói Plus ẩn sẵn Phí vận chuyển như Xuất bán POS.
+- Máy đã lưu tuỳ chỉnh cột cho màn (`iacc-cot-phieu:...` trong localStorage) thì giữ tuỳ chỉnh đó.
+- Hai lần sửa đầu trong phiên dùng bảng `BangSua` nên thiếu giảm giá, phí dịch vụ. PhuongXT chỉ ra nên đã đổi sang `BangHangBan`.
 
 ## Đã kiểm
 
 - `npm run typecheck`: không lỗi.
 - `npm run build`: chạy xong, không lỗi.
 - `python tools/kiem_tra.py --nhanh`: in "Không có lỗi."
-- Chưa mở trình duyệt xem bằng mắt: cửa sổ trình duyệt trong app không vẽ được lúc chạy.
+- Đọc bảng trên trình duyệt: phiếu mới chỉ có 6 cột. Tuỳ chỉnh giao diện liệt kê đủ cột như Bán hàng, bật Phí vận chuyển thì cột hiện ra.
 
 ## Dở dang, việc tiếp theo
 

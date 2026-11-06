@@ -43,6 +43,7 @@ export interface Dong {
   giam?: number
   ptPhiDv?: number
   phiDv?: number
+  phiVc?: number                // phí vận chuyển của dòng, bảng Hàng bán gõ tay (T758)
   kho?: string
   tkNo?: string
   tkCo?: string
