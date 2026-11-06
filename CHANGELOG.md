@@ -11,7 +11,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 - T760: Form công thức: panel Thêm hàng hoá không còn bị phủ tối.
 
 ## 06/11/2026
-- T758: Phiếu hàng bán trả lại có đủ cột như màn Bán hàng: giảm giá, chiết khấu, phí dịch vụ, phí vận chuyển, thuế suất hoặc giảm thuế GTGT. Mặc định chỉ hiện Mã hàng, Tên hàng, ĐVT, Số lượng, Đơn giá, Thành tiền, cột khác bật ở Tuỳ chỉnh giao diện. Phiếu Bán hàng gói Plus thêm cột Phí vận chuyển, ẩn sẵn.
+- T758: Phiếu hàng bán trả lại có cột như màn Bán hàng: giảm giá, chiết khấu, phí dịch vụ, thuế suất hoặc giảm thuế GTGT. Mặc định chỉ hiện Mã hàng, Tên hàng, ĐVT, Số lượng, Đơn giá, Thành tiền, cột khác bật ở Tuỳ chỉnh giao diện. Phiếu Bán hàng gói Plus thêm cột Phí vận chuyển, ẩn sẵn.
 - T757: Phiếu mua hàng có nút tích Chi phí mua hàng cạnh Nhận kèm hoá đơn. Tích thì dải đáy form có ô số tiền và nút Phân bổ, chia chi phí vào từng mặt hàng theo giá trị hàng. Lưới hàng hiện cột Chi phí mua hàng, cộng vào Giá trị nhập kho.
 - T759: Web gói Plus, Công thức chế biến ở Danh mục đổi bố cục: danh sách 7 cột có Mã sản phẩm, Mô tả, Trạng thái; form toàn trang một cột giữa, bảng nguyên vật liệu lọc được từng cột, đóng khi đã sửa thì hỏi lại.
 - T756: Điện thoại, form sửa công thức: ô sửa được nền trắng, ô không sửa được nền xám. Danh sách hết hở hai bên, dấu cộng nút thêm nằm giữa nút.
