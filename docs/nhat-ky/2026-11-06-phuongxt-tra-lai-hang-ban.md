@@ -12,6 +12,7 @@
 - Mặc định (`anMacDinh`): phiếu trả lại chỉ hiện Mã hàng, Tên hàng, ĐVT, Số lượng, Đơn giá, Thành tiền. Phiếu Bán hàng gói Plus ẩn sẵn Phí vận chuyển như Xuất bán POS.
 - Phiếu trả lại bỏ hẳn cột Phí vận chuyển (`boCotBan`), kể cả trong Tuỳ chỉnh giao diện, theo ý PhuongXT.
 - Dải tổng đáy form của phiếu `dongPos` (Bán hàng thêm tay gói Plus, hàng bán trả lại) đổi sang dải phép tính như chi tiết Xuất bán POS (`PhepTinhBan`, CSS mục T758 cuối `app.css`).
+- Dải phép tính chỉ hiện mục có cột đang hiện trên bảng hàng. Tiền hàng, Tổng thanh toán luôn hiện.
 - Máy đã lưu tuỳ chỉnh cột cho màn (`iacc-cot-phieu:...` trong localStorage) thì giữ tuỳ chỉnh đó.
 - Hai lần sửa đầu trong phiên dùng bảng `BangSua` nên thiếu giảm giá, phí dịch vụ. PhuongXT chỉ ra nên đã đổi sang `BangHangBan`.
 
@@ -24,7 +25,7 @@
 
 ## Dở dang, việc tiếp theo
 
-- Không.
+- Ẩn cột thuế mà phiếu vẫn có tiền thuế thì dải ghi Tiền hàng 65.000 = Tổng thanh toán 64.610, nhìn như lệch. PhuongXT chưa chốt có cần xử lý không.
 
 ## Bẫy, quyết định mới
 
