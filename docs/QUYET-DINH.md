@@ -1067,5 +1067,6 @@ Trum chốt 05/11/2026 (T751, T752).
 PhuongXT yêu cầu, T754.
 
 - Hộ kinh doanh, doanh nghiệp tính GTGT theo % doanh thu khai ở Cấu hình kế toán: có giảm thuế GTGT không, theo nghị quyết nào, % giảm mức tỷ lệ. Chưa khai thì hiểu là giảm 20% theo nghị quyết mới nhất.
+- Thẻ Giảm thuế GTGT: nút bật tắt trên cùng, dưới là một dòng 3 cột Giảm theo nghị quyết, % giảm, Hiệu lực (từ ngày, đến ngày chọn được). Chọn nghị quyết thì điền sẵn % giảm, hiệu lực. Không có nút thêm, xoá dòng: có nghị quyết mới thì dev thêm vào `NGHI_QUYET_GIAM_VAT` trong `giam-thue.ts`. Hết hiệu lực thì không tính giảm.
 - Bật giảm thì Danh mục hàng hoá có ô tích Giảm thuế theo quy định, không bắt buộc tích. Tắt thì ô ẩn, không tính giảm.
 - Tiền giảm của một dòng bán = doanh thu tính thuế × tỷ lệ % GTGT ngầm định của hàng (theo ngành nghề) × % giảm. Hàng không tích thì 0.

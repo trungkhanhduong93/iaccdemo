@@ -12,6 +12,7 @@
 - `truong-dm.ts`, `danh-muc/index.ts`: ô tích "Giảm thuế theo quy định" ở khối Thông tin thuế của hàng hoá (TT152 và TT58 % doanh thu), chỉ hiện khi cấu hình bật, không bắt buộc. Lưu theo đơn vị qua `phien`. Hàng mẫu tích sẵn trừ bia (chịu thuế TTĐB) và nguyên vật liệu.
 - `ChungTuForm.tsx`, `BangSua.tsx`, `BangHangBan.tsx`: tiền giảm thuế từng dòng = doanh thu tính thuế × % GTGT của hàng × % giảm, hàng không tích thì 0.
 - CSS cuối `app.css` mục T754.
+- Theo góp ý PhuongXT: thẻ Giảm thuế GTGT đổi nhãn nút thành "Giảm thuế GTGT", dưới là một dòng 3 cột nghị quyết (chọn trong danh sách), % giảm, hiệu lực từ ngày - đến ngày chọn được; bỏ dòng công thức. Cấu hình lưu dạng `ds` có hiệu lực, % giảm lấy theo nghị quyết còn hiệu lực ở ngày làm việc; bản lưu cũ `{ nq, pt }` tự đổi.
 
 ## Đã kiểm
 
@@ -24,7 +25,7 @@
 ## Dở dang, việc tiếp theo
 
 - Danh sách chứng từ, báo cáo bán hàng, chi tiết Xuất bán POS không có từng mã hàng nên vẫn tính giảm trên tổng (tỷ lệ ăn uống × % giảm), chưa trừ hàng không tích. Chứng từ có bia có thể lệch nhẹ giữa danh sách và form.
-- Chưa có ngày hiệu lực chặn theo ngày chứng từ: bật là giảm cho mọi ngày. PhuongXT, Trum xem có cần không.
+- Hiệu lực so với ngày làm việc mẫu (07/10/2026), chưa so theo ngày từng chứng từ.
 - Màn điện thoại (`MXuatBanPos.tsx`) chưa đổi.
 
 ## Bẫy, quyết định mới

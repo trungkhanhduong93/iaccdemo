@@ -20,7 +20,7 @@ import { thTT58, moTaBoSoTT58 } from '../bao-cao/tt58'
 import { CatalogPanel } from '../../ui/generic/CatalogScreen'
 import type { CauHinhDM } from '../danh-muc/truong-dm'
 import type { KieuSo } from '../../ui/format'
-import { NGHI_QUYET_GIAM_VAT, cauHinhGiamVat, type CauHinhGiamVat } from '../ban-hang/giam-thue'
+import { NGHI_QUYET_GIAM_VAT, cauHinhGiamVat, type CauHinhGiamVat, type DongGiamVat } from '../ban-hang/giam-thue'
 
 export const VAI_TRO = ['Chủ doanh nghiệp', 'Kế toán trưởng', 'Kế toán viên', 'Quản lý cửa hàng', 'Thủ kho']
 const PHAM_VI_DS = ['Tất cả cửa hàng', ...CUA_HANG.map(c => c.ten)]
@@ -711,11 +711,29 @@ export function CauHinh({ sc }: ScreenProps) {
   // Giảm thuế GTGT theo nghị quyết (T754): chỉ hộ kinh doanh, doanh nghiệp tính GTGT theo % doanh thu
   const coGiamVat = gtgtTyLe(s)
   const [gv, setGv] = useState<CauHinhGiamVat>(cauHinhGiamVat(s))
-  const nq = NGHI_QUYET_GIAM_VAT.find(n => n.ma === gv.nq)
+  // Một nghị quyết đang áp dụng. Có nghị quyết mới thì dev thêm vào NGHI_QUYET_GIAM_VAT; chọn nghị quyết thì điền sẵn % giảm, hiệu lực
+  const dongGv = gv.ds[0] ?? { ...NGHI_QUYET_GIAM_VAT[0] }
+  const doiDong = (p: Partial<DongGiamVat>) => setGv(g => {
+    const biet = p.nq ? NGHI_QUYET_GIAM_VAT.find(n => n.nq === p.nq) : undefined
+    return { ...g, ds: [{ ...dongGv, ...p, ...(biet ? { pt: biet.pt, tu: biet.tu, den: biet.den } : {}) }] }
+  })
+  const soNgay = (d: string) => { const [dd, mm, yy] = d.split('/').map(Number); return yy * 10000 + mm * 100 + dd }
+  const loiGv = (): string | null => {
+    if (!coGiamVat || !gv.bat) return null
+    for (const d of [dongGv]) {
+      if (!d.nq.trim()) return 'Nhập số nghị quyết giảm thuế GTGT'
+      if (!(d.pt > 0 && d.pt <= 100)) return `Nghị quyết ${d.nq}: % giảm phải lớn hơn 0 và không quá 100`
+      if (!d.tu || !d.den) return `Nghị quyết ${d.nq}: chọn đủ hiệu lực từ ngày, đến ngày`
+      if (soNgay(d.tu) > soNgay(d.den)) return `Nghị quyết ${d.nq}: từ ngày phải trước đến ngày`
+    }
+    return null
+  }
   // Lưu thì chứng từ, danh sách, báo cáo, ô nhập số của đơn vị đổi theo kiểu đã chọn
   const luu = () => {
-    if (coGiamVat && gv.bat && !(gv.pt > 0 && gv.pt <= 100)) { toast('% giảm phải lớn hơn 0 và không quá 100'); return }
-    set({ kieuSo: { ...s.kieuSo, [s.donVi]: kieu }, ...(coGiamVat ? { giamVat: { ...s.giamVat, [s.donVi]: gv } } : {}) }); toast('Đã lưu cấu hình')
+    const loi = loiGv()
+    if (loi) { toast(loi); return }
+    const gvLuu = { ...gv, ds: [dongGv] }
+    set({ kieuSo: { ...s.kieuSo, [s.donVi]: kieu }, ...(coGiamVat ? { giamVat: { ...s.giamVat, [s.donVi]: gvLuu } } : {}) }); toast('Đã lưu cấu hình')
   }
   return (
     <div className="page">
@@ -735,23 +753,25 @@ export function CauHinh({ sc }: ScreenProps) {
         </Card>
         {coGiamVat && (
           <Card title="Giảm thuế GTGT">
-            <div className="form-grid ch-gv" data-hd="giamVat">
-              <div className="f c2"><label className="ch-gv-bat"><input type="checkbox" className="bat-tat" checked={gv.bat} onChange={e => setGv({ ...gv, bat: e.target.checked })} />
-                Được giảm thuế GTGT theo nghị quyết của Quốc hội</label></div>
+            <div className="ch-gv" data-hd="giamVat">
+              <label className="ch-gv-bat"><input type="checkbox" className="bat-tat" checked={gv.bat} onChange={e => setGv({ ...gv, bat: e.target.checked })} />
+                Giảm thuế GTGT</label>
               {gv.bat && <>
-                <div className="f c2"><label>Giảm theo nghị quyết</label>
-                  <Select className="inp" value={gv.nq} aria-label="Giảm theo nghị quyết"
-                    onChange={e => setGv({ ...gv, nq: e.target.value, pt: NGHI_QUYET_GIAM_VAT.find(n => n.ma === e.target.value)?.pt ?? gv.pt })}
-                    ds={NGHI_QUYET_GIAM_VAT.map(n => ({ v: n.ma, t: `${n.ten} (${n.hieuLuc})` }))} /></div>
-                <div className="f"><label>% giảm mức tỷ lệ tính thuế</label>
-                  <input className="inp num" inputMode="decimal" value={gv.pt} aria-label="% giảm mức tỷ lệ tính thuế"
-                    onChange={e => setGv({ ...gv, pt: Number(e.target.value.replace(',', '.')) || 0 })} /></div>
-                <div className="f"><label>Hiệu lực</label><input className="inp" readOnly value={nq?.hieuLuc ?? ''} /></div>
+                <div className="ch-gv-dong ch-gv-dau"><span>Giảm theo nghị quyết</span><span>% giảm</span><span>Hiệu lực</span></div>
+                <div className="ch-gv-dong">
+                  <Select className="inp" value={dongGv.nq} aria-label="Giảm theo nghị quyết" onChange={e => doiDong({ nq: e.target.value })}
+                    ds={NGHI_QUYET_GIAM_VAT.map(n => ({ v: n.nq, t: n.nq }))} />
+                  <input className="inp num" inputMode="decimal" value={dongGv.pt} aria-label="% giảm mức tỷ lệ tính thuế"
+                    onChange={e => doiDong({ pt: Number(e.target.value.replace(',', '.')) || 0 })} />
+                  <div className="ch-gv-ngay">
+                    <ONgay value={dongGv.tu} onChange={v => doiDong({ tu: v })} ariaLabel="Hiệu lực từ ngày" />
+                    <span>-</span>
+                    <ONgay value={dongGv.den} onChange={v => doiDong({ den: v })} ariaLabel="Hiệu lực đến ngày" />
+                  </div>
+                </div>
               </>}
             </div>
-            <Note kind="gray">{gv.bat
-              ? <>Hàng được giảm tích ô <b>Giảm thuế theo quy định</b> ở Danh mục hàng hoá. Tiền giảm = doanh thu tính thuế × tỷ lệ % thuế GTGT của hàng × {gv.pt}%.</>
-              : 'Không giảm thuế GTGT: chứng từ bán hàng không tính tiền giảm thuế.'}</Note>
+            <Note kind="gray">{gv.bat ? <>Hàng được giảm tích ô <b>Giảm thuế theo quy định</b> ở Danh mục hàng hoá.</> : 'Không giảm thuế GTGT: chứng từ bán hàng không tính tiền giảm thuế.'}</Note>
           </Card>
         )}
         <Card title="Bộ định khoản tự động" act={noco ? <Link className="btn sm ghost" to="/app/danh-muc/1-15">Sửa bộ định khoản</Link> : undefined}>
