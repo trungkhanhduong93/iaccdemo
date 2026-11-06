@@ -787,12 +787,14 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
         : laTien && chiTien ? <TongDay tong={tongThanhToan} soDong={dsDong.length} />
           // Phần tổng thành dải cố định ở đáy form, cuộn bảng vẫn thấy (T105); phiếu mua chỉ Tổng tiền vì số khác đã có trên dòng (T84)
           // Trả lại hàng mua chỉ Tổng tiền, bỏ Tiền hàng, Chiết khấu, Tiền thuế GTGT (T727)
+          // Bán hàng thêm tay, hàng bán trả lại: dải phép tính như chi tiết Xuất bán POS (T758)
+          : cfg.dongPos ? <PhepTinhBan tongTien={tongTien} giam={tongGiamGia} ck={tongCk - tongGiamGia + tongPhiDv} phiDv={tongPhiDv} phiVc={tongPhiVc}
+            tyLe={Boolean(giamGtgt)} thue={giamGtgt ? tongGiam : tongThue} tong={tongThanhToan} />
           : <DaiTong tong={tongThanhToan}
             trai={cpCo ? <OChiPhiMua tien={cpMua} onTien={setCpMua} dong={dsDong} onPhanBo={setDsDong} sua={dangSua} /> : undefined}
             muc={chiTien || truocThue || laDc || laSx || laDcn || khoGon || (nhom === 'mua' && traLai) ? [] : [
-            ...(cfg.dongPos ? [['Thành tiền', tongTien], ['Giảm giá', tongGiamGia ? -tongGiamGia : 0], ['Chiết khấu', tongCk - tongGiamGia + tongPhiDv ? -(tongCk - tongGiamGia + tongPhiDv) : 0],
-              ['Phí dịch vụ', tongPhiDv], ...(tongPhiVc ? [['Phí vận chuyển', tongPhiVc]] : [])] as [string, number][] : [['Tiền hàng', tongTien] as [string, number],
-              ...(bo.ck ? [['Chiết khấu', tongCk ? -tongCk : 0] as [string, number]] : [])]),
+            ['Tiền hàng', tongTien] as [string, number],
+            ...(bo.ck ? [['Chiết khấu', tongCk ? -tongCk : 0] as [string, number]] : []),
             giamGtgt ? ['Giảm thuế GTGT', tongGiam ? -tongGiam : 0] : ['Tiền thuế GTGT', tongThue],
             ...(bo.tongNhap ? [['Giá trị nhập kho', tongTien - tongCk + (hkd ? tongThue : 0)] as [string, number]] : []),
           ]} />}
@@ -1533,6 +1535,30 @@ export function DaiTong({ muc, tong, nhan = 'Tổng tiền', tren = [], trai }: 
       ) : (
         <span className="pos-day-tong"><small>{nhan}</small><b>{moneyD(tong)}</b></span>
       )}
+    </div>
+  )
+}
+
+/** Dải phép tính ở đáy form như chi tiết Xuất bán POS (T613): Tiền hàng − Giảm giá − Chiết khấu + Phí dịch vụ = Doanh thu tính thuế ± thuế = Tổng thanh toán (T758) */
+function PhepTinhBan({ tongTien, giam, ck, phiDv, phiVc, tyLe, thue, tong }: { tongTien: number; giam: number; ck: number; phiDv: number; phiVc: number; tyLe: boolean; thue: number; tong: number }) {
+  const muc: [string, string, number][] = [
+    ['', 'Tiền hàng', tongTien], ['−', 'Giảm giá', giam], ['−', 'Chiết khấu', ck], ['+', 'Phí dịch vụ', phiDv],
+    ...(phiVc ? [['+', 'Phí vận chuyển', phiVc] as [string, string, number]] : []),
+  ]
+  const o = (dau: string, nhan: string, so: string, lop = '') => (
+    <span key={nhan} className="pos-phep-cum">
+      {dau && <span className="pos-phep-dau">{dau}</span>}
+      <span className={`pos-phep-o ${lop}`}><small>{nhan}</small><b>{so}</b></span>
+    </span>
+  )
+  return (
+    <div className="fsf-f-pos ban-phep">
+      <div className="pos-phep">
+        {muc.map(([dau, nhan, so]) => o(dau, nhan, money(so)))}
+        {o('=', 'Doanh thu tính thuế', money(tongTien - giam - ck + phiDv + phiVc), 'nen')}
+        {o(tyLe ? '−' : '+', tyLe ? 'Giảm trừ thuế' : 'Thuế GTGT', money(thue))}
+        {o('=', 'Tổng thanh toán', moneyD(tong), 'tong')}
+      </div>
     </div>
   )
 }
