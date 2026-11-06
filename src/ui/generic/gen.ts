@@ -38,6 +38,7 @@ export interface Dong {
   thue: number
   ptCk?: number
   ck?: number
+  cpMua?: number               // phiếu mua hàng: chi phí mua hàng phân bổ vào dòng, cộng vào giá trị nhập kho (T757)
   pt?: number                  // dòng hàng kiểu Xuất bán POS (T753): % giảm giá, tiền giảm giá, % phí dịch vụ, phí dịch vụ
   giam?: number
   ptPhiDv?: number

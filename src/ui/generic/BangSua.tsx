@@ -49,10 +49,11 @@ export interface BangSuaProps {
   coThemHangLoat?: boolean     // nút Thêm hàng loạt chọn nhiều hàng một lần, phiếu mua hàng (T465)
   doRong?: DoRong              // kéo mép phải tiêu đề để giãn cột, chung cho chế độ xem và sửa (T618)
   giaVon?: boolean             // phiếu xuất huỷ: cột Đơn giá, Thành tiền gọi là Giá vốn, Tiền vốn (T741)
+  coCpMua?: boolean            // phiếu mua hàng: cột Chi phí mua hàng trước Giá trị nhập kho, cộng vào giá trị nhập kho (T757)
 }
 
 /** Các cột ẩn hiện được của bảng chi tiết, theo loại phiếu (T49). Mỗi cột trên bảng là một mục, theo thứ tự trên bảng (T86) */
-export function cotTuyChon(cfg: VoucherCfg, o: { coKho?: boolean; coLo?: boolean; coCk?: boolean; coKm?: boolean; coLy?: boolean; coNhapKho?: boolean; coXuatKho?: boolean; coNhomHhdv?: boolean; coGiamThue?: boolean; giaVon?: boolean }): [string, string][] {
+export function cotTuyChon(cfg: VoucherCfg, o: { coKho?: boolean; coLo?: boolean; coCk?: boolean; coKm?: boolean; coLy?: boolean; coNhapKho?: boolean; coXuatKho?: boolean; coNhomHhdv?: boolean; coGiamThue?: boolean; giaVon?: boolean; coCpMua?: boolean }): [string, string][] {
   const hang = cfg.dong === 'hang' || cfg.dong === 'nvl'
   const tien = cfg.dong === 'tien'
   const coThue = cfg.thue !== undefined || hang
@@ -63,7 +64,7 @@ export function cotTuyChon(cfg: VoucherCfg, o: { coKho?: boolean; coLo?: boolean
     ['km', 'Khoản mục', tien && o.coKm], ['cv', 'Công việc', tien && o.coKm],
     ['sl', 'Số lượng', hang], ['gia', o.giaVon ? 'Giá vốn' : 'Đơn giá', hang], ['tien', o.giaVon ? 'Tiền vốn' : 'Thành tiền', true],
     ['ptCk', '% CK', o.coCk], ['ck', 'Tiền CK', o.coCk], ['truocThue', 'Tiền trước thuế', o.coNhapKho],
-    ['ts', 'Thuế suất', coThue && !o.coGiamThue], ['thue', 'Tiền thuế', coThue && !o.coGiamThue], ['giamThue', 'Giảm thuế GTGT', o.coGiamThue], ['nhomHhdv', 'Nhóm HHDV mua vào', o.coNhomHhdv],
+    ['ts', 'Thuế suất', coThue && !o.coGiamThue], ['thue', 'Tiền thuế', coThue && !o.coGiamThue], ['giamThue', 'Giảm thuế GTGT', o.coGiamThue], ['nhomHhdv', 'Nhóm HHDV mua vào', o.coNhomHhdv], ['cpMua', 'Chi phí mua hàng', o.coCpMua],
     ['gtnk', o.coXuatKho ? 'Giá trị xuất kho' : 'Giá trị nhập kho', o.coNhapKho || o.coXuatKho], ['tongTien', 'Tổng tiền', o.coNhapKho],
   ]
   return ds.filter(x => x[2]).map(([k, ten]) => [k, ten])
@@ -110,6 +111,7 @@ export function BangSua({
   coThemHangLoat = false,
   doRong,
   giaVon = false,
+  coCpMua = false,
 }: BangSuaProps) {
   const nhanGia = giaVon ? 'Giá vốn' : 'Đơn giá', nhanTien = giaVon ? 'Tiền vốn' : 'Thành tiền'
   const hang = cfg.dong === 'hang' || cfg.dong === 'nvl'
@@ -133,6 +135,7 @@ export function BangSua({
   const thueCot = coThue && !giamThue && hien('thue')
   const giamCot = Boolean(giamThue) && hien('giamThue')
   const nhomCot = coNhomHhdv && hien('nhomHhdv')
+  const cpCot = coCpMua && hien('cpMua')
   const gtnkCot = (coNhapKho || xuatKho) && hien('gtnk')
   const nhanGt = xuatKho ? 'Giá trị xuất kho' : 'Giá trị nhập kho'
   const tongTienCot = coNhapKho && hien('tongTien')
@@ -297,7 +300,8 @@ export function BangSua({
     ['ts', 'Thuế suất', tsCot, d => d.ts ? String(d.ts) : 'KCT'], ['thue', 'Tiền thuế', thueCot, d => money(d.thue), d => d.thue || 0],
     ['giamThue', 'Giảm thuế GTGT', giamCot, d => money(giamDong(d)), giamDong],
     ['nhomHhdv', 'Nhóm HHDV mua vào', nhomCot, d => d.nhomHhdv || NHOM_HHDV[0]],
-    ['gtnk', nhanGt, gtnkCot, d => money(tienSauCk(d) + (gtnkCoThue ? d.thue || 0 : 0)), d => tienSauCk(d) + (gtnkCoThue ? d.thue || 0 : 0)],
+    ['cpMua', 'Chi phí mua hàng', cpCot, d => money(d.cpMua || 0), d => d.cpMua || 0],
+    ['gtnk', nhanGt, gtnkCot, d => money(tienSauCk(d) + (d.cpMua || 0) + (gtnkCoThue ? d.thue || 0 : 0)), d => tienSauCk(d) + (d.cpMua || 0) + (gtnkCoThue ? d.thue || 0 : 0)],
     ['tongTien', 'Tổng tiền', tongTienCot, d => money(tienSauCk(d) + (d.thue || 0)), d => tienSauCk(d) + (d.thue || 0)],
   ]
   const kieuLoc = (k: string): KieuLoc => cotLoc.find(c => c[0] === k)?.[4] ? 'so' : 'chon'   // cột chữ lọc kiểu chọn (T466)
@@ -317,6 +321,7 @@ export function BangSua({
   const tongCk = dong.reduce((a, d) => a + (d.ck || 0), 0)
   const tongThue = dong.reduce((a, d) => a + (d.thue || 0), 0)
   const tongGiam = dong.reduce((a, d) => a + giamDong(d), 0)
+  const tongCpMua = dong.reduce((a, d) => a + (d.cpMua || 0), 0)
 
   if (cheDo === 'xem') {
     return (
@@ -355,6 +360,7 @@ export function BangSua({
               {thueCot && <ThKeo k="thue" className="num" w={110} doRong={doRong}>Tiền thuế</ThKeo>}
               {giamCot && <ThKeo k="giamThue" className="num" w={130} doRong={doRong}>Giảm thuế GTGT</ThKeo>}
               {nhomCot && <ThKeo k="nhomHhdv" w={240} doRong={doRong}>Nhóm HHDV mua vào</ThKeo>}
+              {cpCot && <ThKeo k="cpMua" className="num" w={130} doRong={doRong}>Chi phí mua hàng</ThKeo>}
               {gtnkCot && <ThKeo k="gtnk" className="num" w={130} doRong={doRong}>{nhanGt}</ThKeo>}
               {tongTienCot && <ThKeo k="tongTien" className="num" w={120} doRong={doRong}>Tổng tiền</ThKeo>}
             </tr>
@@ -394,7 +400,8 @@ export function BangSua({
                 {thueCot && <td className="num">{money(d.thue)}</td>}
                 {giamCot && <td className="num">{money(giamDong(d))}</td>}
                 {nhomCot && <td>{d.nhomHhdv || NHOM_HHDV[0]}</td>}
-                {gtnkCot && <td className="num">{money((d.tien || 0) - (d.ck || 0) + (gtnkCoThue ? d.thue || 0 : 0))}</td>}
+                {cpCot && <td className="num">{money(d.cpMua || 0)}</td>}
+                {gtnkCot && <td className="num">{money((d.tien || 0) - (d.ck || 0) + (d.cpMua || 0) + (gtnkCoThue ? d.thue || 0 : 0))}</td>}
                 {tongTienCot && <td className="num">{money((d.tien || 0) - (d.ck || 0) + (d.thue || 0))}</td>}
               </tr>
             ))}
@@ -412,7 +419,8 @@ export function BangSua({
               {thueCot && <td className="num">{money(tongThue)}</td>}
               {giamCot && <td className="num">{money(tongGiam)}</td>}
               {nhomCot && <td />}
-              {gtnkCot && <td className="num">{money(tongTien - tongCk + (gtnkCoThue ? tongThue : 0))}</td>}
+              {cpCot && <td className="num">{money(tongCpMua)}</td>}
+              {gtnkCot && <td className="num">{money(tongTien - tongCk + tongCpMua + (gtnkCoThue ? tongThue : 0))}</td>}
               {tongTienCot && <td className="num">{money(tongTien - tongCk + tongThue)}</td>}
             </tr>
           </tfoot>}
@@ -460,6 +468,7 @@ export function BangSua({
               {thueCot && <ThKeo k="thue" className="num" w={110} doRong={doRong}>Tiền thuế</ThKeo>}
               {giamCot && <ThKeo k="giamThue" className="num" w={130} doRong={doRong}>Giảm thuế GTGT</ThKeo>}
               {nhomCot && <ThKeo k="nhomHhdv" w={240} doRong={doRong}>Nhóm HHDV mua vào</ThKeo>}
+              {cpCot && <ThKeo k="cpMua" className="num" w={130} doRong={doRong}>Chi phí mua hàng</ThKeo>}
               {gtnkCot && <ThKeo k="gtnk" className="num" w={130} doRong={doRong}>{nhanGt}</ThKeo>}
               {tongTienCot && <ThKeo k="tongTien" className="num" w={120} doRong={doRong}>Tổng tiền</ThKeo>}
               <th style={{ width: 44 }} />
@@ -642,7 +651,8 @@ export function BangSua({
                       ds={NHOM_HHDV.map(v => ({ v, t: v }))} />
                   </td>
                 )}
-                {gtnkCot && <td className="num">{money((d.tien || 0) - (d.ck || 0) + (gtnkCoThue ? d.thue || 0 : 0))}</td>}
+                {cpCot && <td className="num">{money(d.cpMua || 0)}</td>}
+                {gtnkCot && <td className="num">{money((d.tien || 0) - (d.ck || 0) + (d.cpMua || 0) + (gtnkCoThue ? d.thue || 0 : 0))}</td>}
                 {tongTienCot && <td className="num">{money((d.tien || 0) - (d.ck || 0) + (d.thue || 0))}</td>}
                 <td className="c">
                   <button
@@ -670,7 +680,8 @@ export function BangSua({
               {thueCot && <td className="num">{money(tongThue)}</td>}
               {giamCot && <td className="num">{money(tongGiam)}</td>}
               {nhomCot && <td />}
-              {gtnkCot && <td className="num">{money(tongTien - tongCk + (gtnkCoThue ? tongThue : 0))}</td>}
+              {cpCot && <td className="num">{money(tongCpMua)}</td>}
+              {gtnkCot && <td className="num">{money(tongTien - tongCk + tongCpMua + (gtnkCoThue ? tongThue : 0))}</td>}
               {tongTienCot && <td className="num">{money(tongTien - tongCk + tongThue)}</td>}
               <td />
             </tr>

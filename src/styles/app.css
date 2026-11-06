@@ -44478,3 +44478,14 @@ a.hdn-chip:hover { border-color: var(--blue); color: var(--blue); }
   .ch-gv-dong .ch-gv-ngay { grid-column: 1 / -1; grid-row: 2; }
   .ch-gv-dau span:nth-child(3) { display: none; }
 }
+
+/* ── Phiếu mua hàng: khối Chi phí mua hàng dưới lưới hàng, nút Phân bổ (T757) ── */
+.ct-cpm { position: sticky; left: 0; display: flex; flex-direction: column; gap: 8px; padding: 12px 12px 14px; border-top: 1px solid var(--line); }   /* lưới hàng rộng cuộn ngang thì khối này vẫn đứng yên trong khung nhìn */
+.ct-cpm-dau { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.ct-cpm-dau > b { font-size: 14px; color: var(--ink); }
+.ct-cpm-dau > span { font-size: 12px; color: var(--muted); }
+.ct-cpm-chan { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.ct-cpm-tong { margin-left: auto; color: var(--muted); }
+.ct-cpm-tong > b { margin-left: 6px; color: var(--ink); font-variant-numeric: tabular-nums; }
+.ct-cpm-tt { font-size: 12px; color: var(--muted); text-align: right; }
+.ct-cpm-tt.lech { color: var(--red); }

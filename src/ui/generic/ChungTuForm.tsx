@@ -35,6 +35,7 @@ import { BangDieuChuyen, DauDieuChuyen, cotDcn } from '../../modules/kho/BangDie
 import { DCN, dongNhapDc, type DongDcn } from '../../modules/kho/dieu-chuyen'
 import { BangSua, DS_DOI_TUONG, HopCotPhieu, cotTuyChon } from './BangSua'
 import { ApDauBang } from './ApDauBang'
+import { ChiPhiMuaHang, type KhoanCp } from './ChiPhiMuaHang'
 import { BangTraNoNcc, ghiTraNo, phieuMuaConNo, type TraNo } from './BangTraNoNcc'
 import { HopInChungTu, type PhieuIn } from '../bao-cao/InChungTu'
 import { createPortal } from 'react-dom'
@@ -132,8 +133,10 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
   ), [idSeed, loai?.k, moi])
 
   const [dsDong, setDsDong] = useState<Dong[]>(dongGoc)
+  const [dsCp, setDsCp] = useState<KhoanCp[]>(() => (row?._cpMua as KhoanCp[] | undefined) ?? [])   // chi phí mua hàng (T757)
   useEffect(() => {
     setDsDong(dongGoc)
+    setDsCp((row?._cpMua as KhoanCp[] | undefined) ?? [])
   }, [dongGoc])
 
   const laTien = mod.key === 'tien'
@@ -350,6 +353,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
   const ctTtCu = ctTtCon(row)
   const traLai = cfg.prefix === 'TLN' || cfg.prefix === 'TL'
   const chiTt = (nhom === 'mua') !== traLai
+  const coCpMua = truocThue && !traLai && !laKk && !laSx && !laDcn   // phiếu mua hàng nhập kho có khối Chi phí mua hàng (T757)
   const loaiTt = !bo.tt ? '' : hinhThucTt === 'tienmat' ? (chiTt ? 'chi' : 'thu') : hinhThucTt === 'chuyenkhoan' ? (chiTt ? 'unc' : 'bc') : ''
   const viecTt = nhom === 'mua' ? (traLai ? 'trả lại hàng mua' : 'mua hàng') : (traLai ? 'trả lại hàng bán' : 'bán hàng')
   const dgTt = `${chiTt ? 'Chi' : 'Thu'} tiền ${viecTt} theo ${soCt}`
@@ -483,6 +487,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
       _nhanKemHd: nhanKemHd, _soHd: soHd, _ngayHd: ngayHd, _kyHieuHd: kyHieuHd, _httt: hinhThucTt, _ctTt: ctTt,
       ...(nhom === 'ban' && hinhThucTt !== 'congno' ? { _pttt: pttt } : {}),
       ...(dsDc ? { _dsDc: dsDc } : {}),
+      ...(coCpMua ? { _cpMua: dsCp } : {}),
       ...(traTu ? { _thamChieu: traTu.so, _thamChieuDi: traTu.di, _traTuMua: traTu.id } : {}),   // T727
       ...(laTien ? { _traNo: traNoNcc ? traNo : undefined } : {}),
       // Phiếu sản xuất (T152): tham chiếu phiếu xuất, người cập nhật; phiếu xuất mới chờ nhập, phiếu nhập lưu là đã nhập
@@ -859,7 +864,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
             )}
             {/* Nút Tuỳ chỉnh giao diện ở góc trên phải đầu form (T297); hộp vẫn mở cả khi thêm mới, sửa (T161) */}
             {hopCot && (
-              <HopCotPhieu dsDau={dsDau} dsChan={dsChan} ds={laKk ? COT_KK : laSx ? cotSx(sx!) : laDcn ? cotDcn(dcn!) : cotTuyChon(cfg, { coNhomHhdv: nhom === 'mua' && nhanKemHd && s.goi === 'PR', coKho: Boolean(bo.kho) && !khoDau && !laDc && !khoGon, giaVon, coLo: nhom === 'mua' && s.goi === 'PR', coCk: Boolean(bo.ck), coKm: kieu !== 'khong', coLy: Boolean(oLy), coNhapKho: truocThue, coXuatKho: nhom === 'mua' && traLai, coGiamThue: giamGtgt }).filter(([k]) => !anDc.includes(k))}
+              <HopCotPhieu dsDau={dsDau} dsChan={dsChan} ds={laKk ? COT_KK : laSx ? cotSx(sx!) : laDcn ? cotDcn(dcn!) : cotTuyChon(cfg, { coNhomHhdv: nhom === 'mua' && nhanKemHd && s.goi === 'PR', coKho: Boolean(bo.kho) && !khoDau && !laDc && !khoGon, giaVon, coLo: nhom === 'mua' && s.goi === 'PR', coCk: Boolean(bo.ck), coKm: kieu !== 'khong', coLy: Boolean(oLy), coNhapKho: truocThue, coXuatKho: nhom === 'mua' && traLai, coGiamThue: giamGtgt, coCpMua }).filter(([k]) => !anDc.includes(k))}
                 an={anCot} onDoi={doiAnCot} onDong={() => setHopCot(false)} />
             )}
             {ndcCho ? (   // phiếu nhập điều chuyển chờ: sửa thực nhận rồi Nhập kho (T748)
@@ -964,7 +969,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
               )}
             </div>
             {hopCot && (
-              <HopCotPhieu dsDau={dsDau} dsChan={dsChan} ds={laKk ? COT_KK : laSx ? cotSx(sx!) : laDcn ? cotDcn(dcn!) : cotTuyChon(cfg, { coNhomHhdv: nhom === 'mua' && nhanKemHd && s.goi === 'PR', coKho: Boolean(bo.kho) && !khoDau && !laDc && !khoGon, giaVon, coLo: nhom === 'mua' && s.goi === 'PR', coCk: Boolean(bo.ck), coKm: kieu !== 'khong', coLy: Boolean(oLy), coNhapKho: truocThue, coXuatKho: nhom === 'mua' && traLai, coGiamThue: giamGtgt }).filter(([k]) => !anDc.includes(k))}
+              <HopCotPhieu dsDau={dsDau} dsChan={dsChan} ds={laKk ? COT_KK : laSx ? cotSx(sx!) : laDcn ? cotDcn(dcn!) : cotTuyChon(cfg, { coNhomHhdv: nhom === 'mua' && nhanKemHd && s.goi === 'PR', coKho: Boolean(bo.kho) && !khoDau && !laDc && !khoGon, giaVon, coLo: nhom === 'mua' && s.goi === 'PR', coCk: Boolean(bo.ck), coKm: kieu !== 'khong', coLy: Boolean(oLy), coNhapKho: truocThue, coXuatKho: nhom === 'mua' && traLai, coGiamThue: giamGtgt, coCpMua }).filter(([k]) => !anDc.includes(k))}
                 an={anCot} onDoi={doiAnCot} onDong={() => setHopCot(false)} />
             )}
             {hopTt && row && (
@@ -1343,6 +1348,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
               tkTheoLy={coTkTheoLy ? (ly => tkTheoLyDo(loaiPhieuTien, ly)) : undefined}
               coKho={Boolean(bo.kho) && !khoDau && !laDc && !khoGon}   // phiếu điều chỉnh, nhập khác, xuất huỷ: kho ở đầu phiếu (T126, T737, T741)
               giaVon={giaVon}
+              coCpMua={coCpMua}
               khoMacDinh={khoMotCn || 'Kho tổng'}
               coNhapKho={nhom === 'mua' && Boolean(bo.tongNhap)}
               xuatKho={nhom === 'mua' && traLai}   // T728
@@ -1363,6 +1369,9 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
               hienLoc={moLoc}
               doRong={doRongCt}
             />
+          )}
+          {tab === 'ct' && coCpMua && !moLoc && (
+            <ChiPhiMuaHang ds={dsCp} onChange={setDsCp} dong={dsDong} onPhanBo={setDsDong} cheDo={dangSua ? 'sua' : 'xem'} />
           )}
 
           {/* Tab 2: Hoá đơn */}
