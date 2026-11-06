@@ -4,6 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 06/11/2026
 - T757: Phiếu mua hàng có nút tích Chi phí mua hàng cạnh Nhận kèm hoá đơn. Tích thì dải đáy form có ô số tiền và nút Phân bổ, chia chi phí vào từng mặt hàng theo giá trị hàng. Lưới hàng hiện cột Chi phí mua hàng, cộng vào Giá trị nhập kho.
+- T756: Điện thoại, form sửa công thức: ô sửa được nền trắng, ô không sửa được nền xám. Danh sách hết hở hai bên, dấu cộng nút thêm nằm giữa nút.
 - T756: Điện thoại, Công thức chế biến và Công thức sơ chế làm lại theo app IVT: danh sách có tab trạng thái và phễu lọc; chi tiết, thêm, sửa là màn toàn trang; sửa được cửa hàng, kênh áp dụng và nguyên vật liệu. Gói Plus mở được từ Danh mục. Thêm công thức, cả trên web, không còn hỏi chọn cửa hàng trước.
 - T755: Các màn bán hàng đổi tên cột Doanh thu trước thuế thành Doanh thu tính thuế.
 - T754: Cấu hình kế toán có thẻ Giảm thuế GTGT cho hộ kinh doanh, doanh nghiệp tính GTGT theo % doanh thu: bật tắt giảm thuế, chọn nghị quyết (mới nhất 204/2025/QH15), % giảm mức tỷ lệ, hiệu lực từ ngày đến ngày. Hết hiệu lực thì không giảm. Bật thì Danh mục hàng hoá có ô tích Giảm thuế theo quy định, không bắt buộc. Chứng từ bán hàng tính tiền giảm từng dòng = doanh thu tính thuế × % thuế GTGT của hàng × % giảm, hàng không tích thì không giảm.

@@ -44498,6 +44498,9 @@ a.hdn-chip:hover { border-color: var(--blue); color: var(--blue); }
   max-width: 100%;
   overflow-x: hidden;
   box-sizing: border-box;
+  /* Đè padding, gap của luật cũ T188, nếu không tab và nền bị hở hai bên */
+  padding: 0;
+  gap: 0;
 }
 .m-ct-tabs {
   display: flex;
@@ -44920,6 +44923,7 @@ a.hdn-chip:hover { border-color: var(--blue); color: var(--blue); }
 /* Ô nhập form thêm/sửa */
 .m-ct-o {
   background: var(--soft);
+  border: 1px solid transparent;
   border-radius: 10px;
   padding: 7px 12px;
   margin-bottom: 8px;
@@ -44970,11 +44974,23 @@ a.hdn-chip:hover { border-color: var(--blue); color: var(--blue); }
 .m-ct-o-bam {
   display: block;
   width: 100%;
-  border: 0;
   text-align: left;
   font: inherit;
   color: inherit;
   cursor: pointer;
+}
+/* Ô sửa được nền trắng, ô không sửa được giữ nền xám */
+.m-ct-o-bam, .m-ct-o:has(input, textarea) {
+  background: #fff;
+  border-color: var(--line);
+}
+.m-ct-o-bam:disabled {
+  background: var(--soft);
+  border-color: transparent;
+  cursor: default;
+}
+.m-ct-o-bam:disabled .gt {
+  color: var(--muted);
 }
 .m-ct-o textarea {
   width: 100%;

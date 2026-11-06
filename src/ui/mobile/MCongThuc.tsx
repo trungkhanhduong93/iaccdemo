@@ -401,6 +401,7 @@ export const MCongThuc: FC<ScreenProps> = ({ sc, mod }) => {
                 type="button"
                 className="m-ct-o m-ct-o-bam"
                 data-o="dvt"
+                disabled={dsDvtForm.length <= 1}
                 onClick={() => {
                   if (dsDvtForm.length > 1) setMoChonDvt(true)
                 }}
@@ -1020,7 +1021,7 @@ export const MCongThuc: FC<ScreenProps> = ({ sc, mod }) => {
       {/* Nút + tròn nổi góc dưới phải */}
       <button
         type="button"
-        className="m-ct-fab m-nut-them-fab"
+        className="m-ct-fab m-nut-them-fab m-nut-fab-tron"
         aria-label="Thêm công thức"
         onClick={() => nav(`${path}/moi`)}
       >

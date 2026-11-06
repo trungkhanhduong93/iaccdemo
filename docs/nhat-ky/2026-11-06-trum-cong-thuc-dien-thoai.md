@@ -13,6 +13,12 @@
 - `src/styles/app.css`: mục T756 cuối file. CSS cũ giữ nguyên, mục mới đè các luật cũ còn ăn vào màn mới (`.m-tc-tabs` thu nhỏ còn 2px, `.m-ct-tim-ic` tuyệt đối, `.m-ct-nvl-dong` flex có nền).
 - Sau khi lưu sửa, lùi về chi tiết bằng `quayLaiMobile` thay cho `nav replace`. Trum chốt khi nghiệm thu, vì replace để lại 2 mục chi tiết, quay lại phải bấm 2 lần.
 
+## Sửa sau nghiệm thu
+
+- Form sửa: ô sửa được nền trắng có viền, ô không sửa được nền xám. Đơn vị tính chính khoá khi hàng chỉ có 1 đơn vị.
+- Danh sách: `.m-ct-khung` còn ăn padding của luật cũ T188 nên tab hở 14px hai bên. Mục T756 đặt lại `padding: 0`, `gap: 0`.
+- Nút thêm: dùng `m-nut-fab-tron`, dấu cộng về giữa nút.
+
 ## Đã kiểm
 
 - `npm run typecheck`, `npm run build`: chạy xong, không lỗi.
