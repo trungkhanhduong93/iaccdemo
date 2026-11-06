@@ -36,7 +36,7 @@ export const mucHang = (ds: { ma: string; ten: string }[]) => ds.map(h => ({ v: 
 export function useDsCongThuc(loai: LoaiCt): Row[] {
   const { phieuMoi, apSua } = useDaXoa(MAN[loai])
   const [mau] = useState<Row[]>(() => (loai === 'cb' ? CONG_THUC_CB : CONG_THUC_SC).map(c => ({ ...c })))
-  return [...phieuMoi, ...mau].map(apSua)
+  return [...phieuMoi, ...mau].map(apSua).map(c => ((c.tt as string) === 'nhap' ? { ...c, tt: 'off' } : c))
 }
 
 export const nvlCua = (c: Row): NvlCongThuc[] => (c.nvl ?? c.dich ?? []) as NvlCongThuc[]
@@ -100,7 +100,7 @@ function DsCongThuc({ sc, mod, loai, ds }: ScreenProps & { loai: LoaiCt; ds: Row
   const batDau = (trangHt - 1) * coTrang
   const trangNay = list.slice(batDau, batDau + coTrang)
 
-  // Bật tắt công thức ngay trên danh sách; công thức nháp bật lên là đang hoạt động
+  // Bật tắt công thức ngay trên danh sách
   const doiTt = (c: Row) => {
     const moi: TtCongThuc = c.tt === 'on' ? 'off' : 'on'
     suaPhieu(MAN[loai], String(c.id), { tt: moi })

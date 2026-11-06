@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T760 | Công thức chế biến: web gói Plus có danh sách mỗi nguyên vật liệu một dòng, chip trạng thái và thanh lọc theo danh mục hàng hoá, form mẫu B hai khối, ĐVT nguyên vật liệu đổi được, Thêm dòng, Thêm hàng loạt; bỏ trạng thái Nháp ở mọi gói và điện thoại; sửa nút Đầu tháng tràn chữ | Trum | 07/11/2026 | `docs/nhat-ky/2026-11-07-trum-cong-thuc-plus-mau-b.md` |
 | T759 | Web gói Plus, Công thức chế biến ở Danh mục theo màn Công thức định lượng của itax: danh sách 7 cột, form toàn trang một cột giữa, lọc từng cột nguyên vật liệu, cảnh báo khi đóng lúc dữ liệu đã đổi | Trum | Xong | Thêm `CongThucPlus.tsx`, `CongThucPlusForm.tsx`. Gói Pro, điện thoại không đổi |
 | T757 | Web, phiếu mua hàng: nút tích Chi phí mua hàng cạnh Nhận kèm hoá đơn, tích thì dải đáy form có ô số tiền và nút Phân bổ chia vào từng mặt hàng theo giá trị hàng, cột Chi phí mua hàng cộng vào Giá trị nhập kho | PhuongXT | 06/11/2026 | 2026-11-06-phuongxt-chi-phi-mua-hang.md |
 | T756 | Điện thoại, Công thức chế biến và sơ chế theo ảnh app IVT: danh sách có tab trạng thái và phễu lọc, chi tiết toàn trang, form sửa, sheet nguyên vật liệu; gói Plus mở được từ Danh mục | Trum | 06/11/2026 | 2026-11-06-trum-cong-thuc-dien-thoai.md |

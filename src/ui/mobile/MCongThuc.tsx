@@ -135,7 +135,7 @@ export const MCongThuc: FC<ScreenProps> = ({ sc, mod }) => {
 
   // Số đếm cho các tab
   const soDemTab = useMemo(() => {
-    const kq: Record<TtCongThuc, number> = { on: 0, off: 0, nhap: 0 }
+    const kq: Record<TtCongThuc, number> = { on: 0, off: 0 }
     for (const c of locTuKhoa) {
       const ttKey = (c.tt as TtCongThuc) || 'on'
       if (kq[ttKey] !== undefined) {

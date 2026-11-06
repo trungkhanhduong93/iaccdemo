@@ -39,10 +39,10 @@ export const soLuong = (n: number) => (Number(n) || 0).toLocaleString(locSo(), {
 
 // ── Công thức ──
 
-export type TtCongThuc = 'on' | 'off' | 'nhap'
-export const TT_CONG_THUC: [TtCongThuc, string, string][] = [['on', 'Đang hoạt động', 'var(--green)'], ['off', 'Không hoạt động', 'var(--red)'], ['nhap', 'Nháp', 'var(--muted)']]
+export type TtCongThuc = 'on' | 'off'
+export const TT_CONG_THUC: [TtCongThuc, string, string][] = [['on', 'Đang hoạt động', 'var(--green)'], ['off', 'Không hoạt động', 'var(--red)']]
 
-export interface NvlCongThuc { ma: string; sl: number; tang?: number; giam?: number }
+export interface NvlCongThuc { ma: string; sl: number; dvt?: string; tang?: number; giam?: number }
 export interface CongThucCb { id: string; ma: string; spMa: string; dvt?: string; ngay: string; kenh: string[]; cuaHang: string[]; moTa: string; tt: TtCongThuc; nvl: NvlCongThuc[] }   // dvt: ĐVT quy đổi chọn ở form, để trống là ĐVT chính
 export interface CongThucSc { id: string; ma: string; gocMa: string; dvt?: string; ngay: string; cuaHang: string[]; moTa: string; tt: TtCongThuc; dich: NvlCongThuc[] }
 
@@ -52,7 +52,7 @@ export const CONG_THUC_CB: CongThucCb[] = [
     nvl: [{ ma: 'NVL003', sl: 0.2, tang: 10, giam: 5 }, { ma: 'NVL001', sl: 0.08, tang: 5, giam: 5 }, { ma: 'BTP01', sl: 0.45, tang: 10, giam: 10 }, { ma: 'NVL007', sl: 0.02, tang: 20, giam: 20 }] },
   { id: 'cb2', ma: 'CTCB002', spMa: 'BUN02', ngay: '15/09/2026', kenh: ['Tại quán', 'Mang về'], cuaHang: ['Phố Mây Thảo Điền'], moTa: 'Tạm ngưng chờ đổi nhà cung cấp mắm ruốc', tt: 'off',
     nvl: [{ ma: 'NVL025', sl: 0.2, tang: 10, giam: 5 }, { ma: 'NVL015', sl: 0.06, tang: 5, giam: 5 }, { ma: 'NVL014', sl: 0.04, tang: 5, giam: 5 }, { ma: 'BTP02', sl: 0.5, tang: 10, giam: 10 }, { ma: 'NVL007', sl: 0.02, tang: 20, giam: 20 }] },
-  { id: 'cb3', ma: 'CTCB003', spMa: 'COM01', ngay: '10/10/2026', kenh: ['Tại quán', 'Mang về', 'ShopeeFood'], cuaHang: [], moTa: 'Bản thử thêm trứng ốp la, chưa duyệt', tt: 'nhap',
+  { id: 'cb3', ma: 'CTCB003', spMa: 'COM01', ngay: '10/10/2026', kenh: ['Tại quán', 'Mang về', 'ShopeeFood'], cuaHang: [], moTa: 'Bản thử thêm trứng ốp la, chưa duyệt', tt: 'off',
     nvl: [{ ma: 'NVL005', sl: 0.18, tang: 10, giam: 5 }, { ma: 'BTP03', sl: 0.16, tang: 5, giam: 5 }, { ma: 'NVL032', sl: 1 }, { ma: 'NVL012', sl: 0.015, tang: 20, giam: 20 }] },
   { id: 'cb4', ma: 'CTCB004', spMa: 'BTP01', ngay: '01/08/2026', kenh: [], cuaHang: ['Phố Mây Lê Lợi', 'Phố Mây Thảo Điền', 'Phố Mây Nguyễn Trãi'], moTa: 'Nấu nồi 200 lít, ninh xương 8 giờ', tt: 'on',
     nvl: [{ ma: 'NVL002', sl: 0.35, tang: 10, giam: 5 }, { ma: 'NVL015', sl: 0.05, tang: 10, giam: 5 }, { ma: 'NVL031', sl: 0.004 }, { ma: 'NVL027', sl: 0.01 }, { ma: 'NVL029', sl: 0.01 }, { ma: 'NVL030', sl: 0.005 }] },

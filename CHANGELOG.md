@@ -2,6 +2,11 @@
 
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
+## 07/11/2026
+- T760: Web gói Plus, Công thức chế biến: danh sách hiện mỗi nguyên vật liệu một dòng, lọc nhanh bằng chip trạng thái, thanh lọc giống danh mục hàng hoá. Form dùng hết bề rộng màn hình, hai khối thông tin; nguyên vật liệu có quy đổi đổi được đơn vị tính; có nút Thêm dòng, Thêm hàng loạt.
+- T760: Công thức chế biến, sơ chế bỏ trạng thái Nháp ở mọi gói và điện thoại, chỉ còn Đang hoạt động, Không hoạt động.
+- T760: Lịch chọn ngày: chữ nút Đầu tháng không còn lấn viền.
+
 ## 06/11/2026
 - T757: Phiếu mua hàng có nút tích Chi phí mua hàng cạnh Nhận kèm hoá đơn. Tích thì dải đáy form có ô số tiền và nút Phân bổ, chia chi phí vào từng mặt hàng theo giá trị hàng. Lưới hàng hiện cột Chi phí mua hàng, cộng vào Giá trị nhập kho.
 - T759: Web gói Plus, Công thức chế biến ở Danh mục đổi bố cục: danh sách 7 cột có Mã sản phẩm, Mô tả, Trạng thái; form toàn trang một cột giữa, bảng nguyên vật liệu lọc được từng cột, đóng khi đã sửa thì hỏi lại.

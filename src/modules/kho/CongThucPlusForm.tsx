@@ -22,6 +22,12 @@ import {
 } from './san-xuat'
 import { DS_NVL, DS_SP, KENH, MAN, mucHang, nvlCua, OSo } from './CongThuc'
 
+const dvtCuaNvl = (ma: string) => {
+  const h = hangCua(ma)
+  return h ? [h.dvt, ...quyDoiTuDanhMuc(h.ten, h.dvt).map(q => q.dv)] : []
+}
+const dvtHienNvl = (n: NvlCongThuc) => (n.dvt && dvtCuaNvl(n.ma).includes(n.dvt) ? n.dvt : hangCua(n.ma)?.dvt ?? '')
+
 export function FormCongThucPlus({ sc, mod, ct, soCt }: ScreenProps & { ct?: Row; soCt: number }) {
   const { s, toast } = useSession()
   const nav = useNavigate()
@@ -105,7 +111,7 @@ export function FormCongThucPlus({ sc, mod, ct, soCt }: ScreenProps & { ct?: Row
       ? 'Chọn sản phẩm'
       : !ngay
         ? 'Nhập ngày áp dụng'
-        : !nvl.length
+        : !nvl.some(n => n.ma)
           ? 'Thêm nguyên vật liệu thành phần'
           : ''
     if (thieu) {
@@ -122,7 +128,7 @@ export function FormCongThucPlus({ sc, mod, ct, soCt }: ScreenProps & { ct?: Row
       cuaHang,
       moTa,
       tt,
-      nvl,
+      nvl: nvl.filter(n => n.ma),
     } satisfies Omit<CongThucCb, 'id'>
 
     if (moi) themPhieu(MAN.cb, { id: `moi-${Date.now()}`, ...nd }, s.ten)
@@ -142,7 +148,7 @@ export function FormCongThucPlus({ sc, mod, ct, soCt }: ScreenProps & { ct?: Row
           kenh,
           moTa,
           ngay,
-          nvl,
+          nvl: nvl.filter(n => n.ma),
         },
       },
     })
@@ -159,7 +165,7 @@ export function FormCongThucPlus({ sc, mod, ct, soCt }: ScreenProps & { ct?: Row
     return dsNvlGoc.filter(({ item }) => {
       const h = hangCua(item.ma)
       const ten = h?.ten ?? ''
-      const dvtHang = h?.dvt ?? ''
+      const dvtHang = dvtHienNvl(item)
       const slStr = String(item.sl)
 
       if (qMa && !fold(item.ma).includes(qMa)) return false
@@ -192,145 +198,148 @@ export function FormCongThucPlus({ sc, mod, ct, soCt }: ScreenProps & { ct?: Row
 
       <div className="ctpl-than">
         <div className="ctpl-cot">
-          {/* Khối 1: Thông tin chung */}
+          {/* Khối 1: Thông tin chung, mẫu B hai khối, mỗi khối 3 dòng (T760) */}
           <div className="ctpl-tieu-khoi">
             <span>Thông tin chung</span>
-            <input
-              type="checkbox"
-              className="bat-tat"
-              checked={tt === 'on'}
-              onChange={e => setTt(e.target.checked ? 'on' : 'off')}
-              aria-label="Đang sử dụng"
-            />
           </div>
 
-          <div className="ctpl-dong-o">
-            <div className="ctpl-nhan">Mã công thức</div>
-            <div className="ctpl-o khoa" data-o="ma" aria-disabled="true">
-              <input
-                type="text"
-                disabled
-                readOnly
-                value={moi ? '' : ma}
-                placeholder={moi ? 'Mã sinh tự động' : undefined}
-              />
-            </div>
-          </div>
-
-          <div className="ctpl-dong-o">
-            <div className="ctpl-nhan">
-              Sản phẩm <em>*</em>
-            </div>
-            <div className="ctpl-o" data-o="sp">
-              <ChonDanhMuc
-                dm="hang"
-                nhan="sản phẩm"
-                coMa
-                trong="Chọn"
-                value={sp}
-                onChange={v => {
-                  setSp(v)
-                  const h = hangCua(v)
-                  if (h) setDvt(h.dvt)
-                }}
-                ds={mucHang(DS_SP)}
-              />
-            </div>
-          </div>
-
-          <div className="ctpl-dong-o ctpl-dong-doi">
-            <div className="ctpl-nhan">
-              Đơn vị tính <em>*</em>
-            </div>
-            <div className={`ctpl-o${dsDvt.length <= 1 ? ' khoa' : ''}`} data-o="dvt" aria-disabled={dsDvt.length <= 1 ? 'true' : undefined}>
-              {dsDvt.length > 1 ? (
-                <Select
-                  aria-label="Đơn vị tính"
-                  value={dvtHien}
-                  onChange={e => setDvt(e.target.value)}
-                  ds={dsDvt.map(d => ({ v: d, t: d }))}
-                />
-              ) : (
+          <div className="ctpl-hai-khoi">
+            <div className="ctpl-khoi ctpl-khoi-trai">
+              <div className="ctpl-nhan">Mã công thức</div>
+              <div className="ctpl-o khoa" data-o="ma" aria-disabled="true">
                 <input
                   type="text"
                   disabled
                   readOnly
-                  value={dvtHien}
-                  placeholder="Theo hàng đã chọn"
+                  value={moi ? '' : ma}
+                  placeholder={moi ? 'Mã sinh tự động' : undefined}
                 />
-              )}
-            </div>
-            <div className="ctpl-nhan">Ngày áp dụng</div>
-            <div className="ctpl-o" data-o="ngay">
-              <ONgay
-                value={ngay}
-                onChange={setNgay}
-                title="Công thức dùng cho phiếu từ ngày này"
-              />
-            </div>
-          </div>
+              </div>
+              <div className="ctpl-nhan">Trạng thái</div>
+              <div className="ctpl-o-tt" data-o="tt">
+                <input
+                  type="checkbox"
+                  className="bat-tat"
+                  checked={tt === 'on'}
+                  onChange={e => setTt(e.target.checked ? 'on' : 'off')}
+                  aria-label="Trạng thái"
+                />
+                <span>{tt === 'on' ? 'Đang hoạt động' : 'Không hoạt động'}</span>
+              </div>
 
-          <div className="ctpl-dong-o">
-            <div className="ctpl-nhan">Mô tả</div>
-            <div className="ctpl-o" data-o="moTa">
-              <textarea
-                rows={2}
-                value={moTa}
-                onChange={e => setMoTa(e.target.value)}
-                placeholder="Nhập mô tả"
-                aria-label="Mô tả"
-              />
+              <div className="ctpl-nhan">Cửa hàng áp dụng</div>
+              <div className="ctpl-o ctpl-o-rong" data-o="cuaHang">
+                <ChonNhieu
+                  nhan="Cửa hàng áp dụng"
+                  tenDm="cửa hàng"
+                  goiY="Để trống nếu áp dụng cho mọi cửa hàng"
+                  value={cuaHang}
+                  onChange={setCuaHang}
+                  ds={CUA_HANG.map(c => ({
+                    v: c.ten,
+                    t: c.ten,
+                    phu: `Mã: ${c.id.toUpperCase()}`,
+                  }))}
+                />
+              </div>
+
+              <div className="ctpl-nhan">Kênh áp dụng</div>
+              <div className="ctpl-o ctpl-o-rong" data-o="kenh">
+                <ChonNhieu
+                  nhan="Kênh áp dụng"
+                  tenDm="kênh bán"
+                  goiY="Để trống nếu áp dụng cho mọi kênh"
+                  value={kenh}
+                  onChange={setKenh}
+                  ds={KENH.map(k => ({ v: k, t: k }))}
+                />
+              </div>
             </div>
-          </div>
 
-          {/* Khối 2: Phạm vi áp dụng */}
-          <div className="ctpl-tieu-khoi">
-            <span>Phạm vi áp dụng</span>
-          </div>
+            <div className="ctpl-khoi ctpl-khoi-phai">
+              <div className="ctpl-nhan">
+                Sản phẩm <em>*</em>
+              </div>
+              <div className="ctpl-o" data-o="sp">
+                <ChonDanhMuc
+                  dm="hang"
+                  nhan="sản phẩm"
+                  coMa
+                  trong="Chọn"
+                  value={sp}
+                  onChange={v => {
+                    setSp(v)
+                    const h = hangCua(v)
+                    if (h) setDvt(h.dvt)
+                  }}
+                  ds={mucHang(DS_SP)}
+                />
+              </div>
+              <div className="ctpl-nhan">
+                Đơn vị tính <em>*</em>
+              </div>
+              <div className={`ctpl-o${dsDvt.length <= 1 ? ' khoa' : ''}`} data-o="dvt" aria-disabled={dsDvt.length <= 1 ? 'true' : undefined}>
+                {dsDvt.length > 1 ? (
+                  <Select
+                    aria-label="Đơn vị tính"
+                    value={dvtHien}
+                    onChange={e => setDvt(e.target.value)}
+                    ds={dsDvt.map(d => ({ v: d, t: d }))}
+                  />
+                ) : (
+                  <input
+                    type="text"
+                    disabled
+                    readOnly
+                    value={dvtHien}
+                    placeholder="Theo hàng đã chọn"
+                  />
+                )}
+              </div>
 
-          <div className="ctpl-dong-o">
-            <div className="ctpl-nhan">Cửa hàng áp dụng</div>
-            <div className="ctpl-o" data-o="cuaHang">
-              <ChonNhieu
-                nhan="Cửa hàng áp dụng"
-                tenDm="cửa hàng"
-                goiY="Để trống nếu áp dụng cho mọi cửa hàng"
-                value={cuaHang}
-                onChange={setCuaHang}
-                ds={CUA_HANG.map(c => ({
-                  v: c.ten,
-                  t: c.ten,
-                  phu: `Mã: ${c.id.toUpperCase()}`,
-                }))}
-              />
-            </div>
-          </div>
+              <div className="ctpl-nhan">Ngày áp dụng</div>
+              <div className="ctpl-o ctpl-o-rong" data-o="ngay">
+                <ONgay
+                  value={ngay}
+                  onChange={setNgay}
+                  title="Công thức dùng cho phiếu từ ngày này"
+                />
+              </div>
 
-          <div className="ctpl-dong-o">
-            <div className="ctpl-nhan">Kênh áp dụng</div>
-            <div className="ctpl-o" data-o="kenh">
-              <ChonNhieu
-                nhan="Kênh áp dụng"
-                tenDm="kênh bán"
-                goiY="Để trống nếu áp dụng cho mọi kênh"
-                value={kenh}
-                onChange={setKenh}
-                ds={KENH.map(k => ({ v: k, t: k }))}
-              />
+              <div className="ctpl-nhan">Mô tả</div>
+              <div className="ctpl-o ctpl-o-rong" data-o="moTa">
+                <textarea
+                  rows={1}
+                  value={moTa}
+                  onChange={e => setMoTa(e.target.value)}
+                  placeholder="Nhập mô tả"
+                  aria-label="Mô tả"
+                />
+              </div>
             </div>
           </div>
 
           {/* Khối 3: Nguyên vật liệu thành phần */}
           <div className="ctpl-tieu-khoi">
             <span>Nguyên vật liệu thành phần</span>
-            <button
-              type="button"
-              className="ctpl-them"
-              onClick={() => setMoHangLoat(true)}
-            >
-              <Icon n="plus" className="ic sm" />
-              <span>Thêm mới</span>
-            </button>
+            <div className="ctpl-nut-nvl">
+              <button
+                type="button"
+                className="ctpl-them"
+                onClick={() => setNvl(ds => [...ds, { ma: '', sl: 0 }])}
+              >
+                <Icon n="plus" className="ic sm" />
+                <span>Thêm dòng</span>
+              </button>
+              <button
+                type="button"
+                className="ctpl-them"
+                onClick={() => setMoHangLoat(true)}
+              >
+                <Icon n="plus" className="ic sm" />
+                <span>Thêm hàng loạt</span>
+              </button>
+            </div>
           </div>
 
           <div className="ctpl-nvl-wrap">
@@ -395,11 +404,37 @@ export function FormCongThucPlus({ sc, mod, ct, soCt }: ScreenProps & { ct?: Row
                 {dsNvlHien.length > 0 ? (
                   dsNvlHien.map(({ item, index }) => {
                     const h = hangCua(item.ma)
+                    const dsDvtNvl = dvtCuaNvl(item.ma)
                     return (
                       <tr key={index}>
-                        <td className="ctpl-nvl-ma">{item.ma}</td>
+                        <td className="ctpl-nvl-ma">
+                          {item.ma || (
+                            <ChonDanhMuc
+                              dm="nvl"
+                              nhan="nguyên vật liệu"
+                              coMa
+                              chiMa
+                              className="inp sm"
+                              trong="Chọn"
+                              value={item.ma}
+                              ds={mucHang(DS_NVL.filter(x => x.ma !== sp && !nvl.some(n => n.ma === x.ma)))}
+                              onChange={v => doiNvl(index, { ma: v, dvt: undefined })}
+                            />
+                          )}
+                        </td>
                         <td className="ctpl-nvl-ten">{h?.ten ?? ''}</td>
-                        <td className="ctpl-nvl-dvt">{h?.dvt ?? ''}</td>
+                        <td className={`ctpl-nvl-dvt${dsDvtNvl.length > 1 ? '' : ' khoa'}`}>
+                          {dsDvtNvl.length > 1 ? (
+                            <Select
+                              className="inp sm"
+                              aria-label={`Đơn vị tính ${h?.ten ?? ''}`}
+                              value={dvtHienNvl(item)}
+                              // Đổi đơn vị giữ nguyên số lượng, người dùng tự nhập lại (QD100)
+                              onChange={e => doiNvl(index, { dvt: e.target.value === h?.dvt ? undefined : e.target.value })}
+                              ds={dsDvtNvl.map(d => ({ v: d, t: d }))}
+                            />
+                          ) : dvtHienNvl(item)}
+                        </td>
                         <td className="num ctpl-nvl-sl">
                           <OSo val={item.sl} onChange={v => doiNvl(index, { sl: v })} />
                         </td>

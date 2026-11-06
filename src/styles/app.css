@@ -45563,3 +45563,126 @@ a.hdn-chip:hover { border-color: var(--blue); color: var(--blue); }
 body:has(.ctpl-form) .overlay {
   z-index: 70;
 }
+
+/* ── Công thức chế biến Plus mẫu B (T760) ── */
+.ctpl-cot {
+  max-width: none;
+  width: 100%;
+  padding: 0 24px;
+}
+.ctpl-hai-khoi {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  align-items: stretch;
+}
+.ctpl-khoi {
+  flex: 1 1 560px;
+  min-width: 0;
+  display: grid;
+  grid-template-rows: repeat(3, minmax(42px, 1fr));
+  border-top: 1px solid var(--line);
+  border-left: 1px solid var(--line);
+  background: #fff;
+}
+.ctpl-khoi-trai {
+  grid-template-columns: 148px minmax(0, 1fr) 100px 190px;
+}
+.ctpl-khoi-phai {
+  grid-template-columns: 130px minmax(0, 1fr) 110px 120px;
+}
+.ctpl-khoi .ctpl-nhan {
+  width: auto;
+  min-width: 0;
+  max-width: none;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--line);
+}
+.ctpl-khoi .ctpl-o {
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.ctpl-o-rong {
+  grid-column: span 3;
+}
+.ctpl-o-tt {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  background: #fff;
+  color: var(--ink);
+  font-size: 14px;
+  white-space: nowrap;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.ctpl-khoi .ctpl-o textarea {
+  min-height: 28px;
+}
+.ctpl-nut-nvl {
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+}
+.ctpl-nvl td.ctpl-nvl-dvt.khoa {
+  background: var(--soft);
+}
+/* Hàng lọc bảng nguyên vật liệu giống danh sách chứng từ (tr.loc-hang): ô không viền, phễu bên phải */
+.ctpl-nvl .ctpl-loc-hang th {
+  height: 36px;
+  padding: 0 6px;
+  border-bottom: 1px solid var(--luoi-vien);
+}
+.ctpl-loc {
+  flex-direction: row-reverse;
+  height: 30px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+}
+.ctpl-loc input {
+  height: 30px;
+  padding: 0 2px 0 6px;
+  font-size: 13px;
+  font-weight: 400;
+}
+/* Lịch chọn một ngày: 4 nút chân rộng theo chữ, Đầu tháng không lấn viền */
+.dp-chan {
+  grid-template-columns: repeat(4, auto);
+}
+
+/* ── Công thức chế biến Plus danh sách (T760) ── */
+.ctpl-bang {
+  min-width: 1280px;
+}
+.ctpl-bang thead tr:first-child th.c {
+  text-align: center;
+}
+.ctpl-bang thead tr + tr th {
+  height: 32px;
+  padding: 0 11px;
+  background: var(--th);
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 600;
+  white-space: normal;
+  text-align: left;
+  border-bottom: 1px solid var(--luoi-vien);
+  border-right: 1px solid var(--line-2);
+}
+.ctpl-bang thead tr + tr th.num {
+  text-align: right;
+}
+.tbl.ctpl-bang tbody td.ctpl-gop {
+  vertical-align: top;
+  padding-top: 12px !important;
+}
+.ctpl-bang tbody:hover td {
+  background: #f2f7fb;
+}
+.ctpl-bang td.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}

@@ -1088,4 +1088,13 @@ Trum chốt khi làm T759:
 - Học bố cục, luồng thao tác của itax. Màu, phông, icon lấy của repo (QD12).
 - Chưa làm nút Xoá ở form dù itax có, vì T756 cấm nút Xoá công thức.
 
-## QD100. Công thức chế biến: danh sách theo nguyên vật liệu, form mẫu B, bỏ Nháp (đang soạn)
+## QD100. Công thức chế biến: danh sách theo nguyên vật liệu, form mẫu B, bỏ Nháp (06/11/2026)
+
+Trum chốt khi làm T760, chọn trên artifact https://claude.ai/artifact/6uTUETgK1SJvzGEqD45Mxq. Bổ sung QD99.
+
+- Danh sách web gói Plus: mỗi nguyên vật liệu một dòng, cột khác gộp ô theo công thức. Số đếm và phân trang vẫn tính theo công thức.
+- Thanh lọc theo danh mục hàng hoá: hàng 1 là phễu, ô tìm, Áp dụng từ ngày, Lọc, Thêm mới; hàng 2 là chip trạng thái, số đếm, Excel, Tuỳ chỉnh cột. Giữ ô ngày dù danh mục hàng hoá không có.
+- Form theo mẫu B: hai khối, mỗi khối 3 dòng. Trái: Mã công thức và Trạng thái, Cửa hàng áp dụng, Kênh áp dụng. Phải: Sản phẩm và Đơn vị tính, Ngày áp dụng, Mô tả. Loại mẫu A hai cột.
+- Công thức chỉ còn 2 trạng thái Đang hoạt động, Không hoạt động, ở mọi gói và điện thoại. Công thức Nháp cũ thành Không hoạt động. Nháp của chứng từ giữ nguyên.
+- Đổi đơn vị tính nguyên vật liệu trong form giữ nguyên số lượng, không tự quy đổi. Đã cân nhắc tự quy đổi theo danh mục Quy đổi ĐVT và loại: người dùng tự nhập lại số.
+- Phiếu sản xuất vẫn đọc dữ liệu mẫu theo đơn vị chính, chưa dùng đơn vị đổi trong form.
