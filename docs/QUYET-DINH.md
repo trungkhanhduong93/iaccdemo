@@ -1093,8 +1093,9 @@ Trum chốt khi làm T759:
 Trum chốt khi làm T760, chọn trên artifact https://claude.ai/artifact/6uTUETgK1SJvzGEqD45Mxq. Bổ sung QD99.
 
 - Danh sách web gói Plus: mỗi nguyên vật liệu một dòng, cột khác gộp ô theo công thức. Số đếm và phân trang vẫn tính theo công thức.
-- Thanh lọc theo danh mục hàng hoá: hàng 1 là phễu, ô tìm, Áp dụng từ ngày, Lọc, Thêm mới; hàng 2 là chip trạng thái, số đếm, Excel, Tuỳ chỉnh cột. Giữ ô ngày dù danh mục hàng hoá không có.
-- Form theo mẫu B: hai khối, mỗi khối 3 dòng. Trái: Mã công thức và Trạng thái, Cửa hàng áp dụng, Kênh áp dụng. Phải: Sản phẩm và Đơn vị tính, Ngày áp dụng, Mô tả. Loại mẫu A hai cột.
+- Thanh lọc theo danh mục hàng hoá: hàng 1 là phễu, ô tìm, Áp dụng từ ngày, Lọc, Thêm mới; hàng 2 là chip trạng thái, số đếm, Excel, Tuỳ chỉnh cột. Giữ ô ngày dù danh mục hàng hoá không có. Phễu mở Bộ lọc nâng cao dùng chung `BoLoc`, không tự viết hộp riêng.
+- Form theo mẫu B: hai khối, mỗi khối 3 dòng. Trái: Mã công thức và Trạng thái, Cửa hàng áp dụng, Kênh áp dụng. Phải: Sản phẩm; Đơn vị tính và Ngày áp dụng; Mô tả. Loại mẫu A hai cột.
 - Công thức chỉ còn 2 trạng thái Đang hoạt động, Không hoạt động, ở mọi gói và điện thoại. Công thức Nháp cũ thành Không hoạt động. Nháp của chứng từ giữ nguyên.
 - Đổi đơn vị tính nguyên vật liệu trong form giữ nguyên số lượng, không tự quy đổi. Đã cân nhắc tự quy đổi theo danh mục Quy đổi ĐVT và loại: người dùng tự nhập lại số.
+- Trong form, đơn vị tính sản phẩm và nguyên vật liệu hiện cả mã và tên, ở ô và khi thả xuống. Nguyên vật liệu chỉ có 1 đơn vị vẫn là ô chọn, không khoá.
 - Phiếu sản xuất vẫn đọc dữ liệu mẫu theo đơn vị chính, chưa dùng đơn vị đổi trong form.

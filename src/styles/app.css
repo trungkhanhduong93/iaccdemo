@@ -45220,29 +45220,6 @@ a.hdn-chip:hover { border-color: var(--blue); color: var(--blue); }
 .ctpl-ngay {
   width: 170px;
 }
-.ctpl-pheu-pop {
-  padding: 14px;
-  width: 320px;
-}
-.ctpl-loc-o {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin-bottom: 12px;
-}
-.ctpl-loc-o span {
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--ink);
-}
-.ctpl-loc-day {
-  display: flex;
-  justify-content: flex-end;
-  gap: 8px;
-  margin-top: 14px;
-  padding-top: 10px;
-  border-top: 1px solid var(--line);
-}
 .ctpl-tt {
   display: inline-flex;
   align-items: center;
@@ -45589,7 +45566,7 @@ body:has(.ctpl-form) .overlay {
   grid-template-columns: 148px minmax(0, 1fr) 100px 190px;
 }
 .ctpl-khoi-phai {
-  grid-template-columns: 130px minmax(0, 1fr) 110px 120px;
+  grid-template-columns: 130px minmax(0, 1fr) 110px minmax(0, 1fr);
 }
 .ctpl-khoi .ctpl-nhan {
   width: auto;
@@ -45624,9 +45601,6 @@ body:has(.ctpl-form) .overlay {
   display: inline-flex;
   align-items: center;
   gap: 16px;
-}
-.ctpl-nvl td.ctpl-nvl-dvt.khoa {
-  background: var(--soft);
 }
 /* Hàng lọc bảng nguyên vật liệu giống danh sách chứng từ (tr.loc-hang): ô không viền, phễu bên phải */
 .ctpl-nvl .ctpl-loc-hang th {

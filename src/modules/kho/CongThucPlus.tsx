@@ -1,16 +1,15 @@
-import { useMemo, useRef, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import type { Col, Row, ScreenProps } from '../types'
 import { duongDan, tenMan } from '../../app/registry'
 import { useSession } from '../../app/session'
 import { CUA_HANG } from '../../data/mock'
-import { Icon } from '../../ui/Icon'
 import { IconFigmaSearch } from '../../ui/IconFigma'
-import { Select, Popover } from '../../ui/Dropdown'
+import { Select } from '../../ui/Dropdown'
 import { CO_TRANG_DM, PhanTrang } from '../../ui/PhanTrang'
 import { ONgay, docNgay } from '../../ui/ChonNgay'
 import { NutExcel, NutThemMoiSplit } from '../../ui/CongCuDs'
-import { ChipTrangThai, NutTuyChinhCot, useCotDs, type Chip } from '../../ui/LocNangCao'
+import { BoLoc, ChipTrangThai, NutTuyChinhCot, useCauHinhLoc, useCotDs, useLocNhap, type Chip, type OLocDef } from '../../ui/LocNangCao'
 import { fold } from '../../ui/format'
 import { hangCua, apDungCuaHang, TT_CONG_THUC, soLuong, type NvlCongThuc } from './san-xuat'
 import { nvlCua, useDsCongThuc } from './CongThuc'
@@ -93,21 +92,10 @@ function DsCongThucPlus({ sc, mod, ds }: ScreenProps & { ds: Row[] }) {
   const path = duongDan(mod, sc)
 
   const [chip, setChip] = useState<string>('on')
-  const [tim, setTim] = useState('')
-  const [ngay, setNgay] = useState('')
-  const [locSp, setLocSp] = useState('')
-  const [locCuaHang, setLocCuaHang] = useState('')
-
-  const [apTim, setApTim] = useState('')
-  const [apNgay, setApNgay] = useState('')
-  const [apSp, setApSp] = useState('')
-  const [apCuaHang, setApCuaHang] = useState('')
+  const locCt = useLocNhap(() => ({ q: '', ngay: '', sp: '', cuaHang: '' }))
 
   const [trang, setTrang] = useState(1)
   const [coTrang, setCoTrang] = useState(50)
-
-  const nutPheu = useRef<HTMLButtonElement>(null)
-  const [moPheu, setMoPheu] = useState(false)
 
   const dsSp = useMemo(() => {
     return [...new Set(ds.map(c => String(c.spMa)))].map(ma => ({
@@ -117,45 +105,40 @@ function DsCongThucPlus({ sc, mod, ds }: ScreenProps & { ds: Row[] }) {
   }, [ds])
 
   const apLoc = () => {
-    setApTim(tim)
-    setApNgay(ngay)
-    setApSp(locSp)
-    setApCuaHang(locCuaHang)
+    locCt.loc()
     setTrang(1)
-  }
-
-  const lamMoiPheu = () => {
-    setLocSp('')
-    setLocCuaHang('')
-  }
-
-  const apDungPheu = () => {
-    setApSp(locSp)
-    setApCuaHang(locCuaHang)
-    setTrang(1)
-    setMoPheu(false)
   }
 
   const xoaHetLoc = () => {
-    setTim('')
-    setNgay('')
-    setLocSp('')
-    setLocCuaHang('')
-    setApTim('')
-    setApNgay('')
-    setApSp('')
-    setApCuaHang('')
+    locCt.xoaHet()
     setChip('on')
     setTrang(1)
   }
 
-  const dangLoc = Boolean(apTim || apNgay || apSp || apCuaHang)
-  const khacNhap = tim !== apTim || ngay !== apNgay || locSp !== apSp || locCuaHang !== apCuaHang
-  const soDangLocTrongPheu = [apSp, apCuaHang].filter(Boolean).length
+  // Bộ lọc nâng cao dùng chung như danh mục hàng hoá (T760)
+  const oNgay = <ONgay value={locCt.nhap.ngay} placeholder="Áp dụng từ ngày" onChange={v => locCt.dat('ngay', v)} />
+  const oLoc: OLocDef[] = [
+    {
+      k: 'tim', ten: 'Tìm kiếm', coGiaTri: Boolean(locCt.nhap.q.trim()),
+      o: <input className="ds-o-inp" value={locCt.nhap.q} placeholder="Tìm theo mã, tên" onChange={e => locCt.dat('q', e.target.value)}
+        onKeyDown={e => { if (e.key === 'Enter') apLoc() }} />,
+    },
+    { k: 'ngay', ten: 'Áp dụng từ ngày', coGiaTri: Boolean(locCt.nhap.ngay), o: oNgay },
+    {
+      k: 'sp', ten: 'Sản phẩm', coGiaTri: Boolean(locCt.nhap.sp),
+      o: <Select className="ds-o-sel" aria-label="Sản phẩm" value={locCt.nhap.sp} onChange={e => locCt.dat('sp', e.target.value)} ds={[{ v: '', t: 'Tất cả' }, ...dsSp]} />,
+    },
+    {
+      k: 'cuaHang', ten: 'Cửa hàng', coGiaTri: Boolean(locCt.nhap.cuaHang),
+      o: <Select className="ds-o-sel" aria-label="Cửa hàng" value={locCt.nhap.cuaHang} onChange={e => locCt.dat('cuaHang', e.target.value)} ds={[{ v: '', t: 'Tất cả' }, ...CUA_HANG.map(c => ({ v: c.ten, t: c.ten }))]} />,
+    },
+  ]
+  const [cauHinhLoc, datCauHinhLoc] = useCauHinhLoc(path, oLoc.map(o => o.k), ['tim', 'ngay'])
 
   const truocChip = useMemo(() => {
-    const q = fold(apTim.trim())
-    const tuNgay = apNgay ? docNgay(apNgay) : null
+    const { q: tim, ngay, sp, cuaHang } = locCt.ap
+    const q = fold(tim.trim())
+    const tuNgay = ngay ? docNgay(ngay) : null
 
     return ds.filter(c => {
       if (q) {
@@ -168,11 +151,11 @@ function DsCongThucPlus({ sc, mod, ds }: ScreenProps & { ds: Row[] }) {
         const d = docNgay(String(c.ngay))
         if (d.getTime() < tuNgay.getTime()) return false
       }
-      if (apSp && c.spMa !== apSp) return false
-      if (apCuaHang && !apDungCuaHang(c.cuaHang as string[], apCuaHang)) return false
+      if (sp && c.spMa !== sp) return false
+      if (cuaHang && !apDungCuaHang(c.cuaHang as string[], cuaHang)) return false
       return true
     })
-  }, [ds, apTim, apNgay, apSp, apCuaHang])
+  }, [ds, locCt.ap])
 
   const chips: Chip[] = TT_CONG_THUC.map(([k, ten, mau]) => ({
     k,
@@ -214,75 +197,33 @@ function DsCongThucPlus({ sc, mod, ds }: ScreenProps & { ds: Row[] }) {
       <div className="dm-khung">
         <section className="card dm-bang">
           <div className="ds-toolbar-figma">
-            <button
-              ref={nutPheu}
-              type="button"
-              className={`ds-btn-pheu-figma${moPheu || soDangLocTrongPheu > 0 ? ' on' : ''}`}
-              title="Bộ lọc"
-              aria-label="Bộ lọc"
-              aria-expanded={moPheu}
-              onClick={() => setMoPheu(o => !o)}
-            >
-              <Icon n="filter" className="ic sm" />
-              {soDangLocTrongPheu > 0 && <span className="ds-badge-so">{soDangLocTrongPheu}</span>}
-            </button>
-            <div className="ds-tim-figma">
-              <IconFigmaSearch size={16} />
-              <input
-                type="text"
-                placeholder="Tìm theo mã, tên"
-                title="Tìm theo mã, tên"
-                aria-label="Tìm kiếm"
-                value={tim}
-                onChange={e => setTim(e.target.value)}
-                onKeyDown={e => { if (e.key === 'Enter') apLoc() }}
-              />
-            </div>
-            <div className="ctpl-ngay">
-              <ONgay
-                value={ngay}
-                placeholder="Áp dụng từ ngày"
-                onChange={v => setNgay(v)}
-              />
-            </div>
-            <button
-              type="button"
-              className="btn pri ds-nut-loc ctpl-nut-loc"
-              title={khacNhap ? 'Có điều kiện mới, bấm Lọc để tải lại' : undefined}
-              onClick={apLoc}
-            >
-              Lọc{khacNhap && <span className="ds-cham-nhap" />}
-            </button>
-
-            <Popover
-              anchor={nutPheu}
-              open={moPheu}
-              onClose={() => setMoPheu(false)}
-              align="start"
-              role="dialog"
-              className="ctpl-pheu-pop"
-            >
-              <label className="ctpl-loc-o">
-                <span>Sản phẩm</span>
-                <Select
-                  value={locSp}
-                  onChange={e => setLocSp(e.target.value)}
-                  ds={[{ v: '', t: 'Tất cả' }, ...dsSp]}
-                />
-              </label>
-              <label className="ctpl-loc-o">
-                <span>Cửa hàng</span>
-                <Select
-                  value={locCuaHang}
-                  onChange={e => setLocCuaHang(e.target.value)}
-                  ds={[{ v: '', t: 'Tất cả' }, ...CUA_HANG.map(c => ({ v: c.ten, t: c.ten }))]}
-                />
-              </label>
-              <div className="ctpl-loc-day">
-                <button type="button" className="btn sm" onClick={lamMoiPheu}>Làm mới</button>
-                <button type="button" className="btn sm pri" onClick={apDungPheu}>Áp dụng</button>
-              </div>
-            </Popover>
+            <BoLoc
+              ds={oLoc}
+              cauHinh={cauHinhLoc}
+              datCauHinh={datCauHinhLoc}
+              dangLoc={locCt.dangLoc}
+              khacNhap={locCt.khacNhap}
+              onLoc={apLoc}
+              onXoaHet={xoaHetLoc}
+              chiNutPheu
+              ngoaiRieng={{
+                tim: (
+                  <div key="tim" className="ds-tim-figma">
+                    <IconFigmaSearch size={16} />
+                    <input
+                      type="text"
+                      placeholder="Tìm theo mã, tên"
+                      title="Tìm theo mã, tên"
+                      aria-label="Tìm kiếm"
+                      value={locCt.nhap.q}
+                      onChange={e => locCt.dat('q', e.target.value)}
+                      onKeyDown={e => { if (e.key === 'Enter') apLoc() }}
+                    />
+                  </div>
+                ),
+                ngay: <div key="ngay" className="ctpl-ngay">{oNgay}</div>,
+              }}
+            />
 
             <div className="ds-toolbar-phai">
               <NutThemMoiSplit toMoi={`${path}/moi`} />

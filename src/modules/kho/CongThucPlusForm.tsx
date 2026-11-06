@@ -13,6 +13,7 @@ import { ThemHangLoat } from '../../ui/generic/ThemHangLoat'
 import { HopXacNhan } from '../../ui/LocNangCao'
 import { suaPhieu, themPhieu } from '../../ui/generic/daXoa'
 import { ChonNhieu, quyDoiTuDanhMuc } from '../danh-muc/QuyDoiDvt'
+import { maDvt } from '../danh-muc/data'
 import { fold } from '../../ui/format'
 import {
   hangCua,
@@ -22,6 +23,8 @@ import {
 } from './san-xuat'
 import { DS_NVL, DS_SP, KENH, MAN, mucHang, nvlCua, OSo } from './CongThuc'
 
+// Đơn vị tính hiện cả mã và tên, đơn vị chưa có trong danh mục thì chỉ hiện tên
+const nhanDvt = (dvt: string) => (maDvt(dvt) ? `${maDvt(dvt)} - ${dvt}` : dvt)
 const dvtCuaNvl = (ma: string) => {
   const h = hangCua(ma)
   return h ? [h.dvt, ...quyDoiTuDanhMuc(h.ten, h.dvt).map(q => q.dv)] : []
@@ -165,7 +168,7 @@ export function FormCongThucPlus({ sc, mod, ct, soCt }: ScreenProps & { ct?: Row
     return dsNvlGoc.filter(({ item }) => {
       const h = hangCua(item.ma)
       const ten = h?.ten ?? ''
-      const dvtHang = dvtHienNvl(item)
+      const dvtHang = nhanDvt(dvtHienNvl(item))
       const slStr = String(item.sl)
 
       if (qMa && !fold(item.ma).includes(qMa)) return false
@@ -260,7 +263,7 @@ export function FormCongThucPlus({ sc, mod, ct, soCt }: ScreenProps & { ct?: Row
               <div className="ctpl-nhan">
                 Sản phẩm <em>*</em>
               </div>
-              <div className="ctpl-o" data-o="sp">
+              <div className="ctpl-o ctpl-o-rong" data-o="sp">
                 <ChonDanhMuc
                   dm="hang"
                   nhan="sản phẩm"
@@ -281,24 +284,25 @@ export function FormCongThucPlus({ sc, mod, ct, soCt }: ScreenProps & { ct?: Row
               <div className={`ctpl-o${dsDvt.length <= 1 ? ' khoa' : ''}`} data-o="dvt" aria-disabled={dsDvt.length <= 1 ? 'true' : undefined}>
                 {dsDvt.length > 1 ? (
                   <Select
+                    className="inp"
                     aria-label="Đơn vị tính"
                     value={dvtHien}
                     onChange={e => setDvt(e.target.value)}
-                    ds={dsDvt.map(d => ({ v: d, t: d }))}
+                    ds={dsDvt.map(d => ({ v: d, t: nhanDvt(d) }))}
                   />
                 ) : (
                   <input
                     type="text"
                     disabled
                     readOnly
-                    value={dvtHien}
+                    value={dvtHien && nhanDvt(dvtHien)}
                     placeholder="Theo hàng đã chọn"
                   />
                 )}
               </div>
 
               <div className="ctpl-nhan">Ngày áp dụng</div>
-              <div className="ctpl-o ctpl-o-rong" data-o="ngay">
+              <div className="ctpl-o" data-o="ngay">
                 <ONgay
                   value={ngay}
                   onChange={setNgay}
@@ -348,7 +352,7 @@ export function FormCongThucPlus({ sc, mod, ct, soCt }: ScreenProps & { ct?: Row
                 <tr>
                   <th style={{ width: 140 }}>Mã nguyên vật liệu</th>
                   <th>Tên nguyên vật liệu</th>
-                  <th style={{ width: 110 }}>Đơn vị tính</th>
+                  <th style={{ width: 170 }}>Đơn vị tính</th>
                   <th className="num" style={{ width: 110 }}>Số lượng</th>
                   <th className="c" style={{ width: 44 }} />
                 </tr>
@@ -413,7 +417,6 @@ export function FormCongThucPlus({ sc, mod, ct, soCt }: ScreenProps & { ct?: Row
                               dm="nvl"
                               nhan="nguyên vật liệu"
                               coMa
-                              chiMa
                               className="inp sm"
                               trong="Chọn"
                               value={item.ma}
@@ -423,17 +426,17 @@ export function FormCongThucPlus({ sc, mod, ct, soCt }: ScreenProps & { ct?: Row
                           )}
                         </td>
                         <td className="ctpl-nvl-ten">{h?.ten ?? ''}</td>
-                        <td className={`ctpl-nvl-dvt${dsDvtNvl.length > 1 ? '' : ' khoa'}`}>
-                          {dsDvtNvl.length > 1 ? (
+                        <td className="ctpl-nvl-dvt">
+                          {dsDvtNvl.length > 0 && (
                             <Select
                               className="inp sm"
                               aria-label={`Đơn vị tính ${h?.ten ?? ''}`}
                               value={dvtHienNvl(item)}
                               // Đổi đơn vị giữ nguyên số lượng, người dùng tự nhập lại (QD100)
                               onChange={e => doiNvl(index, { dvt: e.target.value === h?.dvt ? undefined : e.target.value })}
-                              ds={dsDvtNvl.map(d => ({ v: d, t: d }))}
+                              ds={dsDvtNvl.map(d => ({ v: d, t: nhanDvt(d) }))}
                             />
-                          ) : dvtHienNvl(item)}
+                          )}
                         </td>
                         <td className="num ctpl-nvl-sl">
                           <OSo val={item.sl} onChange={v => doiNvl(index, { sl: v })} />
