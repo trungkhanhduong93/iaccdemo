@@ -1061,3 +1061,5 @@ Trum chốt 05/11/2026 (T751, T752).
 - Chỉ bấm icon bút mới mở panel, bấm dòng không mở.
 - Panel giữ khung `CatalogPanel` chung. Ô chọn hai cột chỉ dùng trên máy tính, điện thoại dùng `ChonNhieu`.
 - Điện thoại chỉ đổi chữ và form, không có bộ lọc nâng cao, chọn cột.
+
+## QD97. Giảm thuế GTGT theo nghị quyết ở Cấu hình kế toán (đang soạn)
