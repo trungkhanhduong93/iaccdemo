@@ -8,6 +8,7 @@ import { Icon } from '../../ui/Icon'
 import { Select } from '../../ui/Dropdown'
 import { ChonDanhMuc } from '../../ui/ChonDanhMuc'
 import { ONgay } from '../../ui/ChonNgay'
+import { useDong } from '../../ui/FormToanMan'
 import { ThemHangLoat } from '../../ui/generic/ThemHangLoat'
 import { HopXacNhan } from '../../ui/LocNangCao'
 import { suaPhieu, themPhieu } from '../../ui/generic/daXoa'
@@ -67,7 +68,7 @@ export function FormCongThucPlus({ sc, mod, ct, soCt }: ScreenProps & { ct?: Row
   const gocBanDau = useRef(hienTai).current
   const daDoi = hienTai !== gocBanDau
 
-  const dong = () => nav(path, { replace: true })
+  const dong = useDong(path)
 
   const yeuCauDong = () => {
     if (daDoi) {
@@ -80,7 +81,9 @@ export function FormCongThucPlus({ sc, mod, ct, soCt }: ScreenProps & { ct?: Row
   useEffect(() => {
     const on = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        if (document.querySelectorAll('.overlay, .pop').length === 0) {
+        // Menu tab Khác luôn nằm sẵn trong DOM ở dạng ẩn, nên chỉ tính lớp đang hiện
+        const dangMoLop = [...document.querySelectorAll('.overlay, .pop')].some(e => getComputedStyle(e).display !== 'none')
+        if (!dangMoLop) {
           yeuCauDong()
         }
       }

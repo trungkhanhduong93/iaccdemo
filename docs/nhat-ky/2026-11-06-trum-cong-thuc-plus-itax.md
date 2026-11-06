@@ -18,7 +18,9 @@
 - `python tools/kiem_tra.py --nhanh`: in "Không có lỗi."
 - Script Playwright tạm ngoài repo, mục a-i đều PASS: cột bảng, lọc, form phủ cả màn, nền ô, lọc rồi sửa đúng dòng, giữ `tang` `giam`, cảnh báo khi đóng, thêm mới, Pro và điện thoại không đổi, không lỗi console.
 - Bài điện thoại T756 a-h vẫn đạt.
-- Review chéo chưa xong: Trum thấy lâu nên tui dừng worker. Phần dò nơi gọi làm bằng grep: điện thoại nhận màn theo `slug`, gói Plus không mở được `kho/9-1-3` vì mã này nằm trong `CHI_GOI_PRO`.
+- Review chéo của worker không xong, Trum giao Claude tự review. Dò nơi gọi bằng grep: điện thoại nhận màn theo `slug`, gói Plus không mở được `kho/9-1-3` vì mã này nằm trong `CHI_GOI_PRO`.
+- Tự review sửa 3 lỗi: `sed` đổi nhầm 6 luật màu của màn khác; đóng form để thừa mục lịch sử, đổi sang `useDong`; Esc không đóng form vì menu tab Khác luôn nằm sẵn trong DOM ở dạng ẩn.
+- Sau 3 sửa, chạy trên bản `dist` tĩnh vì dev server bị tắt do thiếu RAM: `kiem_tra.py --nhanh` không lỗi, bài đóng form 9/9, bài T756 đạt. Bài T759 có mục e, i FAIL do script đọc `/src/ui/generic/daXoa.ts`, file chỉ có trên dev server; hai mục này đã đạt trên dev server trước các sửa.
 - Chưa thử trên trình duyệt thật ngoài Playwright.
 
 ## Khác itax

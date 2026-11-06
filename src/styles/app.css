@@ -24831,7 +24831,7 @@ button[class*="btn-"] .ic .l2 {
   font-size: 12px;
   font-weight: 600;
   color: #0560a6;
-  background: var(--th);
+  background: #e6eff7;
   border-radius: 6px;
   padding: 3px 8px;
 }
@@ -33390,7 +33390,7 @@ a.tx-item:hover {
 }
 
 .m-bc-quick-chip {
-  background: var(--th);
+  background: #e6eff7;
   border: 1px solid #c2d9ee;
   color: var(--blue);
   border-radius: 16px;
@@ -33450,7 +33450,7 @@ a.tx-item:hover {
   width: 40px;
   height: 40px;
   border-radius: 10px;
-  background: var(--th);
+  background: #e6eff7;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -33871,7 +33871,7 @@ a.tx-item:hover {
 }
 
 .m-sq-card-cuoi {
-  background: var(--th);
+  background: #e6eff7;
   border: 1px solid #c2d9ee;
 }
 
@@ -36995,7 +36995,7 @@ body:has(.m-app) .m-thanh-duoi .m-tab.on .m-tab-ic .ic .l2 {
 }
 
 .m-ls-vong-tron.sua {
-  background: var(--th);
+  background: #e6eff7;
   color: var(--blue, #0560a6);
 }
 
@@ -42228,7 +42228,7 @@ textarea.m-tpb-inp { width: 100%; text-align: left; resize: vertical; }
   font-size: 12px;
 }
 .tl-bang-kq th {
-  background: var(--th);
+  background: #e6eff7;
   color: #1e293b;
   font-weight: 600;
   padding: 5px 6px;
