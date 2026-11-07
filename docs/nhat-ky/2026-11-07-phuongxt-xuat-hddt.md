@@ -24,7 +24,7 @@
 ## Dở dang, việc tiếp theo
 
 - Chờ Trum duyệt QD102.
-- Bản mẫu giả lập đã khai báo, kết nối HĐĐT; popup luôn vào màn phát hành. Ô Số hoá đơn, Ký hiệu ở đầu phiếu chưa đổi theo hoá đơn vừa phát hành, đang hỏi PhuongXT.
+- Bản mẫu giả lập đã khai báo, kết nối HĐĐT; popup luôn vào màn phát hành. Phát hành xong ô Số hoá đơn, Ký hiệu, Ngày hoá đơn (và MST, địa chỉ khi xuất một chứng từ) đổi theo hoá đơn mới, PhuongXT chốt.
 - Số hoá đơn, trạng thái đã xuất chỉ giữ trong phiên (qua `suaPhieu`), tải lại trang là mất, như các phiếu sửa khác.
 - Màn 3.1.5 Xuất hoá đơn điện tử, điện thoại chưa dùng thiết lập mới.
 

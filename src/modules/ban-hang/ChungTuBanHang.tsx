@@ -262,7 +262,8 @@ export function ChungTuBanHang({ sc, mod }: ScreenProps) {
   if (dongXem && dongXem.nguon !== 'FABi') {
     const hd = hdCua(dongXem)
     return (
-      <ChungTuForm key={loc.key} sc={scHien} mod={mod} cfg={BAN_TAY} row={dongXem} rows={rows}
+      // phát hành xong vẽ lại form để ô Số hoá đơn, Ký hiệu, Ngày hoá đơn lấy số mới (T763)
+      <ChungTuForm key={`${loc.key}-${hd?.so ?? ''}`} sc={scHien} mod={mod} cfg={BAN_TAY} row={dongXem} rows={rows}
         metaThem={hd && <span className="chip ok" title={`Mã cơ quan thuế ${hd.ma}, ngày ${hd.ngay}`}><Icon n="receipt" className="ic sm" />HĐ {tenHd(hd)}</span>}
         chanThem={!hd && <button type="button" className="xp-btn-outline" onClick={() => setMoHd(true)}><Icon n="receipt" className="ic sm" /><span>Xuất hoá đơn điện tử</span></button>}>
         {moHd && <HopXuatHddt s={s} man={`${mod.key}/${sc.slug}`} ds={[dongXem]} onDong={() => setMoHd(false)} toast={toast} />}

@@ -133,7 +133,9 @@ export function HopXuatHddt({ s, man, ds, onDong, toast }: { s: Session; man: st
     for (const r of duoc) {
       soHdCuoi += 1
       const hd: HdDaXuat = { mau, kyHieu: kyHieuCua(r), so: String(soHdCuoi).padStart(8, '0'), ngay, ma: maCqt(soHdCuoi) }
-      suaPhieu(man, String(r.id), { _hd: hd, ...(mot ? { _nguoiMuaHd: nm } : {}) })
+      // Ô Số hoá đơn, Ký hiệu, Ngày hoá đơn ở đầu phiếu đổi theo hoá đơn vừa phát hành; một chứng từ thì cả MST, địa chỉ người mua
+      suaPhieu(man, String(r.id), { _hd: hd, _soHd: hd.so, _kyHieuHd: hd.mau + hd.kyHieu, _ngayHd: hd.ngay,
+        ...(mot ? { _nguoiMuaHd: nm, _mst: nm.mst, ...(nm.diaChi ? { _diaChi: nm.diaChi } : {}) } : {}) })
     }
     toast(duoc.length === 1 ? `Đã phát hành hoá đơn ${mau}${kyHieuCua(duoc[0])} số ${String(soHdCuoi).padStart(8, '0')}${h.guiEmail && nm.email ? `, đã gửi ${nm.email}` : ''}`
       : `Đã phát hành ${duoc.length} hoá đơn điện tử qua ${h.ncc}`)
