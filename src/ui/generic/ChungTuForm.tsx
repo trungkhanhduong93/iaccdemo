@@ -50,9 +50,11 @@ export interface ChungTuFormProps extends ScreenProps {
   rows?: Row[]
   children?: React.ReactNode
   anIn?: boolean
+  chanThem?: React.ReactNode   // nút thêm ở chân form lúc xem, sau In phiếu (vd Xuất hoá đơn điện tử, T763)
+  metaThem?: React.ReactNode   // nhãn thêm ở đầu form lúc xem (vd số hoá đơn đã phát hành, T763)
 }
 
-export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }: ChungTuFormProps) {
+export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, chanThem, metaThem }: ChungTuFormProps) {
   const { s, set, toast } = useSession()
   const nav = useNavigate()
   const loc = useLocation()
@@ -841,6 +843,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
               {NGUON[row.nguon]?.[1] ?? 'Thủ công'}
             </span>
             {cuaHang && <span className="chip info" title="Cửa hàng lập chứng từ, không sửa được"><Icon n="cuahang" className="ic sm" />{cuaHang}</span>}
+            {metaThem}
             {khoaKy && <span className="chip warn" title="Phiếu thuộc tháng đã khoá sổ: chỉ xem, không sửa, không xoá. Mở khoá ở màn Khoá sổ"><Icon n="lock" className="ic sm" />Đã khoá sổ</span>}
           </>
         ) : (
@@ -963,6 +966,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
                   <span>In phiếu</span>
                 </button>
               )}
+              {chanThem}
             </div>
             <div className="xp-footer-phai">
               {/* Phiếu nhập điều chuyển chờ mở ra là sửa thực nhận, Nhập kho; đã nhập vẫn Sửa được thực nhận (T748) */}

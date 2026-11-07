@@ -5,6 +5,7 @@ import { CHE_DO, CHE_DO_DN_STANDARD, CHE_DO_HOP_LE, CHE_DO_MAC_DINH, chuanHoaChe
 import { CUA_HANG, DON_VI, HOM_NAY, type DonVi, type Role } from '../data/mock'
 import { datKieuSo, dmy, type KieuSo } from '../ui/format'
 import { datGiamVat, type CauHinhGiamVat } from '../modules/ban-hang/giam-thue'
+import type { CauHinhHddt } from '../modules/ban-hang/hddt'
 import type { LichCachNvl } from '../modules/home/chi-phi-nvl'
 import { thangLamViec } from './thangLamViec'
 
@@ -52,6 +53,7 @@ export interface Session {
   kieuSo?: Record<string, KieuSo>   // quy định chữ số và dấu phân cách theo đơn vị, chọn ở Cấu hình kế toán: 'vn' 1.234.567,89 (mặc định), 'qt' 1,234,567.89 (T710)
   lyDoGhiDe?: Record<string, Record<string, { chiPhi: number; phanBo: number; nhomCp: string }>>   // lý do nghiệp vụ có sẵn sửa tích Là chi phí, Chi phí phân bổ nhiều kỳ, nhóm lý do theo đơn vị; khoá mã lý do (T700)
   giamVat?: Record<string, CauHinhGiamVat>   // giảm thuế GTGT theo nghị quyết theo đơn vị, chọn ở Cấu hình kế toán; chưa đặt là giảm 20% theo nghị quyết mới nhất (T754)
+  hddt?: Record<string, CauHinhHddt>   // thiết lập xuất hoá đơn điện tử theo đơn vị, chọn ở Cấu hình kế toán (T763)
   hangGiamVat?: Record<string, Record<string, boolean>>   // ô tích Giảm thuế theo quy định của hàng hoá theo đơn vị; khoá mã hàng (T754)
 }
 

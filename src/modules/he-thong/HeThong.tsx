@@ -20,6 +20,7 @@ import { thTT58, moTaBoSoTT58 } from '../bao-cao/tt58'
 import { CatalogPanel } from '../../ui/generic/CatalogScreen'
 import type { CauHinhDM } from '../danh-muc/truong-dm'
 import type { KieuSo } from '../../ui/format'
+import { TheCauHinhHddt, cauHinhHddt, loiHddt, type CauHinhHddt } from '../ban-hang/hddt'
 import { NGHI_QUYET_GIAM_VAT, cauHinhGiamVat, type CauHinhGiamVat, type DongGiamVat } from '../ban-hang/giam-thue'
 
 export const VAI_TRO = ['Chủ doanh nghiệp', 'Kế toán trưởng', 'Kế toán viên', 'Quản lý cửa hàng', 'Thủ kho']
@@ -729,11 +730,15 @@ export function CauHinh({ sc }: ScreenProps) {
     return null
   }
   // Lưu thì chứng từ, danh sách, báo cáo, ô nhập số của đơn vị đổi theo kiểu đã chọn
+  // Hoá đơn điện tử (T763): gói Plus, Pro có màn Xuất hoá đơn điện tử
+  const coHddt = s.goi === 'PL' || s.goi === 'PR'
+  const [hd, setHd] = useState<CauHinhHddt>(cauHinhHddt(s))
   const luu = () => {
-    const loi = loiGv()
+    const loi = loiGv() ?? (coHddt ? loiHddt(hd) : null)
     if (loi) { toast(loi); return }
     const gvLuu = { ...gv, ds: [dongGv] }
-    set({ kieuSo: { ...s.kieuSo, [s.donVi]: kieu }, ...(coGiamVat ? { giamVat: { ...s.giamVat, [s.donVi]: gvLuu } } : {}) }); toast('Đã lưu cấu hình')
+    set({ kieuSo: { ...s.kieuSo, [s.donVi]: kieu }, ...(coGiamVat ? { giamVat: { ...s.giamVat, [s.donVi]: gvLuu } } : {}),
+      ...(coHddt ? { hddt: { ...s.hddt, [s.donVi]: hd } } : {}) }); toast('Đã lưu cấu hình')
   }
   return (
     <div className="page">
@@ -751,6 +756,7 @@ export function CauHinh({ sc }: ScreenProps) {
           </div>
           <Note kind="gray">Áp dụng cho số hiện trên chứng từ, danh sách, báo cáo và cách gõ số ở mọi ô nhập của đơn vị này.</Note>
         </Card>
+        {coHddt && <Card title="Hoá đơn điện tử"><TheCauHinhHddt s={s} h={hd} dat={setHd} toast={toast} /></Card>}
         {coGiamVat && (
           <Card title="Giảm thuế GTGT">
             <div className="ch-gv" data-hd="giamVat">

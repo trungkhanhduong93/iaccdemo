@@ -45679,3 +45679,32 @@ body:has(.ctpl-form) .pn-hop {
 .bg-bang thead tr.loc-hang th { height: 36px; padding: 0 6px; background: var(--white); border-bottom: 1px solid var(--line); border-right: 1px solid var(--line-2); }
 .bg-bang thead tr.loc-hang .loc-o, .bg-bang thead tr.loc-hang input.loc-o, .bg-bang thead tr.loc-hang .loc-chon { height: 30px; border: 0; outline: 0; background: var(--white); padding: 0 2px 0 6px; font-size: 13px; box-shadow: none; }
 .bg-bang thead tr.loc-hang .loc-pheu-btn { border: 0; background: transparent; color: var(--muted); cursor: pointer; display: inline-grid; place-items: center; }
+
+/* ── Xuất hoá đơn điện tử từ chứng từ bán hàng (T763) ── */
+.ch-hd-luoi { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 16px; margin-top: 14px; }
+.ch-hd-luoi .f { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.ch-hd-luoi .f label { font-size: 12.5px; color: var(--muted); }
+.ch-hd-luoi .inp { width: 100%; }
+.ch-hd-kn { grid-column: 1 / -1; }
+@media (max-width: 640px) { .ch-hd-luoi { grid-template-columns: 1fr; } }
+.ch-hd .ch-gv-dong { grid-template-columns: 1fr 140px; }
+.ch-hd-kh { margin-top: 4px; }
+.ch-hd-kn { display: flex; align-items: center; gap: 10px; }
+.ch-hd-mail { display: flex; align-items: center; gap: 8px; margin-top: 12px; color: var(--body); cursor: pointer; }
+.ch-hd > .note { margin-top: 12px; }
+.hddt-hop { width: 600px; max-width: calc(100vw - 32px); }
+.hddt-than { display: flex; flex-direction: column; gap: 12px; padding: 0 16px 14px; overflow: auto; }
+.hddt-tt { display: grid; grid-template-columns: 120px 1fr; gap: 6px 12px; font-size: 13px; color: var(--muted); }
+.hddt-tt b { color: var(--ink); font-weight: 500; }
+.hddt-tong { display: flex; justify-content: space-between; align-items: center; padding-top: 6px; border-top: 1px solid var(--line); }
+.hddt-tong b { font-size: 15px; color: var(--ink); }
+.hddt-ds { border: 1px solid var(--line); border-radius: 8px; max-height: 320px; overflow: auto; }
+.hddt-dong { display: grid; grid-template-columns: 130px 1fr 90px 110px; gap: 8px; padding: 7px 10px; font-size: 13px; border-top: 1px solid var(--line); }
+.hddt-dong > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hddt-dong .num { text-align: right; }
+.hddt-dau { border-top: 0; position: sticky; top: 0; background: var(--th); color: var(--muted); font-size: 12.5px; }
+.hddt-cong { font-weight: 600; color: var(--ink); }
+@media (max-width: 640px) {
+  .hddt-dong { grid-template-columns: 1fr 90px; }
+  .hddt-dong > span:nth-child(2), .hddt-dong > span:nth-child(3) { display: none; }
+}

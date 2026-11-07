@@ -1110,4 +1110,12 @@ PhuongXT chọn khi làm T761, chưa hỏi Trum. Bổ sung T723, T724.
 - Lưới Chi tiết giá có phễu lọc dòng như bảng chi tiết phiếu mua hàng (T383): bấm phễu hiện hàng ô lọc dưới tiêu đề cột, tắt phễu thì bỏ lọc.
 - Một mặt hàng đã có giá ở bảng giá khác đang dùng, cùng loại, cùng nhà cung cấp hoặc khách hàng, cùng ĐVT, giao thời gian và cửa hàng: hỏi lại, vẫn cho lưu. Khi lấy giá, bảng bắt đầu muộn hơn được ưu tiên. Điểm này chờ Trum chốt.
 
-## QD102. Xuất hoá đơn điện tử từ chứng từ bán hàng (đang soạn)
+## QD102. Xuất hoá đơn điện tử từ chứng từ bán hàng (07/11/2026, chờ Trum duyệt)
+
+PhuongXT chọn khi làm T763, chưa hỏi Trum.
+
+- Thiết lập ở Cấu hình kế toán, thẻ Hoá đơn điện tử, gói Plus, Pro: bật tắt; nhà cung cấp HĐĐT, tài khoản, mật khẩu, nút Kiểm tra kết nối; hoá đơn có mã của cơ quan thuế (bỏ hình thức máy tính tiền); mỗi cửa hàng một ký hiệu 6 ký tự (vd C26TAA); gửi email cho người mua sau khi phát hành.
+- Loại hoá đơn tự theo phương pháp thuế: GTGT khấu trừ dùng hoá đơn GTGT mẫu số 1, hộ kinh doanh và doanh nghiệp GTGT theo % doanh thu dùng hoá đơn bán hàng mẫu số 2.
+- Chỉ chứng từ bán hàng lập tay, nhập Excel xuất hoá đơn ở phần mềm kế toán. Hoá đơn FABi đã xuất tại máy POS, không có nút xuất.
+- Bấm Xuất hoá đơn điện tử mở popup xem trước: một chứng từ thì sửa được tên, MST, địa chỉ, email người mua; nhiều chứng từ chọn ở danh sách thì mỗi chứng từ một hoá đơn, bỏ qua chứng từ đã có hoá đơn hoặc từ FABi. Bấm Phát hành thì chứng từ có ký hiệu, số hoá đơn, mã cơ quan thuế.
+- Chưa bật hoặc chưa kiểm tra kết nối thì popup báo và dẫn về Cấu hình kế toán.
