@@ -45867,6 +45867,7 @@ body:has(.ctpl-form) .pn-hop {
 }
 
 .auth-slide-chu h2 {
+  text-wrap: balance;
   margin: 0 0 10px;
   font-size: 28px;
   line-height: 1.25;
@@ -45876,6 +45877,7 @@ body:has(.ctpl-form) .pn-hop {
 }
 
 .auth-slide-chu p {
+  text-wrap: pretty;
   margin: 0;
   font-size: 15px;
   line-height: 1.6;
@@ -45955,6 +45957,7 @@ body:has(.ctpl-form) .pn-hop {
 }
 
 .auth-top {
+  position: relative;
   height: 60px;
   flex: none;
   display: flex;
@@ -46214,6 +46217,76 @@ body:has(.ctpl-form) .pn-hop {
   text-decoration: underline;
 }
 
+/* Nút chọn ngôn ngữ thanh logo đăng nhập (T774) */
+.auth-nn {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+}
+
+.auth-nn-nut {
+  height: 32px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #ffffff;
+  padding: 0 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  box-sizing: border-box;
+  transition: border-color .15s ease, background-color .15s ease;
+  position: relative;
+}
+
+.auth-nn-nut:hover,
+.auth-nn-nut.open {
+  border-color: #d1d5db;
+  background-color: #f9fafb;
+}
+
+.auth-nn-co {
+  width: 20px;
+  height: 14px;
+  border-radius: 2px;
+  display: block;
+  flex: none;
+  overflow: hidden;
+}
+
+.auth-nn-ten {
+  display: block;
+  flex: none;
+  color: #9ca3af;
+}
+
+.auth-nn-pop {
+  min-width: 175px;
+}
+
+.auth-nn-pop .mi {
+  min-height: 34px;
+  padding: 6px 10px;
+}
+
+.auth-nn-pop .mi-ic {
+  width: 20px;
+  height: 14px;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.auth-nn-pop .mi:hover .mi-ic,
+.auth-nn-pop .mi:focus-visible .mi-ic,
+.auth-nn-pop .mi.on .mi-ic {
+  background: transparent;
+  box-shadow: none;
+}
+
 /* ── Ghi đè hiển thị trên điện thoại cho màn Đăng nhập (T769) ── */
 @media (max-width: 767px) {
   .auth {
@@ -46241,6 +46314,7 @@ body:has(.ctpl-form) .pn-hop {
   }
 
   .auth-top {
+    position: relative !important;
     height: 60px !important;
     flex: none !important;
     display: flex !important;
@@ -46315,6 +46389,25 @@ body:has(.ctpl-form) .pn-hop {
   .auth-mau-ghi-chu {
     margin-top: auto !important;
     padding-top: 16px;
+  }
+
+  .auth-nn {
+    position: absolute !important;
+    right: 16px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+  }
+
+  .auth-nn-nut::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    min-width: 44px;
+    min-height: 44px;
+    width: 100%;
+    height: 100%;
   }
 }
 

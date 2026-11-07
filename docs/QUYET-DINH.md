@@ -1142,4 +1142,10 @@ Trum chốt mẫu C2 trên https://claude.ai/artifact/2pJtBkB9goLCgmgUwAMnPt (T7
 - Không dùng hiệu ứng chuyển động nền (tia quét, chấm chạy, hình nhấp nhô), không ghi nhãn chữ hay số trang trên cột trái.
 - Chữ slide canh giữa dưới hình. Nút trước, sau tròn, đặt hai bên các chấm.
 
-## QD105. Nút chọn ngôn ngữ ở trang đăng nhập (đang soạn)
+## QD105. Nút chọn ngôn ngữ ở trang đăng nhập (07/11/2026)
+
+Trum chốt 07/11/2026 (T774). Thay ý "không đem sang cờ đổi ngôn ngữ" của QD103.
+
+- Góc phải thanh logo trang Đăng nhập, Quên mật khẩu có nút cờ, menu 4 ngôn ngữ: Tiếng Việt, English, 한국어, 中文.
+- Bản mẫu chưa có bản dịch: chọn ngôn ngữ chỉ đổi cờ trên nút, chữ trên trang giữ tiếng Việt.
+- Cờ vẽ bằng SVG, không dùng emoji cờ.

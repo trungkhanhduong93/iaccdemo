@@ -11,7 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T774 | Trang đăng nhập: sửa chữ slide 1, 2, 4 theo Trum; thêm nút chọn ngôn ngữ có cờ (Tiếng Việt, English, 한국어, 中文) góc phải thanh logo | Trum | Đang làm | Sửa `Login.tsx`, mục T769 trong `app.css` |
+| T776 | Màn Tính giá vốn: sang trang 2 thì dòng "Cộng 51 dòng" mất đường kẻ dưới, dưới dòng tổng còn khoảng trống trong bảng, dưới khung bảng còn khoảng trống xám | | Chờ | Trum báo lúc làm T774, ảnh chụp ở trang 2, tháng 10/2026 |
 | T771 | `tools/kiem_tra.py` ca đăng nhập đợt 8 (hàm `kiem_tra_dang_nhap_dot_8`) báo "Nghiệp vụ: không tìm thấy phân hệ Thu chi" ở màn 390px | | Chờ | Thấy lúc làm T769, bản trước T769 cũng báo. Ca này không nằm trong `--nhanh` |
 | T766 | Điện thoại, phiếu chi lý do CHI02 Thanh toán công nợ nhà cung cấp hiện Nợ 242 Có 1111, cần xem lại vì trả nợ nhà cung cấp thường ghi Nợ 331 | | Chờ | Thấy lúc làm T764, `MDtThuChiLap.tsx`, `tkTheoLyDo` |
 | T734 | Điện thoại, lập phiếu thu chi gói Plus như Standard (tiếp T733): lưu là ghi sổ luôn, bỏ khối hạch toán và `tkNo`, `tkCo`, có chi trả nợ nhà cung cấp | | Chờ | `MDtThuChiLap.tsx` đang trong T552 của Trum, hỏi Trum trước. Đổi `s.goi === 'S'` sang `tcNhuStandard(s.goi)`. Xem nhật ký `2026-11-04-phuongxt-thu-chi-plus-nhu-standard.md` |
