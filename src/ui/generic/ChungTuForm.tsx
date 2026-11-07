@@ -52,9 +52,10 @@ export interface ChungTuFormProps extends ScreenProps {
   anIn?: boolean
   chanThem?: React.ReactNode   // nút thêm ở chân form lúc xem, sau In phiếu (vd Xuất hoá đơn điện tử, T763)
   metaThem?: React.ReactNode   // nhãn thêm ở đầu form lúc xem (vd số hoá đơn đã phát hành, T763)
+  hdDienTu?: boolean   // số, ký hiệu, ngày hoá đơn chỉ có khi đã phát hành HĐĐT: chưa phát hành thì ẩn, đã phát hành thì chỉ xem; bỏ ô tích Lập kèm hoá đơn (T763)
 }
 
-export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, chanThem, metaThem }: ChungTuFormProps) {
+export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, chanThem, metaThem, hdDienTu }: ChungTuFormProps) {
   const { s, set, toast } = useSession()
   const nav = useNavigate()
   const loc = useLocation()
@@ -315,7 +316,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
     setDsDong(dongNhapTuXuat(sx!, px))
   }
   const truocThue = nhom === 'mua' && Boolean(bo.tongNhap)   // phiếu mua: các số tiền ở dòng, khối tổng chỉ Tổng tiền (T84)
-  const coHdDau = (nhom === 'mua' || nhom === 'ban') && Boolean(bo.hd) && nhanKemHd
+  const coHdDau = hdDienTu ? Boolean(row?._hd) : (nhom === 'mua' || nhom === 'ban') && Boolean(bo.hd) && nhanKemHd
   const coThangLl = laTien && tcNhuStandard(s.goi) && nhom !== 'cq'   // chuyển quỹ không ảnh hưởng lãi lỗ
   const dsThangLl = useMemo(() => thangLaiLo(ngayCt, cuaHang), [ngayCt, cuaHang])
   const [thangLl, setThangLl] = useState(dsThangLl[0])
@@ -1091,7 +1092,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
               {row && nhom === 'mua' && (() => { const [cls, nhan] = TT_TIEN.mua[ttTienTheoTra(row)]; return <span className={`ct-nhan-tt ${cls}`}>{nhan}</span> })()}
 
               {/* Ô tích kèm hoá đơn chỉ khi thêm mới, sửa; xem chi tiết thì bỏ, thông tin hoá đơn vẫn hiện ở đầu phiếu (T162) */}
-              {dangSua && <label className="row" style={{ gap: 6, cursor: 'pointer', fontSize: 13 }}>
+              {dangSua && !hdDienTu && <label className="row" style={{ gap: 6, cursor: 'pointer', fontSize: 13 }}>
                 <input
                   type="checkbox"
                   className="bat-tat"
@@ -1263,15 +1264,15 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
                 {/* Số hoá đơn lên đầu; Mẫu số gộp vào Ký hiệu, vd 1C26TMM (ký tự đầu là mẫu số) (T463) */}
                 <div className="f">
                   <label>Số hoá đơn <em>*</em></label>
-                  <input className="inp code" inputMode="numeric" value={soHd} onChange={e => setSoHd(chuanSoHd(e.target.value))} readOnly={!dangSua} />
+                  <input className="inp code" inputMode="numeric" value={soHd} onChange={e => setSoHd(chuanSoHd(e.target.value))} readOnly={!dangSua || hdDienTu} />
                 </div>
                 <div className="f">
                   <label>Ký hiệu <em>*</em></label>
-                  <input className="inp code" maxLength={7} value={kyHieuHd} onChange={e => setKyHieuHd(chuanKyHieuHd(e.target.value))} readOnly={!dangSua} title="Gồm mẫu số và ký hiệu hoá đơn, vd 1C26TMM" />
+                  <input className="inp code" maxLength={7} value={kyHieuHd} onChange={e => setKyHieuHd(chuanKyHieuHd(e.target.value))} readOnly={!dangSua || hdDienTu} title="Gồm mẫu số và ký hiệu hoá đơn, vd 1C26TMM" />
                 </div>
                 <div className="f">
                   <label>Ngày hoá đơn <em>*</em></label>
-                  {dangSua ? <ONgay value={ngayHd} onChange={setNgayHd} /> : <input className="inp" readOnly value={ngayHd} />}
+                  {dangSua && !hdDienTu ? <ONgay value={ngayHd} onChange={setNgayHd} /> : <input className="inp" readOnly value={ngayHd} />}
                 </div>
               </div>
             )}

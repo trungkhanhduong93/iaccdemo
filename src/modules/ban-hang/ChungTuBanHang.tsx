@@ -257,13 +257,13 @@ export function ChungTuBanHang({ sc, mod }: ScreenProps) {
     return ds.map((r, i) => ({ r, i, t: t(r) })).sort((a, b) => b.t - a.t || a.i - b.i).map(x => x.r)
   }, [tatCa, ban, plus, tyLe])   // eslint-disable-line react-hooks/exhaustive-deps
   const dongXem = id && id !== 'moi' ? rows.find(r => r.id === id) : undefined
-  if (id === 'moi') return plus ? <ChungTuForm key={loc.key} sc={scHien} mod={mod} cfg={BAN_TAY} rows={rows} />
+  if (id === 'moi') return plus ? <ChungTuForm key={loc.key} sc={scHien} mod={mod} cfg={BAN_TAY} rows={rows} hdDienTu />
     : <Navigate to={duongDan(mod, sc)} replace />   // gói Standard không lập tay Xuất bán POS (T52)
   if (dongXem && dongXem.nguon !== 'FABi') {
     const hd = hdCua(dongXem)
     return (
       // phát hành xong vẽ lại form để ô Số hoá đơn, Ký hiệu, Ngày hoá đơn lấy số mới (T763)
-      <ChungTuForm key={`${loc.key}-${hd?.so ?? ''}`} sc={scHien} mod={mod} cfg={BAN_TAY} row={dongXem} rows={rows}
+      <ChungTuForm key={`${loc.key}-${hd?.so ?? ''}`} sc={scHien} mod={mod} cfg={BAN_TAY} row={dongXem} rows={rows} hdDienTu
         metaThem={hd && <span className="chip ok" title={`Mã cơ quan thuế ${hd.ma}, ngày ${hd.ngay}`}><Icon n="receipt" className="ic sm" />HĐ {tenHd(hd)}</span>}
         chanThem={!hd && <button type="button" className="xp-btn-outline" onClick={() => setMoHd(true)}><Icon n="receipt" className="ic sm" /><span>Xuất hoá đơn điện tử</span></button>}>
         {moHd && <HopXuatHddt s={s} man={`${mod.key}/${sc.slug}`} ds={[dongXem]} onDong={() => setMoHd(false)} toast={toast} />}

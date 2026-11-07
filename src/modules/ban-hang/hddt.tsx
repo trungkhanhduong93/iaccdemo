@@ -1,5 +1,5 @@
 // Xuất hoá đơn điện tử từ chứng từ bán hàng lập tay gói Plus (T763): thiết lập ở Cấu hình kế toán, popup xem trước rồi phát hành
-import { useState } from 'react'
+import { useState, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import type { Row } from '../types'
 import { gtgtTyLe, type Session } from '../../app/session'
@@ -8,6 +8,7 @@ import { Select } from '../../ui/Dropdown'
 import { Note } from '../../ui/Page'
 import { dmy, money } from '../../ui/format'
 import { useDongEsc } from '../../ui/LocNangCao'
+import { ONgay } from '../../ui/ChonNgay'
 import { suaPhieu } from '../../ui/generic/daXoa'
 
 /** Nhà cung cấp hoá đơn điện tử kết nối được (dữ liệu giả, chưa nối thật) */
@@ -114,7 +115,15 @@ const NGUOI_MUA: Record<string, [string, string]> = {
 let soHdCuoi = 128   // số hoá đơn đã cấp trong phiên, tăng dần như nhà cung cấp trả về
 const maCqt = (i: number) => `M${String(HOM_NAY.getFullYear()).slice(2)}-${(0x3a7f21 + i * 7919).toString(16).toUpperCase()}`
 
-/** Popup xuất hoá đơn điện tử: một chứng từ (sửa được thông tin người mua) hoặc nhiều chứng từ đã chọn ở danh sách */
+/** Thông tin khách hàng trên hoá đơn: công ty (MST, tên đơn vị, mã đơn vị quan hệ ngân sách) hoặc cá nhân (CCCD, số hộ chiếu) */
+interface TtKhach { loai: 'cty' | 'cn'; mst: string; tenDv: string; cccd: string; tenNm: string; diaChi: string; sdt: string; email: string; maQhns: string; hoChieu: string; ghiChu: string }
+
+/** Một dòng nhãn bên trái, ô nhập bên phải như bảng */
+function Dong({ nhan, bb, loi, children }: { nhan: string; bb?: boolean; loi?: boolean; children: ReactNode }) {
+  return <div className={`hddt-o${loi ? ' loi' : ''}`}><span>{nhan}{bb && <em>*</em>}</span><div>{children}</div></div>
+}
+
+/** Popup phát hành hoá đơn điện tử: một chứng từ (nhập thông tin khách hàng) hoặc nhiều chứng từ đã chọn ở danh sách */
 export function HopXuatHddt({ s, man, ds, onDong, toast }: { s: Session; man: string; ds: Row[]; onDong: () => void; toast: (m: string) => void }) {
   useDongEsc(onDong)
   // Bản mẫu luôn giả lập đã khai báo đủ, đã kết nối: giữ nhà cung cấp, ký hiệu đã lưu, thiếu gì thì lấy giá trị mẫu (T763)
@@ -124,48 +133,92 @@ export function HopXuatHddt({ s, man, ds, onDong, toast }: { s: Session; man: st
   const duoc = ds.filter(r => r.nguon !== 'FABi' && !hdCua(r))
   const boQua = ds.length - duoc.length
   const mot = ds.length === 1 && duoc.length === 1 ? duoc[0] : undefined
-  const kh = mot ? KHACH.find(k => k.ten === mot.doiTuong) : undefined
-  const tt = kh ? NGUOI_MUA[kh.ma] : undefined
-  const [nm, setNm] = useState({ ten: String(mot?.doiTuong ?? ''), mst: kh?.mst ?? '', diaChi: tt?.[0] ?? '', email: tt?.[1] ?? '' })
   const kyHieuCua = (r: Row) => h.kyHieu[String(r._cnId ?? '')] ?? Object.values(h.kyHieu)[0]
+  const dsKyHieu = [...new Set(Object.values(h.kyHieu))]
+  const [ngay, setNgay] = useState(dmy(HOM_NAY))
+  const [kyHieu, setKyHieu] = useState(mot ? kyHieuCua(mot) : dsKyHieu[0])
+  const kh = mot ? KHACH.find(x => x.ten === mot.doiTuong) : undefined
+  const tt = kh ? NGUOI_MUA[kh.ma] : undefined
+  const laCty = Boolean(kh?.mst)
+  const [k, setK] = useState<TtKhach>({
+    loai: laCty ? 'cty' : 'cn', mst: kh?.mst.replace(/\s/g, '') ?? '', tenDv: laCty ? String(mot?.doiTuong ?? '') : '', cccd: '',
+    tenNm: laCty || kh?.ma === 'KL' ? '' : String(mot?.doiTuong ?? ''), diaChi: tt?.[0] ?? '', sdt: '', email: tt?.[1] ?? '', maQhns: '', hoChieu: '', ghiChu: '',
+  })
+  const [daThu, setDaThu] = useState(false)   // bấm Phát hành rồi mới tô đỏ ô bắt buộc còn trống
+  const dat = (p: Partial<TtKhach>) => setK(x => ({ ...x, ...p }))
+  const o = (key: keyof TtKhach, nhan: string, goiY: string, bb = false) => (
+    <Dong nhan={nhan} bb={bb} loi={daThu && bb && !String(k[key]).trim()}>
+      <input className="hddt-inp" value={String(k[key])} placeholder={goiY} aria-label={nhan} onChange={e => dat({ [key]: e.target.value })} />
+    </Dong>
+  )
+  const thieu = !ngay || !kyHieu || (mot ? (k.loai === 'cty' ? !k.tenDv.trim() || !k.diaChi.trim() : !k.tenNm.trim()) : false)
   const phatHanh = () => {
-    const ngay = dmy(HOM_NAY)
+    if (thieu) { setDaThu(true); toast('Nhập đủ các ô có dấu *'); return }
+    let cuoi = ''
     for (const r of duoc) {
       soHdCuoi += 1
-      const hd: HdDaXuat = { mau, kyHieu: kyHieuCua(r), so: String(soHdCuoi).padStart(8, '0'), ngay, ma: maCqt(soHdCuoi) }
-      // Ô Số hoá đơn, Ký hiệu, Ngày hoá đơn ở đầu phiếu đổi theo hoá đơn vừa phát hành; một chứng từ thì cả MST, địa chỉ người mua
-      suaPhieu(man, String(r.id), { _hd: hd, _soHd: hd.so, _kyHieuHd: hd.mau + hd.kyHieu, _ngayHd: hd.ngay,
-        ...(mot ? { _nguoiMuaHd: nm, _mst: nm.mst, ...(nm.diaChi ? { _diaChi: nm.diaChi } : {}) } : {}) })
+      const kh1 = mot ? kyHieu : kyHieuCua(r)
+      const hd: HdDaXuat = { mau, kyHieu: kh1, so: String(soHdCuoi).padStart(8, '0'), ngay, ma: maCqt(soHdCuoi) }
+      cuoi = `${mau}${kh1} số ${hd.so}`
+      // Ô Số hoá đơn, Ký hiệu, Ngày hoá đơn ở đầu phiếu lấy theo hoá đơn vừa phát hành; một chứng từ thì cả MST hoặc CCCD, địa chỉ khách hàng
+      suaPhieu(man, String(r.id), {
+        _hd: hd, _soHd: hd.so, _kyHieuHd: hd.mau + hd.kyHieu, _ngayHd: hd.ngay,
+        ...(mot ? { _khachHd: k, _mst: k.loai === 'cty' ? k.mst : k.cccd, ...(k.diaChi ? { _diaChi: k.diaChi } : {}) } : {}),
+      })
     }
-    toast(duoc.length === 1 ? `Đã phát hành hoá đơn ${mau}${kyHieuCua(duoc[0])} số ${String(soHdCuoi).padStart(8, '0')}${h.guiEmail && nm.email ? `, đã gửi ${nm.email}` : ''}`
+    toast(duoc.length === 1 ? `Đã phát hành hoá đơn ${cuoi}${h.guiEmail && mot && k.email ? `, đã gửi ${k.email}` : ''}`
       : `Đã phát hành ${duoc.length} hoá đơn điện tử qua ${h.ncc}`)
     onDong()
   }
   return createPortal(
     <div className="overlay ds-hop-nen" onMouseDown={e => { if (e.target === e.currentTarget) onDong() }}>
-      <div className="ds-hop hddt-hop" role="dialog" aria-modal="true" aria-label="Xuất hoá đơn điện tử">
-        <div className="ds-hop-dau"><b>Xuất hoá đơn điện tử</b></div>
+      <div className="ds-hop hddt-hop" role="dialog" aria-modal="true" aria-label="Phát hành hoá đơn điện tử">
+        <div className="ds-hop-dau"><b>Phát hành hoá đơn điện tử</b><span className="grow" />
+          <button type="button" className="icon-btn" aria-label="Đóng" title="Đóng" onClick={onDong}>×</button></div>
         <div className="hddt-than">
           {!duoc.length ? (
             <Note kind="warn">Các chứng từ đã chọn đều đã có hoá đơn hoặc là hoá đơn FABi xuất tại máy POS.</Note>
           ) : <>
-            <div className="hddt-tt">
-              <span>Nhà cung cấp</span><b>{h.ncc}</b>
-              <span>Loại hoá đơn</span><b>{tenLoaiHd(s)} (mẫu số {mau})</b>
-              <span>Ngày hoá đơn</span><b>{dmy(HOM_NAY)}</b>
-              {mot && <><span>Ký hiệu</span><b>{mau}{kyHieuCua(mot)}</b></>}
+            <div className="hddt-bang">
+              <Dong nhan="Ngày hoá đơn" bb loi={daThu && !ngay}>
+                <ONgay value={ngay} onChange={setNgay} placeholder="Chọn ngày hoá đơn" inputClassName="hddt-inp" ariaLabel="Ngày hoá đơn" />
+              </Dong>
+              <Dong nhan="Ký hiệu hoá đơn" bb>
+                {mot ? <Select className="hddt-inp" value={kyHieu} aria-label="Ký hiệu hoá đơn" onChange={e => setKyHieu(e.target.value)} ds={dsKyHieu.map(v => ({ v, t: mau + v }))} />
+                  : <input className="hddt-inp" readOnly value="Theo cửa hàng của từng chứng từ" aria-label="Ký hiệu hoá đơn" />}
+              </Dong>
             </div>
-            {mot ? (
-              <div className="form-grid">
-                <div className="f c2"><label>Tên người mua</label><input className="inp" value={nm.ten} aria-label="Tên người mua" onChange={e => setNm({ ...nm, ten: e.target.value })} /></div>
-                <div className="f"><label>Mã số thuế</label><input className="inp" value={nm.mst} aria-label="Mã số thuế người mua" placeholder="Khách lẻ để trống" onChange={e => setNm({ ...nm, mst: e.target.value })} /></div>
-                <div className="f"><label>Email nhận hoá đơn</label><input className="inp" type="email" value={nm.email} aria-label="Email nhận hoá đơn" onChange={e => setNm({ ...nm, email: e.target.value })} /></div>
-                <div className="f c2"><label>Địa chỉ</label><input className="inp" value={nm.diaChi} aria-label="Địa chỉ người mua" onChange={e => setNm({ ...nm, diaChi: e.target.value })} /></div>
-                <div className="f c2 hddt-tong"><span>Tổng tiền thanh toán</span><b>{money(Number(mot.tong) || 0)}</b></div>
+            {mot ? <>
+              <div className="hddt-kh">
+                <b>Thông tin khách hàng</b>
+                <label><input type="radio" name="hddt-loai" checked={k.loai === 'cn'} onChange={() => dat({ loai: 'cn' })} />Cá nhân</label>
+                <label><input type="radio" name="hddt-loai" checked={k.loai === 'cty'} onChange={() => dat({ loai: 'cty' })} />Công ty</label>
               </div>
-            ) : (
+              <div className="hddt-bang">
+                {k.loai === 'cty' ? <>
+                  {o('mst', 'Mã số thuế/CCCD', 'Nhập mã số thuế/CCCD')}
+                  {o('tenDv', 'Tên đơn vị', 'Nhập tên đơn vị', true)}
+                  {o('diaChi', 'Địa chỉ', 'Nhập địa chỉ', true)}
+                  {o('tenNm', 'Tên người mua', 'Nhập tên người mua')}
+                  {o('sdt', 'Số điện thoại', 'Nhập số điện thoại')}
+                  {o('email', 'Email', 'Nhập email')}
+                  {o('maQhns', 'Mã đơn vị quan hệ ngân sách', 'Nhập mã đơn vị quan hệ ngân sách')}
+                </> : <>
+                  {o('cccd', 'Căn cước công dân', 'Nhập căn cước công dân')}
+                  {o('tenNm', 'Tên người mua', 'Nhập tên người mua', true)}
+                  {o('diaChi', 'Địa chỉ', 'Nhập địa chỉ')}
+                  {o('sdt', 'Số điện thoại', 'Nhập số điện thoại')}
+                  {o('email', 'Email', 'Nhập email')}
+                  {o('hoChieu', 'Số hộ chiếu', 'Nhập số hộ chiếu')}
+                </>}
+                <Dong nhan="Ghi chú">
+                  <textarea className="hddt-inp" rows={2} value={k.ghiChu} placeholder="Nhập ghi chú (nếu có)" aria-label="Ghi chú" onChange={e => dat({ ghiChu: e.target.value })} />
+                </Dong>
+              </div>
+              <div className="hddt-tong"><span>Tổng tiền thanh toán</span><b>{money(Number(mot.tong) || 0)}</b></div>
+            </> : (
               <div className="hddt-ds">
-                <div className="hddt-dong hddt-dau"><span>Số chứng từ</span><span>Người mua</span><span>Ký hiệu</span><span>Tổng tiền</span></div>
+                <div className="hddt-dong hddt-dau"><span>Số chứng từ</span><span>Khách hàng</span><span>Ký hiệu</span><span>Tổng tiền</span></div>
                 {duoc.map(r => (
                   <div key={String(r.id)} className="hddt-dong">
                     <span className="code">{r.so}</span><span title={String(r.doiTuong ?? '')}>{r.doiTuong}</span><span>{mau}{kyHieuCua(r)}</span><span className="num">{money(Number(r.tong) || 0)}</span>
@@ -177,11 +230,7 @@ export function HopXuatHddt({ s, man, ds, onDong, toast }: { s: Session; man: st
             {boQua > 0 && <Note kind="gray">Bỏ qua {boQua} chứng từ đã có hoá đơn hoặc là hoá đơn FABi.</Note>}
           </>}
         </div>
-        <div className="ds-chan">
-          <span className="grow" />
-          <button type="button" className="btn" onClick={onDong}>{!duoc.length ? 'Đóng' : 'Huỷ'}</button>
-          {duoc.length > 0 && <button type="button" className="btn pri" autoFocus onClick={phatHanh}>Phát hành</button>}
-        </div>
+        {duoc.length > 0 && <div className="hddt-chan"><button type="button" className="btn pri" onClick={phatHanh}>Phát hành HĐĐT</button></div>}
       </div>
     </div>,
     document.body,
