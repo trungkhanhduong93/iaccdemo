@@ -1,4 +1,4 @@
-// Giá vốn NVL trong tháng gói Free trên điện thoại (T394): mở từ thẻ Giá vốn nguyên vật liệu ở trang chủ.
+// Chi phí NVL trong tháng gói Free trên điện thoại (T394): mở từ thẻ Chi phí nguyên vật liệu ở trang chủ.
 // Cách tính chung cả công ty, đổi ở Thông tin đơn vị như web (T767): kiểm kê định kỳ hoặc tổng chi phí mua hàng trong tháng.
 // Xem mọi cửa hàng: danh sách từng cửa hàng, bấm dòng đổi luôn cửa hàng trên thanh đầu (T611).
 // Xem một cửa hàng: các số của công thức và phiếu mua hàng trong tháng.
@@ -35,7 +35,7 @@ export function MChiPhiNvl(_: ScreenProps) {
       {/* Thẻ tổng ở đầu */}
       <div className="m-standard-cpt-tong-the">
         <div className="m-standard-cpt-tong-nhan">
-          Tổng giá vốn NVL tháng {thang}/2026{cn ? ` · ${cn.ten}` : ''}
+          Tổng chi phí NVL tháng {thang}/2026{cn ? ` · ${cn.ten}` : ''}
           <small className="m-standard-cpt-tong-phu">
             {moTaCach(tong.cach)} · {pct(dt ? tong.tien / dt : 0)} doanh thu
           </small>
@@ -51,7 +51,7 @@ export function MChiPhiNvl(_: ScreenProps) {
       {/* Dòng cách tính như web: tên, mô tả, nút Đổi cách tính mở Thông tin đơn vị */}
       <div className="m-nvl-cach">
         <span className="m-nvl-cach-chu">
-          Phương pháp giá vốn NVL chung cả công ty: <b>{CACH_NVL[tong.cach].ten}</b> · {CACH_NVL[tong.cach].mota}
+          Phương pháp tính chi phí NVL chung cả công ty: <b>{CACH_NVL[tong.cach].ten}</b> · {CACH_NVL[tong.cach].mota}
         </span>
         <Link to={DI_DOI_CACH_NVL} className="btn sm ghost m-nvl-cach-nut">Đổi cách tính</Link>
         {cn && !cnThanh && (
@@ -65,8 +65,13 @@ export function MChiPhiNvl(_: ScreenProps) {
           </button>
         )}
       </div>
+      {/* mở form phiếu kiểm kê mới như web (T768) */}
+      <Link to="/app/kho/5-1-10/moi" className="m-tcf-nut-vien chu-xanh">
+        <Icon n="clipboard" className="ic sm" kieu="net" />
+        <span>Kiểm kê ngay</span>
+      </Link>
       {khoa && (
-        <div className="m-nvl-ghi">Tháng {thang}/2026 đã khoá sổ: giá vốn NVL giữ theo cách tính lúc khoá, không sửa được.</div>
+        <div className="m-nvl-ghi">Tháng {thang}/2026 đã khoá sổ: chi phí NVL giữ theo cách tính lúc khoá, không sửa được.</div>
       )}
 
       {/* Khi chưa chọn cửa hàng: danh sách cửa hàng */}

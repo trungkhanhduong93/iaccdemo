@@ -820,7 +820,7 @@ export function ThongTinDonVi({ sc }: ScreenProps) {
     loai: (chuaKhai ? '' : loaiHinhDv(s, dv)) as LoaiHinh | '',
     nhom: tt.nhom ?? 1, ppHkd: tt.ppHkd ?? 'doanhThu' as PpHkd, ppGtgt: s.ppGtgt, ppTndn: s.ppTndn,
     cnChinh: tt.cnChinh || dsCn[0]?.id || '', kenhOnline: tt.kenhOnline ?? KENH_ONLINE, kenhSan: tt.kenhSan ?? KENH_SAN,
-    cachNvl: cachNvlHienTai(s) as CachNvl,   // cách tính giá vốn NVL trang chủ gói Standard, chung cả công ty (T767)
+    cachNvl: cachNvlHienTai(s) as CachNvl,   // cách tính chi phí NVL trang chủ gói Standard, chung cả công ty (T767)
   }))
   const sua = (p: Partial<typeof f>) => setF(x => ({ ...x, ...p }))
   const dnCoDinh = s.goi === 'PR'   // doanh nghiệp gói Pro: GTGT khấu trừ, TNDN theo lợi nhuận, không chọn
@@ -946,9 +946,9 @@ export function ThongTinDonVi({ sc }: ScreenProps) {
               <ONgay value={ngayLam} placeholder="dd/mm/yyyy" onChange={setNgayLam} title="Ngày bắt đầu nhập liệu trên iPOS Accounting, chọn lúc khởi tạo đơn vị" />
             </div>
             {/* Gói Standard ẩn ô này, mặc định bình quân cuối kỳ (T268) */}
-            {/* Gói Standard: giá vốn NVL trang chủ tính một cách chung mọi cửa hàng, không chọn theo cửa hàng nữa (T767) */}
-            {s.goi === 'S' && <div className="f c2"><label>Phương pháp giá vốn NVL</label>
-              <Select className="inp" value={f.cachNvl} ds={DS_CACH_NVL} aria-label="Phương pháp giá vốn NVL" onChange={e => sua({ cachNvl: e.target.value as CachNvl })} />
+            {/* Gói Standard: chi phí NVL trang chủ tính một cách chung mọi cửa hàng, không chọn theo cửa hàng nữa (T767) */}
+            {s.goi === 'S' && <div className="f c2"><label>Phương pháp tính chi phí NVL</label>
+              <Select className="inp" value={f.cachNvl} ds={DS_CACH_NVL} aria-label="Phương pháp tính chi phí NVL" onChange={e => sua({ cachNvl: e.target.value as CachNvl })} />
               <small className="muted">{CACH_NVL[f.cachNvl].mota}. Áp dụng chung mọi cửa hàng.</small></div>}
             {s.goi !== 'S' && <div className="f c2"><label>Phương pháp tính giá xuất kho</label><Select className="inp"><option>Bình quân gia quyền cuối kỳ</option><option>Bình quân tức thời</option><option>Nhập trước xuất trước</option></Select></div>}
           </div>

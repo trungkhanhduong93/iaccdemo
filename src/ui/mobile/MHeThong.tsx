@@ -628,7 +628,7 @@ export const MThongTinDonVi: FC<ScreenProps> = () => {
     cnChinh: tt.cnChinh || dsCn[0]?.id || '',
     kenhOnline: tt.kenhOnline ?? KENH_ONLINE,
     kenhSan: tt.kenhSan ?? KENH_SAN,
-    cachNvl: cachNvlHienTai(s) as CachNvl,   // cách tính giá vốn NVL trang chủ gói Standard, chung cả công ty (T767)
+    cachNvl: cachNvlHienTai(s) as CachNvl,   // cách tính chi phí NVL trang chủ gói Standard, chung cả công ty (T767)
   }))
 
   const sua = (p: Partial<typeof f>) => setF(x => ({ ...x, ...p }))
@@ -917,11 +917,11 @@ export const MThongTinDonVi: FC<ScreenProps> = () => {
             <label className="m-form-nhan">Ngày bắt đầu làm việc</label>
             <ONgay value={ngayLam} placeholder="dd/mm/yyyy" onChange={setNgayLam} title="Ngày bắt đầu nhập liệu trên iPOS Accounting, chọn lúc khởi tạo đơn vị" />
           </div>
-          {/* Gói Standard: giá vốn NVL trang chủ tính một cách chung mọi cửa hàng (T767) */}
+          {/* Gói Standard: chi phí NVL trang chủ tính một cách chung mọi cửa hàng (T767) */}
           {s.goi === 'S' && (
             <div className="m-form-dong">
-              <label className="m-form-nhan">Phương pháp giá vốn NVL</label>
-              <Select className="inp" value={f.cachNvl} ds={DS_CACH_NVL} aria-label="Phương pháp giá vốn NVL"
+              <label className="m-form-nhan">Phương pháp tính chi phí NVL</label>
+              <Select className="inp" value={f.cachNvl} ds={DS_CACH_NVL} aria-label="Phương pháp tính chi phí NVL"
                 onChange={e => sua({ cachNvl: e.target.value as CachNvl })} />
               <small className="muted">
                 {CACH_NVL[f.cachNvl].mota}. Áp dụng chung mọi cửa hàng.

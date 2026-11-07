@@ -877,7 +877,7 @@ function MTrangChuCoPhi() {
             <div className="m-tc-the-head">
               <div className="m-tc-the-tieu-hop">
                 <h3 className="m-tc-the-tieu">Chi phí nguyên vật liệu T10/2026</h3>
-                <span className="m-tc-the-info" title="Chi phí giá vốn nguyên vật liệu trong tháng">
+                <span className="m-tc-the-info" title="Chi phí nguyên vật liệu trong tháng">
                   <Icon n="info" className="ic sm" />
                 </span>
               </div>

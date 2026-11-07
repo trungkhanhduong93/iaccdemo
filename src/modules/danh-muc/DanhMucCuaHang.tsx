@@ -56,7 +56,7 @@ export function DanhMucCuaHang({ sc, mod }: ScreenProps) {
     { k: 'kv', t: 'Khu vực', cls: 'dim' },
     { k: 'kho', t: 'Kho', cls: 'dim', r: r => <>{r.kho}{standard && <span className="chip" style={{ marginLeft: 8 }}>Mặc định</span>}</> },
     { k: 'nguon', t: 'Nguồn', cls: 'dim' },
-    // Cách tính giá vốn NVL chung cả công ty, chọn ở Thông tin đơn vị, không còn theo cửa hàng (T767)
+    // Cách tính chi phí NVL chung cả công ty, chọn ở Thông tin đơn vị, không còn theo cửa hàng (T767)
     // Mọi gói: bật, tắt tự động đồng bộ phiếu thu, chi lập trên FABi theo cửa hàng, (T264)
     { k: 'dongBo', t: 'Đồng bộ thu chi FABi', w: 210, r: (r: Row) => {
       const bat = batDongBoThuChi(s, String(r.id))
@@ -179,7 +179,7 @@ export function DanhMucCuaHang({ sc, mod }: ScreenProps) {
         </div>
       </div>
       {s.goi === 'S' && <Note icon="info">Gói Standard: mỗi cửa hàng tự có một kho mặc định theo iPOS Inventory, không cần khai báo kho.
-        Phương pháp giá vốn NVL dùng chung cả công ty, đổi ở <Link to={DI_DOI_CACH_NVL}>Thông tin đơn vị</Link>.</Note>}
+        Phương pháp tính chi phí NVL dùng chung cả công ty, đổi ở <Link to={DI_DOI_CACH_NVL}>Thông tin đơn vị</Link>.</Note>}
       {cho.length > 0 && <Note kind="warn" icon="alert">{cho.length} phiếu thu, chi từ FABi đang chờ vì phương thức thanh toán chưa map quỹ
         ({[...new Set(cho.map(x => `${x.pttt} · ${x.cn}`))].join('; ')}). <Link to="/app/danh-muc/1-12">Map ở Danh mục Quỹ tiền</Link></Note>}
       <section className="card dm-bang">

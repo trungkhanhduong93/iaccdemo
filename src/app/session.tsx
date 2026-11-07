@@ -47,7 +47,7 @@ export interface Session {
   ttDv?: Record<string, TtDonVi>   // thông tin kê khai từng đơn vị (T145)
   cnThem?: Record<string, CnThem[]>   // cửa hàng lên sổ thêm từ cửa hàng FABi theo từng đơn vị (T142)
   cnCongTy?: Record<string, Record<string, string>>   // công ty chọn lại cho cửa hàng ở Danh mục cửa hàng theo đơn vị; khoá mã cửa hàng, giá trị mã đơn vị; chưa đặt là đơn vị đang mở (T711)
-  cachNvlDv?: Record<string, LichCachNvl[]>   // cách tính giá vốn NVL gói Free theo đơn vị, chung mọi cửa hàng; mỗi lần đổi áp dụng từ kỳ đầu chưa khoá sổ (T767)
+  cachNvlDv?: Record<string, LichCachNvl[]>   // cách tính chi phí NVL gói Free theo đơn vị, chung mọi cửa hàng; mỗi lần đổi áp dụng từ kỳ đầu chưa khoá sổ (T767)
   dongBoThuChi?: Record<string, Record<string, boolean>>   // tự động đồng bộ phiếu thu, chi lập trên FABi theo đơn vị, từng cửa hàng (mã cửa hàng); chưa đặt là bật (T264)
   mapPttt?: Record<string, Record<string, string>>   // map PTTT FABi về quỹ theo đơn vị; khoá 'mã cửa hàng|mã PTTT', giá trị mã quỹ (T264)
   kieuSo?: Record<string, KieuSo>   // quy định chữ số và dấu phân cách theo đơn vị, chọn ở Cấu hình kế toán: 'vn' 1.234.567,89 (mặc định), 'qt' 1,234,567.89 (T710)

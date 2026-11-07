@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 07/11/2026
+- T768: Gói Standard, thẻ Giá vốn nguyên vật liệu ở trang chủ đổi tên thành Chi phí nguyên vật liệu, các màn liên quan ở web và điện thoại đổi theo. Web: xem mọi cửa hàng thì ra bảng cửa hàng, bấm một cửa hàng (hoặc đã chọn cửa hàng ở thanh trên) thì ra bảng mặt hàng NVL gồm Mã hàng, Tên hàng, ĐVT, Tồn đầu kỳ, Mua trong kỳ, Tồn cuối kỳ, Sử dụng trong kỳ, Giá gần nhất, Chi phí NVL. Màn có nút xanh Kiểm kê ngay, bỏ ô lọc tháng (lấy tháng theo trang chủ).
 - T767: Gói Standard, giá vốn NVL ở trang chủ chỉ còn 2 phương pháp chung cả công ty: Kiểm kê định kỳ (Tồn đầu + Mua trong tháng − Tồn cuối) và Tổng chi phí mua hàng trong tháng. Chọn ở Hệ thống > Thông tin đơn vị, Danh mục cửa hàng không còn ô chọn. Thẻ Chế độ kế toán thêm Ngày bắt đầu làm việc, bỏ Năm làm việc hiện tại; gói Standard ẩn Ngày đầu năm tài chính.
 - T765: Web gói Plus, danh sách Bán hàng có cột Trạng thái phát hành (Chưa phát hành, Đã phát hành) và cột Số hoá đơn. Dòng chưa phát hành có nút Phát hành, mở form như ở chi tiết. Chọn nhiều chứng từ rồi bấm Phát hành HĐĐT thì popup kiểm tra thông tin người mua từng chứng từ, sửa hoặc bỏ chọn dòng thiếu. Gửi xong có bảng kết quả từng hoá đơn và nút phát hành lại dòng lỗi.
 - T764: Điện thoại, Công nợ khách hàng gói Plus, Pro hiện dạng thẻ giống Công nợ nhà cung cấp: khách còn nợ, khách trả thừa, đã tất toán tách nhóm, tổng nợ phải thu ghim dưới đáy. Nút Thu tiền mở phiếu thu điền sẵn khách và lý do Thu Nợ.

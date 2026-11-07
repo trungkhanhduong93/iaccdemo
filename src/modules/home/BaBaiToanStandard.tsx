@@ -1134,7 +1134,7 @@ export function BaBaiToanStandard({ d, thang: thangXem, selCns, chonKy }: { d: T
               title="Xem chi phí nguyên vật liệu"
             >
               <div className="l">
-                <b>Giá vốn nguyên vật liệu</b>
+                <b>Chi phí nguyên vật liệu</b>
                 <span>{moTaCach(nvl.cach)}</span>
               </div>
               <div className="r">
