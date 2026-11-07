@@ -176,7 +176,7 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
   })
 
   // T526: Lập phiếu mới để trống các trường, chỉ giữ mặc định bắt buộc
-  const [doiTuong, setDoiTuong] = useState<string>(() => dienSan?.doiTuong ?? (goc?.doiTuong ? String(goc.doiTuong) : ''))
+  const [doiTuong, setDoiTuong] = useState<string>(() => dienSan?.doiTuong ?? (goc?.doiTuong ? String(goc.doiTuong) : goc ? '' : sp.get('dt') ?? ''))
   const [diaChi, setDiaChi] = useState<string>(() => dienSan?.diaChi ?? (goc?._diaChi || goc?.diaChi ? String(goc._diaChi || goc?.diaChi) : ''))
   const [nguoiGiaoDich, setNguoiGiaoDich] = useState<string>(() => dienSan?.nguoiGiaoDich ?? nguoiGoc(goc))
 

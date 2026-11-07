@@ -949,6 +949,7 @@ export const MBaoCaoDong: FC<Props> = ({ maBc, khuon, cols, rows, q = '', xemTat
 
   const laTongHopMauD =
     maNorm === '4.2.3' || maNorm.endsWith('.4.2.3') || maNorm.endsWith('/4.2.3') ||
+    maNorm === '3.2.9' || maNorm.endsWith('.3.2.9') || maNorm.endsWith('/3.2.9') ||
     maNorm === '5.2.9' || maNorm.endsWith('.5.2.9') || maNorm.endsWith('/5.2.9') ||
     maNorm === '5.2.3' || maNorm.endsWith('.5.2.3') || maNorm.endsWith('/5.2.3')
 

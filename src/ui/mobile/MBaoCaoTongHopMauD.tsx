@@ -1,4 +1,4 @@
-// Báo cáo tổng hợp theo mẫu D trên điện thoại cho 4.2.3, 5.2.9, 5.2.3 (T624)
+// Báo cáo tổng hợp theo mẫu D trên điện thoại cho 4.2.3, 3.2.9, 5.2.9, 5.2.3 (T624, T764)
 import React, { useEffect, useMemo, useState, type FC } from 'react'
 import { Link } from 'react-router-dom'
 import type { Row } from '../../modules/types'
@@ -60,6 +60,8 @@ export const MBaoCaoTongHopMauD: FC<MBaoCaoTongHopMauDProps> = ({ maBc, rows, q 
 
   const maNorm = (maBc || '').replace(/-/g, '.').split('/').pop() || ''
   const is423 = maNorm === '4.2.3'
+  const is329 = maNorm === '3.2.9'
+  const laCongNo = is423 || is329
   const is529 = maNorm === '5.2.9'
   const is523 = maNorm === '5.2.3'
   const isStandard = s.goi === 'S'
@@ -71,6 +73,8 @@ export const MBaoCaoTongHopMauD: FC<MBaoCaoTongHopMauDProps> = ({ maBc, rows, q 
     const textGoc = el.textContent
     const ten = is423
       ? 'Công nợ nhà cung cấp'
+      : is329
+      ? 'Công nợ khách hàng'
       : is529
       ? 'Tổng hợp nhập kho'
       : 'Báo cáo xuất nhập tồn'
@@ -78,7 +82,7 @@ export const MBaoCaoTongHopMauD: FC<MBaoCaoTongHopMauDProps> = ({ maBc, rows, q 
     return () => {
       if (el && textGoc) el.textContent = textGoc
     }
-  }, [is423, is529, is523])
+  }, [is423, is329, is529, is523])
 
   // Chuẩn hoá dữ liệu
   const dsChuan = useMemo<ItemChuan[]>(() => {
@@ -94,8 +98,8 @@ export const MBaoCaoTongHopMauD: FC<MBaoCaoTongHopMauDProps> = ({ maBc, rows, q 
         const ma = String(r.ma || '')
         const ten = String(r.ten || r.tenHang || r.doiTuong || r.ncc || '')
         const dvt = String(r.dvt || '')
-        const nhom = is423
-          ? (Number(r.cuoi ?? 0) > 0 ? 'Nhà cung cấp còn nợ' : 'Đã tất toán')
+        const nhom = laCongNo
+          ? (Number(r.cuoi ?? 0) > 0 ? (is329 ? 'Khách hàng còn nợ' : 'Nhà cung cấp còn nợ') : is329 && Number(r.cuoi ?? 0) < 0 ? 'Khách hàng trả thừa' : 'Đã tất toán')
           : String(r.nhom || nhomCuaMa(ma) || 'Hàng hoá, nguyên vật liệu')
 
         // 4.2.3 Công nợ
@@ -126,7 +130,7 @@ export const MBaoCaoTongHopMauD: FC<MBaoCaoTongHopMauDProps> = ({ maBc, rows, q 
         const kho = r._kho ? (Array.isArray(r._kho) ? r._kho[0] : String(r._kho)) : 'Kho bếp Lê Lợi'
 
         let tongTien = 0
-        if (is423) tongTien = cuoi
+        if (laCongNo) tongTien = cuoi
         else if (is529) tongTien = tienNhap
         else if (is523) tongTien = isStandard ? sl1 : gt1
 
@@ -161,7 +165,7 @@ export const MBaoCaoTongHopMauD: FC<MBaoCaoTongHopMauDProps> = ({ maBc, rows, q 
           kho,
         }
       })
-  }, [rows, q, is423, is529, is523, isStandard])
+  }, [rows, q, is329, laCongNo, is529, is523, isStandard])
 
   // Gom theo nhóm
   const dsNhom = useMemo<NhomItem[]>(() => {
@@ -175,7 +179,7 @@ export const MBaoCaoTongHopMauD: FC<MBaoCaoTongHopMauDProps> = ({ maBc, rows, q 
     return Array.from(map.entries()).map(([tenNhom, items]) => {
       let tongTien = 0
       let tongSl = 0
-      if (is423) {
+      if (laCongNo) {
         tongTien = items.reduce((s, x) => s + x.cuoi, 0)
         tongSl = items.reduce((s, x) => s + x.soDon, 0)
       } else if (is529) {
@@ -193,15 +197,15 @@ export const MBaoCaoTongHopMauD: FC<MBaoCaoTongHopMauDProps> = ({ maBc, rows, q 
         items,
       }
     })
-  }, [dsChuan, is423, is529, is523, isStandard])
+  }, [dsChuan, laCongNo, is529, is523, isStandard])
 
   // Tổng ghim đáy màn hình
   const tongTienTatCa = useMemo(() => {
-    if (is423) return dsChuan.reduce((s, x) => s + x.cuoi, 0)
+    if (laCongNo) return dsChuan.reduce((s, x) => s + x.cuoi, 0)
     if (is529) return dsChuan.reduce((s, x) => s + x.tienNhap, 0)
     if (is523) return isStandard ? 0 : dsChuan.reduce((s, x) => s + x.gt1, 0)
     return 0
-  }, [dsChuan, is423, is529, is523, isStandard])
+  }, [dsChuan, laCongNo, is529, is523, isStandard])
 
   const toggleItem = (ma: string, macDinhMo: boolean) => {
     setItemMo(prev => {
@@ -223,7 +227,7 @@ export const MBaoCaoTongHopMauD: FC<MBaoCaoTongHopMauDProps> = ({ maBc, rows, q 
             <div className="m-bkm-ngay-head">
               <span className="m-bkm-ngay-ten">{nhom.tenNhom}</span>
               <span className="m-bkm-ngay-phai">
-                {nhom.items.length} {is423 ? 'nhà cung cấp' : 'mặt hàng'}
+                {nhom.items.length} {is423 ? 'nhà cung cấp' : is329 ? 'khách hàng' : 'mặt hàng'}
                 {(!is523 || !isStandard) && (
                   <>
                     {' · '}
@@ -291,8 +295,8 @@ export const MBaoCaoTongHopMauD: FC<MBaoCaoTongHopMauDProps> = ({ maBc, rows, q 
                     {/* Chi tiết khi bung */}
                     {isBung && (
                       <div className="m-bkm-chi-tiet">
-                        {/* 1. Màn 4.2.3: Công nợ NCC */}
-                        {is423 && (
+                        {/* 1. Màn 4.2.3: Công nợ NCC, 3.2.9: Công nợ khách hàng */}
+                        {laCongNo && (
                           <div className="m-bkm-ds-hang">
                             <div className="m-bkm-hang-item">
                               <div className="m-bkm-hang-top">
@@ -302,7 +306,7 @@ export const MBaoCaoTongHopMauD: FC<MBaoCaoTongHopMauDProps> = ({ maBc, rows, q 
                             </div>
                             <div className="m-bkm-hang-item">
                               <div className="m-bkm-hang-top">
-                                <span className="m-bkm-hang-ten">Mua nợ trong kỳ</span>
+                                <span className="m-bkm-hang-ten">{is329 ? 'Bán nợ trong kỳ' : 'Mua nợ trong kỳ'}</span>
                                 <span className="m-bkm-hang-tien num m-so-dong-duong">+{money(it.ps)}</span>
                               </div>
                             </div>
@@ -321,7 +325,7 @@ export const MBaoCaoTongHopMauD: FC<MBaoCaoTongHopMauDProps> = ({ maBc, rows, q 
                               </div>
                             </div>
 
-                            {/* Chân thẻ 4.2.3 */}
+                            {/* Chân thẻ công nợ */}
                             <div className="m-bkm-ct-chan">
                               <div className="m-bkm-ct-chan-trai">
                                 <span>Số đơn phát sinh <b className="num">{it.soDon}</b></span>
@@ -329,11 +333,13 @@ export const MBaoCaoTongHopMauD: FC<MBaoCaoTongHopMauDProps> = ({ maBc, rows, q 
                               <div className="m-bkm-ct-chan-phai" style={{ display: 'flex', gap: 6 }}>
                                 {it.cuoi > 0 && (
                                   <Link
-                                    to={`/app/tien/2-1-1/moi?loai=chi&ly=CHI02&dt=${encodeURIComponent(it.ten)}`}
+                                    to={is329
+                                      ? `/app/tien/2-1-1/moi?loai=thu&ly=THU02&dt=${encodeURIComponent(it.ten)}`
+                                      : `/app/tien/2-1-1/moi?loai=chi&ly=CHI02&dt=${encodeURIComponent(it.ten)}`}
                                     className="btn pri sm"
                                     onClick={e => e.stopPropagation()}
                                   >
-                                    Thanh toán
+                                    {is329 ? 'Thu tiền' : 'Thanh toán'}
                                   </Link>
                                 )}
                               </div>
@@ -512,6 +518,8 @@ export const MBaoCaoTongHopMauD: FC<MBaoCaoTongHopMauDProps> = ({ maBc, rows, q 
             <div className="m-bkm-chan-nhan">
               {is423
                 ? 'Tổng nợ phải trả NCC'
+                : is329
+                ? 'Tổng nợ phải thu khách hàng'
                 : is529
                 ? 'Tổng tiền nhập kho'
                 : 'Tổng giá trị tồn kho cuối kỳ'}

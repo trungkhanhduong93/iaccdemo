@@ -97,7 +97,7 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc, mod }) => {
   const la427 = maBcStr === '4.2.7'
   const la327 = maBcStr === '3.2.7'
   const la5215 = maBcStr === '5.2.15'
-  const laMauDMoi = maBcStr === '3.2.8' || maBcStr === '5.2.10' || maBcStr === '4.2.3' || maBcStr === '5.2.9' || maBcStr === '5.2.3'
+  const laMauDMoi = maBcStr === '3.2.8' || maBcStr === '5.2.10' || maBcStr === '4.2.3' || maBcStr === '3.2.9' || maBcStr === '5.2.9' || maBcStr === '5.2.3'
   const laMauD = la427 || la327 || la5215 || laMauDMoi
   const is523 = maBcStr === '5.2.3'
   const isStandard = s.goi === 'S'
