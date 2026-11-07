@@ -1133,4 +1133,11 @@ Trum chốt trên mẫu https://claude.ai/artifact/2pJtBkB9goLCgmgUwAMnPt (T769)
 - Đăng ký sử dụng ngay mở luồng Thử mở từ FABi vì bản mẫu chưa có màn đăng ký.
 - Điện thoại ẩn slider, giữ thanh logo.
 
-## QD104. Cột trái trang đăng nhập dùng hình minh hoạ, nền theo video IVT (đang soạn)
+## QD104. Cột trái trang đăng nhập dùng hình minh hoạ, nền theo video IVT (07/11/2026)
+
+Trum chốt mẫu C2 trên https://claude.ai/artifact/2pJtBkB9goLCgmgUwAMnPt (T772). Thay ý "slider dùng ảnh chụp màn thật trên nền xanh `#06365e`" của QD103.
+
+- Slider dùng hình minh hoạ đã tách nền, đổi tone về xanh `#0560a6` và cam `#f28020`, cùng đứng trên một đường đáy, cao tối đa 300px.
+- Nền sáng `#e9f1f9` lấy từ thiết kế video IVT: khối nghiêng góc trên trái, vòng cam góc dưới phải, lưới ô bo góc chỉ hiện ở rìa.
+- Không dùng hiệu ứng chuyển động nền (tia quét, chấm chạy, hình nhấp nhô), không ghi nhãn chữ hay số trang trên cột trái.
+- Chữ slide canh giữa dưới hình. Nút trước, sau tròn, đặt hai bên các chấm.

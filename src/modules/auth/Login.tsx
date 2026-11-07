@@ -12,25 +12,25 @@ import slide4 from '../../assets/dang-nhap/slide-4.webp'
 const SLIDES = [
   {
     img: slide1,
-    alt: 'Màn Xuất bán POS',
+    alt: 'Minh hoạ báo cáo đồng bộ lên đám mây',
     tieuDe: 'Doanh thu FABi tự vào sổ',
     moTa: 'Đơn POS từ FABi về sổ theo từng hoá đơn, không nhập tay. Kế toán chỉ kiểm tra và xử lý đơn lỗi.',
   },
   {
     img: slide2,
-    alt: 'Màn Bàn làm việc',
+    alt: 'Minh hoạ danh sách việc đã tích',
     tieuDe: 'Việc trong ngày nằm trên một màn',
     moTa: 'Bàn làm việc gom đơn lỗi, hoá đơn chờ hạch toán, công nợ quá hạn, hạn nộp tờ khai và tiến độ khoá sổ.',
   },
   {
     img: slide3,
-    alt: 'Màn Sổ quỹ tiền mặt',
+    alt: 'Minh hoạ máy tính kế toán và biểu đồ tăng',
     tieuDe: 'Sổ sách, báo cáo theo chế độ kế toán',
     moTa: 'Sổ quỹ, sổ ngân hàng, báo cáo tài chính theo TT58, TT133, TT99. Xem theo từng cửa hàng hoặc gộp cả chuỗi.',
   },
   {
     img: slide4,
-    alt: 'Màn Kiểm kê kho',
+    alt: 'Minh hoạ nhân viên kiểm hàng trong kho',
     tieuDe: 'Kho theo từng cửa hàng',
     moTa: 'Nhập, xuất, điều chuyển, kiểm kê theo từng kho. Đồng bộ với iPOS Inventory.',
   },
@@ -48,20 +48,84 @@ export function AuthBrand() {
 
   return (
     <div className="auth-l">
-      {SLIDES.map((s, i) => (
-        <img
-          key={i}
-          src={s.img}
-          alt={s.alt}
-          className={`auth-slide${i === slide ? ' on' : ''}`}
+      <svg
+        aria-hidden="true"
+        width="576"
+        height="900"
+        className="auth-bg-nghieng"
+      >
+        <defs>
+          <linearGradient id="auth-nghieng" x1="0.33" y1="0" x2="0.67" y2="1">
+            <stop offset="0" stopColor="#0560A6" stopOpacity="0.2" />
+            <stop offset="1" stopColor="#0560A6" stopOpacity="0.04" />
+          </linearGradient>
+        </defs>
+        <rect
+          x="-250"
+          y="-330"
+          width="560"
+          height="560"
+          rx="124"
+          transform="rotate(20 40 0)"
+          fill="url(#auth-nghieng)"
         />
-      ))}
-      <div className="auth-phu" />
+      </svg>
+      <div className="auth-bg-sang" aria-hidden="true" />
+      <div className="auth-bg-cam" aria-hidden="true" />
+      <div className="auth-bg-luoi" aria-hidden="true">
+        <svg aria-hidden="true" width="100%" height="100%">
+          <defs>
+            <pattern
+              id="auth-o-kho"
+              width="100"
+              height="100"
+              patternUnits="userSpaceOnUse"
+              x="-14"
+              y="-10"
+            >
+              <rect
+                x="9"
+                y="9"
+                width="82"
+                height="82"
+                rx="20"
+                fill="none"
+                stroke="#0560A6"
+                strokeOpacity="0.14"
+                strokeWidth="1.5"
+              />
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#auth-o-kho)" />
+        </svg>
+      </div>
+
+      <div className="auth-hinh">
+        {SLIDES.map((s, i) => (
+          <img
+            key={i}
+            src={s.img}
+            alt={s.alt}
+            className={`auth-slide${i === slide ? ' on' : ''}`}
+          />
+        ))}
+      </div>
+      <div className="auth-bong" aria-hidden="true" />
       <div className="auth-slide-chu">
         <h2>{SLIDES[slide].tieuDe}</h2>
         <p>{SLIDES[slide].moTa}</p>
       </div>
       <div className="auth-day">
+        <button
+          type="button"
+          className="auth-nut-truoc"
+          onClick={() => setSlide((slide + SLIDES.length - 1) % SLIDES.length)}
+          aria-label="Slide trước"
+        >
+          <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M15 6l-6 6 6 6" />
+          </svg>
+        </button>
         <div className="auth-cham">
           {SLIDES.map((_, i) => (
             <button
@@ -75,28 +139,16 @@ export function AuthBrand() {
             </button>
           ))}
         </div>
-        <div className="auth-nuts">
-          <button
-            type="button"
-            className="auth-nut-truoc"
-            onClick={() => setSlide((slide + SLIDES.length - 1) % SLIDES.length)}
-            aria-label="Slide trước"
-          >
-            <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M15 6l-6 6 6 6" />
-            </svg>
-          </button>
-          <button
-            type="button"
-            className="auth-nut-sau"
-            onClick={() => setSlide((slide + 1) % SLIDES.length)}
-            aria-label="Slide sau"
-          >
-            <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M9 6l6 6-6 6" />
-            </svg>
-          </button>
-        </div>
+        <button
+          type="button"
+          className="auth-nut-sau"
+          onClick={() => setSlide((slide + 1) % SLIDES.length)}
+          aria-label="Slide sau"
+        >
+          <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M9 6l6 6-6 6" />
+          </svg>
+        </button>
       </div>
     </div>
   )

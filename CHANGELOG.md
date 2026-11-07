@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 07/11/2026
+- T772: Trang đăng nhập, cột trái đổi sang nền sáng có lưới ô bo góc, khối nghiêng và vòng cam như video hướng dẫn iPOS Inventory. Slider dùng 4 hình minh hoạ cùng tone xanh của app thay cho ảnh chụp màn hình, chữ canh giữa, nút chuyển slide tròn.
 - T770: Kho > Tính giá vốn thành màn danh sách: lọc theo tháng, kho, nhóm, hàng hoá; bảng Đầu kỳ, Nhập trong kỳ, Giá vốn theo công thức (II + IV) ÷ (I + III), dòng Cộng, xuất Excel. Nút Chạy tính giá mở hộp chọn kho, tháng, nhóm, hàng; đang chạy có thanh tiến trình và nút Huỷ. Chạy xong báo số mã thành công, mã lỗi; Xem mã lỗi ra bảng mã hàng, kho, lý do lỗi, xuất Excel được.
 - T769: Trang đăng nhập làm lại theo bố cục iFaster. Bên trái là slider 4 ảnh màn hình của app, tự chuyển. Bên phải có logo trên cùng, khung nhắc dùng tài khoản FABi, nút mắt xem mật khẩu, ô Nhớ đăng nhập, link Thử mở từ FABi, dòng Đăng ký sử dụng ngay. Trang Quên mật khẩu dùng chung khung. Điện thoại ẩn slider.
 - T768: Gói Standard, thẻ Giá vốn nguyên vật liệu ở trang chủ đổi tên thành Chi phí nguyên vật liệu, các màn liên quan ở web và điện thoại đổi theo. Web: xem mọi cửa hàng thì ra bảng cửa hàng, bấm một cửa hàng (hoặc đã chọn cửa hàng ở thanh trên) thì ra bảng mặt hàng NVL gồm Mã hàng, Tên hàng, ĐVT, Tồn đầu kỳ, Mua trong kỳ, Tồn cuối kỳ, Sử dụng trong kỳ, Giá gần nhất, Chi phí NVL. Màn có nút xanh Kiểm kê ngay, bỏ ô lọc tháng (lấy tháng theo trang chủ).
