@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T762 | Danh sách Bán hàng gói Plus bỏ chip Đã, Chưa đồng bộ, thay bằng tab Xuất bán POS (hoá đơn FABi) và Bán hàng (lập tay, nhập Excel) | PhuongXT | 07/11/2026 | 2026-11-07-phuongxt-tab-ban-hang.md |
 | T761 | Danh mục Bảng giá gom theo lần khai: mỗi lần khai là một bảng giá có mã, tên, nhiều dòng; danh sách hiện chi tiết từng mặt hàng; bấm dòng mở form sửa cả bảng giá, lưới có lọc dòng; trùng mặt hàng với bảng khác thì hỏi lại | PhuongXT | 07/11/2026 | `docs/nhat-ky/2026-11-07-phuongxt-bang-gia-gom.md`. QD101 chờ Trum duyệt |
 | T760 | Công thức chế biến: web gói Plus có danh sách mỗi nguyên vật liệu một dòng, chip trạng thái và thanh lọc theo danh mục hàng hoá, form mẫu B hai khối, ĐVT nguyên vật liệu đổi được, Thêm dòng, Thêm hàng loạt; bỏ trạng thái Nháp ở mọi gói và điện thoại; sửa nút Đầu tháng tràn chữ | Trum | 07/11/2026 | `docs/nhat-ky/2026-11-07-trum-cong-thuc-plus-mau-b.md` |
 | T759 | Web gói Plus, Công thức chế biến ở Danh mục theo màn Công thức định lượng của itax: danh sách 7 cột, form toàn trang một cột giữa, lọc từng cột nguyên vật liệu, cảnh báo khi đóng lúc dữ liệu đã đổi | Trum | Xong | Thêm `CongThucPlus.tsx`, `CongThucPlusForm.tsx`. Gói Pro, điện thoại không đổi |

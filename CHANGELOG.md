@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 07/11/2026
+- T762: Web gói Plus, danh sách Bán hàng bỏ chip Đã đồng bộ, Chưa đồng bộ; thay bằng tab Tất cả, Xuất bán POS (hoá đơn FABi), Bán hàng (chứng từ lập tay, nhập Excel). Các tab dùng chung một bảng và các nút Đồng bộ, Excel, Tuỳ chỉnh cột.
 - T761: Danh mục Bảng giá: mỗi lần khai giá là một bảng giá có mã BGxxxx, tên, nhiều mặt hàng. Danh sách hiện từng mặt hàng kèm mã, tên bảng giá. Bấm dòng mở form giống Thêm mới với cả bảng giá, sửa được nhiều mặt hàng một lần, có nút Xoá. Lưới Chi tiết giá có phễu lọc dòng như phiếu mua hàng. Mặt hàng đã có giá ở bảng giá khác cùng thời gian, cửa hàng thì hỏi lại trước khi lưu.
 - T760: Web gói Plus, Công thức chế biến: danh sách hiện mỗi nguyên vật liệu một dòng, lọc nhanh bằng chip trạng thái, thanh lọc giống danh mục hàng hoá. Form dùng hết bề rộng màn hình, hai khối thông tin; nguyên vật liệu có quy đổi đổi được đơn vị tính; có nút Thêm dòng, Thêm hàng loạt.
 - T760: Web gói Plus, Công thức chế biến: phễu mở Bộ lọc nâng cao giống danh mục hàng hoá, có thêm Nguyên vật liệu, Kênh áp dụng; các ô chọn gõ tìm được. Form xếp Đơn vị tính cùng dòng Ngày áp dụng, đơn vị tính hiện cả mã và tên; dòng mới tìm được nguyên vật liệu theo mã hoặc tên.
