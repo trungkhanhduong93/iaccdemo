@@ -1123,4 +1123,12 @@ PhuongXT chọn khi làm T763, chưa hỏi Trum.
 - Phát hành xong, ô Số hoá đơn, Ký hiệu (mẫu số + ký hiệu), Ngày hoá đơn ở đầu phiếu đổi theo hoá đơn vừa phát hành; xuất một chứng từ thì MST, địa chỉ người mua cũng đổi theo popup.
 - Bản mẫu giả lập đơn vị đã khai báo đủ, đã kết nối (VNPT Invoice, ký hiệu C26TAA, C26TAB, C26TAC); khách công ty có sẵn địa chỉ, email nhận hoá đơn, bấm Xuất hoá đơn điện tử là thấy ngay màn phát hành.
 
-## QD103. Trang đăng nhập theo iFaster (đang soạn)
+## QD103. Trang đăng nhập theo iFaster (07/11/2026)
+
+Trum chốt trên mẫu https://claude.ai/artifact/2pJtBkB9goLCgmgUwAMnPt (T769).
+
+- Bố cục theo trang đăng nhập iFaster: cột trái 40% là slider, cột phải có thanh logo trên cùng và form ở giữa.
+- Slider dùng ảnh chụp màn thật của app trên nền xanh `#06365e`, không dùng ảnh của iFaster.
+- Không đem sang: cờ đổi ngôn ngữ, nút Đăng nhập với mã hỗ trợ. Chỗ nút mã hỗ trợ đặt link Thử mở từ FABi.
+- Đăng ký sử dụng ngay mở luồng Thử mở từ FABi vì bản mẫu chưa có màn đăng ký.
+- Điện thoại ẩn slider, giữ thanh logo.

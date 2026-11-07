@@ -989,12 +989,141 @@ def kiem_tra_dang_nhap_dot_8():
 
         SHOTS.mkdir(exist_ok=True)
 
-        # 1. Bắt đầu từ localStorage trống
+        # ── 1. Kiểm tra trang đăng nhập mới T769 ở màn máy tính 1440x900 ──
+        pg_mt = b.new_page(viewport={'width': 1440, 'height': 900})
+        con_mt = []
+        pg_mt.on('console', lambda m: con_mt.append(m.text) if m.type == 'error' else None)
+        pg_mt.on('pageerror', lambda e: con_mt.append(str(e)))
+
+        pg_mt.goto(URL + '#/dang-nhap')
+        pg_mt.evaluate("localStorage.clear()")
+        pg_mt.wait_for_selector('.auth-box')
+        pg_mt.wait_for_timeout(300)
+
+        # .auth-l hiện, có đúng 4 img.auth-slide, đúng 1 cái .on
+        auth_l_mt = pg_mt.locator('.auth-l')
+        if auth_l_mt.count() == 0 or not auth_l_mt.first.is_visible():
+            loi.append('Trang đăng nhập (1440x900): .auth-l không hiển thị')
+
+        slides = pg_mt.locator('img.auth-slide')
+        if slides.count() != 4:
+            loi.append(f'Trang đăng nhập (1440x900): phải có đúng 4 img.auth-slide, thấy {slides.count()}')
+        slides_on = pg_mt.locator('img.auth-slide.on')
+        if slides_on.count() != 1:
+            loi.append(f'Trang đăng nhập (1440x900): phải có đúng 1 img.auth-slide.on, thấy {slides_on.count()}')
+
+        # Bấm .auth-nut-sau thì chấm .on chuyển sang chấm kế
+        chams = pg_mt.locator('.auth-cham button')
+        if chams.count() != 4:
+            loi.append(f'Trang đăng nhập (1440x900): phải có đúng 4 chấm .auth-cham button, thấy {chams.count()}')
+        chams_on = pg_mt.locator('.auth-cham button.on, .auth-cham .on')
+        if chams_on.count() != 1:
+            loi.append(f'Trang đăng nhập (1440x900): phải có đúng 1 chấm .auth-cham có class on, thấy {chams_on.count()}')
+
+        idx_truoc = pg_mt.evaluate("""() => {
+            const btns = Array.from(document.querySelectorAll('.auth-cham button'));
+            return btns.findIndex(b => b.classList.contains('on') || b.querySelector('.on'));
+        }""")
+        nut_sau = pg_mt.locator('.auth-nut-sau')
+        if nut_sau.count() == 0:
+            loi.append('Trang đăng nhập (1440x900): thiếu nút chuyển slide .auth-nut-sau')
+        else:
+            nut_sau.click()
+            pg_mt.wait_for_timeout(200)
+            idx_sau = pg_mt.evaluate("""() => {
+                const btns = Array.from(document.querySelectorAll('.auth-cham button'));
+                return btns.findIndex(b => b.classList.contains('on') || b.querySelector('.on'));
+            }""")
+            if idx_truoc != -1 and idx_sau != (idx_truoc + 1) % 4:
+                loi.append(f'Trang đăng nhập (1440x900): bấm .auth-nut-sau chấm .on không chuyển sang kế (từ {idx_truoc} sang {idx_sau})')
+
+        # Bấm .auth-mat thì input mật khẩu đổi type password sang text
+        inp_mk_mt = pg_mt.locator('form.auth-box input:not([type="checkbox"])').nth(1)
+        if inp_mk_mt.count() == 0:
+            inp_mk_mt = pg_mt.locator('form.auth-box input').nth(1)
+        type_dau = inp_mk_mt.get_attribute('type')
+        if type_dau != 'password':
+            loi.append(f'Trang đăng nhập (1440x900): ô mật khẩu ban đầu phải có type="password", thấy "{type_dau}"')
+        nut_mat = pg_mt.locator('.auth-mat')
+        if nut_mat.count() == 0:
+            loi.append('Trang đăng nhập (1440x900): thiếu nút mắt .auth-mat')
+        else:
+            nut_mat.click()
+            pg_mt.wait_for_timeout(100)
+            type_sau = inp_mk_mt.get_attribute('type')
+            if type_sau != 'text':
+                loi.append(f'Trang đăng nhập (1440x900): bấm .auth-mat thì input mật khẩu phải đổi sang type="text", thấy "{type_sau}"')
+
+        # .auth-top img hiện. Có .auth-note, .auth-fabi, .auth-dk
+        logo_top_mt = pg_mt.locator('.auth-top img')
+        if logo_top_mt.count() == 0 or not logo_top_mt.first.is_visible():
+            loi.append('Trang đăng nhập (1440x900): thiếu hoặc ẩn .auth-top img')
+        if pg_mt.locator('.auth-note').count() == 0:
+            loi.append('Trang đăng nhập (1440x900): thiếu khung nhắc .auth-note')
+        if pg_mt.locator('.auth-fabi').count() == 0:
+            loi.append('Trang đăng nhập (1440x900): thiếu link FABi .auth-fabi')
+        if pg_mt.locator('.auth-dk').count() == 0:
+            loi.append('Trang đăng nhập (1440x900): thiếu dòng đăng ký .auth-dk')
+
+        # Bấm link "Quên mật khẩu?" thì URL có '#/quen-mat-khau', trang có chữ "Đặt lại mật khẩu"; bấm "Gửi liên kết" thì hiện câu "Đã gửi liên kết"
+        link_quen = pg_mt.locator('a:has-text("Quên mật khẩu?"), button:has-text("Quên mật khẩu?"), a[href*="quen-mat-khau"]')
+        if link_quen.count() == 0:
+            loi.append('Trang đăng nhập (1440x900): thiếu link "Quên mật khẩu?"')
+        else:
+            link_quen.first.click()
+            pg_mt.wait_for_timeout(300)
+            if '#/quen-mat-khau' not in pg_mt.url:
+                loi.append(f'Quên mật khẩu: URL không có #/quen-mat-khau ({pg_mt.url})')
+            if pg_mt.locator(':has-text("Đặt lại mật khẩu")').count() == 0:
+                loi.append('Quên mật khẩu: không thấy tiêu đề "Đặt lại mật khẩu"')
+            nut_gui = pg_mt.locator('button:has-text("Gửi liên kết")')
+            if nut_gui.count() == 0:
+                loi.append('Quên mật khẩu: thiếu nút "Gửi liên kết"')
+            else:
+                nut_gui.first.click()
+                pg_mt.wait_for_timeout(200)
+                if pg_mt.locator(':has-text("Đã gửi liên kết")').count() == 0:
+                    loi.append('Quên mật khẩu: bấm Gửi liên kết không hiện câu "Đã gửi liên kết"')
+
+        if con_mt:
+            loi.append(f'Trang đăng nhập (1440x900): lỗi console {con_mt[:2]}')
+        pg_mt.close()
+        print('  - Màn Đăng nhập 1440x900: slider, mắt mật khẩu, logo, link phụ, quên mật khẩu đạt yêu cầu')
+
+        # ── 2. Kiểm tra trang đăng nhập ở màn 390x844 ──
+        # Bắt đầu từ localStorage trống
         pg.goto(URL + '#/dang-nhap')
         pg.evaluate("localStorage.clear()")
-        pg.wait_for_timeout(200)
+        pg.wait_for_selector('.auth-box')
+        pg.wait_for_timeout(300)
+        pg.screenshot(path=str(SHOTS / 'm-08-dang-nhap.png'))
 
-        # 2. Mở màn quên mật khẩu, kiểm không tràn ngang
+        # Màn 390x844: .auth-l không hiện, .auth-top img hiện, không cuộn ngang (document.documentElement.scrollWidth <= 390), ô nhập cao ít nhất 44px
+        auth_l_m = pg.locator('.auth-l')
+        if auth_l_m.count() > 0 and auth_l_m.first.is_visible():
+            loi.append('Trang đăng nhập (390px): .auth-l không được hiển thị trên điện thoại')
+
+        logo_top_m = pg.locator('.auth-top img')
+        if logo_top_m.count() == 0 or not logo_top_m.first.is_visible():
+            loi.append('Trang đăng nhập (390px): thiếu hoặc ẩn logo .auth-top img')
+
+        sw = pg.evaluate("document.documentElement.scrollWidth")
+        if sw > 390:
+            loi.append(f'Trang đăng nhập (390px): cuộn ngang (scrollWidth = {sw} > 390)')
+
+        inps_m = pg.locator('form.auth-box input:not([type="checkbox"])')
+        if inps_m.count() < 2:
+            inps_m = pg.locator('form.auth-box input')
+        for i in range(min(inps_m.count(), 2)):
+            cao = inps_m.nth(i).evaluate("el => el.getBoundingClientRect().height")
+            if cao < 43.5:
+                loi.append(f'Trang đăng nhập (390px): ô nhập thứ {i+1} cao {round(cao, 1)}px < 44px')
+
+        nut_login = pg.locator('form.auth-box button[type="submit"], .auth-box button[type="submit"]')
+        kiem_man('Đăng nhập', nut_login)
+        print('  - Màn Đăng nhập 390px: ẩn .auth-l, hiện logo .auth-top, không tràn ngang, ô nhập >= 44px')
+
+        # Mở màn quên mật khẩu, kiểm không tràn ngang
         pg.goto(URL + '#/quen-mat-khau')
         pg.wait_for_selector('.auth-box')
         pg.wait_for_timeout(300)
@@ -1002,21 +1131,27 @@ def kiem_tra_dang_nhap_dot_8():
         kiem_man('Quên mật khẩu')
         print('  - Màn Quên mật khẩu: không tràn ngang')
 
-        # 3. Mở #/dang-nhap từ localStorage trống
+        # Đăng nhập email bất kỳ + mật khẩu 6 ký tự thì sang '#/chon-don-vi'
         pg.goto(URL + '#/dang-nhap')
         pg.wait_for_selector('.auth-box')
-        pg.wait_for_timeout(300)
-        pg.screenshot(path=str(SHOTS / 'm-08-dang-nhap.png'))
-        nut_login = pg.locator('.auth-box button[type="submit"]')
-        kiem_man('Đăng nhập', nut_login)
-        print('  - Màn Đăng nhập: không tràn ngang, nút trong khung nhìn')
+        pg.wait_for_timeout(200)
 
-        # Gõ email và mật khẩu như người dùng thật
-        pg.locator('.auth-box input.inp').nth(0).fill('thuha@phomay.vn')
-        pg.locator('.auth-box input[type="password"]').fill('123456')
+        inp_email = pg.locator('form.auth-box input:not([type="checkbox"])').nth(0)
+        if inp_email.count() == 0:
+            inp_email = pg.locator('form.auth-box input').nth(0)
+        inp_mk = pg.locator('form.auth-box input:not([type="checkbox"])').nth(1)
+        if inp_mk.count() == 0:
+            inp_mk = pg.locator('form.auth-box input').nth(1)
+
+        inp_email.fill('thuha@phomay.vn')
+        inp_mk.fill('123456')
         pg.wait_for_timeout(150)
+        nut_login = pg.locator('form.auth-box button[type="submit"], .auth-box button[type="submit"]')
         nut_login.click()
         pg.wait_for_timeout(500)
+
+        if '#/chon-don-vi' not in pg.url and pg.locator('.dv-card').count() == 0:
+            loi.append(f'Đăng nhập: sau khi submit không sang #/chon-don-vi (URL: {pg.url})')
 
         # 4. Nếu có màn chọn đơn vị thì chọn đơn vị đầu tiên
         if pg.locator('.dv-card').count() > 0:
@@ -5528,7 +5663,7 @@ def main():
         # Màn ngoài app
         for path in ['/dang-nhap', '/quen-mat-khau', '/chon-don-vi', '/khoi-tao']:
             vao(path, 'PR')
-            if not pg.locator('h2').count():
+            if not pg.locator('h1, h2').count():
                 loi.append(f'{path}: trắng trang')
             if con:
                 loi.append(f'{path}: lỗi console {con[:2]}')
