@@ -1109,3 +1109,5 @@ PhuongXT chọn khi làm T761, chưa hỏi Trum. Bổ sung T723, T724.
 - Thêm mới và sửa dùng chung một form toàn màn. Bấm một dòng mở form với mọi dòng cùng mã bảng giá, dòng vừa bấm tô nhẹ. Sửa không đổi được loại giá. Xoá xoá cả bảng giá.
 - Lưới Chi tiết giá có phễu lọc dòng như bảng chi tiết phiếu mua hàng (T383): bấm phễu hiện hàng ô lọc dưới tiêu đề cột, tắt phễu thì bỏ lọc.
 - Một mặt hàng đã có giá ở bảng giá khác đang dùng, cùng loại, cùng nhà cung cấp hoặc khách hàng, cùng ĐVT, giao thời gian và cửa hàng: hỏi lại, vẫn cho lưu. Khi lấy giá, bảng bắt đầu muộn hơn được ưu tiên. Điểm này chờ Trum chốt.
+
+## QD102. Xuất hoá đơn điện tử từ chứng từ bán hàng (đang soạn)
