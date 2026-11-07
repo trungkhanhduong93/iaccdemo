@@ -135,7 +135,7 @@ function khachMacDinh(r: Row): TtKhach {
 const thieuKhach = (k: TtKhach): string | null => k.loai === 'cty'
   ? (!k.tenDv.trim() ? 'Thiếu tên đơn vị' : !k.diaChi.trim() ? 'Thiếu địa chỉ' : null)
   : (!k.tenNm.trim() ? 'Thiếu tên người mua' : null)
-const tenMua = (k: TtKhach) => (k.loai === 'cty' ? k.tenDv : k.tenNm)
+const tenCty = (k: TtKhach) => (k.loai === 'cty' ? k.tenDv : '')
 
 /** Cấu hình dùng khi phát hành: bản mẫu luôn giả lập đã khai báo đủ, đã kết nối (T763) */
 function cauHinhPhatHanh(s: Session): CauHinhHddt {
@@ -340,12 +340,13 @@ function HopHangLoat({ s, man, ds, boQua, onDong }: { s: Session; man: string; d
           </Note>
         )}
         <div className="hddt-ds hddt-kq">
-          <div className="hddt-dong hddt-dau"><span>Số chứng từ</span><span>Người mua</span><span>Tổng tiền</span><span>Kết quả</span></div>
+          <div className="hddt-dong hddt-dau"><span>Số chứng từ</span><span>Công ty</span><span>Người mua</span><span>Tổng tiền</span><span>Kết quả</span></div>
           {dsKq.map(r => {
             const x = kq[id(r)]
+            const k = kh[id(r)]
             return (
               <div key={id(r)} className="hddt-dong">
-                <span className="code">{r.so}</span><span title={tenMua(kh[id(r)])}>{tenMua(kh[id(r)])}</span>
+                <span className="code">{r.so}</span><span title={tenCty(k)}>{tenCty(k)}</span><span title={k.tenNm}>{k.tenNm}</span>
                 <span className="num">{money(Number(r.tong) || 0)}</span>
                 {x.hd ? <span className="ph-ok" title={`Mã cơ quan thuế ${x.hd.ma}`}>Đã phát hành {tenHd(x.hd)}</span>
                   : <span className="ph-loi" title={x.loi}>{x.loi}</span>}
@@ -375,7 +376,7 @@ function HopHangLoat({ s, man, ds, boQua, onDong }: { s: Session; man: string; d
       <div className="hddt-ds hddt-lo">
         <div className="hddt-dong hddt-dau">
           <span><input type="checkbox" aria-label="Chọn tất cả" checked={tatCa} onChange={() => setBo(tatCa ? new Set(ds.map(id)) : new Set())} /></span>
-          <span>Số chứng từ</span><span>Người mua</span><span>Loại</span><span>MST/CCCD</span><span>Ký hiệu</span><span className="num">Tổng tiền</span><span>Kiểm tra</span>
+          <span>Số chứng từ</span><span>Loại</span><span>Công ty</span><span>Người mua</span><span>MST/CCCD</span><span>Ký hiệu</span><span className="num">Tổng tiền</span><span>Kiểm tra</span>
         </div>
         {ds.map(r => {
           const k = kh[id(r)]
@@ -386,8 +387,10 @@ function HopHangLoat({ s, man, ds, boQua, onDong }: { s: Session; man: string; d
               <span><input type="checkbox" aria-label={`Chọn ${r.so}`} checked={!boChon}
                 onChange={() => setBo(x => { const n = new Set(x); if (n.has(id(r))) n.delete(id(r)); else n.add(id(r)); return n })} /></span>
               <span className="code">{r.so}</span>
-              <span title={tenMua(k)}>{tenMua(k) || <span className="dim">Chưa có</span>}</span>
               <span>{k.loai === 'cty' ? 'Công ty' : 'Cá nhân'}</span>
+              {/* Công ty là tên đơn vị trên hoá đơn, chỉ có khi loại Công ty; Người mua là người giao dịch */}
+              <span title={tenCty(k)}>{k.loai === 'cty' ? (k.tenDv || <span className="dim">Chưa có</span>) : ''}</span>
+              <span title={k.tenNm}>{k.tenNm || (k.loai === 'cn' ? <span className="dim">Chưa có</span> : '')}</span>
               <span className="code">{(k.loai === 'cty' ? k.mst : k.cccd) || ''}</span>
               <span className="code">{mau}{kyHieuCua(h, r)}</span>
               <span className="num">{money(Number(r.tong) || 0)}</span>
@@ -399,7 +402,7 @@ function HopHangLoat({ s, man, ds, boQua, onDong }: { s: Session; man: string; d
           )
         })}
         <div className="hddt-dong hddt-cong">
-          <span /><span>Cộng</span><span /><span /><span /><span />
+          <span /><span>Cộng</span><span /><span /><span /><span /><span />
           <span className="num">{money(cong(sanSang))}</span><span />
         </div>
       </div>

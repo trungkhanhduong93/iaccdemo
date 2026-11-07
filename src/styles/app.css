@@ -45736,12 +45736,12 @@ body:has(.ctpl-form) .pn-hop {
 .ph-ok { color: var(--green); }
 .ph-loi { color: var(--red); }
 .ph-kt { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-.hddt-hop.rong { width: 1000px; }
+.hddt-hop.rong { width: 1080px; }
 .hddt-lo, .hddt-kq { max-height: 360px; }
-.hddt-lo .hddt-dong { grid-template-columns: 24px 130px minmax(160px, 1fr) 70px 110px 80px 110px 160px; align-items: center; min-width: 900px; }
+.hddt-lo .hddt-dong { grid-template-columns: 24px 120px 70px minmax(150px, 1.2fr) minmax(110px, 1fr) 110px 80px 110px 160px; align-items: center; min-width: 1000px; }
 .hddt-lo .hddt-dong.bo > span:not(:first-child) { opacity: .5; }
 .hddt-lo input[type="checkbox"] { margin: 0; cursor: pointer; }
-.hddt-kq .hddt-dong { grid-template-columns: 130px minmax(160px, 1fr) 110px minmax(240px, 1.2fr); min-width: 700px; }
+.hddt-kq .hddt-dong { grid-template-columns: 120px minmax(150px, 1.2fr) minmax(110px, 1fr) 110px minmax(240px, 1.2fr); min-width: 800px; }
 .ph-tien { display: flex; flex-direction: column; gap: 8px; font-size: 13.5px; color: var(--ink); }
 .ph-thanh { height: 8px; border-radius: 4px; background: var(--soft); overflow: hidden; }
 .ph-thanh i { display: block; height: 100%; background: var(--blue); transition: width .25s; }

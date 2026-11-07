@@ -6,9 +6,9 @@
 
 ## Đã làm
 
-- `src/modules/ban-hang/ChungTuBanHang.tsx`: danh sách gói Plus thêm cột Trạng thái phát hành (Chưa phát hành, Đã phát hành), dòng chưa phát hành có nút Phát hành mở popup một hoá đơn. Cột Hoá đơn điện tử đổi tên thành Số hoá đơn, chỉ hiện số khi đã phát hành. Nút thanh công cụ đổi chữ thành "Phát hành HĐĐT (n)".
+- `src/modules/ban-hang/ChungTuBanHang.tsx`: danh sách gói Plus thêm cột Trạng thái phát hành (Chưa phát hành, Đã phát hành), dòng chưa phát hành có nút Phát hành mở popup một hoá đơn. Theo ý PhuongXT, cột này nằm sau Tổng tiền, cố định bên phải cùng Tổng tiền, chỉ hiện ở tab Bán hàng (tab Tất cả, Xuất bán POS không có). Cột Hoá đơn điện tử đổi tên thành Số hoá đơn, chỉ hiện số khi đã phát hành. Nút thanh công cụ đổi chữ thành "Phát hành HĐĐT (n)". Nút này và cột tích chọn chỉ có ở tab Bán hàng; đổi tab thì bỏ chọn. Cột Số hoá đơn hiện ở cả ba tab.
 - `src/modules/ban-hang/hddt.tsx`: tách `khachMacDinh`, `thieuKhach`, `ghiHd`, `FormKhach`, khung `Vo` để popup một hoá đơn và hàng loạt dùng chung. `HopXuatHddt` giữ danh sách lúc mở. Còn 1 chứng từ phát hành được thì vào `HopMot` (form như ở chi tiết), từ 2 trở lên vào `HopHangLoat`.
-- `HopHangLoat`: bước kiểm tra (ngày hoá đơn chung, bảng người mua, loại, MST/CCCD, ký hiệu theo cửa hàng, tổng tiền, cột Kiểm tra, nút Sửa mở form người mua của dòng đó, bỏ chọn để phát hành sau). Bấm phát hành thì gửi từng hoá đơn, có thanh tiến trình. Gửi xong hiện bảng kết quả từng dòng và nút "Phát hành lại n dòng lỗi".
+- `HopHangLoat`: bước kiểm tra (ngày hoá đơn chung; bảng gồm loại, Công ty (tên đơn vị, chỉ có khi loại Công ty), Người mua (người giao dịch), MST/CCCD, ký hiệu theo cửa hàng, tổng tiền, cột Kiểm tra, nút Sửa mở form người mua của dòng đó, bỏ chọn để phát hành sau). Bấm phát hành thì gửi từng hoá đơn, có thanh tiến trình. Gửi xong hiện bảng kết quả từng dòng và nút "Phát hành lại n dòng lỗi".
 - Giả lập lỗi: lượt từ 3 hoá đơn trở lên thì hoá đơn cuối bị nhà cung cấp trả lỗi một lần (mỗi lần mở popup), gửi lại thì được. Mục đích là demo được dòng lỗi.
 - Cuối `src/styles/app.css`: mục T765.
 
