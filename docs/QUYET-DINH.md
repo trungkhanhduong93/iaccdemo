@@ -1141,3 +1141,5 @@ Trum chốt mẫu C2 trên https://claude.ai/artifact/2pJtBkB9goLCgmgUwAMnPt (T7
 - Nền sáng `#e9f1f9` lấy từ thiết kế video IVT: khối nghiêng góc trên trái, vòng cam góc dưới phải, lưới ô bo góc chỉ hiện ở rìa.
 - Không dùng hiệu ứng chuyển động nền (tia quét, chấm chạy, hình nhấp nhô), không ghi nhãn chữ hay số trang trên cột trái.
 - Chữ slide canh giữa dưới hình. Nút trước, sau tròn, đặt hai bên các chấm.
+
+## QD105. Nút chọn ngôn ngữ ở trang đăng nhập (đang soạn)
