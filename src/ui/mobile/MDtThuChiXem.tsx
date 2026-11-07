@@ -67,6 +67,8 @@ export const MDtThuChiXem: FC<MDtThuChiXemProps> = ({
   const isChi = row.loai === 'chi' || row.loai === 'unc'
   const isThu = row.loai === 'thu' || row.loai === 'bc'
   const isCq = row.loai === 'cq'
+  // Phiếu chuyển quỹ mẫu nhiều cái không ghi lý do, vẫn hiện dòng Lý do
+  const lyDoHien = triLyDo || (isCq ? 'Chuyển quỹ' : '')
 
   const tenLoaiPhieu = row.tenLoai
     ? String(row.tenLoai)
@@ -227,13 +229,13 @@ export const MDtThuChiXem: FC<MDtThuChiXemProps> = ({
                 </>
               )}
 
-              {triLyDo && (
+              {lyDoHien && (
                 <>
                   <div className="m-tc-dong-thong-tin">
                     <span className="nhan">{isChi ? 'Lý do chi' : isCq ? 'Lý do' : 'Lý do thu'}</span>
                     <span className="tri ly-do-wrap">
-                      <span>{triLyDo}</span>
-                      {isChi && laLyChiPhi(triLyDo, s) && <span className="m-tc-badge-nhom-cp">Chi phí</span>}
+                      <span>{lyDoHien}</span>
+                      {isChi && laLyChiPhi(lyDoHien, s) && <span className="m-tc-badge-nhom-cp">Chi phí</span>}
                     </span>
                   </div>
                   <div className="m-tc-vach-ngang" />

@@ -8,6 +8,7 @@
 
 - `src/ui/mobile/MDtThuChiXem.tsx`: phiếu chuyển quỹ (`isCq`) ẩn dòng Địa chỉ và Tháng ghi nhận chi phí. Phiếu thu, phiếu chi giữ nguyên.
 - Cùng file: nhãn lý do của phiếu chuyển quỹ đổi từ "Lý do thu" thành "Lý do".
+- Cùng file: phiếu chuyển quỹ mẫu không ghi lý do (không có `_lyDo`, dòng không có `ly`, `doanLyDoThuChi` trả rỗng với `cq`) nên dòng Lý do bị ẩn. Giờ luôn hiện, thiếu thì ghi "Chuyển quỹ".
 
 ## Đã kiểm
 
@@ -19,7 +20,7 @@
 
 ## Dở dang, việc tiếp theo
 
-- Không.
+- Form lập phiếu chuyển quỹ điện thoại (`MDtThuChiLap.tsx` dòng 785) vẫn ghi "Lý do thu". Chưa đổi vì Trum đang giữ file này ở T552.
 
 ## Bẫy, quyết định mới
 
