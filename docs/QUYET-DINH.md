@@ -1099,3 +1099,5 @@ Trum chốt khi làm T760, chọn trên artifact https://claude.ai/artifact/6uTU
 - Đổi đơn vị tính nguyên vật liệu trong form giữ nguyên số lượng, không tự quy đổi. Đã cân nhắc tự quy đổi theo danh mục Quy đổi ĐVT và loại: người dùng tự nhập lại số.
 - Trong form, đơn vị tính sản phẩm và nguyên vật liệu hiện cả mã và tên, ở ô và khi thả xuống. Hàng chỉ có 1 đơn vị, không có quy đổi, vẫn là ô chọn, không khoá.
 - Phiếu sản xuất vẫn đọc dữ liệu mẫu theo đơn vị chính, chưa dùng đơn vị đổi trong form.
+
+## QD101. Bảng giá gom theo lần khai giá (đang soạn)
