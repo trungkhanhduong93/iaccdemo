@@ -1122,3 +1122,5 @@ PhuongXT chọn khi làm T763, chưa hỏi Trum.
 - Bản mẫu chưa có kết nối thật: popup luôn coi như đã kết nối, giữ nhà cung cấp, ký hiệu đã lưu ở Cấu hình kế toán.
 - Phát hành xong, ô Số hoá đơn, Ký hiệu (mẫu số + ký hiệu), Ngày hoá đơn ở đầu phiếu đổi theo hoá đơn vừa phát hành; xuất một chứng từ thì MST, địa chỉ người mua cũng đổi theo popup.
 - Bản mẫu giả lập đơn vị đã khai báo đủ, đã kết nối (VNPT Invoice, ký hiệu C26TAA, C26TAB, C26TAC); khách công ty có sẵn địa chỉ, email nhận hoá đơn, bấm Xuất hoá đơn điện tử là thấy ngay màn phát hành.
+
+## QD103. Trang đăng nhập theo iFaster (đang soạn)

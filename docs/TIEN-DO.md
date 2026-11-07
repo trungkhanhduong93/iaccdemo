@@ -11,6 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T769 | Trang đăng nhập, quên mật khẩu theo iFaster (mẫu https://claude.ai/artifact/2pJtBkB9goLCgmgUwAMnPt): cột trái slider 4 ảnh màn thật, thanh logo, khung nhắc tài khoản FABi, Nhớ đăng nhập, Thử mở từ FABi, Đăng ký sử dụng ngay | Trum | Đang làm | Sửa `Login.tsx`, cuối `app.css` (mục T769), `tools/kiem_tra.py`; thêm `src/assets/dang-nhap/` |
 | T766 | Điện thoại, phiếu chi lý do CHI02 Thanh toán công nợ nhà cung cấp hiện Nợ 242 Có 1111, cần xem lại vì trả nợ nhà cung cấp thường ghi Nợ 331 | | Chờ | Thấy lúc làm T764, `MDtThuChiLap.tsx`, `tkTheoLyDo` |
 | T734 | Điện thoại, lập phiếu thu chi gói Plus như Standard (tiếp T733): lưu là ghi sổ luôn, bỏ khối hạch toán và `tkNo`, `tkCo`, có chi trả nợ nhà cung cấp | | Chờ | `MDtThuChiLap.tsx` đang trong T552 của Trum, hỏi Trum trước. Đổi `s.goi === 'S'` sang `tcNhuStandard(s.goi)`. Xem nhật ký `2026-11-04-phuongxt-thu-chi-plus-nhu-standard.md` |
 | T696 | `kiem_tra.py --dien-thoai` dừng ở đợt 5 (lập phiếu): chờ 30 giây không thấy `.m-xp-nut-menu` nên không chạy tới các đợt sau | | Chờ | Thấy lúc nghiệm thu T695. Nút có trong `src/ui/mobile/MDtThuChiXem.tsx:341`, xem `tools/kiem_tra.py:642`. Đợt 11A chạy riêng vẫn qua |
