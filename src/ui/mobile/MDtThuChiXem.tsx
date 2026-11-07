@@ -164,13 +164,14 @@ export const MDtThuChiXem: FC<MDtThuChiXemProps> = ({
               {isChi ? 'Quỹ tiền mặt *' : isThu ? 'Quỹ thu tiền *' : 'Từ quỹ *'}
             </span>
             <span className="m-tc-xem-quy-ten">{tuQuy}</span>
+            {/* Chuyển quỹ: Đến quỹ chung khung với Từ quỹ, kẻ ngăn giữa (T779) */}
+            {isCq && (
+              <>
+                <span className="m-tc-xem-quy-nhan m-tc-xem-den-quy">Đến quỹ *</span>
+                <span className="m-tc-xem-quy-ten">{denQuy}</span>
+              </>
+            )}
           </div>
-          {isCq && (
-            <div className="m-tc-xem-khoi-quy m-tc-xem-den-quy">
-              <span className="m-tc-xem-quy-nhan">Đến quỹ *</span>
-              <span className="m-tc-xem-quy-ten">{denQuy}</span>
-            </div>
-          )}
         </section>
 
         {/* 2. Segmented control 3 options */}

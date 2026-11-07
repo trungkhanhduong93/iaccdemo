@@ -5,7 +5,7 @@ Người làm: dinhlanphuongipacc, 08/11/2026.
 ## Đã làm
 
 - `src/ui/generic/ChungTuForm.tsx`: phiếu chuyển quỹ lưu `_tuQuy`, `_denQuy`; mở lại phiếu đọc hai trường này, chưa có thì suy như cũ (rút tiền đi từ ngân hàng về quỹ tiền mặt, còn lại từ quỹ tiền mặt cửa hàng sang tài khoản ngân hàng đầu).
-- `src/ui/mobile/MDtThuChiXem.tsx`: màn xem phiếu chuyển quỹ thêm khối Đến quỹ dưới Từ quỹ, cùng luật suy với máy tính. Không sửa `MXemPhieu.tsx` (Trum giữ ở T552).
+- `src/ui/mobile/MDtThuChiXem.tsx`: màn xem phiếu chuyển quỹ hiện Đến quỹ trong cùng khung với Từ quỹ, kẻ gạch ngăn giữa (cuối `app.css`, mục T779), cùng luật suy với máy tính. Không sửa `MXemPhieu.tsx` (Trum giữ ở T552).
 
 ## Đã kiểm
 

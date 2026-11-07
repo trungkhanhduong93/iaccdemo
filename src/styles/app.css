@@ -47471,3 +47471,10 @@ table.ds-gv {
   opacity: 0.4;
   cursor: not-allowed;
 }
+
+/* ── T779: xem phiếu chuyển quỹ điện thoại, Đến quỹ chung khung với Từ quỹ ── */
+.m-tc-xem-den-quy {
+  margin-top: 6px;
+  padding-top: 8px;
+  border-top: 1px dashed #e2e8f0;
+}

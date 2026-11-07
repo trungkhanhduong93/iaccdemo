@@ -3,7 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 08/11/2026
-- T779: Phiếu chuyển quỹ lưu đúng Từ quỹ, Đến quỹ đã chọn, mở lại không còn về quỹ mặc định. Màn xem phiếu chuyển quỹ trên điện thoại có thêm ô Đến quỹ dưới Từ quỹ.
+- T779: Phiếu chuyển quỹ lưu đúng Từ quỹ, Đến quỹ đã chọn, mở lại không còn về quỹ mặc định. Màn xem phiếu chuyển quỹ trên điện thoại hiện Từ quỹ và Đến quỹ trong cùng một khung.
 
 ## 07/11/2026
 - T778: Icon trên tab trình duyệt và dấu logo ở góc sidebar đổi sang logo mới: tờ chứng từ, đồng tiền, máy tính, sao vàng, dải xanh iPOS.vn.
