@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 07/11/2026
+- T777: Trang đăng nhập, slide 4 đổi sang hình nhóm lập ngân sách bên máy tính bỏ túi, cùng tone xanh cam với 3 slide kia.
 - T775: Điện thoại, xem phiếu chuyển quỹ không còn dòng Địa chỉ và Tháng ghi nhận chi phí; nhãn "Lý do thu" đổi thành "Lý do".
 - T774: Trang đăng nhập có chữ giới thiệu mới ở slide 1, 2, 4 và nút chọn ngôn ngữ có cờ ở góc phải (Tiếng Việt, English, 한국어, 中文). Bản mẫu chưa dịch, chọn ngôn ngữ chỉ đổi cờ.
 - T773: Trang đăng nhập, hình minh hoạ cột trái to theo bề ngang cột và chiều cao màn, không còn nhỏ trên màn rộng.

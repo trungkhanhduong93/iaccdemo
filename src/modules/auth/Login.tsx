@@ -31,7 +31,7 @@ const SLIDES = [
   },
   {
     img: slide4,
-    alt: 'Minh hoạ nhân viên kiểm hàng trong kho',
+    alt: 'Minh hoạ nhóm lập ngân sách bên máy tính bỏ túi',
     tieuDe: 'Quản trị kho hàng chuyên biệt cho F&B',
     moTa: 'Nhập, xuất, chế biến, điều chuyển, kiểm kê theo từng kho. Tất cả nghiệp vụ đều thiết kế riêng cho kế toán ngành F&B.',
   },

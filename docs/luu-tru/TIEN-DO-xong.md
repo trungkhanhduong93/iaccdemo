@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T777 | Trang đăng nhập: thay hình slide 4 bằng hình lập ngân sách, đổi tone xanh cam như 3 slide kia (`slide-4.webp`, `Login.tsx`) | Trum | 07/11/2026 | 2026-11-07-trum-slide-4-ngan-sach.md |
 | T775 | Điện thoại, xem phiếu chuyển quỹ: bỏ dòng Địa chỉ, Tháng ghi nhận chi phí; nhãn Lý do thu đổi thành Lý do (`MDtThuChiXem.tsx`) | dinhlanphuongipacc | 07/11/2026 | 2026-11-07-dinhlanphuongipacc-xem-phieu-chuyen-quy.md |
 | T774 | Trang đăng nhập: chữ slide 1, 2, 4 mới; nút chọn ngôn ngữ có cờ (Tiếng Việt, English, 한국어, 中文) góc phải thanh logo, chưa dịch | Trum | 07/11/2026 | 2026-11-07-trum-dang-nhap-ngon-ngu.md |
 | T773 | Trang đăng nhập: hình minh hoạ cột trái co giãn theo cột và chiều cao màn (tối đa 680px, giữ tỉ lệ khung 496:300), hết nhỏ trên màn rộng | Trum | 07/11/2026 | 2026-11-07-trum-dang-nhap-hinh-to.md |
