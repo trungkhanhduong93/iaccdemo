@@ -1,7 +1,6 @@
 // Xuất hoá đơn điện tử từ chứng từ bán hàng lập tay gói Plus (T763): thiết lập ở Cấu hình kế toán, popup xem trước rồi phát hành
 import { useState } from 'react'
 import { createPortal } from 'react-dom'
-import { Link } from 'react-router-dom'
 import type { Row } from '../types'
 import { gtgtTyLe, type Session } from '../../app/session'
 import { CUA_HANG, HOM_NAY, KHACH } from '../../data/mock'
@@ -30,7 +29,8 @@ const kyHieuMacDinh = (i: number) => `C${String(HOM_NAY.getFullYear()).slice(2)}
 
 export function cauHinhHddt(s: Session): CauHinhHddt {
   const da = s.hddt?.[s.donVi]
-  const goc: CauHinhHddt = { bat: false, ncc: NCC_HDDT[0], tk: '', mk: '', daKetNoi: false, kyHieu: {}, guiEmail: true }
+  // Bản mẫu giả lập đơn vị đã khai báo, kết nối xong để demo bấm Xuất hoá đơn điện tử là thấy màn phát hành (T763)
+  const goc: CauHinhHddt = { bat: true, ncc: NCC_HDDT[0], tk: 'phomay_hddt', mk: 'matkhau-mau', daKetNoi: true, kyHieu: {}, guiEmail: true }
   const ch = { ...goc, ...da }
   return { ...ch, kyHieu: Object.fromEntries(CUA_HANG.map((c, i) => [c.id, ch.kyHieu[c.id] ?? kyHieuMacDinh(i)])) }
 }
@@ -102,20 +102,31 @@ export interface HdDaXuat { mau: string; kyHieu: string; so: string; ngay: strin
 export const hdCua = (r: Row) => r._hd as HdDaXuat | undefined
 export const tenHd = (h: HdDaXuat) => `${h.mau}${h.kyHieu} số ${h.so}`
 
+/** Địa chỉ, email nhận hoá đơn của khách công ty (dữ liệu giả); khách lẻ để trống */
+const NGUOI_MUA: Record<string, [string, string]> = {
+  KH001: ['25 Nguyễn Thị Minh Khai, phường Sài Gòn, TP.HCM', 'ketoan@saoviet.vn'],
+  KH002: ['118 Trần Phú, phường Nha Trang, Khánh Hoà', 'hoadon@bienxanh.vn'],
+  KH003: ['9 Hạ Long, phường Hồng Gai, Quảng Ninh', 'vp@halongtech.vn'],
+  KH004: ['42 Võ Văn Tần, phường Xuân Hoà, TP.HCM', 'ketoan@anhduong-event.vn'],
+  GRAB: ['268 Tô Hiến Thành, phường Diên Hồng, TP.HCM', 'hoadon.grabfood@iacc-demo.vn'],
+}
+
 let soHdCuoi = 128   // số hoá đơn đã cấp trong phiên, tăng dần như nhà cung cấp trả về
 const maCqt = (i: number) => `M${String(HOM_NAY.getFullYear()).slice(2)}-${(0x3a7f21 + i * 7919).toString(16).toUpperCase()}`
 
 /** Popup xuất hoá đơn điện tử: một chứng từ (sửa được thông tin người mua) hoặc nhiều chứng từ đã chọn ở danh sách */
 export function HopXuatHddt({ s, man, ds, onDong, toast }: { s: Session; man: string; ds: Row[]; onDong: () => void; toast: (m: string) => void }) {
   useDongEsc(onDong)
-  const h = cauHinhHddt(s)
+  // Bản mẫu luôn giả lập đã khai báo đủ, đã kết nối: giữ nhà cung cấp, ký hiệu đã lưu, thiếu gì thì lấy giá trị mẫu (T763)
+  const daLuu = cauHinhHddt(s)
+  const h: CauHinhHddt = { ...daLuu, bat: true, daKetNoi: true, tk: daLuu.tk || 'phomay_hddt', mk: daLuu.mk || 'matkhau-mau' }
   const mau = mauSoHd(s)
   const duoc = ds.filter(r => r.nguon !== 'FABi' && !hdCua(r))
   const boQua = ds.length - duoc.length
   const mot = ds.length === 1 && duoc.length === 1 ? duoc[0] : undefined
   const kh = mot ? KHACH.find(k => k.ten === mot.doiTuong) : undefined
-  const [nm, setNm] = useState({ ten: String(mot?.doiTuong ?? ''), mst: kh?.mst ?? '', diaChi: '', email: '' })
-  const chuaSan = !h.bat || !h.daKetNoi
+  const tt = kh ? NGUOI_MUA[kh.ma] : undefined
+  const [nm, setNm] = useState({ ten: String(mot?.doiTuong ?? ''), mst: kh?.mst ?? '', diaChi: tt?.[0] ?? '', email: tt?.[1] ?? '' })
   const kyHieuCua = (r: Row) => h.kyHieu[String(r._cnId ?? '')] ?? Object.values(h.kyHieu)[0]
   const phatHanh = () => {
     const ngay = dmy(HOM_NAY)
@@ -133,9 +144,7 @@ export function HopXuatHddt({ s, man, ds, onDong, toast }: { s: Session; man: st
       <div className="ds-hop hddt-hop" role="dialog" aria-modal="true" aria-label="Xuất hoá đơn điện tử">
         <div className="ds-hop-dau"><b>Xuất hoá đơn điện tử</b></div>
         <div className="hddt-than">
-          {chuaSan ? (
-            <Note kind="warn">{!h.bat ? 'Đơn vị chưa bật xuất hoá đơn điện tử.' : `Chưa kiểm tra kết nối ${h.ncc}.`} Vào <Link to="/app/he-thong/cau-hinh" onClick={onDong}>Cấu hình kế toán</Link> để thiết lập.</Note>
-          ) : !duoc.length ? (
+          {!duoc.length ? (
             <Note kind="warn">Các chứng từ đã chọn đều đã có hoá đơn hoặc là hoá đơn FABi xuất tại máy POS.</Note>
           ) : <>
             <div className="hddt-tt">
@@ -168,8 +177,8 @@ export function HopXuatHddt({ s, man, ds, onDong, toast }: { s: Session; man: st
         </div>
         <div className="ds-chan">
           <span className="grow" />
-          <button type="button" className="btn" onClick={onDong}>{chuaSan || !duoc.length ? 'Đóng' : 'Huỷ'}</button>
-          {!chuaSan && duoc.length > 0 && <button type="button" className="btn pri" autoFocus onClick={phatHanh}>Phát hành</button>}
+          <button type="button" className="btn" onClick={onDong}>{!duoc.length ? 'Đóng' : 'Huỷ'}</button>
+          {duoc.length > 0 && <button type="button" className="btn pri" autoFocus onClick={phatHanh}>Phát hành</button>}
         </div>
       </div>
     </div>,

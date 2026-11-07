@@ -1118,4 +1118,5 @@ PhuongXT chọn khi làm T763, chưa hỏi Trum.
 - Loại hoá đơn tự theo phương pháp thuế: GTGT khấu trừ dùng hoá đơn GTGT mẫu số 1, hộ kinh doanh và doanh nghiệp GTGT theo % doanh thu dùng hoá đơn bán hàng mẫu số 2.
 - Chỉ chứng từ bán hàng lập tay, nhập Excel xuất hoá đơn ở phần mềm kế toán. Hoá đơn FABi đã xuất tại máy POS, không có nút xuất.
 - Bấm Xuất hoá đơn điện tử mở popup xem trước: một chứng từ thì sửa được tên, MST, địa chỉ, email người mua; nhiều chứng từ chọn ở danh sách thì mỗi chứng từ một hoá đơn, bỏ qua chứng từ đã có hoá đơn hoặc từ FABi. Bấm Phát hành thì chứng từ có ký hiệu, số hoá đơn, mã cơ quan thuế.
-- Chưa bật hoặc chưa kiểm tra kết nối thì popup báo và dẫn về Cấu hình kế toán.
+- Bản mẫu chưa có kết nối thật: popup luôn coi như đã kết nối, giữ nhà cung cấp, ký hiệu đã lưu ở Cấu hình kế toán.
+- Bản mẫu giả lập đơn vị đã khai báo đủ, đã kết nối (VNPT Invoice, ký hiệu C26TAA, C26TAB, C26TAC); khách công ty có sẵn địa chỉ, email nhận hoá đơn, bấm Xuất hoá đơn điện tử là thấy ngay màn phát hành.
