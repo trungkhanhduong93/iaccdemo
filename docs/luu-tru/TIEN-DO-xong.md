@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T778 | Favicon và dấu logo vuông ở sidebar đổi sang logo ACC iPOS, logo chữ ngang giữ nguyên (`favicon.png`, `acc-dau.webp`) | Trum | 07/11/2026 | 2026-11-07-trum-logo-vuong.md |
 | T777 | Trang đăng nhập: thay hình slide 4 bằng hình lập ngân sách, đổi tone xanh cam như 3 slide kia (`slide-4.webp`, `Login.tsx`) | Trum | 07/11/2026 | 2026-11-07-trum-slide-4-ngan-sach.md |
 | T775 | Điện thoại, xem phiếu chuyển quỹ: bỏ dòng Địa chỉ, Tháng ghi nhận chi phí; nhãn Lý do thu đổi thành Lý do (`MDtThuChiXem.tsx`) | dinhlanphuongipacc | 07/11/2026 | 2026-11-07-dinhlanphuongipacc-xem-phieu-chuyen-quy.md |
 | T774 | Trang đăng nhập: chữ slide 1, 2, 4 mới; nút chọn ngôn ngữ có cờ (Tiếng Việt, English, 한국어, 中文) góc phải thanh logo, chưa dịch | Trum | 07/11/2026 | 2026-11-07-trum-dang-nhap-ngon-ngu.md |

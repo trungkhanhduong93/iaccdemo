@@ -11,7 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T778 | Đổi favicon và dấu logo vuông ở sidebar sang logo ACC iPOS (tờ chứng từ, đồng tiền, máy tính, sao vàng). Logo chữ ngang giữ nguyên | Trum | Đang làm | Sửa `public/favicon.png`, `src/assets/acc-dau.webp`, chú thích `src/ui/Logo.tsx` |
 | T776 | Màn Tính giá vốn: sang trang 2 thì dòng "Cộng 51 dòng" mất đường kẻ dưới, dưới dòng tổng còn khoảng trống trong bảng, dưới khung bảng còn khoảng trống xám | | Chờ | Trum báo lúc làm T774, ảnh chụp ở trang 2, tháng 10/2026 |
 | T771 | `tools/kiem_tra.py` ca đăng nhập đợt 8 (hàm `kiem_tra_dang_nhap_dot_8`) báo "Nghiệp vụ: không tìm thấy phân hệ Thu chi" ở màn 390px | | Chờ | Thấy lúc làm T769, bản trước T769 cũng báo. Ca này không nằm trong `--nhanh` |
 | T766 | Điện thoại, phiếu chi lý do CHI02 Thanh toán công nợ nhà cung cấp hiện Nợ 242 Có 1111, cần xem lại vì trả nợ nhà cung cấp thường ghi Nợ 331 | | Chờ | Thấy lúc làm T764, `MDtThuChiLap.tsx`, `tkTheoLyDo` |
