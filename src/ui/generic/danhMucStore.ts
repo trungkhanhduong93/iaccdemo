@@ -105,6 +105,12 @@ export function addCatalogRow(dm: string, row: Row) {
   emitChange()
 }
 
+/** Đưa dữ liệu mẫu vào kho phiên một lần, để sửa, xoá được như dòng thêm mới (vd Bảng giá, T761) */
+export function gieoCatalogRows(dm: string, rows: Row[]) {
+  const normKey = chieuKhoa(dm)
+  if (!daThemRows.has(normKey)) daThemRows.set(normKey, rows)
+}
+
 /** Sửa, xoá dòng đã thêm trong phiên theo mã, vd lý do nghiệp vụ thủ công (T708); dòng có sẵn không đổi */
 export function suaCatalogRow(dm: string, ma: unknown, row: Row | null) {
   const normKey = chieuKhoa(dm)

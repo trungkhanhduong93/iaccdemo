@@ -161,6 +161,7 @@ export function CatalogScreen({ sc }: ScreenProps) {
   const [tichLoc, setTichLoc] = useState(thamDau.get('tich') === '1' || (cfg.tich?.macDinh ?? false))
   const [moHangLoat, setMoHangLoat] = useState(false)
   const [moFormThem, setMoFormThem] = useState(false)   // form thêm riêng của màn (cfg.formThem, T723)
+  const [suaFormThem, setSuaFormThem] = useState<Row | null>(null)   // dòng đang sửa bằng form thêm riêng
   const khoaXoa = (r: Row) => String(cfg.dsChungTu?.cotSo ? r[cfg.dsChungTu.cotSo] : khoaDong(r))
 
   // Các cột lọc nâng cao của riêng từng danh mục
@@ -254,9 +255,11 @@ export function CatalogScreen({ sc }: ScreenProps) {
   const [dienSan, setDienSan] = useState<Row | undefined>(undefined)
   // Bấm dòng: gán luôn giá trị form cùng lượt vẽ, không đợi useEffect vẽ lần hai
   const moSua = useCallback((r: Row | null, kieu?: string, them?: Row) => {
+    // Màn có form thêm riêng: bấm dòng mở form đó để sửa, cùng bố cục với Thêm mới (vd Bảng giá)
+    if (cfg.formThem && r && !kieu && Object.keys(r).length) { setSuaFormThem(r); setMoFormThem(true); return }
     setEdit(r ? (kieu ? { ...r, _kieu: kieu } : r) : {})
     setDienSan(them)
-  }, [])
+  }, [cfg.formThem])
   // STT đánh lại theo dòng đang hiện sau tìm, lọc
   const rowsHien = useMemo((): Row[] => cfg.stt ? rows.map((r, i) => ({ ...r, _stt: i + 1 })) : rows, [rows, cfg.stt])
   // Kiểu danh sách chứng từ (dsChungTu): phân trang, dòng Tổng, chọn dòng xem chi tiết ở khung dưới như danh sách thu chi
@@ -638,7 +641,10 @@ export function CatalogScreen({ sc }: ScreenProps) {
       )}
       {quyVuaTao && <GoiYLapPhieu quy={quyVuaTao} onDong={() => setQuyVuaTao(null)} />}
       {moHangLoat && cfg.hangLoat && <cfg.hangLoat.Form soDong={all.length} rows={all} onDong={() => setMoHangLoat(false)} />}
-      {moFormThem && cfg.formThem && <cfg.formThem tab={tabGt || undefined} onDong={() => setMoFormThem(false)} />}
+      {moFormThem && cfg.formThem && (
+        <cfg.formThem tab={tabGt || undefined} sua={suaFormThem ?? undefined}
+          onDong={() => { setMoFormThem(false); setSuaFormThem(null) }} />
+      )}
     </div>
   )
 }

@@ -313,20 +313,18 @@ const danhMuc: ModuleDef = {
           return { ...datSoDuQuy(s, String(v.ma), du, chia), ...map }
         },
       } } },
-    // T154: bảng giá theo iFaster; giá nhập có nhà cung cấp, kho áp dụng để trống là mọi kho
-    // T723: Thêm mới mở form nhiều dòng (một khoảng thời gian, nhiều nhà cung cấp, nhiều mặt hàng); bấm dòng vẫn sửa từng dòng
-    // T724: 2 tab Giá nhập, Giá bán thay lọc Loại giá; Bộ lọc có Trạng thái, bỏ ĐVT, Đơn giá, VAT
-    '1.14': { catalog: { them: 'Thêm bảng giá', formThem: ThemBangGia, khongLoc: ['loai', 'dvt', 'gia', 'vat'],
+    // T154: bảng giá theo iFaster
+    // T723: Thêm mới mở form nhiều dòng (một khoảng thời gian, nhiều nhà cung cấp, nhiều mặt hàng)
+    // T724: 2 tab Giá nhập, Giá bán thay lọc Loại giá; Bộ lọc có Trạng thái
+    // T761: mỗi lần khai giá là một bảng giá có mã, tên, nhiều dòng mặt hàng; bấm dòng mở cùng form để sửa cả lưới.
+    // Dữ liệu mẫu gieo vào kho phiên (ThemBangGia.tsx) nên rows trả rỗng
+    '1.14': { catalog: { them: 'Thêm bảng giá', formThem: ThemBangGia, khongLoc: ['loai', 'soHang', 'hang'],
       tabTheo: { k: 'loai', ds: ['Giá nhập', 'Giá bán'], anCot: { 'Giá nhập': ['kh'], 'Giá bán': ['ncc'] } },
-      cols: [{ k: 'ten', t: 'Hàng hoá' }, { k: 'dvt', t: 'ĐVT' }, { k: 'thoiGian', t: 'Thời gian áp dụng', w: 200 }, { k: 'gia', t: 'Đơn giá', num: true },
-        { k: 'vat', t: 'VAT (%)', num: true }, { k: 'ncc', t: 'Nhà cung cấp', r: (r: Row) => r.ncc || '—' },
-        // T723: giá bán có khách hàng (trống là mọi khách hàng); áp dụng theo cửa hàng thay cho kho
-        { k: 'kh', t: 'Khách hàng', r: (r: Row) => r.loai === 'Giá bán' ? (r.kh || 'Tất cả khách hàng') : '—' }, { k: 'cuaHang', t: 'Cửa hàng áp dụng', r: (r: Row) => r.cuaHang || 'Tất cả cửa hàng' }],
-      rows: () => [
-        ...HANG.map(h => ({ loai: 'Giá bán', ten: h.ten, dvt: h.dvt, thoiGian: '01/09/2026 - 31/12/2026', gia: h.gia, vat: h.ts, ncc: '', kh: '', cuaHang: '' })),
-        ...NVL.slice(0, 8).map(h => ({ loai: 'Giá nhập', ten: h.ten, dvt: h.dvt, thoiGian: '01/10/2026 - 31/03/2027', gia: h.gia, vat: h.ts,
-          ncc: (NCC.find(n => n.nhom === h.nhom) ?? NCC[0]).ten, kh: '', cuaHang: '' })),
-      ] } },
+      cols: [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Tên bảng giá' }, { k: 'thoiGian', t: 'Thời gian áp dụng', w: 200 },
+        { k: 'soHang', t: 'Số mặt hàng', num: true }, { k: 'hang', t: 'Mặt hàng' },
+        { k: 'ncc', t: 'Nhà cung cấp', r: (r: Row) => r.ncc || '—' },
+        { k: 'kh', t: 'Khách hàng', r: (r: Row) => r.kh || 'Tất cả khách hàng' }, { k: 'cuaHang', t: 'Cửa hàng áp dụng', r: (r: Row) => r.cuaHang || 'Tất cả cửa hàng' }],
+      rows: () => [] } },
     '1.15': { cheDo: ['TT133', 'TT99'], catalog: { them: 'Thêm bút toán', nhomLoc: 'lct', nhanLoc: 'Loại chứng từ',
       cols: [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Nghiệp vụ' }, { k: 'lct', t: 'Loại chứng từ' }, { k: 'loc', t: 'Lọc theo', cls: 'dim' },
         { k: 'no', t: 'TK Nợ', cls: 'code', c: true }, { k: 'co', t: 'TK Có', cls: 'code', c: true }, { k: 'tien', t: 'Số tiền lấy từ', cls: 'dim' }],
