@@ -83,7 +83,7 @@ export function DsMaLoiGiaVon(props: {
               </colgroup>
               <thead>
                 <tr>
-                  <th className="stt">STT</th>
+                  <th className="tgv-stt">STT</th>
                   <th>Mã hàng</th>
                   <th>Tên hàng</th>
                   <th>Kho</th>
@@ -93,7 +93,7 @@ export function DsMaLoiGiaVon(props: {
               <tbody>
                 {ds.map((x, i) => (
                   <tr key={`${x.ma}-${x.kho}-${i}`}>
-                    <td className="stt">{i + 1}</td>
+                    <td className="tgv-stt">{i + 1}</td>
                     <td className="ma-hang">{x.ma}</td>
                     <td className="ten-hang">
                       <span className="cat2" title={x.hang}>

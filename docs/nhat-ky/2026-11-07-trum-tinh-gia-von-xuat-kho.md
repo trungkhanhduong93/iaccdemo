@@ -14,6 +14,7 @@
 - `src/modules/kho/tinh-gia-von/DsMaLoiGiaVon.tsx`: modal danh sách mã lỗi (Mã hàng, Tên hàng, Kho, Lý do lỗi), xuất Excel.
 - `src/modules/kho/index.ts`: dòng 5.1.7 đổi từ màn công cụ sang màn riêng.
 - `src/styles/app.css`: mục cuối T770. Đổi tên lớp worker đặt trùng lớp có sẵn: `.phu` thành `.tgv-phu`, `.hop` thành `.tgv-hop`, `.ct-goi-y` thành `.cthang-goi-y`; `.ds-hang-trang-thai` gói trong `.page-gia-von`.
+- Sửa sau khi push: cột STT modal mã lỗi dùng lớp `.stt` trùng lớp chấm trạng thái chung (`app.css` dòng 213), ô lệch, có chấm tròn. Đổi thành `.tgv-stt`.
 
 ## Đã kiểm
 

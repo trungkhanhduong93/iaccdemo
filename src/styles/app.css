@@ -46538,8 +46538,8 @@ body:has(.ctpl-form) .pn-hop {
   white-space: nowrap;
 }
 
-.tgv-hop.loi td.stt,
-.tgv-hop.loi th.stt {
+.tgv-hop.loi td.tgv-stt,
+.tgv-hop.loi th.tgv-stt {
   width: 52px;
   text-align: right;
   color: var(--muted);
@@ -47177,7 +47177,7 @@ table.ds-gv {
   white-space: nowrap;
 }
 
-.ds-gv td.stt-ds {
+.ds-gv td.tgv-stt-ds {
   text-align: center;
   color: var(--muted);
 }
