@@ -1132,3 +1132,5 @@ Trum chốt trên mẫu https://claude.ai/artifact/2pJtBkB9goLCgmgUwAMnPt (T769)
 - Không đem sang: cờ đổi ngôn ngữ, nút Đăng nhập với mã hỗ trợ. Chỗ nút mã hỗ trợ đặt link Thử mở từ FABi.
 - Đăng ký sử dụng ngay mở luồng Thử mở từ FABi vì bản mẫu chưa có màn đăng ký.
 - Điện thoại ẩn slider, giữ thanh logo.
+
+## QD104. Cột trái trang đăng nhập dùng hình minh hoạ, nền theo video IVT (đang soạn)
