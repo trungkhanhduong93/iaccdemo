@@ -782,7 +782,7 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
             style={{ cursor: 'pointer' }}
           >
             <div className="m-t650-nhan-cot">
-              <label className="nhan">{isChi ? 'Lý do chi' : 'Lý do thu'} <span className="sao">*</span></label>
+              <label className="nhan">{isChi ? 'Lý do chi' : isCq ? 'Lý do' : 'Lý do thu'} <span className="sao">*</span></label>
               {laChiPhi && <span className="m-tc-badge-nhom-cp">Chi phí</span>}
             </div>
             <div className="m-tc-lap-select">

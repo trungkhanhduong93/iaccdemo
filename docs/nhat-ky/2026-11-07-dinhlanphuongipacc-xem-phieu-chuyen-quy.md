@@ -20,7 +20,7 @@
 
 ## Dở dang, việc tiếp theo
 
-- Form lập phiếu chuyển quỹ điện thoại (`MDtThuChiLap.tsx` dòng 785) vẫn ghi "Lý do thu". Chưa đổi vì Trum đang giữ file này ở T552.
+- Không. Form lập phiếu chuyển quỹ điện thoại (`MDtThuChiLap.tsx` dòng 785) cũng đổi nhãn thành "Lý do". File này Trum đang giữ ở T552, dinhlanphuongipacc đồng ý sửa luôn vì chỉ đổi một nhãn.
 
 ## Bẫy, quyết định mới
 
