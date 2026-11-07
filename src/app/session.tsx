@@ -34,6 +34,7 @@ export interface Session {
   khoiTao: boolean       // đã chạy xong khởi tạo
   thuGon?: boolean       // sidebar thu gọn còn biểu tượng
   ngayDauNam?: Record<string, string>   // ngày đầu năm từng đơn vị (dd/mm/yyyy), khai ở Thông tin đơn vị
+  ngayLamViec?: Record<string, string>   // ngày bắt đầu làm việc trên IACC từng đơn vị (dd/mm/yyyy), chọn lúc khởi tạo, sửa ở Thông tin đơn vị (T767)
   namTaiChinh?: Record<string, number>  // năm tài chính từng đơn vị, khai ở Thông tin đơn vị
   ppGtgt: PpGtgt         // phương pháp tính thuế GTGT (TT58): 'tyLe' hoặc 'khauTru', mặc định 'tyLe'
   ppTndn: PpTndn         // phương pháp tính thuế TNDN (TT58): 'tyLe' hoặc 'thuNhap', mặc định 'thuNhap'
@@ -46,8 +47,7 @@ export interface Session {
   ttDv?: Record<string, TtDonVi>   // thông tin kê khai từng đơn vị (T145)
   cnThem?: Record<string, CnThem[]>   // cửa hàng lên sổ thêm từ cửa hàng FABi theo từng đơn vị (T142)
   cnCongTy?: Record<string, Record<string, string>>   // công ty chọn lại cho cửa hàng ở Danh mục cửa hàng theo đơn vị; khoá mã cửa hàng, giá trị mã đơn vị; chưa đặt là đơn vị đang mở (T711)
-  cachNvl?: Record<string, Record<string, LichCachNvl[]>>   // cách tính chi phí NVL gói Free theo đơn vị, cửa hàng; mỗi lần đổi áp dụng từ kỳ đầu chưa khoá sổ (T232)
-  giaThanhTay?: Record<string, Record<string, number>>   // giá thành món nhập tay theo đơn vị; khoá cửa hàng-yyyymm-mã món (T232)
+  cachNvlDv?: Record<string, LichCachNvl[]>   // cách tính giá vốn NVL gói Free theo đơn vị, chung mọi cửa hàng; mỗi lần đổi áp dụng từ kỳ đầu chưa khoá sổ (T767)
   dongBoThuChi?: Record<string, Record<string, boolean>>   // tự động đồng bộ phiếu thu, chi lập trên FABi theo đơn vị, từng cửa hàng (mã cửa hàng); chưa đặt là bật (T264)
   mapPttt?: Record<string, Record<string, string>>   // map PTTT FABi về quỹ theo đơn vị; khoá 'mã cửa hàng|mã PTTT', giá trị mã quỹ (T264)
   kieuSo?: Record<string, KieuSo>   // quy định chữ số và dấu phân cách theo đơn vị, chọn ở Cấu hình kế toán: 'vn' 1.234.567,89 (mặc định), 'qt' 1,234,567.89 (T710)
@@ -208,6 +208,8 @@ export const dsCuaHang = (s: Pick<Session, 'donVi' | 'cnThem'>): { id: string; t
 export const namTaiChinh = (s: Session) => s.namTaiChinh?.[s.donVi] ?? new Date().getFullYear()
 /** Ngày đầu năm của đơn vị đang làm việc; chưa khai thì 01/01 của năm tài chính như lúc khởi tạo đơn vị */
 export const ngayDauNam = (s: Session) => s.ngayDauNam?.[s.donVi] ?? `01/01/${namTaiChinh(s)}`
+/** Ngày bắt đầu làm việc của đơn vị: ngày chọn lúc khởi tạo; đơn vị cũ chưa lưu thì lấy ngày lên sổ của cửa hàng khởi tạo, không có thì ngày đầu năm */
+export const ngayLamViec = (s: Session) => s.ngayLamViec?.[s.donVi] ?? s.cnThem?.[s.donVi]?.find(c => c.banDau)?.tuNgay ?? ngayDauNam(s)
 /** Các kỳ (tháng) của năm tài chính, từ tháng của ngày đầu năm, 12 tháng. so = yyyymm để so sánh */
 export function dsKyNam(s: Session): { nhan: string; so: number }[] {
   const [, mm, yy] = ngayDauNam(s).split('/').map(Number)

@@ -16,7 +16,7 @@ import { datLocDaXem, docTuyChinh, luuTuyChinh } from '../../ui/bao-cao/tuyChinh
 import { tinhToanTongQuan, type TongQuanSoLieu } from './chiSo'
 import { useSession, type Session } from '../../app/session'
 import { LaiLoChart, trucLaiLo } from '../../ui/Charts'
-import { moTaCachNgan, nvlKy } from './chi-phi-nvl'
+import { moTaCach, nvlKy } from './chi-phi-nvl'
 import { useMoTuTrangChu } from '../../app/tuTrangChu'
 import { useDongEsc } from '../../ui/LocNangCao'
 import { ModalQuy } from './quyThuChi'
@@ -1135,7 +1135,7 @@ export function BaBaiToanStandard({ d, thang: thangXem, selCns, chonKy }: { d: T
             >
               <div className="l">
                 <b>Giá vốn nguyên vật liệu</b>
-                <span>{moTaCachNgan(nvl.ds)}</span>
+                <span>{moTaCach(nvl.cach)}</span>
               </div>
               <div className="r">
                 <b>{moneyD(nvlTien)}</b>

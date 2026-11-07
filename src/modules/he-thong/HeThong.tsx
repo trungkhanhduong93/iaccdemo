@@ -3,7 +3,7 @@ import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import type { Col, Row, ScreenDef, ScreenProps } from '../types'
 import { MODULES, duongDan, hienMan, laBaoCao } from '../../app/registry'
-import { donViHienTai, dsCuaHang, dsDonVi, gtgtTyLe, loaiHinhDv, useSession, cheDoHienTai, namTaiChinh, ngayDauNam, type PpGtgt, type PpTndn, type Session } from '../../app/session'
+import { donViHienTai, dsCuaHang, dsDonVi, gtgtTyLe, loaiHinhDv, useSession, cheDoHienTai, namTaiChinh, ngayDauNam, ngayLamViec, type PpGtgt, type PpTndn, type Session } from '../../app/session'
 import { ChonKenh, KENH_ONLINE, KENH_SAN, NHOM_HKD, type LoaiHinh, type PpHkd } from '../onboarding/OnboardFabi'
 import { FEATURE, FEATURES, GOI, GOIS, MODS, demTheoGoi, kieuGhiSo, type Goi } from '../../app/plan'
 import { CHE_DO, CHE_DO_HOP_LE, cheDoCuaGoi, type CheDo } from '../../app/che-do'
@@ -21,6 +21,7 @@ import { CatalogPanel } from '../../ui/generic/CatalogScreen'
 import type { CauHinhDM } from '../danh-muc/truong-dm'
 import type { KieuSo } from '../../ui/format'
 import { TheCauHinhHddt, cauHinhHddt, loiHddt, type CauHinhHddt } from '../ban-hang/hddt'
+import { CACH_NVL, DS_CACH_NVL, cachNvlHienTai, datCachNvl, type CachNvl } from '../home/chi-phi-nvl'
 import { NGHI_QUYET_GIAM_VAT, cauHinhGiamVat, type CauHinhGiamVat, type DongGiamVat } from '../ban-hang/giam-thue'
 
 export const VAI_TRO = ['Chủ doanh nghiệp', 'Kế toán trưởng', 'Kế toán viên', 'Quản lý cửa hàng', 'Thủ kho']
@@ -808,9 +809,9 @@ export function ThongTinDonVi({ sc }: ScreenProps) {
   const tt = s.ttDv?.[s.donVi] ?? {}
   // Ngày đầu năm: chứng từ thêm mới phải có ngày từ ngày này trở đi, trừ màn khai số dư
   const [dauNam, setDauNam] = useState(ngayDauNam(s))
-  // Năm làm việc hiện tại: các kỳ số liệu là 12 tháng tính từ ngày đầu năm; đổi năm thì ngày đầu năm đổi năm theo
-  const [nam, setNam] = useState(namTaiChinh(s))
-  const doiNam = (n: number) => { setNam(n); setDauNam(d => d.replace(/\d{4}$/, String(n))) }
+  const [ngayLam, setNgayLam] = useState(ngayLamViec(s))   // ngày bắt đầu làm việc chọn lúc khởi tạo (T767)
+  // Năm tài chính theo năm của ngày đầu năm tài chính, không chọn riêng nữa (T767), như lúc khởi tạo
+  const nam = Number(dauNam.slice(-4)) || namTaiChinh(s)
   // Thông tin kê khai khai lúc khởi tạo, sửa lại ở đây (T145); chưa khai thì đơn vị tên "Hộ kinh doanh..." coi là hộ kinh doanh
   const dsCn = dsCuaHang(s)
   const chuaKhai = Boolean(s.choKeKhai?.[s.donVi])   // đơn vị từ FABi chưa khai Thông tin kê khai thuế: để trống loại hình (PhuongXT 31/10/2026)
@@ -819,6 +820,7 @@ export function ThongTinDonVi({ sc }: ScreenProps) {
     loai: (chuaKhai ? '' : loaiHinhDv(s, dv)) as LoaiHinh | '',
     nhom: tt.nhom ?? 1, ppHkd: tt.ppHkd ?? 'doanhThu' as PpHkd, ppGtgt: s.ppGtgt, ppTndn: s.ppTndn,
     cnChinh: tt.cnChinh || dsCn[0]?.id || '', kenhOnline: tt.kenhOnline ?? KENH_ONLINE, kenhSan: tt.kenhSan ?? KENH_SAN,
+    cachNvl: cachNvlHienTai(s) as CachNvl,   // cách tính giá vốn NVL trang chủ gói Standard, chung cả công ty (T767)
   }))
   const sua = (p: Partial<typeof f>) => setF(x => ({ ...x, ...p }))
   const dnCoDinh = s.goi === 'PR'   // doanh nghiệp gói Pro: GTGT khấu trừ, TNDN theo lợi nhuận, không chọn
@@ -835,20 +837,23 @@ export function ThongTinDonVi({ sc }: ScreenProps) {
   const cheDoTheoLoai = (l: LoaiHinh): CheDo =>
     l === 'hkd' ? (CHE_DO_HOP_LE[s.goi].includes('TT152') ? 'TT152' : s.cheDo) : s.goi === 'PL' || dnStandard ? 'TT58' : s.cheDo
   const luuDv = () => {
-    if (!/^\d{2}\/\d{2}\/\d{4}$/.test(dauNam)) { toast('Ngày đầu năm cần nhập dạng dd/mm/yyyy'); return }
+    if (!/^\d{2}\/\d{2}\/\d{4}$/.test(dauNam)) { toast('Ngày đầu năm tài chính cần nhập dạng dd/mm/yyyy'); return }
+    if (!/^\d{2}\/\d{2}\/\d{4}$/.test(ngayLam)) { toast('Ngày bắt đầu làm việc cần nhập dạng dd/mm/yyyy'); return }
     if (!f.ten.trim()) { toast('Tên đơn vị không được để trống'); return }
     const { ten, mst, diaChi, loai, nhom, ppHkd, cnChinh, kenhOnline, kenhSan } = f
+    const nvl = f.cachNvl !== cachNvlHienTai(s) ? datCachNvl(s, f.cachNvl) : {}   // đổi cách tính áp dụng từ tháng đầu chưa khoá sổ
     if (!loai) {   // chưa chọn loại hình: chỉ lưu thông tin chung, Kê khai thuế vẫn hỏi Thông tin kê khai thuế
-      set({ ttDv: { ...s.ttDv, [s.donVi]: { ...s.ttDv?.[s.donVi], ten, mst, diaChi } }, ngayDauNam: { ...s.ngayDauNam, [s.donVi]: dauNam }, namTaiChinh: { ...s.namTaiChinh, [s.donVi]: nam } })
+      set({ ...nvl, ttDv: { ...s.ttDv, [s.donVi]: { ...s.ttDv?.[s.donVi], ten, mst, diaChi } }, ngayDauNam: { ...s.ngayDauNam, [s.donVi]: dauNam }, ngayLamViec: { ...s.ngayLamViec, [s.donVi]: ngayLam }, namTaiChinh: { ...s.namTaiChinh, [s.donVi]: nam } })
       toast('Đã lưu thông tin đơn vị')
       return
     }
     set({
+      ...nvl,
       choKeKhai: { ...s.choKeKhai, [s.donVi]: false },
       cheDo: cheDoTheoLoai(loai),
       // Doanh nghiệp chọn thuế GTGT, TNDN (gói Plus, Pro cố định khấu trừ, theo lợi nhuận); hộ kinh doanh luôn GTGT trực tiếp trên doanh thu
       ppGtgt: loai === 'hkd' || dnStandard ? 'tyLe' : dnCoDinh ? 'khauTru' : f.ppGtgt, ppTndn: tndnCoDinh ? 'thuNhap' : dnStandard ? 'tyLe' : f.ppTndn,
-      ngayDauNam: { ...s.ngayDauNam, [s.donVi]: dauNam }, namTaiChinh: { ...s.namTaiChinh, [s.donVi]: nam },
+      ngayDauNam: { ...s.ngayDauNam, [s.donVi]: dauNam }, ngayLamViec: { ...s.ngayLamViec, [s.donVi]: ngayLam }, namTaiChinh: { ...s.namTaiChinh, [s.donVi]: nam },
       ttDv: { ...s.ttDv, [s.donVi]: { ten, mst, diaChi, loai, nhom, ppHkd: ppCoDinh ?? ppHkd, cnChinh, kenhOnline, kenhSan: kenhSan.filter(k => kenhOnline.includes(k)) } },
     })
     toast('Đã lưu thông tin đơn vị')
@@ -930,17 +935,21 @@ export function ThongTinDonVi({ sc }: ScreenProps) {
         </Card>
         <Card title="Chế độ kế toán">
           <div className="form-grid" data-hd="cheDo">
-            <div className="f">
-              <label>Ngày đầu năm</label>
+            {/* Gói Standard ẩn ngày đầu năm tài chính, giữ mặc định 01/01 (T767) */}
+            {s.goi !== 'S' && <div className="f">
+              <label>Ngày đầu năm tài chính</label>
               <ONgay value={dauNam} placeholder="dd/mm/yyyy" onChange={setDauNam}
                 title="Chứng từ thêm mới phải có ngày từ ngày này trở đi, trừ các màn khai số dư đầu kỳ" />
-            </div>
+            </div>}
             <div className="f">
-              <label>Năm làm việc hiện tại</label>
-              <Select className="inp" value={String(nam)} aria-label="Năm làm việc hiện tại" onChange={e => doiNam(Number(e.target.value))}
-                ds={[-2, -1, 0, 1].map(d => String(new Date().getFullYear() + d)).map(n => ({ v: n, t: n }))} />
+              <label>Ngày bắt đầu làm việc</label>
+              <ONgay value={ngayLam} placeholder="dd/mm/yyyy" onChange={setNgayLam} title="Ngày bắt đầu nhập liệu trên iPOS Accounting, chọn lúc khởi tạo đơn vị" />
             </div>
             {/* Gói Standard ẩn ô này, mặc định bình quân cuối kỳ (T268) */}
+            {/* Gói Standard: giá vốn NVL trang chủ tính một cách chung mọi cửa hàng, không chọn theo cửa hàng nữa (T767) */}
+            {s.goi === 'S' && <div className="f c2"><label>Phương pháp giá vốn NVL</label>
+              <Select className="inp" value={f.cachNvl} ds={DS_CACH_NVL} aria-label="Phương pháp giá vốn NVL" onChange={e => sua({ cachNvl: e.target.value as CachNvl })} />
+              <small className="muted">{CACH_NVL[f.cachNvl].mota}. Áp dụng chung mọi cửa hàng.</small></div>}
             {s.goi !== 'S' && <div className="f c2"><label>Phương pháp tính giá xuất kho</label><Select className="inp"><option>Bình quân gia quyền cuối kỳ</option><option>Bình quân tức thời</option><option>Nhập trước xuất trước</option></Select></div>}
           </div>
         </Card>

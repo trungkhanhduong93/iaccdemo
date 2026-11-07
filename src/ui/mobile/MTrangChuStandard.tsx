@@ -8,7 +8,7 @@ import { Icon, ONen } from '../Icon'
 import { fold, moneyD, pct, short } from '../format'
 import { type KyBaoCao, tinhToanTongQuan } from '../../modules/home/chiSo'
 import { tonQuyTheoSo } from '../../modules/home/LichSuQuy'
-import { moTaCachNgan, nvlKy } from '../../modules/home/chi-phi-nvl'
+import { moTaCach, nvlKy } from '../../modules/home/chi-phi-nvl'
 import { useMoTuTrangChu } from '../../app/tuTrangChu'
 import { Select } from '../Dropdown'
 import { datLocDaXem } from '../bao-cao/tuyChinhBC'
@@ -500,7 +500,7 @@ export function MTrangChuStandard(_props?: Partial<ScreenProps>) {
             >
               <div className="m-tcf-kqkd-cot-trai">
                 <div className="m-tcf-kqkd-ten-hang">Chi phí nguyên vật liệu</div>
-                <div className="m-tcf-kqkd-sub-hang">{moTaCachNgan(nvl.ds)}</div>
+                <div className="m-tcf-kqkd-sub-hang">{moTaCach(nvl.cach)}</div>
               </div>
               <div className="m-tcf-kqkd-cot-phai">
                 <div className="m-tcf-kqkd-tien-pt">

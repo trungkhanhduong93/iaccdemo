@@ -9,7 +9,6 @@ import { Icon } from '../Icon'
 import { Select } from '../Dropdown'
 import { HopXacNhan } from '../LocNangCao'
 import { fold } from '../format'
-import { CACH_NVL, DS_CACH_NVL, cachNvlHienTai, datCachNvl, kyDauChuaKhoa, tenKy, type CachNvl } from '../../modules/home/chi-phi-nvl'
 import { batDongBoThuChi, datDongBoThuChi } from '../../modules/tien/dong-bo-fabi'
 
 export const MCuaHang: FC<ScreenProps> = () => {
@@ -17,7 +16,6 @@ export const MCuaHang: FC<ScreenProps> = () => {
   const nav = useNavigate()
   const [moThem, setMoThem] = useState(false)
   const [xem, setXem] = useState<Row | null>(null)
-  const [doiNvl, setDoiNvl] = useState<{ cn: string; ten: string; cach: CachNvl } | null>(null)
   const [doiCty, setDoiCty] = useState<{ cn: string; ten: string; cty: string } | null>(null)   // chọn lại công ty, chờ xác nhận như web (T711)
   const dv = congTyCn(s, String(xem?.id ?? ''))   // công ty của cửa hàng đang xem chi tiết (T711)
 
@@ -55,7 +53,7 @@ export const MCuaHang: FC<ScreenProps> = () => {
   ], [coSan, them, standard]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const lenSo = (ds: CnThem[], khaiSoDu: boolean, caiDat: Partial<Session>) => {
-    set({ cnThem: { ...s.cnThem, [s.donVi]: [...them, ...ds] }, ...caiDat })   // cấu hình đồng bộ thu chi, cách tính NVL chọn lúc thêm (T264)
+    set({ cnThem: { ...s.cnThem, [s.donVi]: [...them, ...ds] }, ...caiDat })   // cấu hình đồng bộ thu chi chọn lúc thêm (T264)
     setMoThem(false)
     toast(`Đã lên sổ ${ds.length} cửa hàng từ FABi`)
     if (khaiSoDu) {
@@ -179,25 +177,6 @@ export const MCuaHang: FC<ScreenProps> = () => {
                   <span className="m-xp-nhan">Nguồn:</span>
                   <span className="m-xp-tri">{xem.nguon}</span>
                 </div>
-                {s.goi === 'S' && (
-                  <div className="m-xp-dong-tt m-cn-dong-nvl">
-                    <span className="m-xp-nhan">Cách tính chi phí NVL:</span>
-                    <span className="m-xp-tri">
-                      <Select
-                        className="inp dmcn-nvl"
-                        value={cachNvlHienTai(s, String(xem.id))}
-                        ds={DS_CACH_NVL}
-                        aria-label={`Cách tính chi phí NVL ${xem.ten}`}
-                        onChange={e => {
-                          const cach = e.target.value as CachNvl
-                          if (cach !== cachNvlHienTai(s, String(xem.id))) {
-                            setDoiNvl({ cn: String(xem.id), ten: String(xem.ten), cach })
-                          }
-                        }}
-                      />
-                    </span>
-                  </div>
-                )}
                 <div className="m-xp-dong-tt m-cn-dong-db">
                   <span className="m-xp-nhan">Đồng bộ thu chi FABi:</span>
                   <span className="m-xp-tri dmcn-db">
@@ -228,24 +207,6 @@ export const MCuaHang: FC<ScreenProps> = () => {
             </div>
           </aside>
         </div>
-      )}
-
-      {doiNvl && (
-        <HopXacNhan
-          tieuDe="Đổi cách tính chi phí NVL"
-          nut="Đồng ý"
-          nutDo={false}
-          onDong={() => setDoiNvl(null)}
-          onDongY={() => {
-            set(datCachNvl(s, doiNvl.cn, doiNvl.cach))
-            setDoiNvl(null)
-            toast(`Đã đổi cách tính chi phí NVL của ${doiNvl.ten}`)
-          }}
-        >
-          {doiNvl.ten} tính chi phí NVL {CACH_NVL[doiNvl.cach].theo}: {CACH_NVL[doiNvl.cach].mota[0].toLowerCase() + CACH_NVL[doiNvl.cach].mota.slice(1)}.
-          Tính lại từ tháng {tenKy(kyDauChuaKhoa())}, tháng đầu chưa khoá sổ. Các tháng đã khoá sổ giữ nguyên số.
-          {doiNvl.cach === 'tay' ? ' Nhập giá thành món ở màn Chi phí NVL, món chưa có giá thành tính bằng 0.' : ''}
-        </HopXacNhan>
       )}
 
       {doiCty && (() => {

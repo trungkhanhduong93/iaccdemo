@@ -3,7 +3,6 @@ import { useSession, ngayDauNam, type CnThem, type Session } from '../../app/ses
 import { cuaHangChuaDung, type CuaHangFabi } from '../../modules/onboarding/cua-hang-fabi'
 import { Icon } from '../Icon'
 import { Select } from '../Dropdown'
-import { DS_CACH_NVL, cachNvlHienTai, datCachNvl, type CachNvl } from '../../modules/home/chi-phi-nvl'
 import { datDongBoThuChi } from '../../modules/tien/dong-bo-fabi'
 
 export interface MThemCuaHangFabiProps {
@@ -23,10 +22,10 @@ export const MThemCuaHangFabi: FC<MThemCuaHangFabiProps> = ({ onDong, onLenSo })
   const { s } = useSession()
   const ds = useMemo(() => cuaHangChuaDung(s), [s])
   const [chon, setChon] = useState<string[]>(() => ds.map(c => c.id))   // như web: tích sẵn mọi cửa hàng FABi chưa dùng (T749)
-  const [cauHinh, setCauHinh] = useState<Record<string, { dongBo: boolean; cach: CachNvl }>>({})
+  const [cauHinh, setCauHinh] = useState<Record<string, { dongBo: boolean }>>({})
 
-  const chCua = (id: string) => cauHinh[id] ?? { dongBo: true, cach: cachNvlHienTai(s, id) }
-  const doiCh = (id: string, p: Partial<{ dongBo: boolean; cach: CachNvl }>) =>
+  const chCua = (id: string) => cauHinh[id] ?? { dongBo: true }
+  const doiCh = (id: string, p: Partial<{ dongBo: boolean }>) =>
     setCauHinh(x => ({ ...x, [id]: { ...chCua(id), ...p } }))
 
   const batChon = (id: string) => {
@@ -36,8 +35,7 @@ export const MThemCuaHangFabi: FC<MThemCuaHangFabiProps> = ({ onDong, onLenSo })
   const caiDat = () =>
     chon.reduce<Partial<Session>>((p, id) => {
       const ch = chCua(id)
-      const p2 = { ...p, ...datDongBoThuChi({ ...s, ...p }, id, ch.dongBo) }
-      return s.goi === 'S' ? { ...p2, ...datCachNvl({ ...s, ...p2 }, id, ch.cach) } : p2
+      return { ...p, ...datDongBoThuChi({ ...s, ...p }, id, ch.dongBo) }
     }, {})
 
   const tuNgay = ngayDauNam(s)
@@ -86,18 +84,6 @@ export const MThemCuaHangFabi: FC<MThemCuaHangFabiProps> = ({ onDong, onLenSo })
 
                     {isChon && (
                       <div className="m-ch-cau-hinh">
-                        {s.goi === 'S' && (
-                          <div className="m-ch-dong-opt">
-                            <span className="m-ch-opt-nhan">Cách tính chi phí NVL:</span>
-                            <Select
-                              className="inp m-ch-sel"
-                              value={ch.cach}
-                              ds={DS_CACH_NVL}
-                              aria-label={`Cách tính chi phí NVL ${c.ten}`}
-                              onChange={e => doiCh(c.id, { cach: e.target.value as CachNvl })}
-                            />
-                          </div>
-                        )}
                         <div className="m-ch-dong-opt">
                           <span className="m-ch-opt-nhan">Đồng bộ thu chi FABi:</span>
                           <span className="m-ch-switch-box">

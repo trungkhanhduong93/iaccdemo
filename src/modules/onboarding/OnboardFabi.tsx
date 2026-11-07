@@ -386,7 +386,7 @@ export function OnboardFabi() {
           // doanh nghiệp: gói Standard chỉ sổ % doanh thu nên giữ tyLe, như popup kê khai thuế
           ...(n.loai === 'dn' ? { ppGtgt: s.goi === 'S' ? 'tyLe' : n.gtgt ?? 'tyLe', ppTndn: s.goi === 'S' ? 'tyLe' : n.tndn ?? 'tyLe' } as const : {}) } : {}),
         ...(s.dvMoi && s.donVi === s.dvMoi.id ? { cnThem: { ...s.cnThem, [s.donVi]: cnChon.map(c => ({ id: c.id, ten: c.ten, khuVuc: c.khuVuc ?? '', tuNgay: n.ngayLam, banDau: true })) }, dvMoi: { ...s.dvMoi, ...khai, diem: cnChon.length } } : {}),
-        ngayDauNam: { ...s.ngayDauNam, [s.donVi]: DAU_NAM }, namTaiChinh: { ...s.namTaiChinh, [s.donVi]: HOM_NAY.getFullYear() } })
+        ngayDauNam: { ...s.ngayDauNam, [s.donVi]: DAU_NAM }, namTaiChinh: { ...s.namTaiChinh, [s.donVi]: HOM_NAY.getFullYear() }, ngayLamViec: { ...s.ngayLamViec, [s.donVi]: n.ngayLam } })
       try { localStorage.removeItem(KEY) } catch { /* bỏ qua */ }
       setN(MAC_DINH)
       nav('/app')
@@ -406,7 +406,7 @@ export function OnboardFabi() {
       return
     }
     set({ goi: n.goi, cheDo: n.cheDo, khoiTao: true, ttDv, huongDan: { ...s.huongDan, [s.donVi]: false }, ...(s.dvMoi && s.donVi === s.dvMoi.id ? { cnThem: { ...s.cnThem, [s.donVi]: cnChon.map(c => ({ id: c.id, ten: c.ten, khuVuc: c.khuVuc, tuNgay: n.ngayDauNam, banDau: true })) }, dvMoi: { ...s.dvMoi, ten: n.tenDv || s.dvMoi.ten, viettat: vietTat(n.tenDv) || s.dvMoi.viettat, mst: n.mst, diaChi: n.diaChi, goi: n.goi, diem: n.chon.length } } : {}),
-      ngayDauNam: { ...s.ngayDauNam, [s.donVi]: n.ngayDauNam }, namTaiChinh: { ...s.namTaiChinh, [s.donVi]: Number(n.ngayDauNam.slice(-4)) } })
+      ngayDauNam: { ...s.ngayDauNam, [s.donVi]: n.ngayDauNam }, namTaiChinh: { ...s.namTaiChinh, [s.donVi]: Number(n.ngayDauNam.slice(-4)) }, ngayLamViec: { ...s.ngayLamViec, [s.donVi]: n.ngayDauNam } })
     try { localStorage.removeItem(KEY) } catch { /* bỏ qua */ }
     setN(MAC_DINH)
     nav('/app/danh-muc')   // vào phân hệ Danh mục để khởi tạo danh mục

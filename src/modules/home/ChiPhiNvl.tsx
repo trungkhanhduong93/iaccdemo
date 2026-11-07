@@ -1,28 +1,26 @@
-// Chi phí NVL trong tháng gói Free (T232): mở từ thẻ Chi phí nguyên vật liệu ở trang chủ, dòng Chi phí NVL ở Báo cáo kết quả kinh doanh.
-// Xem mọi cửa hàng: bảng từng cửa hàng với cách tính riêng, bấm dòng xem cửa hàng đó.
-// Xem một cửa hàng: chi tiết theo cách tính; cách nhập tay có bảng món bán trong kỳ, số lượng, giá thành tự nhập, thành tiền.
-import { useRef, useState, type ReactNode } from 'react'
+// Giá vốn NVL trong tháng gói Free (T232): mở từ thẻ Giá vốn nguyên vật liệu ở trang chủ, dòng Chi phí NVL ở Báo cáo kết quả kinh doanh.
+// Cách tính chung cả công ty, chọn ở Thông tin đơn vị (T767): kiểm kê định kỳ hoặc tổng chi phí mua hàng trong tháng.
+// Xem mọi cửa hàng: bảng từng cửa hàng, bấm dòng xem cửa hàng đó. Xem một cửa hàng: các số của công thức và phiếu mua hàng trong tháng.
 import { Link, useSearchParams } from 'react-router-dom'
-import type { Col, Row, ScreenProps } from '../types'
+import type { Col, ScreenProps } from '../types'
 import { cuaHangHienTai, useSession } from '../../app/session'
 import { CUA_HANG } from '../../data/mock'
 import { Icon } from '../../ui/Icon'
 import { Note } from '../../ui/Page'
 import { Table } from '../../ui/Table'
 import { Select } from '../../ui/Dropdown'
-import { money, moneyD, pct } from '../../ui/format'
+import { moneyD, pct } from '../../ui/format'
 import { useMoTuTrangChu } from '../../app/tuTrangChu'
-import { NutExcel, NutXuatExcel } from '../../ui/CongCuDs'
+import { NutXuatExcel } from '../../ui/CongCuDs'
 import { xuatBangExcel } from '../../ui/xuatBangExcel'
 import { ganMoPhieu } from '../../ui/generic/SoChungTu'   // số phiếu bấm mở chứng từ (T491)
-import { docGiaThanh, xuatGiaThanh } from './excel-gia-thanh'
-import { CACH_NVL, daKhoaThang, datGiaThanhTay, giaThanhIvt, giaThanhTayCua, moTaCach, monBanKy, nvlKy, phieuMuaKy, tieuHaoKy } from './chi-phi-nvl'
+import { CACH_NVL, DI_DOI_CACH_NVL, daKhoaThang, moTaCach, nvlKy, phieuMuaKy } from './chi-phi-nvl'
 
 const THANG = [7, 8, 9, 10]
 
 export function ChiPhiNvl(_: ScreenProps) {
   const moTuTrangChu = useMoTuTrangChu()   // liên kết trong màn mở kèm nút về Trang chủ (T232)
-  const { s, set, toast } = useSession()
+  const { s, toast } = useSession()
   const [tham, setTham] = useSearchParams()
   const thang = THANG.includes(Number(tham.get('thang'))) ? Number(tham.get('thang')) : 10
   const cnThanh = cuaHangHienTai(s)
@@ -34,170 +32,77 @@ export function ChiPhiNvl(_: ScreenProps) {
     setTham(n, { replace: true })
   }
   const tong = nvlKy(s, cn ? [cn.id] : [], thang)
+  const kk = tong.cach === 'kk'
   const dt = tong.ds.reduce((a, x) => a + x.dt, 0)
   const khoa = daKhoaThang(thang)
-  const [tab, setTab] = useState<'mon' | 'th'>('mon')   // cách iPOS Inventory: tab giá thành món, tab NVL tiêu hao
-  const [locLoai, setLocLoai] = useState('')   // tab NVL tiêu hao: lọc theo loại phiếu, rỗng là tất cả
-  const tep = useRef<HTMLInputElement>(null)
-  const x = cn ? tong.ds[0] : undefined
-  const mon = cn ? monBanKy(cn.id, thang) : []
+  const dsMua = cn ? phieuMuaKy(cn.id, thang) : []
 
-  // Xuất Excel bảng đang xem (T232): mọi cửa hàng, giá thành món, NVL tiêu hao, phiếu nhập mua; nhập tay dùng mẫu nhập được
+  // Xuất Excel bảng đang xem: mọi cửa hàng, hoặc phiếu mua hàng của một cửa hàng
   const loiXuat = () => toast('Không xuất được file Excel')
   const xuat = () => {
-    const ky = `Tháng ${thang}/2026`
-    if (!cn || !x) return xuatBangExcel(`Chi phí NVL tháng ${thang}/2026`, 'Tất cả cửa hàng',
-      [{ t: 'Cửa hàng', rong: 28 }, { t: 'Cách tính', rong: 30 }, { t: 'Doanh thu', so: true }, { t: 'Chi phí NVL', so: true }, { t: 'Tỷ lệ trên doanh thu', rong: 18 }],
-      tong.ds.map(d => [d.ten, CACH_NVL[d.cach].ten, d.dt, d.tien, pct(d.dt ? d.tien / d.dt : 0)]), ['Cộng', '', dt, tong.tien, pct(dt ? tong.tien / dt : 0)]).catch(loiXuat)
-    const cotMonX = [{ t: 'Mã món', rong: 12 }, { t: 'Tên món', rong: 30 }, { t: 'ĐVT', rong: 8 }, { t: 'Số lượng bán', so: true }, { t: 'Giá thành', so: true }, { t: 'Thành tiền', so: true }]
-    if (x.cach === 'ivt' && tab === 'mon') {
-      const gt = giaThanhIvt(cn.id, thang)
-      return xuatBangExcel(`Giá thành iPOS Inventory ${cn.ten} tháng ${thang}/2026`, ky, cotMonX,
-        mon.map(m => [m.ma, m.ten, m.dvt, m.sl, gt.get(m.ma) ?? 0, m.sl * (gt.get(m.ma) ?? 0)]), ['', `${mon.length} món bán trong tháng`, '', '', '', x.gtMon]).catch(loiXuat)
-    }
-    if (x.cach === 'ivt') {
-      const ds = tieuHaoKy(cn.id, thang).ds.filter(r => !locLoai || r.tenLoai === locLoai)
-      return xuatBangExcel(`Chi phí NVL tiêu hao ${cn.ten} tháng ${thang}/2026`, locLoai ? `${ky} · ${locLoai}` : ky,
-        [{ t: 'Ngày', rong: 12 }, { t: 'Số phiếu', rong: 18 }, { t: 'Loại phiếu', rong: 18 }, { t: 'Diễn giải', rong: 44 }, { t: 'Giá trị', so: true }],
-        ds.map(r => [String(r.ngay), String(r.so), String(r.tenLoai), String(r.dienGiai ?? ''), r.gt]), ['', `${ds.length} phiếu`, '', '', ds.reduce((a, r) => a + r.gt, 0)]).catch(loiXuat)
-    }
-    if (x.cach === 'nhap') {
-      const ds = phieuMuaKy(cn.id, thang)
-      return xuatBangExcel(`Phiếu nhập mua ${cn.ten} tháng ${thang}/2026`, ky,
-        [{ t: 'Số phiếu', rong: 18 }, { t: 'Ngày', rong: 12 }, { t: 'Nhà cung cấp', rong: 36 }, { t: 'Tiền hàng', so: true }, { t: 'Thuế GTGT', so: true }, { t: 'Tổng tiền', so: true }],
-        ds.map(r => [String(r.so), String(r.ngay), String(r.doiTuong), Number(r.tien), Number(r.thue), Number(r.tong)]),
-        [`${ds.length} phiếu`, '', '', ds.reduce((a, r) => a + Number(r.tien), 0), ds.reduce((a, r) => a + Number(r.thue), 0), x.tien]).catch(loiXuat)
-    }
-    return xuatGiaThanh(`gia-thanh-${cn.id}-${thang}-2026.xlsx`, `Giá thành món ${cn.ten} tháng ${thang}/2026`,
-      mon.map(m => ({ ...m, gia: giaThanhTayCua(s, cn.id, thang, m.ma) }))).catch(loiXuat)
-  }
-  // Nhập tay: nhập lại giá thành theo mã món từ file Excel; tháng đã khoá không nhập
-  const nhap = async (f: File) => {
-    if (!cn) return
-    try {
-      const doc = await docGiaThanh(f)
-      let st = s, nhan = 0
-      mon.forEach(m => { const g = doc.get(m.ma); if (g !== undefined) { st = { ...st, ...datGiaThanhTay(st, cn.id, thang, m.ma, g) }; nhan++ } })
-      const thua = [...doc.keys()].filter(ma => !mon.some(m => m.ma === ma)).length
-      if (nhan) set({ giaThanhTay: st.giaThanhTay })
-      toast(nhan ? `Đã nhập giá thành ${nhan} món${thua ? `, bỏ qua ${thua} mã không bán trong tháng` : ''}` : 'File không có giá thành món nào khớp mã món trong tháng')
-    } catch { toast('Không đọc được file Excel') }
+    if (!cn) return xuatBangExcel(`Giá vốn NVL tháng ${thang}/2026`, `Tất cả cửa hàng · ${CACH_NVL[tong.cach].ten}`,
+      [{ t: 'Cửa hàng', rong: 28 }, ...(kk ? [{ t: 'Tồn đầu kỳ', so: true }, { t: 'Mua trong tháng', so: true }, { t: 'Tồn cuối kỳ', so: true }] : []),
+        { t: 'Giá vốn NVL', so: true }, { t: 'Doanh thu', so: true }, { t: 'Tỷ lệ trên doanh thu', rong: 18 }],
+      tong.ds.map(d => [d.ten, ...(kk ? [d.tonDau ?? 0, d.mua, d.tonCuoi ?? 0] : []), d.tien, d.dt, pct(d.dt ? d.tien / d.dt : 0)]),
+      ['Cộng', ...(kk ? [tong.tonDau, tong.mua, tong.tonCuoi] : []), tong.tien, dt, pct(dt ? tong.tien / dt : 0)]).catch(loiXuat)
+    return xuatBangExcel(`Phiếu mua hàng ${cn.ten} tháng ${thang}/2026`, `Tháng ${thang}/2026`,
+      [{ t: 'Số phiếu', rong: 18 }, { t: 'Ngày', rong: 12 }, { t: 'Nhà cung cấp', rong: 36 }, { t: 'Tiền hàng', so: true }, { t: 'Thuế GTGT', so: true }, { t: 'Tổng tiền', so: true }],
+      dsMua.map(r => [String(r.so), String(r.ngay), String(r.doiTuong), Number(r.tien), Number(r.thue), Number(r.tong)]),
+      [`${dsMua.length} phiếu`, '', '', dsMua.reduce((a, r) => a + Number(r.tien), 0), dsMua.reduce((a, r) => a + Number(r.thue), 0), tong.mua]).catch(loiXuat)
   }
   const ve = cn && !cnThanh ? <button type="button" className="cpt-ve" title="Về mọi cửa hàng" aria-label="Về mọi cửa hàng" onClick={() => doi({ cn: undefined })}><Icon n="chevl" /></button>
     : <Link to="/app/trang-chu/tong-quan" className="cpt-ve" title="Về Tổng quan" aria-label="Về Tổng quan"><Icon n="chevl" /></Link>
+  const cotMua: Col[] = [{ k: 'so', t: 'Số phiếu', cls: 'code' }, { k: 'ngay', t: 'Ngày' }, { k: 'doiTuong', t: 'Nhà cung cấp' },
+    { k: 'tien', t: 'Tiền hàng', num: true }, { k: 'thue', t: 'Thuế GTGT', num: true }, { k: 'tong', t: 'Tổng tiền', num: true }]
+  const cotCn: Col[] = [
+    // tên cửa hàng màu liên kết cho biết bấm được; bấm lan lên dòng mở chi tiết (T491)
+    { k: 'ten', t: 'Cửa hàng', r: r => r.id ? <button type="button" className="ds-link-so nvl-ten-cn" title={`Xem giá vốn NVL ${r.ten}`}>{r.ten}</button> : r.ten },
+    // Kiểm kê định kỳ: đủ ba số của công thức; tổng chi phí mua hàng thì giá vốn chính là tiền mua, không lặp cột
+    ...(kk ? [{ k: 'tonDau', t: 'Tồn đầu kỳ', num: true }, { k: 'mua', t: 'Mua trong tháng', num: true }, { k: 'tonCuoi', t: 'Tồn cuối kỳ', num: true }] : []),
+    { k: 'tien', t: 'Giá vốn NVL', num: true },
+    { k: 'dt', t: 'Doanh thu', num: true },
+    { k: 'tyLe', t: 'Tỷ lệ trên doanh thu', num: true },
+  ]
 
   return (
     <div className="page cpt-trang" onClickCapture={moTuTrangChu}>   {/* phần đầu, thẻ tổng cố định; phần dưới cuộn riêng (T263) */}
       <div className="cpt-dau">
         {ve}
-        <h1>Chi phí NVL tháng {thang}/2026</h1>
+        <h1>Giá vốn NVL tháng {thang}/2026</h1>
         <span className="grow" />
-        {x?.cach === 'tay'
-          ? <NutExcel onXuat={xuat} onNhap={() => khoa ? toast(`Tháng ${thang}/2026 đã khoá sổ, không nhập được giá thành`) : tep.current?.click()} />
-          : <NutXuatExcel onXuat={xuat} />}
-        <input ref={tep} type="file" accept=".xlsx" hidden onChange={e => { const f = e.target.files?.[0]; e.target.value = ''; if (f) nhap(f) }} />
+        <NutXuatExcel onXuat={xuat} />
         <Select className="inp nvl-thang" value={String(thang)} aria-label="Tháng" ds={THANG.map(t => ({ v: String(t), t: `Tháng ${t}/2026` }))}
           onChange={e => doi({ thang: e.target.value })} />
       </div>
       <div className="cpt-tong">
-        <span>Tổng chi phí NVL{cn ? ` · ${cn.ten}` : ''}<small className="nvl-phu">{moTaCach(tong.ds)} · {pct(dt ? tong.tien / dt : 0)} doanh thu</small></span>
-        {/* Giá thành iPOS Inventory: chi phí NVL gồm hai phần, ghi công thức kèm số (T232) */}
-        {cn && tong.ds[0].cach === 'ivt' && <span className="nvl-ct">= Tổng giá thành iPOS Inventory <b>{moneyD(tong.ds[0].gtMon ?? 0)}</b> + Chi phí NVL tiêu hao <b>{moneyD(tong.ds[0].tieuHao ?? 0)}</b></span>}
+        <span>Tổng giá vốn NVL{cn ? ` · ${cn.ten}` : ''}<small className="nvl-phu">{moTaCach(tong.cach)} · {pct(dt ? tong.tien / dt : 0)} doanh thu</small></span>
+        {/* Kiểm kê định kỳ: ghi công thức kèm số (T767) */}
+        {kk && <span className="nvl-ct">= Tồn đầu kỳ <b>{moneyD(tong.tonDau)}</b> + Mua trong tháng <b>{moneyD(tong.mua)}</b> − Tồn cuối kỳ <b>{moneyD(tong.tonCuoi)}</b></span>}
         <b>{moneyD(tong.tien)}</b>
       </div>
       <div className="cpt-cuon">
-      {khoa && <Note kind="gray" icon="lock">Tháng {thang}/2026 đã khoá sổ: chi phí NVL giữ theo cách tính lúc khoá, không sửa được.</Note>}
-      {cn ? <ChiTietCn cn={cn.id} thang={thang} khoa={khoa} tab={tab} setTab={setTab} locLoai={locLoai} setLocLoai={setLocLoai} /> : (
-        <section className="card nvl-bang">
-          <Table cols={[
-            // tên cửa hàng màu liên kết cho biết bấm được; bấm lan lên dòng mở chi tiết (T491)
-            { k: 'ten', t: 'Cửa hàng', r: r => <>{r.id ? <button type="button" className="ds-link-so nvl-ten-cn" title={`Xem chi phí NVL ${r.ten}`}>{r.ten}</button> : r.ten}{Number(r.thieu) > 0 && <span className="chip warn nvl-chip">Còn {r.thieu} món chưa có giá thành</span>}</> },
-            { k: 'cach', t: 'Cách tính' },
-            { k: 'dt', t: 'Doanh thu', num: true },
-            { k: 'tien', t: 'Chi phí NVL', num: true },
-            { k: 'tyLe', t: 'Tỷ lệ trên doanh thu', num: true },
-          ]} rows={tong.ds.map(x => ({ id: x.cn, ten: x.ten, thieu: x.thieuGia, cach: CACH_NVL[x.cach].ten, dt: x.dt, tien: x.tien, tyLe: pct(x.dt ? x.tien / x.dt : 0) }))}
-            sum={{ ten: 'Cộng', dt, tien: tong.tien, tyLe: pct(dt ? tong.tien / dt : 0) }}
-            onRow={r => doi({ cn: String(r.id) })} />
-          <div className="nvl-chan">Bấm cửa hàng để xem chi tiết. Đổi cách tính ở <Link to="/app/danh-muc/cua-hang">Danh mục cửa hàng</Link>.</div>
-        </section>
-      )}
-      </div>
-    </div>
-  )
-}
-
-function ChiTietCn({ cn, thang, khoa, tab, setTab, locLoai, setLocLoai }: {
-  cn: string; thang: number; khoa: boolean; tab: 'mon' | 'th'; setTab: (t: 'mon' | 'th') => void; locLoai: string; setLocLoai: (v: string) => void
-}) {
-  const { s, set } = useSession()
-  const x = nvlKy(s, [cn], thang).ds[0]
-  const mon = monBanKy(cn, thang)
-  const dau = (
-    <div className="nvl-cach">
-      <span>Cách tính: <b>{CACH_NVL[x.cach].ten}</b> · {CACH_NVL[x.cach].mota}</span>
-      <Link to="/app/danh-muc/cua-hang" className="btn sm ghost">Đổi cách tính</Link>
-    </div>
-  )
-  // Cột bảng món dùng chung cho giá thành iPOS Inventory và nhập tay; gia: ô Giá thành
-  const cotMon = (gia: (r: Row) => ReactNode): Col[] => [
-    { k: 'ma', t: 'Mã món', cls: 'code', w: 90 }, { k: 'ten', t: 'Tên món' }, { k: 'dvt', t: 'ĐVT', w: 70 },
-    { k: 'sl', t: 'Số lượng bán', num: true, w: 120 },
-    { k: 'gia', t: 'Giá thành', num: true, w: 150, r: gia },
-    { k: 'tien', t: 'Thành tiền', num: true, w: 150 },
-  ]
-  // iPOS Inventory (T232): hai tab, giá thành món lấy từ iPOS Inventory (chỉ xem) và chi phí NVL tiêu hao; mỗi tab ghi cách tính riêng
-  if (x.cach === 'ivt') {
-    const gt = giaThanhIvt(cn, thang)
-    const th = tieuHaoKy(cn, thang)
-    const dsTh = locLoai ? th.ds.filter(r => r.tenLoai === locLoai) : th.ds
-    const rows: Row[] = mon.map(m => ({ ...m, gia: gt.get(m.ma) ?? 0, tien: m.sl * (gt.get(m.ma) ?? 0) }))
-    const colsTh: Col[] = [{ k: 'ngay', t: 'Ngày', w: 110 }, { k: 'so', t: 'Số phiếu', cls: 'code', w: 150 }, { k: 'tenLoai', t: 'Loại phiếu', w: 150 },
-      { k: 'dienGiai', t: 'Diễn giải' }, { k: 'gt', t: 'Giá trị', num: true, w: 150 }]
-    return (
+      {khoa && <Note kind="gray" icon="lock">Tháng {thang}/2026 đã khoá sổ: giá vốn NVL giữ theo cách tính lúc khoá, không sửa được.</Note>}
       <section className="card nvl-bang">
-        <div className="nvl-tab-dau">
-          <div className="tabs nvl-tabs">
-            <button type="button" className={tab === 'mon' ? 'on' : ''} onClick={() => setTab('mon')}>Giá thành iPOS Inventory</button>
-            <button type="button" className={tab === 'th' ? 'on' : ''} onClick={() => setTab('th')}>Chi phí NVL tiêu hao</button>
-          </div>
-          <Link to="/app/danh-muc/cua-hang" className="btn sm ghost">Đổi cách tính</Link>
+        <div className="nvl-cach">
+          <span>Phương pháp giá vốn NVL chung cả công ty: <b>{CACH_NVL[tong.cach].ten}</b> · {CACH_NVL[tong.cach].mota}</span>
+          <Link to={DI_DOI_CACH_NVL} className="btn sm ghost">Đổi cách tính</Link>
         </div>
-        {tab === 'mon' ? <>
-          <div className="nvl-cach"><span>Cách tính: <b>Số lượng món bán × giá thành món trên iPOS Inventory</b></span></div>
-          <Table cols={cotMon(r => money(Number(r.gia)))} rows={rows} sum={{ ten: `${mon.length} món bán trong tháng`, tien: x.gtMon }} />
+        {cn ? <>
+          <Table cols={ganMoPhieu(cotMua)} rows={dsMua}
+            sum={{ so: `${dsMua.length} phiếu mua hàng`, tien: dsMua.reduce((a, r) => a + Number(r.tien), 0), thue: dsMua.reduce((a, r) => a + Number(r.thue), 0), tong: tong.mua }} />
+          <div className="nvl-chan">
+            <Link to="/app/mua-hang/4-1-1">Xem danh sách phiếu mua hàng</Link>
+            {kk && <>. Tồn đầu kỳ, tồn cuối kỳ lấy từ phiếu kiểm kê cuối tháng trước và cuối tháng này: <Link to="/app/kho/5-1-10">Xem phiếu kiểm kê</Link></>}
+          </div>
         </> : <>
-          <div className="nvl-cach"><span>Cách tính: <b>Xuất huỷ + Xuất điều chỉnh − Nhập điều chỉnh</b> · {moneyD(th.huy)} + {moneyD(th.xdc)} − {moneyD(th.ndc)}</span>
-            <Select className="inp nvl-loc" value={locLoai} aria-label="Loại phiếu" onChange={e => setLocLoai(e.target.value)}
-              ds={[{ v: '', t: 'Tất cả loại phiếu' }, ...['Xuất huỷ', 'Xuất điều chỉnh', 'Nhập điều chỉnh'].map(t => ({ v: t, t }))]} /></div>
-          <Table cols={ganMoPhieu(colsTh)} rows={dsTh} sum={{ so: `${dsTh.length} phiếu`, gt: dsTh.reduce((a, r) => a + r.gt, 0) }} />
+          <Table cols={cotCn}
+            rows={tong.ds.map(x => ({ id: x.cn, ten: x.ten, tonDau: x.tonDau, mua: x.mua, tonCuoi: x.tonCuoi, dt: x.dt, tien: x.tien, tyLe: pct(x.dt ? x.tien / x.dt : 0) }))}
+            sum={{ ten: 'Cộng', ...(kk ? { tonDau: tong.tonDau, mua: tong.mua, tonCuoi: tong.tonCuoi } : {}), dt, tien: tong.tien, tyLe: pct(dt ? tong.tien / dt : 0) }}
+            onRow={r => doi({ cn: String(r.id) })} />
+          <div className="nvl-chan">Bấm cửa hàng để xem phiếu mua hàng trong tháng.</div>
         </>}
       </section>
-    )
-  }
-  if (x.cach === 'nhap') {
-    const ds = phieuMuaKy(cn, thang)
-    const cols: Col[] = [{ k: 'so', t: 'Số phiếu', cls: 'code' }, { k: 'ngay', t: 'Ngày' }, { k: 'doiTuong', t: 'Nhà cung cấp' },
-      { k: 'tien', t: 'Tiền hàng', num: true }, { k: 'thue', t: 'Thuế GTGT', num: true }, { k: 'tong', t: 'Tổng tiền', num: true }]
-    return (
-      <section className="card nvl-bang">
-        {dau}
-        <Table cols={ganMoPhieu(cols)} rows={ds} sum={{ so: `${ds.length} phiếu`, tien: ds.reduce((a, r) => a + Number(r.tien), 0), thue: ds.reduce((a, r) => a + Number(r.thue), 0), tong: x.tien }} />
-        <div className="nvl-chan"><Link to="/app/mua-hang/4-1-1">Xem danh sách phiếu mua hàng</Link></div>
-      </section>
-    )
-  }
-  // Nhập tay: món có bán trong kỳ, số lượng lấy từ FABi, giá thành tự nhập; thành tiền = số lượng × giá thành
-  const rows: Row[] = mon.map(m => { const g = giaThanhTayCua(s, cn, thang, m.ma); return { ...m, gia: g, tien: g === undefined ? undefined : m.sl * g } })
-  const cols = cotMon(r => khoa ? money(Number(r.gia ?? 0))
-      : <input className={`inp nvl-gia${r.gia === undefined ? ' thieu' : ''}`} inputMode="numeric" placeholder="Nhập giá thành" aria-label={`Giá thành ${r.ten}`}
-          value={r.gia === undefined ? '' : money(Number(r.gia))}
-          onChange={e => { const so = e.target.value.replace(/\D/g, ''); set(datGiaThanhTay(s, cn, thang, String(r.ma), so ? Number(so) : undefined)) }} />)
-  return (
-    <section className="card nvl-bang">
-      {dau}
-      {x.thieuGia > 0 && !khoa && <Note kind="warn" icon="alert">Còn {x.thieuGia} món chưa có giá thành, đang tính bằng 0. Nhập giá thành vào ô tô vàng.</Note>}
-      <Table cols={cols} rows={rows} sum={{ ten: `${mon.length} món bán trong tháng`, tien: x.tien }} />
-    </section>
+      </div>
+    </div>
   )
 }
