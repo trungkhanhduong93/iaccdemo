@@ -46259,3 +46259,1063 @@ body:has(.ctpl-form) .pn-hop {
   }
 }
 
+/* ── Màn Tính giá vốn xuất kho: danh sách, modal chạy tính giá, danh sách mã lỗi, ô chọn tháng (T770) ── */
+/* chon-thang.css */
+/* Ô chọn tháng dạng popover lịch 12 tháng (T770) */
+.ct-nut {
+  width: 100%;
+  min-height: 42px;
+  padding: 4px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--white);
+  color: var(--body);
+  text-align: left;
+  cursor: pointer;
+  font-family: var(--fs);
+  font-size: 14px;
+}
+
+.ct-nut:hover:not(:disabled) {
+  border-color: var(--blue);
+}
+
+.ct-nut:disabled {
+  background: var(--soft);
+  color: var(--muted);
+  cursor: not-allowed;
+}
+
+.ct-nut[aria-expanded="true"] {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px var(--tint);
+}
+
+.ct-nut.loi {
+  border-color: var(--red);
+}
+
+.ct-gt {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  overflow: hidden;
+}
+
+.cthang-goi-y {
+  color: var(--faint);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.ct-icon {
+  flex: none;
+  color: var(--faint);
+}
+
+.ct-pop {
+  width: 316px;
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  box-shadow: var(--sh-lg);
+  padding: 10px 14px 14px;
+}
+
+.ct-lich-dau {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 10px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid var(--line);
+}
+
+.ct-lich-dau b {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.ct-lich-dau button {
+  width: 30px;
+  height: 30px;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+
+.ct-lich-dau button:hover:not(:disabled) {
+  background: var(--soft);
+  color: var(--ink);
+}
+
+.ct-lich-dau button:disabled {
+  color: var(--line);
+  cursor: not-allowed;
+}
+
+.ct-thang {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+
+.ct-thang button {
+  height: 44px;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  color: var(--body);
+  font-size: 13px;
+  cursor: pointer;
+  font-family: var(--fs);
+}
+
+.ct-thang button:hover:not(:disabled) {
+  background: var(--hdb-bg);
+}
+
+.ct-thang button.nay {
+  color: var(--blue);
+  font-weight: 600;
+}
+
+.ct-thang button[aria-pressed="true"],
+.ct-thang button.chon {
+  background: var(--blue);
+  color: var(--white);
+  font-weight: 600;
+}
+
+.ct-thang button:disabled {
+  background: var(--soft);
+  color: var(--faint);
+  cursor: not-allowed;
+}
+
+/* ds-ma-loi.css */
+/* Khung modal dùng chung cho Tính giá vốn xuất kho (T770) */
+.tgv-phu {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  background: var(--man, rgba(14, 26, 43, 0.5));
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding-block: calc(20px + env(safe-area-inset-top, 0px)) calc(20px + env(safe-area-inset-bottom, 0px));
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+
+.tgv-phu.tang-2 {
+  z-index: 30;
+  justify-content: center;
+}
+
+.tgv-hop {
+  width: 100%;
+  max-width: 900px;
+  flex: none;
+  margin-block: auto;
+  background: var(--white);
+  border-radius: var(--r);
+  box-shadow: var(--sh-lg);
+}
+
+.tgv-hop.loi {
+  max-width: 860px;
+}
+
+.hop-dau {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 18px 20px 14px;
+  border-bottom: 1px solid var(--line);
+}
+
+.hop-dau h2 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.hop-dau p {
+  margin: 2px 0 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.nut-x {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: 0;
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+
+.nut-x:hover {
+  background: var(--soft);
+  color: var(--ink);
+}
+
+.hop-than {
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.tgv-hop.loi .hop-than {
+  padding-block: 14px 18px;
+  gap: 12px;
+}
+
+.thanh-cong-cu {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 12px;
+}
+
+.thanh-cong-cu p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.cuon-bang {
+  max-height: 52vh;
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+}
+
+.tgv-hop.loi table {
+  width: 100%;
+  min-width: 640px;
+  table-layout: fixed;
+  border-collapse: collapse;
+  font-size: 13.5px;
+}
+
+.tgv-hop.loi th,
+.tgv-hop.loi td {
+  padding: 9px 12px;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--line);
+}
+
+.tgv-hop.loi th {
+  position: sticky;
+  top: 0;
+  background: var(--hdb-bg);
+  color: var(--ink);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.tgv-hop.loi td.stt,
+.tgv-hop.loi th.stt {
+  width: 52px;
+  text-align: right;
+  color: var(--muted);
+}
+
+.tgv-hop.loi td.ma-hang {
+  font-weight: 600;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.cat2 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+}
+
+.tgv-hop.loi td.ly-do {
+  overflow-wrap: anywhere;
+}
+
+.tgv-hop.loi tr:last-child td {
+  border-bottom: 0;
+}
+
+.hop-chan {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 14px 20px 18px;
+  border-top: 1px solid var(--line);
+}
+
+.hop-chan .nut {
+  height: 38px;
+  padding: 0 16px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--line);
+  background: var(--white);
+  color: var(--body);
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--fs);
+}
+
+.hop-chan .nut:hover:not(:disabled) {
+  background: var(--soft);
+}
+
+@media (max-width: 600px) {
+  .hop-chan .nut {
+    flex: 1;
+    justify-content: center;
+  }
+}
+
+/* modal-tinh-gia.css */
+/* Modal Tính giá vốn xuất kho (T770) */
+.modal-tinh-gia.tgv-phu {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  background: rgba(14, 26, 43, 0.5);
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding-block: calc(20px + env(safe-area-inset-top, 0px)) calc(20px + env(safe-area-inset-bottom, 0px));
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+
+.modal-tinh-gia .tgv-hop {
+  width: 100%;
+  max-width: 900px;
+  flex: none;
+  margin-block: auto;
+  background: var(--white);
+  border-radius: var(--r);
+  box-shadow: var(--sh-lg);
+}
+
+.modal-tinh-gia .hop-dau {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 18px 20px 14px;
+  border-bottom: 1px solid var(--line);
+}
+
+.modal-tinh-gia .hop-dau h2 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.modal-tinh-gia .hop-dau p {
+  margin: 2px 0 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.modal-tinh-gia .nut-x {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: var(--r-sm);
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.modal-tinh-gia .nut-x:hover:not(:disabled) {
+  background: var(--soft);
+  color: var(--ink);
+}
+
+.modal-tinh-gia .nut-x:disabled {
+  color: var(--line);
+  cursor: not-allowed;
+}
+
+.modal-tinh-gia .hop-than {
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Bảng điều kiện 4 dòng, cột nhãn 220px nền xám, ô chọn cao 42px */
+.modal-tinh-gia .bang {
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+}
+
+.modal-tinh-gia .dk {
+  position: relative;
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+}
+
+.modal-tinh-gia .dk + .dk {
+  border-top: 1px solid var(--line);
+}
+
+.modal-tinh-gia .dk-nhan {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 14px 16px;
+  background: var(--soft);
+  border-right: 1px solid var(--line);
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.modal-tinh-gia .dk:first-child .dk-nhan {
+  border-top-left-radius: var(--r-sm);
+}
+
+.modal-tinh-gia .dk:last-child .dk-nhan {
+  border-bottom-left-radius: var(--r-sm);
+}
+
+.modal-tinh-gia .dk-nhan .bb {
+  color: var(--red);
+  font-weight: 600;
+}
+
+.modal-tinh-gia .dk-nhan .i {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--muted);
+  color: var(--white);
+  font: 700 10px/14px var(--fs);
+  text-align: center;
+  cursor: help;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-tinh-gia .dk-o {
+  position: relative;
+  padding: 9px 12px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.modal-tinh-gia .dk-o .chc-o,
+.modal-tinh-gia .dk-o .ct-nut {
+  min-height: 42px;
+  height: 42px;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  font-family: var(--fs);
+  font-size: 14px;
+}
+
+.modal-tinh-gia .dk-o .chc-o:hover:not(.disabled),
+.modal-tinh-gia .dk-o .ct-nut:hover:not(:disabled) {
+  border-color: var(--blue);
+}
+
+.modal-tinh-gia .dk-o .chc-o.disabled,
+.modal-tinh-gia .dk-o .ct-nut:disabled {
+  background: var(--soft);
+  color: var(--muted);
+  cursor: not-allowed;
+}
+
+.modal-tinh-gia .loi-chu {
+  margin: 4px 2px 0;
+  font-size: 12px;
+  color: var(--red);
+}
+
+/* Tiến trình */
+.modal-tinh-gia .tien-do {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  border-radius: var(--r-sm);
+  background: var(--tint);
+}
+
+.modal-tinh-gia .td-tren {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.modal-tinh-gia .td-tren b {
+  color: var(--blue-d);
+  font-weight: 600;
+}
+
+.modal-tinh-gia .td-pt {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--blue-d);
+}
+
+.modal-tinh-gia .thanh {
+  height: 8px;
+  border-radius: 999px;
+  background: var(--tint);
+  box-shadow: inset 0 0 0 1px rgba(5, 96, 166, 0.16);
+  overflow: hidden;
+}
+
+.modal-tinh-gia .thanh i {
+  display: block;
+  height: 100%;
+  width: 0;
+  border-radius: 999px;
+  background: var(--blue);
+  transition: width 0.12s linear;
+}
+
+.modal-tinh-gia .td-dang {
+  font-size: 13px;
+  color: var(--ink);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.modal-tinh-gia .td-duoi {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 2px 12px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* Kết quả */
+.modal-tinh-gia .kq {
+  display: flex;
+  gap: 10px;
+  padding: 12px;
+  border-radius: var(--r-sm);
+}
+
+.modal-tinh-gia .kq svg {
+  flex: none;
+  margin-top: 1px;
+}
+
+.modal-tinh-gia .kq.xong {
+  background: var(--green-t);
+}
+
+.modal-tinh-gia .kq.xong svg,
+.modal-tinh-gia .kq.xong b {
+  color: var(--green);
+}
+
+.modal-tinh-gia .kq.huy {
+  background: var(--amber-t);
+}
+
+.modal-tinh-gia .kq.huy svg,
+.modal-tinh-gia .kq.huy b {
+  color: var(--amber);
+}
+
+.modal-tinh-gia .kq.canh-bao {
+  background: var(--amber-t);
+}
+
+.modal-tinh-gia .kq.canh-bao svg,
+.modal-tinh-gia .kq.canh-bao b {
+  color: var(--amber);
+}
+
+.modal-tinh-gia .kq > div {
+  flex: 1;
+  min-width: 0;
+}
+
+.modal-tinh-gia .kq b {
+  display: block;
+  font-weight: 600;
+}
+
+.modal-tinh-gia .kq p {
+  margin: 2px 0 0;
+  font-size: 13px;
+  color: var(--body);
+}
+
+.modal-tinh-gia .dem-kq {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 16px;
+  margin-top: 8px;
+  font-size: 13px;
+}
+
+.modal-tinh-gia .dem-kq span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.modal-tinh-gia .dem-kq i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.modal-tinh-gia .dem-kq .tc i {
+  background: var(--green);
+}
+
+.modal-tinh-gia .dem-kq .ll i {
+  background: var(--red);
+}
+
+.modal-tinh-gia .dem-kq strong {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.modal-tinh-gia .nut-xem-loi {
+  margin-left: auto;
+  height: 32px;
+  padding: 0 12px;
+  border: 1px solid var(--amber);
+  border-radius: 6px;
+  background: var(--white);
+  color: var(--amber);
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--fs);
+  font-size: 13px;
+}
+
+.modal-tinh-gia .nut-xem-loi:hover {
+  background: var(--amber-t);
+}
+
+/* Chân modal */
+.modal-tinh-gia .hop-chan {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 14px 20px 18px;
+  border-top: 1px solid var(--line);
+}
+
+.modal-tinh-gia .nut {
+  height: 38px;
+  padding: 0 16px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--line);
+  background: var(--white);
+  color: var(--body);
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--fs);
+  font-size: 14px;
+}
+
+.modal-tinh-gia .nut:hover:not(:disabled) {
+  background: var(--soft);
+}
+
+.modal-tinh-gia .nut.chinh-nut {
+  background: var(--blue);
+  border-color: var(--blue);
+  color: var(--white);
+  font-weight: 600;
+}
+
+.modal-tinh-gia .nut.chinh-nut:hover:not(:disabled) {
+  background: var(--blue-d);
+  border-color: var(--blue-d);
+}
+
+.modal-tinh-gia .nut.do {
+  border-color: var(--red);
+  color: var(--red);
+  font-weight: 600;
+  background: var(--white);
+}
+
+.modal-tinh-gia .nut.do:hover:not(:disabled) {
+  background: var(--red-t);
+}
+
+.modal-tinh-gia .nut:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (max-width: 600px) {
+  .modal-tinh-gia .dk {
+    grid-template-columns: 1fr;
+  }
+  .modal-tinh-gia .dk-nhan {
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+    padding-block: 7px;
+  }
+  .modal-tinh-gia .dk:first-child .dk-nhan {
+    border-top-right-radius: var(--r-sm);
+  }
+  .modal-tinh-gia .dk:last-child .dk-nhan {
+    border-bottom-left-radius: 0;
+  }
+  .modal-tinh-gia .hop-chan .nut {
+    flex: 1;
+    justify-content: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .modal-tinh-gia .thanh i {
+    transition: none;
+  }
+}
+
+/* ds-gia-von.css */
+/* Danh sách tính giá vốn xuất kho (T770) */
+.page-gia-von {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.gia-von-dau {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.gia-von-dau h1 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.gia-von-dau p {
+  margin: 0;
+  max-width: 80ch;
+  color: var(--muted);
+  font-size: 13.5px;
+}
+
+.the-ds {
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  overflow: hidden;
+}
+
+/* Hàng trạng thái dưới thanh toolbar */
+.page-gia-von .ds-hang-trang-thai {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 12px 6px 16px;
+  border-bottom: 1px solid var(--line-2);
+  background: var(--white);
+}
+
+.page-gia-von .ds-hang-trang-thai .trang-thai {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 14px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.page-gia-von .ds-hang-trang-thai .trang-thai b {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.page-gia-von .ds-hang-trang-thai .trang-thai .lk {
+  border: 0;
+  background: none;
+  padding: 0;
+  color: var(--link);
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.page-gia-von .ds-hang-trang-thai .trang-thai .lk:hover {
+  text-decoration: underline;
+}
+
+/* Khung cuộn bảng danh sách tính giá vốn */
+.cuon-ds {
+  overflow: auto;
+  max-height: calc(100dvh - 250px);
+  min-height: 320px;
+}
+
+table.ds-gv {
+  width: 100%;
+  min-width: 1300px;
+  table-layout: fixed;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 13.5px;
+}
+
+.ds-gv th,
+.ds-gv td {
+  padding: 9px 10px;
+  border-bottom: 1px solid var(--line);
+  border-right: 1px solid var(--line-2);
+}
+
+.ds-gv th:last-child,
+.ds-gv td:last-child {
+  border-right: 0;
+}
+
+.ds-gv th {
+  position: sticky;
+  top: 0;
+  background: var(--soft);
+  color: var(--ink);
+  font-weight: 600;
+  z-index: 2;
+  vertical-align: middle;
+  font-size: 13px;
+  white-space: normal;
+}
+
+.ds-gv thead tr:first-child th {
+  height: 40px;
+}
+
+.ds-gv thead tr:nth-child(2) th {
+  top: 40px;
+}
+
+.ds-gv th.nhom {
+  text-align: center;
+  color: var(--blue-d);
+}
+
+.ds-gv th small {
+  display: block;
+  margin-top: 1px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--muted);
+  letter-spacing: 0.06em;
+}
+
+.ds-gv .so {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.ds-gv .giua {
+  text-align: center;
+}
+
+.ds-gv td.so {
+  white-space: nowrap;
+}
+
+.ds-gv td.stt-ds {
+  text-align: center;
+  color: var(--muted);
+}
+
+.ds-gv .khong {
+  color: var(--faint);
+}
+
+.ds-gv th.gv {
+  background: var(--gv-dau, #dbe8f4);
+}
+
+.ds-gv td.gv {
+  background: var(--gv, #f2f7fc);
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.ds-gv tbody tr:hover td {
+  background: var(--hdb, #f4f7fa);
+}
+
+.ds-gv tbody tr:hover td.gv {
+  background: var(--tint, #e6eff7);
+}
+
+.ds-gv .phu-chu {
+  display: block;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.ds-gv td.tg {
+  white-space: nowrap;
+}
+
+.ds-gv td.tg span {
+  color: var(--muted);
+}
+
+.ds-gv tr.moi td {
+  animation: sang 2.4s ease-out;
+}
+
+@keyframes sang {
+  from {
+    background: var(--green-t, #e3f4ea);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ds-gv tr.moi td {
+    animation: none;
+  }
+}
+
+.ds-gv tfoot td {
+  position: sticky;
+  bottom: 0;
+  background: var(--white);
+  border-top: 2px solid var(--line);
+  border-bottom: 0;
+  font-weight: 700;
+  color: var(--ink);
+  z-index: 1;
+}
+
+.ds-gv tfoot td.gv {
+  background: var(--gv, #f2f7fc);
+}
+
+.chip-loi {
+  display: inline-block;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: var(--red-t, #fcebea);
+  color: var(--red, #c2362b);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: help;
+}
+
+.cat2 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+}
+
+.phan-trang {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 14px;
+  border-top: 1px solid var(--line);
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.phan-trang b {
+  color: var(--ink);
+}
+
+.phan-trang .trang {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.phan-trang .trang button {
+  min-width: 28px;
+  height: 28px;
+  padding: 0 6px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  background: var(--white);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  color: var(--ink);
+}
+
+.phan-trang .trang button:hover:not(:disabled) {
+  background: var(--soft);
+}
+
+.phan-trang .trang button[aria-current="page"] {
+  background: var(--tint, #e6eff7);
+  border-color: var(--blue, #0560a6);
+  color: var(--blue, #0560a6);
+  font-weight: 600;
+}
+
+.phan-trang .trang button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}

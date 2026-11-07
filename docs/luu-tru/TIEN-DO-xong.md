@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T770 | Màn Tính giá vốn xuất kho (kho/5-1-7) theo bản vẽ: danh sách giá vốn đầu kỳ, nhập, giá vốn theo kho và hàng, lọc như Xuất khác; modal chạy tính giá có Huỷ; báo mã lỗi, danh sách mã lỗi xuất Excel | Trum | 07/11/2026 | 2026-11-07-trum-tinh-gia-von-xuat-kho.md |
 | T769 | Trang đăng nhập, quên mật khẩu theo iFaster: slider 4 ảnh màn thật, thanh logo, khung nhắc tài khoản FABi, nút mắt, Nhớ đăng nhập, Thử mở từ FABi, Đăng ký sử dụng ngay | Trum | 07/11/2026 | 2026-11-07-trum-dang-nhap-ifaster.md |
 | T768 | Trang chủ Standard: Giá vốn NVL đổi tên thành Chi phí NVL ở web, app; màn chi tiết một cửa hàng là bảng mặt hàng NVL (tồn đầu, mua, tồn cuối, sử dụng, giá gần nhất, chi phí), thêm nút Kiểm kê ngay, bỏ lọc tháng trong màn | PhuongXT | 07/11/2026 | 2026-11-07-phuongxt-chi-phi-nvl-mat-hang.md |
 | T767 | Giá vốn NVL trang chủ chỉ còn 2 phương pháp chung cả công ty (Kiểm kê định kỳ, Tổng chi phí mua hàng trong tháng), cài ở Thông tin đơn vị; Chế độ kế toán thêm Ngày bắt đầu làm việc, bỏ Năm làm việc hiện tại | PhuongXT | 07/11/2026 | 2026-11-07-phuongxt-phuong-phap-gia-von-nvl.md |

@@ -10,6 +10,7 @@ import { SO_BO_SUNG } from '../bao-cao/so-bo-sung'
 import { MAN_KK, mauDieuChinh, mauKiemKe } from './dieu-chinh'
 import { PhieuSanXuat } from './PhieuSanXuat'
 import { CongThucScreen } from './CongThuc'
+import { TinhGiaVon } from './tinh-gia-von/TinhGiaVon'
 import { cauHinhSx, type LoaiSx } from './san-xuat'
 import { baoCaoKiemKe, chiTietKho, tongHopKho, tongHopTra, type NguonPhieu } from './bao-cao'
 import { PhieuDieuChuyen } from './PhieuDieuChuyen'
@@ -112,9 +113,7 @@ const kho: ModuleDef = {
     '5.1.3': phieuSx('xcb', 'Xuất chế biến', 'flask'),
     '5.1.5': { kind: 'custom', comp: CongThucScreen, icon: 'book' },
     '5.1.6': phieuSx('xsc', 'Xuất sơ chế', 'chef'),
-    '5.1.7': { tool: { nut: 'Tính giá vốn tháng 9/2026', mota: 'Tính giá xuất kho bình quân gia quyền cuối kỳ cho từng nguyên vật liệu, từng kho. Cập nhật đơn giá vào phiếu xuất bán POS, xuất huỷ, xuất khác và bút toán giá vốn. Chạy lại được nhiều lần trước khi khoá sổ.',
-      caiDat: [['Kỳ tính', 'Tháng 9/2026'], ['Phương pháp', 'Bình quân gia quyền cuối kỳ'], ['Phạm vi', 'Tất cả kho']],
-      nhatKy: [['07/10/2026 09:20', 'Tính thử tháng 9/2026: 142 mặt hàng, 5 kho', 'Có 2 mặt hàng tồn âm'], ['01/09/2026 08:45', 'Tháng 8/2026: 138 mặt hàng, 5 kho', 'Xong']] } },
+    '5.1.7': { kind: 'custom', comp: TinhGiaVon },
     '5.1.8': { tool: { nut: 'Tính giá thành tháng 9/2026', mota: 'Giá thành món theo công thức chế biến và giá xuất kho bình quân. Dùng cho chuỗi có một cấp chế biến.', caiDat: [['Kỳ tính', 'Tháng 9/2026'], ['Đối tượng', 'Món bán trên FABi']] } },
     '5.1.10': KK,
     '5.1.11': { voucher: { prefix: 'BSG', doiTuong: 'ncc', nhan: 'Nhà cung cấp', them: 'Thêm phiếu bổ sung giá', dong: 'nvl', tien: [0, 0], thue: 0, dienGiai: ['Bổ sung giá cho phiếu nhập chưa có giá'], noCo: [['152', '331', 'Bổ sung giá nhập']] } },
