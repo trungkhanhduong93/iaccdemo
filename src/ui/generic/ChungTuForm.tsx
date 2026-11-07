@@ -188,8 +188,9 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
   // Phiếu chuyển quỹ: quỹ đi và quỹ đến. Rút tiền ngân hàng thì đi từ tài khoản về quỹ tiền mặt
   const quyTm = `Quỹ tiền mặt ${CUA_HANG.find(c => c.ten === cuaHang)?.ngan ?? CUA_HANG[0].ngan}`
   const rut = fold(dienGiai).includes('rut tien')
-  const [tuQuy, setTuQuy] = useState(rut ? QUY_TIEN[CUA_HANG.length] : quyTm)
-  const [denQuy, setDenQuy] = useState(rut ? quyTm : QUY_TIEN[CUA_HANG.length])
+  // Phiếu đã lưu Từ quỹ, Đến quỹ thì mở lại đúng quỹ đã chọn (T779)
+  const [tuQuy, setTuQuy] = useState(() => row?._tuQuy ? String(row._tuQuy) : rut ? QUY_TIEN[CUA_HANG.length] : quyTm)
+  const [denQuy, setDenQuy] = useState(() => row?._denQuy ? String(row._denQuy) : rut ? quyTm : QUY_TIEN[CUA_HANG.length])
   useEffect(() => {
     setLyDo(row?._lyDo ? String(row._lyDo) : lyGoc(row?.dienGiai ? String(row.dienGiai) : cfg.dienGiai[0]))
   }, [loai?.k, row?.id])
@@ -497,6 +498,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
       _nguoiGiao: nguoiGiao, _nhanVien: nhanVien, _diaChi: diaChi, _mst: mst, _hanTt: hanTt,
       _nhanKemHd: nhanKemHd, _soHd: soHd, _ngayHd: ngayHd, _kyHieuHd: kyHieuHd, _httt: hinhThucTt, _ctTt: ctTt,
       ...(nhom === 'ban' && hinhThucTt !== 'congno' ? { _pttt: pttt } : {}),
+      ...(nhom === 'cq' ? { _tuQuy: tuQuy, _denQuy: denQuy } : {}),   // T779
       ...(dsDc ? { _dsDc: dsDc } : {}),
       ...(coCpMua ? { _cpMua: cpCo ? cpMua : 0 } : {}),
       ...(traTu ? { _thamChieu: traTu.so, _thamChieuDi: traTu.di, _traTuMua: traTu.id } : {}),   // T727

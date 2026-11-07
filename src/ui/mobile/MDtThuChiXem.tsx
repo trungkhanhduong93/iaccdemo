@@ -3,8 +3,8 @@ import { Link, useNavigate } from 'react-router-dom'
 import type { Row, ScreenProps } from '../../modules/types'
 import { duongDan } from '../../app/registry'
 import { useSession } from '../../app/session'
-import { money } from '../format'
-import { theCuaPhieu } from '../generic/ChungTuForm'
+import { fold, money } from '../format'
+import { QUY_TIEN, theCuaPhieu } from '../generic/ChungTuForm'
 import { MLichSu } from './MLichSu'
 import { useDongChungTu } from '../generic/VoucherScreen'
 import { HopXacNhan } from '../LocNangCao'
@@ -69,6 +69,12 @@ export const MDtThuChiXem: FC<MDtThuChiXemProps> = ({
   const isCq = row.loai === 'cq'
   // Phiếu chuyển quỹ mẫu nhiều cái không ghi lý do, vẫn hiện dòng Lý do
   const lyDoHien = triLyDo || (isCq ? 'Chuyển quỹ' : '')
+  // Chuyển quỹ: Từ quỹ, Đến quỹ như form máy tính; phiếu chưa lưu thì suy như web, rút tiền đi từ ngân hàng về quỹ tiền mặt (T779)
+  const quyTmCh = `Quỹ tiền mặt ${CUA_HANG.find(c => c.ten === cuaHangTen)?.ngan ?? CUA_HANG[0].ngan}`
+  const quyNh = QUY_TIEN[CUA_HANG.length]
+  const rut = fold(String(row.dienGiai ?? row._ghiChu ?? '')).includes('rut tien')
+  const tuQuy = isCq ? String(row._tuQuy ?? (rut ? quyNh : triQuy)) : triQuy
+  const denQuy = isCq ? String(row._denQuy ?? (tuQuy === quyNh ? quyTmCh : quyNh)) : ''
 
   const tenLoaiPhieu = row.tenLoai
     ? String(row.tenLoai)
@@ -157,8 +163,14 @@ export const MDtThuChiXem: FC<MDtThuChiXemProps> = ({
             <span className="m-tc-xem-quy-nhan">
               {isChi ? 'Quỹ tiền mặt *' : isThu ? 'Quỹ thu tiền *' : 'Từ quỹ *'}
             </span>
-            <span className="m-tc-xem-quy-ten">{triQuy}</span>
+            <span className="m-tc-xem-quy-ten">{tuQuy}</span>
           </div>
+          {isCq && (
+            <div className="m-tc-xem-khoi-quy m-tc-xem-den-quy">
+              <span className="m-tc-xem-quy-nhan">Đến quỹ *</span>
+              <span className="m-tc-xem-quy-ten">{denQuy}</span>
+            </div>
+          )}
         </section>
 
         {/* 2. Segmented control 3 options */}
