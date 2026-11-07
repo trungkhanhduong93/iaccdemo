@@ -120,6 +120,17 @@ export function suaCatalogRow(dm: string, ma: unknown, row: Row | null) {
   emitChange()
 }
 
+/** Thay cả nhóm dòng trong kho phiên (vd mọi dòng của một bảng giá, T761): bỏ dòng khớp, chèn dòng mới vào chỗ dòng khớp đầu tiên; moi rỗng là xoá nhóm */
+export function thayNhomCatalogRows(dm: string, khop: (r: Row) => boolean, moi: Row[]) {
+  const normKey = chieuKhoa(dm)
+  const cur = daThemRows.get(normKey) ?? []
+  const i = cur.findIndex(khop)
+  const con = cur.filter(r => !khop(r))
+  const viTri = i < 0 ? con.length : cur.slice(0, i).filter(r => !khop(r)).length
+  daThemRows.set(normKey, [...con.slice(0, viTri), ...moi, ...con.slice(viTri)])
+  emitChange()
+}
+
 /** Tự sinh mã kế tiếp nếu ô Mã để trống (T347) */
 export function sinhMaKeTiep(dm: string, formVal: Row, allRows: Row[]): string {
   const normKey = chieuKhoa(dm)

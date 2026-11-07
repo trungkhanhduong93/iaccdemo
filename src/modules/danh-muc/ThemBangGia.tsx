@@ -2,8 +2,8 @@
 // Đầu form: loại giá, thời gian áp dụng, cửa hàng áp dụng (chung cho mọi dòng); nhà cung cấp, khách hàng mặc định cho dòng mới.
 // Lưới chi tiết: mỗi dòng một đối tượng + một mặt hàng + ĐVT (chọn lại được ĐVT quy đổi) + đơn giá + VAT.
 // Giá nhập bắt buộc nhà cung cấp; giá bán để trống khách hàng là áp dụng cho mọi khách hàng.
-// T761 (QD101): mỗi lần khai là một bảng giá có mã BGxxxx, tên, giữ cả lưới trong dong; danh sách một dòng mỗi bảng giá.
-// Bấm dòng bảng giá mở form này để sửa cả lưới. Trùng mặt hàng với bảng giá khác cùng thời gian, cửa hàng thì hỏi lại, bảng bắt đầu muộn hơn được ưu tiên.
+// T761 (QD101): mỗi lần khai là một bảng giá có mã BGxxxx, tên. Kho lưu mỗi mặt hàng một dòng kèm soBg, tenBg; danh sách hiện chi tiết từng dòng.
+// Bấm một dòng mở form này với mọi dòng cùng mã bảng giá để sửa cả lưới. Trùng mặt hàng với bảng giá khác cùng thời gian, cửa hàng thì hỏi lại, bảng bắt đầu muộn hơn được ưu tiên.
 import { useState } from 'react'
 import { useSession } from '../../app/session'
 import { FormToanMan } from '../../ui/FormToanMan'
@@ -12,8 +12,9 @@ import { HopXacNhan } from '../../ui/LocNangCao'
 import { Select } from '../../ui/Dropdown'
 import { ChonKhoangNgay, type KhoangNgay } from '../../ui/ChonNgay'
 import { ThemHangLoat, type HangChon } from '../../ui/generic/ThemHangLoat'
-import { addCatalogRow, gieoCatalogRows, suaCatalogRow, useAddedCatalogRows } from '../../ui/generic/danhMucStore'
-import { dmy, docSoQT } from '../../ui/format'
+import { gieoCatalogRows, thayNhomCatalogRows, useAddedCatalogRows } from '../../ui/generic/danhMucStore'
+import { dmy, docSoQT, money } from '../../ui/format'
+import { OLoc, dangLoc, dsGiaTri, khopLoc, type GiaTriLoc, type KieuLoc, type LocCot } from '../../ui/LocCot'
 import type { Row } from '../types'
 import { CUA_HANG, HANG, HOM_NAY, KHACH, NCC, NVL } from '../../data/mock'
 import { DS_HANG_HOA_12 } from './data'
@@ -23,7 +24,7 @@ import { ONhap } from '../ccdc/the-phan-bo'
 type LoaiGia = 'Giá nhập' | 'Giá bán'
 interface HangGia { ma: string; ten: string; dvt: string; nhom?: string; gia: number; vat: number }
 interface DongGia { key: number; dt: string; ma: string; dvt: string; gia: string; vat: string }   // dt: mã nhà cung cấp (giá nhập) hoặc khách hàng (giá bán)
-interface DongLuu { dt: string; ma: string; dvt: string; gia: number; vat: number }   // dòng lưu trong bảng giá (cột dong)
+interface DongLuu { dt: string; ma: string; dvt: string; gia: number; vat: number }   // một mặt hàng của bảng giá trước khi thành dòng danh sách
 
 /** Giá bán: món, hàng bán; giá nhập: nguyên vật liệu và hàng mua về bán lại (có tồn kho) */
 const HANG_BAN: HangGia[] = DS_HANG_HOA_12.map(h => {
@@ -53,34 +54,32 @@ const DM = '1.14'
 const tenNcc = (ma: string) => NCC.find(n => n.ma === ma)?.ten ?? ''
 const tenKh = (ma: string) => KHACH.find(n => n.ma === ma)?.ten ?? ''
 
-/** Một dòng danh sách bảng giá: giữ cả lưới trong dong; soHang, hang, ncc, kh là phần tóm tắt để hiện, tìm */
-function bangGia(ma: string, ten: string, loai: LoaiGia, thoiGian: string, cuaHang: string, dong: DongLuu[], _tt = 1): Row {
+/** Các dòng danh sách của một bảng giá: mỗi mặt hàng một dòng, kèm mã, tên bảng giá và phần chung (loại, thời gian, cửa hàng) */
+function bangGia(soBg: string, tenBg: string, loai: LoaiGia, thoiGian: string, cuaHang: string, dong: DongLuu[], _tt = 1): Row[] {
   const laNhap = loai === 'Giá nhập'
   const ds = laNhap ? HANG_NHAP : HANG_BAN
-  const duyNhat = (a: string[]) => [...new Set(a.filter(Boolean))].join(', ')
-  return {
-    ma, ten, loai, thoiGian, cuaHang, dong, _tt,
-    soHang: new Set(dong.map(d => d.ma)).size,
-    hang: duyNhat(dong.map(d => ds.find(h => h.ma === d.ma)?.ten ?? d.ma)),
-    ncc: laNhap ? duyNhat(dong.map(d => tenNcc(d.dt))) : '',
-    // Giá bán: dòng để trống khách hàng là mọi khách hàng
-    kh: laNhap ? '' : duyNhat([...(dong.some(d => !d.dt) ? ['Tất cả khách hàng'] : []), ...dong.map(d => tenKh(d.dt))]),
-  }
+  return dong.map((d, i) => ({
+    _k: `${soBg}-${i + 1}`, soBg, tenBg, loai, thoiGian, cuaHang, _tt,
+    maHang: d.ma, tenHang: ds.find(h => h.ma === d.ma)?.ten ?? d.ma, dvt: d.dvt, gia: d.gia, vat: d.vat, dtMa: d.dt,
+    // Giá bán để trống khách hàng là mọi khách hàng
+    ncc: laNhap ? tenNcc(d.dt) : '', kh: laNhap ? '' : tenKh(d.dt),
+  }))
 }
 
 // Dữ liệu mẫu: giá bán thực đơn, giá bán riêng cho một khách hàng, giá nhập nguyên vật liệu theo nhà cung cấp cùng nhóm
 gieoCatalogRows(DM, [
-  bangGia('BG0001', 'Giá bán thực đơn 2026', 'Giá bán', '01/09/2026 - 31/12/2026', '',
-    HANG_BAN.map(h => ({ dt: '', ma: h.ma, dvt: h.dvt, gia: h.gia, vat: h.vat }))),
-  bangGia('BG0002', `Giá bán riêng ${KHACH[0]?.ten ?? 'khách quen'}`, 'Giá bán', '01/10/2026 - 31/12/2026', CUA_HANG[0]?.ten ?? '',
-    HANG_BAN.slice(0, 4).map(h => ({ dt: KHACH[0]?.ma ?? '', ma: h.ma, dvt: h.dvt, gia: Math.round(h.gia * 0.9 / 1000) * 1000, vat: h.vat }))),
-  bangGia('BG0003', 'Giá nhập nguyên vật liệu Q4/2026', 'Giá nhập', '01/10/2026 - 31/03/2027', '',
+  // Thực đơn chỉ lấy món bán (HANG), không lấy nguyên vật liệu, công cụ dụng cụ trong danh mục hàng hoá chung
+  ...bangGia('BG0001', 'Giá bán thực đơn 2026', 'Giá bán', '01/09/2026 - 31/12/2026', '',
+    HANG_BAN.filter(h => HANG.some(x => x.ma === h.ma)).map(h => ({ dt: '', ma: h.ma, dvt: h.dvt, gia: h.gia, vat: h.vat }))),
+  ...bangGia('BG0002', 'Giá bán khách đoàn Biển Xanh', 'Giá bán', '01/10/2026 - 31/12/2026', CUA_HANG[0]?.ten ?? '',
+    HANG_BAN.slice(0, 4).map(h => ({ dt: KHACH.find(k => k.ma === 'KH002')?.ma ?? '', ma: h.ma, dvt: h.dvt, gia: Math.round(h.gia * 0.9 / 1000) * 1000, vat: h.vat }))),
+  ...bangGia('BG0003', 'Giá nhập nguyên vật liệu Q4/2026', 'Giá nhập', '01/10/2026 - 31/03/2027', '',
     NVL.slice(0, 8).map(h => ({ dt: (NCC.find(n => n.nhom === h.nhom) ?? NCC[0]).ma, ma: h.ma, dvt: h.dvt, gia: h.gia, vat: h.ts }))),
 ])
 
 /** Mã bảng giá kế tiếp: BG + 4 số, lớn nhất đang có cộng 1 */
 function maKeTiep(rows: Row[]): string {
-  const so = Math.max(0, ...rows.map(r => Number(String(r.ma ?? '').replace(/^BG/, '')) || 0))
+  const so = Math.max(0, ...rows.map(r => Number(String(r.soBg ?? '').replace(/^BG/, '')) || 0))
   return `BG${String(so + 1).padStart(4, '0')}`
 }
 
@@ -92,27 +91,50 @@ const giaoCh = (a: string[], b: string[]) => !a.length || !b.length || a.some(x 
 export function ThemBangGia({ onDong, tab, sua: dongSua }: { onDong: () => void; tab?: string; sua?: Row }) {
   const { toast } = useSession()
   const tatCa = useAddedCatalogRows(DM)
-  const [ten, setTen] = useState(String(dongSua?.ten ?? ''))
+  // Sửa: lấy mọi dòng cùng mã bảng giá với dòng vừa bấm; dau giữ phần chung của bảng giá
+  const soBg = dongSua?.soBg ? String(dongSua.soBg) : ''
+  const [dongCu] = useState(() => soBg ? tatCa.filter(r => r.soBg === soBg) : [])
+  const dau: Row | undefined = dongCu[0] ?? dongSua
+  const [ten, setTen] = useState(String(dau?.tenBg ?? ''))
   const [hoiTrung, setHoiTrung] = useState<string[] | null>(null)
   const homNay = new Date(HOM_NAY.getFullYear(), HOM_NAY.getMonth(), HOM_NAY.getDate())
-  const [loai, setLoai] = useState<LoaiGia>(dongSua ? (dongSua.loai === 'Giá bán' ? 'Giá bán' : 'Giá nhập') : tab === 'Giá bán' ? 'Giá bán' : 'Giá nhập')   // mở theo tab đang xem (T724)
-  const [khoang, setKhoang] = useState<KhoangNgay>(() => (dongSua && docKhoang(dongSua.thoiGian)) || { tu: homNay, den: new Date(homNay.getFullYear() + 1, homNay.getMonth(), homNay.getDate() - 1) })
-  const [cuaHang, setCuaHang] = useState<string[]>(() => dongSua?.cuaHang ? String(dongSua.cuaHang).split(',').map(x => x.trim()).filter(Boolean) : [])
-  const [dong, setDong] = useState<DongGia[]>(() => {
-    const cu = (dongSua?.dong ?? []) as DongLuu[]
-    return cu.length ? cu.map(d => ({ key: ++soKhoa, dt: d.dt, ma: d.ma, dvt: d.dvt, gia: String(d.gia), vat: String(d.vat) })) : [dongMoi(), dongMoi(), dongMoi()]
-  })
+  const [loai, setLoai] = useState<LoaiGia>(dau ? (dau.loai === 'Giá bán' ? 'Giá bán' : 'Giá nhập') : tab === 'Giá bán' ? 'Giá bán' : 'Giá nhập')   // mở theo tab đang xem (T724)
+  const [khoang, setKhoang] = useState<KhoangNgay>(() => (dau && docKhoang(dau.thoiGian)) || { tu: homNay, den: new Date(homNay.getFullYear() + 1, homNay.getMonth(), homNay.getDate() - 1) })
+  const [cuaHang, setCuaHang] = useState<string[]>(() => tachCh(dau?.cuaHang))
+  const [dong, setDong] = useState<DongGia[]>(() => dongCu.length
+    ? dongCu.map(r => ({ key: ++soKhoa, dt: String(r.dtMa ?? ''), ma: String(r.maHang ?? ''), dvt: String(r.dvt ?? ''), gia: String(r.gia ?? ''), vat: String(r.vat ?? '') }))
+    : [dongMoi(), dongMoi(), dongMoi()])
+  // Dòng vừa bấm ở danh sách: tô nhẹ trong lưới để dễ thấy
+  const [keyBam] = useState(() => { const i = dongCu.findIndex(r => r._k === dongSua?._k); return i >= 0 ? dong[i].key : -1 })
   // Sửa: mọi dòng cùng một nhà cung cấp, khách hàng thì lấy làm mặc định
   const [dtMacDinh, setDtMacDinh] = useState(() => new Set(dong.map(d => d.dt)).size === 1 ? dong[0].dt : '')
   const [loi, setLoi] = useState<Set<number>>(new Set())
   const [moHangLoat, setMoHangLoat] = useState(false)
   const [hoiXoa, setHoiXoa] = useState(false)
+  // Lọc dòng chi tiết giá như bảng chi tiết phiếu mua hàng (T383): bấm phễu hiện hàng ô lọc dưới tiêu đề cột, tắt phễu thì bỏ lọc
+  const [moLoc, setMoLoc] = useState(false)
+  const [gtLoc, setGtLoc] = useState<Record<string, GiaTriLoc>>({})
 
   const laNhap = loai === 'Giá nhập'
   const dsHang = laNhap ? HANG_NHAP : HANG_BAN
   const hangCua = (ma: string) => dsHang.find(h => h.ma === ma)
   const dsDt = laNhap ? NCC : KHACH
   const nhanDt = laNhap ? 'nhà cung cấp' : 'khách hàng'
+  const tenDtCua = (ma: string) => dsDt.find(n => n.ma === ma)?.ten ?? ''
+
+  // [khoá, tên cột, chữ của dòng, số của dòng (cột số lọc theo =, >, trong khoảng…)]
+  const cotLoc: [string, string, (d: DongGia) => string, ((d: DongGia) => number)?][] = [
+    ['dt', laNhap ? 'Nhà cung cấp' : 'Khách hàng', d => d.dt ? tenDtCua(d.dt) : laNhap ? '' : 'Tất cả khách hàng'],
+    ['ma', 'Mặt hàng', d => d.ma ? `${d.ma} · ${hangCua(d.ma)?.ten ?? ''}` : ''],
+    ['dvt', 'ĐVT', d => d.dvt],
+    ['gia', 'Đơn giá', d => money(docSoQT(d.gia)), d => docSoQT(d.gia)],
+    ['vat', 'VAT (%)', d => d.vat, d => docSoQT(d.vat)],
+  ]
+  const kieuLoc = (k: string): KieuLoc => cotLoc.find(c => c[0] === k)?.[3] ? 'so' : 'chon'
+  const loc: LocCot = { gt: gtLoc, dat: (k, g) => setGtLoc(t => ({ ...t, [k]: g })), kieu: c => kieuLoc(c.k),
+    layLuaChon: k => { const lay = cotLoc.find(c => c[0] === k)?.[2]; return lay ? dsGiaTri(dong, lay) : [] } }
+  const khop = (d: DongGia) => !moLoc || cotLoc.every(([k, , lay, so]) => !dangLoc(gtLoc[k]) || khopLoc(kieuLoc(k), gtLoc[k], lay(d), so?.(d)))
+  const soKhop = dong.filter(khop).length
 
   const sua = (key: number, p: Partial<DongGia>) => {
     setDong(ds => ds.map(d => d.key === key ? { ...d, ...p } : d))
@@ -122,7 +144,7 @@ export function ThemBangGia({ onDong, tab, sua: dongSua }: { onDong: () => void;
   // Đổi loại giá thì danh sách hàng, đối tượng khác hẳn: bỏ hết dòng, giữ lại 3 dòng trống
   const doiLoai = (l: LoaiGia) => {
     if (l === loai) return
-    setLoai(l); setDtMacDinh(''); setDong([dongMoi(), dongMoi(), dongMoi()]); setLoi(new Set())
+    setLoai(l); setDtMacDinh(''); setDong([dongMoi(), dongMoi(), dongMoi()]); setLoi(new Set()); setGtLoc({})
   }
   // Đổi nhà cung cấp, khách hàng mặc định: điền cho các dòng chưa chọn
   const doiDtMacDinh = (ma: string) => { setDtMacDinh(ma); setDong(ds => ds.map(d => d.dt ? d : { ...d, dt: ma })) }
@@ -160,20 +182,20 @@ export function ThemBangGia({ onDong, tab, sua: dongSua }: { onDong: () => void;
     }
     // Trùng mặt hàng với bảng giá khác đang dùng, cùng loại, giao thời gian và cửa hàng: hỏi lại trước khi lưu
     if (!boQuaTrung) {
-      const trung = tatCa.filter(r => r.ma !== dongSua?.ma && r.loai === loai && r._tt !== 0)
+      const nhom = new Map<string, string[]>()
+      tatCa.filter(r => r.soBg !== soBg && r.loai === loai && r._tt !== 0)
         .filter(r => { const k = docKhoang(r.thoiGian); return k && giaoNgay(k, khoang) && giaoCh(tachCh(r.cuaHang), cuaHang) })
-        .flatMap(r => {
-          const ds = dongDien.filter(d => ((r.dong ?? []) as DongLuu[]).some(x => x.ma === d.ma && x.dt === d.dt && x.dvt === d.dvt))
-          return ds.length ? [`${r.ma} ${r.ten}: ${ds.slice(0, 3).map(d => hangCua(d.ma)?.ten).join(', ')}${ds.length > 3 ? ` và ${ds.length - 3} mặt hàng khác` : ''}`] : []
-        })
+        .filter(r => dongDien.some(d => r.maHang === d.ma && (r.dtMa ?? '') === d.dt && r.dvt === d.dvt))
+        .forEach(r => { const k = `${r.soBg} ${r.tenBg}`; nhom.set(k, [...(nhom.get(k) ?? []), String(r.tenHang)]) })
+      const trung = [...nhom].map(([k, ds]) => `${k}: ${ds.slice(0, 3).join(', ')}${ds.length > 3 ? ` và ${ds.length - 3} mặt hàng khác` : ''}`)
       if (trung.length) { setHoiTrung(trung); return }
     }
     const thoiGian = `${dmy(khoang.tu)} - ${dmy(khoang.den)}`
-    const ma = dongSua?.ma ? String(dongSua.ma) : maKeTiep(tatCa)
+    const ma = soBg || maKeTiep(tatCa)
     const tenLuu = ten.trim() || `${loai} ${thoiGian}`
-    const row = bangGia(ma, tenLuu, loai, thoiGian, cuaHang.join(', '),
-      dongDien.map(d => ({ dt: d.dt, ma: d.ma, dvt: d.dvt || hangCua(d.ma)!.dvt, gia: docSoQT(d.gia), vat: docSoQT(d.vat) })), dongSua?._tt ?? 1)
-    if (dongSua?.ma) suaCatalogRow(DM, ma, row); else addCatalogRow(DM, row)
+    const rows = bangGia(ma, tenLuu, loai, thoiGian, cuaHang.join(', '),
+      dongDien.map(d => ({ dt: d.dt, ma: d.ma, dvt: d.dvt || hangCua(d.ma)!.dvt, gia: docSoQT(d.gia), vat: docSoQT(d.vat) })), dau?._tt ?? 1)
+    thayNhomCatalogRows(DM, r => r.soBg === ma, rows)   // thêm mới: chưa có dòng nào cùng mã nên thêm vào cuối
     toast(`Đã lưu bảng giá ${ma} (${dongDien.length} dòng), áp dụng ${thoiGian}`)
     onDong()
   }
@@ -186,12 +208,12 @@ export function ThemBangGia({ onDong, tab, sua: dongSua }: { onDong: () => void;
   const dsMucHang = dsHang.map(h => ({ v: h.ma, t: h.ten, phu: `Mã: ${h.ma} · ${h.dvt}` }))
 
   return (
-    <FormToanMan icon="banggia" title={dongSua ? `Sửa bảng giá ${String(dongSua.ma ?? '')}` : 'Thêm bảng giá'} chuaMenu onClose={onDong}
+    <FormToanMan icon="banggia" title={soBg ? `Sửa bảng giá ${soBg}` : 'Thêm bảng giá'} chuaMenu onClose={onDong}
       meta={<span className="muted">Khai giá cho nhiều mặt hàng, nhiều {nhanDt} cùng một khoảng thời gian.</span>}
       foot={(
         <>
           <button type="button" className="btn" onClick={onDong}>Huỷ</button>
-          {dongSua?.ma && (
+          {soBg && (
             <button type="button" className="btn" onClick={() => setHoiXoa(true)}>
               <Icon n="trash" className="ic sm" />Xoá
             </button>
@@ -203,7 +225,7 @@ export function ThemBangGia({ onDong, tab, sua: dongSua }: { onDong: () => void;
       <section className="card bg-dau">
         <div className="bg-dau-o">
           <label className="bg-nhan">Mã bảng giá</label>
-          <input className="inp" value={String(dongSua?.ma ?? maKeTiep(tatCa))} readOnly aria-label="Mã bảng giá" />
+          <input className="inp" value={soBg || maKeTiep(tatCa)} readOnly aria-label="Mã bảng giá" />
         </div>
         <div className="bg-dau-o">
           <label className="bg-nhan">Tên bảng giá</label>
@@ -236,6 +258,12 @@ export function ThemBangGia({ onDong, tab, sua: dongSua }: { onDong: () => void;
       <section className="card bang-sua bg-chi-tiet">
         <div className="bg-thanh">
           <b>Chi tiết giá</b>
+          <button type="button" className={`ct-nut-loc${moLoc ? ' on' : ''}`} aria-pressed={moLoc}
+            title={moLoc ? 'Ẩn bộ lọc dòng chi tiết' : 'Lọc dòng chi tiết'} aria-label="Lọc dòng chi tiết"
+            onClick={() => { if (moLoc) setGtLoc({}); setMoLoc(v => !v) }}>
+            <Icon n="filter" className="ic sm" />
+          </button>
+          {moLoc && soKhop < dong.length && <span className="muted bg-dem-loc">{soKhop}/{dong.length} dòng</span>}
           <span className="grow" />
           <button type="button" className="btn sm ghost" onClick={() => setMoHangLoat(true)}><Icon n="layers" className="ic sm" />Chọn nhiều mặt hàng</button>
           <button type="button" className="btn sm ghost" onClick={() => setDong(ds => [...ds, dongMoi(dtMacDinh)])}><Icon n="plus" className="ic sm" />Thêm dòng</button>
@@ -252,13 +280,24 @@ export function ThemBangGia({ onDong, tab, sua: dongSua }: { onDong: () => void;
                 <th className="r" style={{ width: 80 }}>VAT (%)</th>
                 <th style={{ width: 40 }} />
               </tr>
+              {moLoc && (
+                <tr className="loc-hang">
+                  <th />
+                  {cotLoc.map(([k, t]) => <th key={k}><OLoc c={{ k, t }} loc={loc} /></th>)}
+                  <th />
+                </tr>
+              )}
             </thead>
             <tbody>
+              {moLoc && soKhop === 0 && (
+                <tr><td colSpan={7} className="c muted">Không có dòng nào khớp bộ lọc</td></tr>
+              )}
               {dong.map((d, i) => {
+                if (!khop(d)) return null   // giữ số thứ tự gốc của dòng khi đang lọc
                 const h = hangCua(d.ma)
                 const dsDv = h ? dvtCua(h) : []
                 return (
-                  <tr key={d.key} className={loi.has(d.key) ? 'bg-loi' : ''}>
+                  <tr key={d.key} className={loi.has(d.key) ? 'bg-loi' : d.key === keyBam ? 'bg-bam' : ''}>
                     <td className="c muted">{i + 1}</td>
                     <td>
                       <ChonCoTim className="inp sm" ds={dsMucDt} value={d.dt} onChange={v => sua(d.key, { dt: v })} nhan={nhanDt} />
@@ -288,10 +327,10 @@ export function ThemBangGia({ onDong, tab, sua: dongSua }: { onDong: () => void;
         </div>
       </section>
 
-      {hoiXoa && dongSua?.ma && (
-        <HopXacNhan tieuDe={`Xoá bảng giá ${String(dongSua.ma)}?`} nut="Xoá" onDong={() => setHoiXoa(false)}
-          onDongY={() => { suaCatalogRow(DM, dongSua.ma, null); toast(`Đã xoá bảng giá ${String(dongSua.ma)}`); onDong() }}>
-          Xoá bảng giá {String(dongSua.ten ?? '')} cùng {dongSua.soHang} mặt hàng, áp dụng {String(dongSua.thoiGian ?? '')}.
+      {hoiXoa && soBg && (
+        <HopXacNhan tieuDe={`Xoá bảng giá ${soBg}?`} nut="Xoá" onDong={() => setHoiXoa(false)}
+          onDongY={() => { thayNhomCatalogRows(DM, r => r.soBg === soBg, []); toast(`Đã xoá bảng giá ${soBg}`); onDong() }}>
+          Xoá bảng giá {String(dau?.tenBg ?? '')} cùng {dongCu.length} dòng mặt hàng, áp dụng {String(dau?.thoiGian ?? '')}.
         </HopXacNhan>
       )}
       {hoiTrung && (

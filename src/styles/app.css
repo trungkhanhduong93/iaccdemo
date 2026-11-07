@@ -45668,3 +45668,14 @@ body:has(.ctpl-form) .pn-hop {
 /* ── Dải phép tính đáy form bán hàng thêm tay, hàng bán trả lại như Xuất bán POS (T758) ── */
 .fsf-day:has(.ban-phep) { height: auto; }
 .ban-phep { padding: 8px 22px; }
+
+/* ── Bảng giá gom theo lần khai: dòng vừa bấm ở danh sách tô nhẹ trong lưới form (T761) ── */
+.bg-bang tr.bg-bam td { background: var(--tint); }
+/* Phễu lọc dòng cạnh chữ Chi tiết giá, hàng ô lọc như bảng chi tiết phiếu mua hàng (T383) */
+.bg-thanh > .ct-nut-loc { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; padding: 0; border: 1px solid transparent; border-radius: 6px; background: none; color: var(--muted); cursor: pointer; }
+.bg-thanh > .ct-nut-loc:hover { color: var(--ink); background: var(--soft); }
+.bg-thanh > .ct-nut-loc.on { color: var(--blue); border-color: var(--blue); background: var(--blue-soft, #eaf3fb); }
+.bg-dem-loc { font-size: 12px; }
+.bg-bang thead tr.loc-hang th { height: 36px; padding: 0 6px; background: var(--white); border-bottom: 1px solid var(--line); border-right: 1px solid var(--line-2); }
+.bg-bang thead tr.loc-hang .loc-o, .bg-bang thead tr.loc-hang input.loc-o, .bg-bang thead tr.loc-hang .loc-chon { height: 30px; border: 0; outline: 0; background: var(--white); padding: 0 2px 0 6px; font-size: 13px; box-shadow: none; }
+.bg-bang thead tr.loc-hang .loc-pheu-btn { border: 0; background: transparent; color: var(--muted); cursor: pointer; display: inline-grid; place-items: center; }

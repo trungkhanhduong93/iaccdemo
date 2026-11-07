@@ -2,8 +2,7 @@
 // Lấy theo bảng DM_ tương ứng trong CSDL kế toán iPOS (schema-dm.md)
 import { DON_VI_TINH, TEN_DVT, TEN_NHOM_HANG, TEN_NHOM_DOI_TUONG, TEN_NHOM_MUC_CP, TEN_NHOM_KHO, TEN_MUC_CHI_PHI, TEN_CONG_VIEC_17, NHOM_HANG, TEN_THUONG_HIEU, DS_THUONG_HIEU,
   DS_HANG_HOA_12, dienGiaiQd, maDvt, maHang, maKho, DS_CHUNG_TU_TIEN, DS_MUC_CHI_PHI_16, DS_CONG_VIEC_17, DS_QUY_TIEN_112 } from './data'
-import { CUA_HANG, HOM_NAY, KHACH, KHO, NCC, NHAN_VIEN, NHOM_LY_DO, nhomLyTuDong } from '../../data/mock'
-import { dmy } from '../../ui/format'
+import { CUA_HANG, KHACH, KHO, NCC, NHAN_VIEN, NHOM_LY_DO, nhomLyTuDong } from '../../data/mock'
 import { NGANH_NGHE_CON, timNganhNghe } from './nganh-nghe'
 import { DN_AN_UONG, NGANH_NGHE_DN, timNganhNgheDn } from './nganh-nghe-dn'
 import { cauHinhGiamVat, type CauHinhGiamVat } from '../ban-hang/giam-thue'
@@ -697,37 +696,7 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
     ],
   },
 
-  // 1.14 Bảng giá (chưa có bảng DM_ trong schema, chờ đối chiếu). Form theo iFaster; nhà cung cấp chỉ có ở giá nhập (T154)
-  '1.14': {
-    haiCot: true,
-    khoi: [
-      {
-        ten: 'Thông tin chung',
-        truong: [
-          { k: 'loai', nhan: 'Loại giá', kieu: 'chon', ds: ['Giá nhập', 'Giá bán'], batBuoc: true, caHang: true },
-          { k: 'ten', nhan: 'Hàng hoá', kieu: 'chonTim', batBuoc: true, caHang: true, ds: TEN_HANG, maDs: maHang },
-          { k: 'dvt', nhan: 'Đơn vị tính', kieu: 'chon', ds: TEN_DVT, nhanDs: nhanDvt, batBuoc: true },
-          { k: 'thoiGian', nhan: 'Thời gian áp dụng', kieu: 'khoangNgay', batBuoc: true },
-          { k: 'gia', nhan: 'Đơn giá', kieu: 'tien', batBuoc: true },
-          { k: 'vat', nhan: 'VAT (%)', kieu: 'so' },
-          { k: 'ncc', nhan: 'Nhà cung cấp', kieu: 'chonTim', batBuoc: true, caHang: true, ds: NCC.map(n => n.ten), maDs: maNcc, hien: v => v.loai === 'Giá nhập' },
-          // T723: giá bán chọn khách hàng hoặc để trống là mọi khách hàng; áp dụng theo cửa hàng thay cho kho
-          { k: 'kh', nhan: 'Khách hàng', kieu: 'chonTim', caHang: true, ds: KHACH.map(n => n.ten), maDs: t => KHACH.find(n => n.ten === t)?.ma ?? '', hien: v => v.loai === 'Giá bán', goiY: 'Để trống nếu đơn giá áp dụng cho mọi khách hàng' },
-          { k: 'cuaHang', nhan: 'Cửa hàng áp dụng', kieu: 'chonNhieu', ds: CUA_HANG.map(c => c.ten), caHang: true, goiY: 'Để trống nếu đơn giá áp dụng cho mọi cửa hàng' },
-        ],
-      },
-      {
-        ten: 'Trạng thái',
-        truong: [
-          { k: '_tt', nhan: 'Đang sử dụng', kieu: 'tich', caHang: true },
-        ],
-      },
-    ],
-    // Mặc định giá nhập, áp dụng một năm từ hôm nay như iFaster
-    moi: () => ({ loai: 'Giá nhập', thoiGian: `${dmy(HOM_NAY)} - ${dmy(new Date(HOM_NAY.getFullYear() + 1, HOM_NAY.getMonth(), HOM_NAY.getDate()))}` }),
-    // Chọn hàng thì lấy đơn vị tính của hàng
-    doi: (k, v) => k === 'ten' ? { dvt: DS_HANG_HOA_12.find(h => h.ten === v.ten)?.dvt ?? v.dvt } : {},
-  },
+  // 1.14 Bảng giá: không dùng panel, Thêm, Sửa đều mở form ThemBangGia (T761)
 
   // 1.15 Bút toán tự động (chưa có bảng DM_ trong schema, chờ đối chiếu)
   '1.15': {
