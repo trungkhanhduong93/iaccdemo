@@ -11,6 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T770 | Màn Tính giá vốn xuất kho (kho/5-1-7) theo bản vẽ https://claude.ai/artifact/KNxBSWT9Jkkoy8nx47ZewM: danh sách giá vốn đầu kỳ, nhập, giá vốn theo kho và hàng; modal chạy tính giá có Huỷ; báo mã lỗi, danh sách mã lỗi xuất Excel | Trum | Đang làm | Thêm `src/modules/kho/tinh-gia-von/`; sửa `kho/index.ts` (dòng 5.1.7), cuối `app.css` (mục T770). Giao 2 agy + 1 opencode |
 | T769 | Trang đăng nhập, quên mật khẩu theo iFaster (mẫu https://claude.ai/artifact/2pJtBkB9goLCgmgUwAMnPt): cột trái slider 4 ảnh màn thật, thanh logo, khung nhắc tài khoản FABi, Nhớ đăng nhập, Thử mở từ FABi, Đăng ký sử dụng ngay | Trum | Đang làm | Sửa `Login.tsx`, cuối `app.css` (mục T769), `tools/kiem_tra.py`; thêm `src/assets/dang-nhap/` |
 | T766 | Điện thoại, phiếu chi lý do CHI02 Thanh toán công nợ nhà cung cấp hiện Nợ 242 Có 1111, cần xem lại vì trả nợ nhà cung cấp thường ghi Nợ 331 | | Chờ | Thấy lúc làm T764, `MDtThuChiLap.tsx`, `tkTheoLyDo` |
 | T734 | Điện thoại, lập phiếu thu chi gói Plus như Standard (tiếp T733): lưu là ghi sổ luôn, bỏ khối hạch toán và `tkNo`, `tkCo`, có chi trả nợ nhà cung cấp | | Chờ | `MDtThuChiLap.tsx` đang trong T552 của Trum, hỏi Trum trước. Đổi `s.goi === 'S'` sang `tcNhuStandard(s.goi)`. Xem nhật ký `2026-11-04-phuongxt-thu-chi-plus-nhu-standard.md` |
