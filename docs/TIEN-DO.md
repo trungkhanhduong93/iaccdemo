@@ -11,6 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T765 | Danh sách Bán hàng gói Plus (tiếp T763): cột Trạng thái phát hành, cột Số hoá đơn, nút Phát hành trên từng dòng; phát hành hàng loạt có bước kiểm tra thông tin người mua, tiến trình, bảng kết quả, phát hành lại dòng lỗi | PhuongXT | Đang làm | Sửa `src/modules/ban-hang/hddt.tsx`, `ChungTuBanHang.tsx`, cuối `app.css` (mục T765) |
 | T764 | Điện thoại, Công nợ khách hàng 3.2.9 gói Plus dạng thẻ giống Công nợ nhà cung cấp 4.2.3 | Trum | Đang làm | MSoBaoCao.tsx, MBaoCaoDong.tsx, MBaoCaoTongHopMauD.tsx |
 | T734 | Điện thoại, lập phiếu thu chi gói Plus như Standard (tiếp T733): lưu là ghi sổ luôn, bỏ khối hạch toán và `tkNo`, `tkCo`, có chi trả nợ nhà cung cấp | | Chờ | `MDtThuChiLap.tsx` đang trong T552 của Trum, hỏi Trum trước. Đổi `s.goi === 'S'` sang `tcNhuStandard(s.goi)`. Xem nhật ký `2026-11-04-phuongxt-thu-chi-plus-nhu-standard.md` |
 | T696 | `kiem_tra.py --dien-thoai` dừng ở đợt 5 (lập phiếu): chờ 30 giây không thấy `.m-xp-nut-menu` nên không chạy tới các đợt sau | | Chờ | Thấy lúc nghiệm thu T695. Nút có trong `src/ui/mobile/MDtThuChiXem.tsx:341`, xem `tools/kiem_tra.py:642`. Đợt 11A chạy riêng vẫn qua |
