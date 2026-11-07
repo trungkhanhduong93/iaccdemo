@@ -230,7 +230,7 @@ export const MDtThuChiXem: FC<MDtThuChiXemProps> = ({
               {triLyDo && (
                 <>
                   <div className="m-tc-dong-thong-tin">
-                    <span className="nhan">{isChi ? 'Lý do chi' : 'Lý do thu'}</span>
+                    <span className="nhan">{isChi ? 'Lý do chi' : isCq ? 'Lý do' : 'Lý do thu'}</span>
                     <span className="tri ly-do-wrap">
                       <span>{triLyDo}</span>
                       {isChi && laLyChiPhi(triLyDo, s) && <span className="m-tc-badge-nhom-cp">Chi phí</span>}
@@ -240,17 +240,21 @@ export const MDtThuChiXem: FC<MDtThuChiXemProps> = ({
                 </>
               )}
 
-              <div className="m-tc-dong-thong-tin">
-                <span className="nhan">Địa chỉ</span>
-                <span className="tri dia-chi">{diaChiHienThi}</span>
-              </div>
-              <div className="m-tc-vach-ngang" />
+              {!isCq && (
+                <>
+                  <div className="m-tc-dong-thong-tin">
+                    <span className="nhan">Địa chỉ</span>
+                    <span className="tri dia-chi">{diaChiHienThi}</span>
+                  </div>
+                  <div className="m-tc-vach-ngang" />
 
-              <div className="m-tc-dong-thong-tin">
-                <span className="nhan">Tháng ghi nhận chi phí</span>
-                <span className="tri">{thangChiPhi}</span>
-              </div>
-              <div className="m-tc-vach-ngang" />
+                  <div className="m-tc-dong-thong-tin">
+                    <span className="nhan">Tháng ghi nhận chi phí</span>
+                    <span className="tri">{thangChiPhi}</span>
+                  </div>
+                  <div className="m-tc-vach-ngang" />
+                </>
+              )}
 
               <div className="m-tc-dong-thong-tin">
                 <span className="nhan">Ghi chú</span>
