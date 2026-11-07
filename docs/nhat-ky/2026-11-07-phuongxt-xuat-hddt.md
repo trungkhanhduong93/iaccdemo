@@ -24,7 +24,7 @@
 ## Dở dang, việc tiếp theo
 
 - Chờ Trum duyệt QD102.
-- Popup làm lại theo mẫu PhuongXT gửi (bảng nhãn, ô; Cá nhân, Công ty). Form lập tay chưa phát hành thì ẩn Số hoá đơn, Ký hiệu, Ngày hoá đơn (prop `hdDienTu` của `ChungTuForm`).
+- Popup làm lại theo mẫu PhuongXT gửi (bảng nhãn, ô; Cá nhân, Công ty). Bỏ Ghi chú; Tên người mua mặc định là Người giao dịch của chứng từ; Ký hiệu là ô gõ tay, mặc định theo cài đặt. Form lập tay chưa phát hành thì ẩn Số hoá đơn, Ký hiệu, Ngày hoá đơn (prop `hdDienTu` của `ChungTuForm`).
 - Bản mẫu giả lập đã khai báo, kết nối HĐĐT; popup luôn vào màn phát hành. Phát hành xong ô Số hoá đơn, Ký hiệu, Ngày hoá đơn (và MST, địa chỉ khi xuất một chứng từ) đổi theo hoá đơn mới, PhuongXT chốt.
 - Số hoá đơn, trạng thái đã xuất chỉ giữ trong phiên (qua `suaPhieu`), tải lại trang là mất, như các phiếu sửa khác.
 - Màn 3.1.5 Xuất hoá đơn điện tử, điện thoại chưa dùng thiết lập mới.
