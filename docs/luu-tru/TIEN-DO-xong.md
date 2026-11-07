@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T765 | Danh sách Bán hàng gói Plus: cột Trạng thái phát hành, Số hoá đơn, nút Phát hành từng dòng; phát hành hàng loạt có bước kiểm tra người mua, tiến trình, bảng kết quả, phát hành lại dòng lỗi | PhuongXT | 07/11/2026 | 2026-11-07-phuongxt-phat-hanh-hang-loat.md |
 | T764 | Điện thoại, Công nợ khách hàng 3.2.9 gói Plus dạng thẻ giống Công nợ nhà cung cấp 4.2.3, có nút Thu tiền | Trum | 07/11/2026 | 2026-11-07-trum-cong-no-khach-hang-the.md |
 | T763 | Xuất hoá đơn điện tử gói Plus: thiết lập ở Cấu hình kế toán; màn Bán hàng (chứng từ lập tay) có nút xuất HĐĐT ở chi tiết và danh sách | PhuongXT | 07/11/2026 | 2026-11-07-phuongxt-xuat-hddt.md |
 | T762 | Danh sách Bán hàng gói Plus bỏ chip Đã, Chưa đồng bộ, thay bằng tab Xuất bán POS (hoá đơn FABi) và Bán hàng (lập tay, nhập Excel) | PhuongXT | 07/11/2026 | 2026-11-07-phuongxt-tab-ban-hang.md |

@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 07/11/2026
+- T765: Web gói Plus, danh sách Bán hàng có cột Trạng thái phát hành (Chưa phát hành, Đã phát hành) và cột Số hoá đơn. Dòng chưa phát hành có nút Phát hành, mở form như ở chi tiết. Chọn nhiều chứng từ rồi bấm Phát hành HĐĐT thì popup kiểm tra thông tin người mua từng chứng từ, sửa hoặc bỏ chọn dòng thiếu. Gửi xong có bảng kết quả từng hoá đơn và nút phát hành lại dòng lỗi.
 - T764: Điện thoại, Công nợ khách hàng gói Plus, Pro hiện dạng thẻ giống Công nợ nhà cung cấp: khách còn nợ, khách trả thừa, đã tất toán tách nhóm, tổng nợ phải thu ghim dưới đáy. Nút Thu tiền mở phiếu thu điền sẵn khách và lý do Thu Nợ.
 - T764: Điện thoại, nút Thanh toán ở Công nợ nhà cung cấp mở phiếu chi điền sẵn nhà cung cấp.
 - T763: Cấu hình kế toán gói Plus, Pro có thẻ Hoá đơn điện tử: nhà cung cấp, tài khoản kết nối, ký hiệu hoá đơn từng cửa hàng. Web gói Plus, màn Bán hàng: chứng từ lập tay, nhập Excel có nút Xuất hoá đơn điện tử ở chi tiết; danh sách có ô chọn nhiều chứng từ, nút Xuất hoá đơn điện tử, cột Hoá đơn điện tử. Popup xem trước người mua, ký hiệu, tổng tiền rồi Phát hành.
