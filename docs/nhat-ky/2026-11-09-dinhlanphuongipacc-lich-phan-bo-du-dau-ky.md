@@ -10,6 +10,7 @@
 - `ccdc/the-phan-bo.tsx`: `ngayBd` của thẻ dư đầu kỳ luôn lấy Ngày bắt đầu làm việc, nên kỳ đầu của lịch là tháng của ngày đó. Số kỳ = Số tháng PB − Số tháng đã PB, mỗi kỳ = (Số tiền − Giá trị đã PB khai trên thẻ) ÷ số kỳ còn, kỳ cuối nhận phần lẻ (giữ như cũ).
 - Cột Ngày bắt đầu PB của thẻ dư đầu kỳ chỉ xem, không gõ được nữa. Thẻ ghi tăng trong kỳ giữ nguyên.
 - Điện thoại `MThePhanBo.tsx`: dùng `ngayBd` (xuất từ `the-phan-bo.tsx`) cho Ngày bắt đầu phân bổ ở chi tiết, dòng "Phân bổ: n tháng từ", lịch sử mẫu, kiểm khi lưu. Form sửa thẻ dư đầu kỳ hiện ngày chỉ xem, không mở lịch chọn ngày.
+- Điện thoại, form sửa thẻ: ô số tiền, số tháng, ô ngày (ghi tăng, bắt đầu, ngừng phân bổ) đổi cùng kiểu phiếu thu chi: ô viền trắng cao 38px, "đ" và "tháng" nằm trong ô, ô ngày chữ xanh kèm mũi tên xuống (`ONgayO`, mục CSS T782 cuối `app.css`).
 
 ## Đã kiểm
 

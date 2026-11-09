@@ -47478,3 +47478,19 @@ table.ds-gv {
   padding-top: 8px;
   border-top: 1px dashed #e2e8f0;
 }
+
+/* ── Thẻ chi phí điện thoại: ô số tiền, ô ngày như phiếu thu chi (T782) ── */
+.m-tpb-o { position: relative; display: block; flex: 0 1 62%; min-width: 0; }
+.m-pb-ky-dong .m-tpb-o { flex: 0 0 160px; }
+.m-tpb-inp, .m-tpb-inp.ngan { width: 100%; height: 38px; padding: 0 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--white); font-size: 14px; font-variant-numeric: tabular-nums; }
+.m-tpb-o.co-dv .m-tpb-inp { padding-right: 28px; }
+.m-tpb-o.co-dv.ngan .m-tpb-inp { padding-right: 56px; }
+.m-tpb-o .m-tpb-dv { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font-size: 14px; color: var(--muted); pointer-events: none; }
+.m-tpb-inp:focus { border-color: var(--blue); background: var(--white); }
+.m-tpb-inp:disabled { background: #f4f7fa; color: var(--muted); }
+.m-tpb-inp.da-sua { border-color: #d0650a; }
+textarea.m-tpb-inp { height: auto; padding: 8px 12px; }
+.m-tpb-ngay { flex: 0 1 62%; min-width: 0; height: 38px; display: flex; align-items: center; gap: 6px; padding: 0 10px 0 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--white); color: var(--blue); font-size: 14px; box-sizing: border-box; }
+.m-tpb-ngay > span { flex: 1; text-align: right; }
+.m-tpb-ngay svg { flex: none; }
+.m-tpb-ngay.do { color: var(--red); }

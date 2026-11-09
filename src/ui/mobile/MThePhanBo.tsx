@@ -244,13 +244,20 @@ export const MTheNoiDung: FC<{ t: TheMobile; goi: Goi }> = ({ t, goi }) => {
 // ── Màn sửa thẻ ──
 
 const ONhap: FC<{ id: string; v: string; onDoi: (s: string) => void; soTien?: boolean; ngan?: boolean; dv?: string; khoa?: boolean; daSua?: boolean; nhan: string }> = ({ id, v, onDoi, soTien, ngan, dv, khoa, daSua, nhan }) => (
-  <span className="m-tpb-o">
+  <span className={`m-tpb-o${dv ? ' co-dv' : ''}${ngan ? ' ngan' : ''}`}>
     <input id={id} className={`m-tpb-inp${ngan ? ' ngan' : ''}${daSua ? ' da-sua' : ''}`} aria-label={nhan} inputMode={soTien ? 'numeric' : undefined} value={v} disabled={khoa}
       onChange={e => onDoi(soTien ? e.target.value.replace(/\D/g, '') : e.target.value)} />
     {dv && <span className="m-tpb-dv">{dv}</span>}
   </span>
 )
 const tienO = (s: unknown) => { const n = so(s); return n ? money(n) : '' }
+/** Ô ngày như phiếu thu chi điện thoại: ô viền, ngày chữ xanh, mũi tên xuống; bấm cả hàng mở lịch (T782) */
+const ONgayO: FC<{ v: unknown; doCanh?: boolean }> = ({ v, doCanh }) => (
+  <span className={`m-tpb-ngay${doCanh ? ' do' : ''}`}>
+    <span>{String(v ?? '')}</span>
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
+  </span>
+)
 
 /** Đổi của thẻ khi lưu, ghi vào nhật ký "Sửa thẻ: Trường: cũ → mới; ..." để tab Lịch sử tách ra */
 function moTaDoi(cu: TheMobile, moi: TheMobile): string {
@@ -382,7 +389,7 @@ export const MTheSua: FC<{ t: TheMobile; goi: Goi; onHuy: () => void; onLuu: (mo
           <div className="m-pb-dong"><span className="n">Cửa hàng</span><span className="g">{dr.cn}</span></div>
           <div className="m-pb-dong"><span className="n">Loại thẻ</span><span className="m-tpb-khoa">{dr.loai}{dau ? ' · Đầu kỳ' : ''}</span></div>
           <label className="m-pb-dong" htmlFor="tpb-ten"><span className="n">Tên thẻ <b className="m-gt-sao">*</b></span><ONhap id="tpb-ten" nhan="Tên thẻ" v={dr.ten} onDoi={s => setDr(x => ({ ...x, ten: s }))} /></label>
-          <div className="m-pb-dong m-gt-bam" role="button" tabIndex={0} onClick={() => setLich({ k: 'ngay' })}><span className="n">Ngày ghi tăng</span><span className="g">{dr.ngay} ›</span></div>
+          <div className="m-pb-dong m-gt-bam" role="button" tabIndex={0} onClick={() => setLich({ k: 'ngay' })}><span className="n">Ngày ghi tăng</span><ONgayO v={dr.ngay} /></div>
           <div className="m-pb-dong"><span className="n">Giá trị thẻ</span><span className="g">{money(gtThe(dr))} đ</span></div>
         </div>
 
@@ -464,12 +471,12 @@ export const MTheSua: FC<{ t: TheMobile; goi: Goi; onHuy: () => void; onLuu: (mo
               )}
               {/* Thẻ dư đầu kỳ: ngày theo Ngày bắt đầu làm việc, chỉ xem (T782) */}
               {dau ? <div className="m-pb-dong"><span className="n">Ngày bắt đầu phân bổ</span><span className="g">{ngayBd(dr, dS)}</span></div>
-                : <div className="m-pb-dong m-gt-bam" role="button" tabIndex={0} onClick={() => setLich({ k: 'ngayPb', i: sheet })}><span className="n">Ngày bắt đầu phân bổ</span><span className="g">{dS.ngayPb} ›</span></div>}
+                : <div className="m-pb-dong m-gt-bam" role="button" tabIndex={0} onClick={() => setLich({ k: 'ngayPb', i: sheet })}><span className="n">Ngày bắt đầu phân bổ</span><ONgayO v={dS.ngayPb} /></div>}
               <div className="m-pb-dong"><span className="n">Phân bổ mỗi tháng</span><span className="g">{money(tinhDong(dr, dS).tienKy)} đ</span></div>
               <label className="m-pb-dong"><span className="n">Ngừng phân bổ</span>
                 <input id="tpb-ngung" type="checkbox" role="switch" className="m-tpb-gat" checked={Boolean(dS.ngung)}
                   onChange={e => suaDong(sheet, { ngung: e.target.checked, ngayNgung: e.target.checked ? ngayNgungMd(String(dS.ngayPb ?? ''), goi) : undefined })} /></label>
-              {dS.ngung && <div className="m-pb-dong m-gt-bam" role="button" tabIndex={0} onClick={() => setLich({ k: 'ngayNgung', i: sheet })}><span className="n">Ngày ngừng phân bổ</span><span className="g m-tpb-do">{dS.ngayNgung} ›</span></div>}
+              {dS.ngung && <div className="m-pb-dong m-gt-bam" role="button" tabIndex={0} onClick={() => setLich({ k: 'ngayNgung', i: sheet })}><span className="n">Ngày ngừng phân bổ</span><ONgayO v={dS.ngayNgung} doCanh /></div>}
             </div>
             <div className="m-loc-day"><button type="button" className="m-pb-btn-luu m-tpb-xong" onClick={() => setSheet(null)}>Xong</button></div>
           </div>
