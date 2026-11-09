@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T782 | Thẻ chi phí phân bổ dư đầu kỳ: lịch phân bổ bắt đầu từ kỳ của Ngày bắt đầu làm việc (Hệ thống, Thông tin đơn vị), số kỳ = số kỳ còn, mỗi kỳ = (Số tiền − Đã phân bổ khai trên thẻ) ÷ số kỳ còn, kỳ cuối nhận phần lẻ; cột Ngày bắt đầu PB của thẻ dư đầu kỳ chỉ xem | dinhlanphuongipacc | 09/11/2026 | [nhật ký](../nhat-ky/2026-11-09-dinhlanphuongipacc-lich-phan-bo-du-dau-ky.md) |
 | T780 | Giảm thuế GTGT theo từng món ở Xuất bán POS (tiếp T754, QD97): mỗi dòng = doanh thu tính thuế × % GTGT của hàng × % giảm, hàng không tích Giảm thuế theo quy định thì 0; tổng phiếu, danh sách, thanh toán, báo cáo bán hàng, điện thoại cộng từ từng dòng; bảng chi tiết POS thêm cột tích chỉ xem Giảm thuế theo quy định, ẩn sẵn | Trum | Xong | Giảm thuế từng dòng theo `giamThueHang`, cột Giảm thuế theo quy định ẩn sẵn ở bảng chi tiết POS |
 | T778 | Favicon và dấu logo vuông ở sidebar đổi sang logo ACC iPOS, logo chữ ngang giữ nguyên (`favicon.png`, `acc-dau.webp`) | Trum | 07/11/2026 | 2026-11-07-trum-logo-vuong.md |
 | T777 | Trang đăng nhập: thay hình slide 4 bằng hình lập ngân sách, đổi tone xanh cam như 3 slide kia (`slide-4.webp`, `Login.tsx`) | Trum | 07/11/2026 | 2026-11-07-trum-slide-4-ngan-sach.md |

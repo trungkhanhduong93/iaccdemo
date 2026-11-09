@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom'
 import type { CauHinhDM } from '../danh-muc/truong-dm'
 import type { Row } from '../types'
 import type { Goi } from '../../app/plan'
+import { ngayLamViecHienTai } from '../../app/session'
 import { St, Table } from '../../ui/Table'
 import { ChonDanhMuc } from '../../ui/ChonDanhMuc'
 import { CCDC_HANG, daKhoaSo, khoaSoDenCua } from '../../data/mock'
@@ -50,8 +51,9 @@ const theoThang = (goi: Goi) => goi === 'S' || goi === 'PL'
 const khongTruoc = (s: string, moc: string) => ngaySo(s) < ngaySo(moc) ? moc : s
 /** Ngày cuối tháng của một ngày dd/mm/yyyy (mốc cho tháng ngừng phân bổ) */
 const cuoiThangCua = (d: string) => { const [, m, y] = d.split('/').map(Number); return m && y ? cuoiThang(y, m) : '' }
-/** Ngày bắt đầu phân bổ của dòng; thẻ cũ chưa có ở dòng thì lấy của thẻ */
-const ngayBd = (v: V, d: DongPb) => String(d.ngayPb ?? v.ngayPb ?? '')
+/** Ngày bắt đầu phân bổ của dòng; thẻ cũ chưa có ở dòng thì lấy của thẻ.
+ *  Thẻ dư đầu kỳ (T782): luôn từ kỳ của Ngày bắt đầu làm việc khai ở Hệ thống, Thông tin đơn vị */
+const ngayBd = (v: V, d: DongPb) => (laDau(v) && ngayLamViecHienTai()) || String(d.ngayPb ?? v.ngayPb ?? '')
 
 /** Lịch phân bổ đều: mỗi kỳ là ngày cuối tháng, từ tháng của ngày bắt đầu; kỳ cuối nhận phần lẻ do làm tròn */
 function lichPhanBo(tong: number, ky: number, ngayBd: string): { ngay: string; tien: number }[] {
@@ -380,7 +382,8 @@ export const THE_PHAN_BO: CauHinhDM = {
             { k: 'conHt', t: 'Còn lại hiện tại', num: true, w: 120, wCung: true, r: ro('conHt') }] : []),
           // Tiêu đề cột viết tắt phân bổ thành PB cho lưới gọn (T287). Mỗi dòng một ngày bắt đầu phân bổ; đổi ngày thì lịch tính lại, bỏ số đã gõ lại ở các kỳ (T159)
           { k: 'ngayPb', t: 'Ngày bắt đầu PB', w: 132, wCung: true, r: (r: Row) => r._i === undefined ? null
-            : xem ? ngayBd(v, r as DongPb) : <ONhap v={ngayBd(v, r as DongPb)} ten={`Ngày bắt đầu phân bổ dòng ${r._i + 1}`} onDoi={s => sua(r._i, { ngayPb: khongTruoc(s, String(v.ngay ?? '')) })} /> },
+            // Thẻ dư đầu kỳ: ngày theo Ngày bắt đầu làm việc, chỉ xem (T782)
+            : xem || laDau(v) ? ngayBd(v, r as DongPb) : <ONhap v={ngayBd(v, r as DongPb)} ten={`Ngày bắt đầu phân bổ dòng ${r._i + 1}`} onDoi={s => sua(r._i, { ngayPb: khongTruoc(s, String(v.ngay ?? '')) })} /> },
           // Chỉ có khi sửa thẻ: tích ngừng từng dòng; có dòng tích thì hiện cột ngày (gói Free, Standard: tháng) ngừng phân bổ
           // Đang xem mà không dòng nào ngừng thì ẩn cột cho lưới gọn (T287)
           ...(v._sua && (!xem || dong.some(d => d.ngung)) ? [{ k: 'ngung', t: 'Ngừng PB', w: 72, wCung: true, c: true, r: (r: Row) => r._i === undefined ? null

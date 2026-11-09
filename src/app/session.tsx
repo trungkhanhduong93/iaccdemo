@@ -148,6 +148,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const kieu = s.kieuSo?.[s.donVi] ?? 'vn'
   datKieuSo(kieu)
   datGiamVat(s, loaiHinhDv(s, donViHienTai(s)) !== 'hkd')   // T754
+  ngayLamViecHt = ngayDauNam(s)   // T782
   return (
     <Ctx.Provider value={{ s, set, toast: setMsg }}>
       <Fragment key={kieu}>{children}</Fragment>
@@ -208,6 +209,9 @@ export const dsCuaHang = (s: Pick<Session, 'donVi' | 'cnThem'>): { id: string; t
 export const namTaiChinh = (s: Session) => s.namTaiChinh?.[s.donVi] ?? new Date().getFullYear()
 /** Ngày đầu năm của đơn vị đang làm việc; chưa khai thì 01/01 của năm tài chính như lúc khởi tạo đơn vị */
 export const ngayDauNam = (s: Session) => s.ngayDauNam?.[s.donVi] ?? `01/01/${namTaiChinh(s)}`
+/** Ngày bắt đầu làm việc (ô ở Hệ thống, Thông tin đơn vị) của đơn vị đang làm việc, cho hàm ngoài React như lịch phân bổ thẻ dư đầu kỳ (T782) */
+let ngayLamViecHt = ''
+export const ngayLamViecHienTai = () => ngayLamViecHt
 /** Ngày bắt đầu làm việc của đơn vị: ngày chọn lúc khởi tạo; đơn vị cũ chưa lưu thì lấy ngày lên sổ của cửa hàng khởi tạo, không có thì ngày đầu năm */
 export const ngayLamViec = (s: Session) => s.ngayLamViec?.[s.donVi] ?? s.cnThem?.[s.donVi]?.find(c => c.banDau)?.tuNgay ?? ngayDauNam(s)
 /** Các kỳ (tháng) của năm tài chính, từ tháng của ngày đầu năm, 12 tháng. so = yyyymm để so sánh */
