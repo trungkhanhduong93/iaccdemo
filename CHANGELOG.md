@@ -3,7 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 09/11/2026
-- T782: Thẻ chi phí phân bổ dư đầu kỳ: lịch phân bổ bắt đầu từ tháng của Ngày bắt đầu làm việc khai ở Hệ thống, Thông tin đơn vị; số kỳ là số tháng còn phân bổ, mỗi kỳ bằng phần còn lại chia đều. Ngày bắt đầu phân bổ của thẻ dư đầu kỳ chỉ xem.
+- T782: Thẻ chi phí phân bổ dư đầu kỳ: lịch phân bổ bắt đầu từ tháng của Ngày bắt đầu làm việc khai ở Hệ thống, Thông tin đơn vị; số kỳ là số tháng còn phân bổ, mỗi kỳ bằng phần còn lại chia đều. Ngày bắt đầu phân bổ của thẻ dư đầu kỳ chỉ xem, cả web và điện thoại.
 - T780: Đơn vị tính GTGT theo % doanh thu, Xuất bán POS tính Giảm thuế GTGT theo từng món: món không tích Giảm thuế theo quy định ở Danh mục hàng hoá thì không giảm, món bán lẻ tính theo tỷ lệ bán lẻ. Danh sách, chi tiết phiếu, báo cáo bán hàng, điện thoại cùng số. Bảng chi tiết có cột Giảm thuế theo quy định, ẩn sẵn.
 
 ## 08/11/2026

@@ -4,7 +4,7 @@
 import { useState, type FC, type KeyboardEvent } from 'react'
 import { Link } from 'react-router-dom'
 import type { Goi } from '../../app/plan'
-import { canKichHoat, daPhanBoKy, daPhanBoToiKy, kyNay, lichDong, tinhDong, type DongPb } from '../../modules/ccdc/the-phan-bo'
+import { canKichHoat, daPhanBoKy, daPhanBoToiKy, kyNay, lichDong, ngayBd, tinhDong, type DongPb } from '../../modules/ccdc/the-phan-bo'
 import { docSoQT, money } from '../format'
 import { Icon } from '../Icon'
 import { LichDon } from '../ChonNgay'
@@ -81,7 +81,7 @@ const MucXem: FC<{ t: TheMobile; d: DongPb; i: number }> = ({ t, d, i }) => {
         <Dong n="Số tháng phân bổ:" v={`${so(d.ky)} tháng`} />
         {dau && <><Dong n="Số tháng đã phân bổ:" v={`${so(d.kyDa)} tháng`} /><Dong n="Số tháng còn lại:" v={`${kyCon} tháng`} /></>}
         <Dong n="Phân bổ mỗi tháng:" v={`${money(tienKy)} đ`} dam />
-        <Dong n="Ngày bắt đầu phân bổ:" v={String(d.ngayPb ?? t.ngayPb ?? '')} />
+        <Dong n="Ngày bắt đầu phân bổ:" v={ngayBd(t, d)} />
         {d.ngung && <Dong n="Ngày ngừng phân bổ:" v={String(d.ngayNgung ?? '')} cls="ngung" />}
       </div>
     </div>
@@ -160,7 +160,7 @@ const TabLich: FC<{ t: TheMobile; goi: Goi }> = ({ t, goi }) => {
 /** Thao tác mẫu của thẻ cho tab Lịch sử (cùng khuôn Lịch sử phiếu thu chi) */
 function lichSuMau(t: TheMobile): DongLichSu[] {
   const ds: DongLichSu[] = []
-  const kyDau = Math.min(...t.dong.map(d => thangCua(String(d.ngayPb ?? t.ngayPb ?? t.ngay))))
+  const kyDau = Math.min(...t.dong.map(d => thangCua(ngayBd(t, d) || t.ngay)))
   if (kyDau && kyDau < kyNay()) {
     const c = new Date(Math.floor(kyDau / 100), kyDau % 100, 0)
     ds.push({ luc: `${String(c.getDate()).padStart(2, '0')}/${String(c.getMonth() + 1).padStart(2, '0')}/${c.getFullYear()} 17:00`, ai: 'Hệ thống', tenViec: `Phân bổ kỳ ${tenThang(kyDau)}`, loai: 'ghi_so', noiDung: `Hạch toán chi phí phân bổ tháng ${tenThang(kyDau)}.` })
@@ -297,9 +297,9 @@ export const MTheSua: FC<{ t: TheMobile; goi: Goi; onHuy: () => void; onLuu: (mo
 
   const luu = (x: TheMobile) => {
     if (!x.ten.trim()) return baoLoi('Nhập tên thẻ')
-    const loi = x.dong.findIndex(d => so(d.gt) <= 0 || so(d.ky) <= 0 || !Number.isFinite(ngaySo(String(d.ngayPb ?? ''))))
+    const loi = x.dong.findIndex(d => so(d.gt) <= 0 || so(d.ky) <= 0 || !Number.isFinite(ngaySo(ngayBd(x, d))))
     if (loi >= 0) return baoLoi(`Mục ${loi + 1}: cần số tiền, số tháng và ngày bắt đầu phân bổ`)
-    const ng = x.dong.findIndex(d => d.ngung && !(ngaySo(String(d.ngayNgung ?? '')) >= ngaySo(String(d.ngayPb ?? ''))))
+    const ng = x.dong.findIndex(d => d.ngung && !(ngaySo(String(d.ngayNgung ?? '')) >= ngaySo(ngayBd(x, d))))
     if (ng >= 0) return baoLoi(`Mục ${ng + 1}: ngày ngừng phân bổ phải sau hoặc bằng ngày bắt đầu phân bổ`)
     const lech = x.dong.findIndex(d => Math.round(lechDong(x, d)) !== 0)
     if (lech >= 0) { setDr(x); setHoi(lech); return }
@@ -397,7 +397,7 @@ export const MTheSua: FC<{ t: TheMobile; goi: Goi; onHuy: () => void; onLuu: (mo
               </div>
               <div className="m-t449-hang-than">
                 <Dong n={dau ? 'Cần phân bổ:' : 'Số tiền:'} v={`${money(can)} đ`} dam />
-                <Dong n="Phân bổ:" v={`${kyCon} tháng từ ${d.ngayPb ?? ''}`} />
+                <Dong n="Phân bổ:" v={`${kyCon} tháng từ ${ngayBd(dr, d)}`} />
                 {d.ngung && <Dong n="Ngừng phân bổ từ:" v={String(d.ngayNgung ?? '')} cls="ngung" />}
               </div>
               <button type="button" className="m-tpb-mo-lich" onClick={() => setKyDong(i)}>
@@ -462,7 +462,9 @@ export const MTheSua: FC<{ t: TheMobile; goi: Goi; onHuy: () => void; onLuu: (mo
                   <div className="m-pb-dong"><span className="n">Số tháng còn lại</span><span className="g">{tinhDong(dr, dS).kyCon} tháng</span></div>
                 </>
               )}
-              <div className="m-pb-dong m-gt-bam" role="button" tabIndex={0} onClick={() => setLich({ k: 'ngayPb', i: sheet })}><span className="n">Ngày bắt đầu phân bổ</span><span className="g">{dS.ngayPb} ›</span></div>
+              {/* Thẻ dư đầu kỳ: ngày theo Ngày bắt đầu làm việc, chỉ xem (T782) */}
+              {dau ? <div className="m-pb-dong"><span className="n">Ngày bắt đầu phân bổ</span><span className="g">{ngayBd(dr, dS)}</span></div>
+                : <div className="m-pb-dong m-gt-bam" role="button" tabIndex={0} onClick={() => setLich({ k: 'ngayPb', i: sheet })}><span className="n">Ngày bắt đầu phân bổ</span><span className="g">{dS.ngayPb} ›</span></div>}
               <div className="m-pb-dong"><span className="n">Phân bổ mỗi tháng</span><span className="g">{money(tinhDong(dr, dS).tienKy)} đ</span></div>
               <label className="m-pb-dong"><span className="n">Ngừng phân bổ</span>
                 <input id="tpb-ngung" type="checkbox" role="switch" className="m-tpb-gat" checked={Boolean(dS.ngung)}

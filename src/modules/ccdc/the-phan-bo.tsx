@@ -53,7 +53,7 @@ const khongTruoc = (s: string, moc: string) => ngaySo(s) < ngaySo(moc) ? moc : s
 const cuoiThangCua = (d: string) => { const [, m, y] = d.split('/').map(Number); return m && y ? cuoiThang(y, m) : '' }
 /** Ngày bắt đầu phân bổ của dòng; thẻ cũ chưa có ở dòng thì lấy của thẻ.
  *  Thẻ dư đầu kỳ (T782): luôn từ kỳ của Ngày bắt đầu làm việc khai ở Hệ thống, Thông tin đơn vị */
-const ngayBd = (v: V, d: DongPb) => (laDau(v) && ngayLamViecHienTai()) || String(d.ngayPb ?? v.ngayPb ?? '')
+export const ngayBd = (v: V, d: DongPb) => (laDau(v) && ngayLamViecHienTai()) || String(d.ngayPb ?? v.ngayPb ?? '')
 
 /** Lịch phân bổ đều: mỗi kỳ là ngày cuối tháng, từ tháng của ngày bắt đầu; kỳ cuối nhận phần lẻ do làm tròn */
 function lichPhanBo(tong: number, ky: number, ngayBd: string): { ngay: string; tien: number }[] {
