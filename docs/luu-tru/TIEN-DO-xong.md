@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T780 | Giảm thuế GTGT theo từng món ở Xuất bán POS (tiếp T754, QD97): mỗi dòng = doanh thu tính thuế × % GTGT của hàng × % giảm, hàng không tích Giảm thuế theo quy định thì 0; tổng phiếu, danh sách, thanh toán, báo cáo bán hàng, điện thoại cộng từ từng dòng; bảng chi tiết POS thêm cột tích chỉ xem Giảm thuế theo quy định, ẩn sẵn | Trum | Xong | Giảm thuế từng dòng theo `giamThueHang`, cột Giảm thuế theo quy định ẩn sẵn ở bảng chi tiết POS |
 | T778 | Favicon và dấu logo vuông ở sidebar đổi sang logo ACC iPOS, logo chữ ngang giữ nguyên (`favicon.png`, `acc-dau.webp`) | Trum | 07/11/2026 | 2026-11-07-trum-logo-vuong.md |
 | T777 | Trang đăng nhập: thay hình slide 4 bằng hình lập ngân sách, đổi tone xanh cam như 3 slide kia (`slide-4.webp`, `Login.tsx`) | Trum | 07/11/2026 | 2026-11-07-trum-slide-4-ngan-sach.md |
 | T779 | Phiếu chuyển quỹ: lưu Từ quỹ, Đến quỹ chọn ở form máy tính; màn xem điện thoại hiện cả Đến quỹ | dinhlanphuongipacc | 08/11/2026 | [nhật ký](../nhat-ky/2026-11-08-dinhlanphuongipacc-chuyen-quy-den-quy.md) |

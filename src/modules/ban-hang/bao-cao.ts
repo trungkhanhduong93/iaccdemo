@@ -4,7 +4,7 @@ import type { Col, Row } from '../types'
 import { CUA_HANG, DAILY, HANG, trongThang } from '../../data/mock'
 import { dmy } from '../../ui/format'
 import { dongCuaPhieu, soFabi, theoKenh } from './ChungTuBanHang'
-import { giamThueHkd } from './giam-thue'
+import { giamThueHang } from './giam-thue'
 import { docLocNguon, quaLocDong, quaLocDt, quaLocKenh } from '../bao-cao/loc-nguon'
 
 interface DongBan {
@@ -35,7 +35,7 @@ const cong = (ds: Row[], k: string) => ds.reduce((a, x) => a + (Number(x[k]) || 
  *  Tổng tiền = doanh thu tính thuế + thuế − giảm thuế − phiếu giảm giá + phí vận chuyển */
 const tienDong = (d: DongBan, tyLe?: boolean) => {
   const dtTt = d.thanh - d.giam - d.ck + d.phiDv
-  const giamThue = tyLe ? giamThueHkd(dtTt) : 0
+  const giamThue = tyLe ? giamThueHang(dtTt, d.ma) : 0
   const thue = tyLe ? 0 : d.thue
   return { thanh: d.thanh, giam: d.giam, ck: d.ck, phiDv: d.phiDv, dtTt, thue, giamThue, phieuGg: d.phieuGg, phiVc: d.phiVc, tong: dtTt + thue - giamThue - d.phieuGg + d.phiVc }
 }

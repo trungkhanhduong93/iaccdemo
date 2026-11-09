@@ -30,7 +30,7 @@ import { ChungTuForm } from '../../ui/generic/ChungTuForm'
 import { dongTuHang, tinhDong } from './BangHangBan'
 import { HopCotPhieu } from '../../ui/generic/BangSua'
 import { DS_PTTT } from '../danh-muc/data'
-import { giamThueHkd } from './giam-thue'
+import { cauHinhGiamVat, giamThueHang, giamThueHkd, hangDuocGiam } from './giam-thue'
 import { HopXuatHddt, hdCua, tenHd } from './hddt'
 
 /** Bán hàng ngoài POS: tiệc mang về, khách công ty đặt trước. Lập tay, không qua FABi; là tab Bán hàng 3.1.7 từ gói Plus (T52) */
@@ -131,21 +131,28 @@ function dongMonDon(x: XPos) {
   }))
 }
 
-export { giamThueHkd }
-/** GTGT theo % doanh thu không có VAT (T450): chia lại tiền các phương thức thanh toán theo tổng = doanh thu − giảm thuế GTGT (T353) */
-export function ttHkd<T extends { dt: number; tm: number; ck: number; the: number; app: number }>(x: T): T {
-  const cu = x.tm + x.ck + x.the + x.app || 1
-  const [tm, ck, the, app] = chiaTheo(x.dt - giamThueHkd(x.dt), [x.tm / cu, x.ck / cu, x.the / cu, x.app / cu], 1)
-  return { ...x, tm, ck, the, app }
-}
-
-/** Cột theo phương pháp GTGT (T163, T450): theo % doanh thu bỏ Thuế suất, Tiền thuế, luôn hiện Giảm thuế GTGT; khấu trừ luôn hiện Thuế suất, Tiền thuế */
-const anTheoLoai = (an: string[], tyLe: boolean) => tyLe ? [...an.filter(k => k !== 'giamThue'), 'ts', 'thue'] : an.filter(k => k !== 'ts' && k !== 'thue')
+export type NgayPOS = (typeof DAILY)[number]
 
 /** Dòng món của chứng từ: hoá đơn FABi lấy món của đơn, chứng từ gộp chia doanh thu theo cơ cấu món */
 export function dongCuaPhieu(x: NgayPOS) {
   return (x as XPos).loai === 'don' ? dongMonDon(x as XPos) : dongMonGiam(x.dt, x.vat)
 }
+
+/** Giảm thuế GTGT của một phiếu POS theo từng món (T780): tổng giảm thuế từng dòng hàng đúng QD97 */
+export function giamThuePhieu(x: NgayPOS): number {
+  return dongCuaPhieu(x).reduce((a, d) => a + giamThueHang(d.dtTruocThue, d.ma), 0)
+}
+
+export { giamThueHkd }
+/** GTGT theo % doanh thu không có VAT (T450): chia lại tiền các phương thức thanh toán theo tổng = doanh thu − giảm thuế GTGT (T353, T780) */
+export function ttHkd<T extends NgayPOS>(x: T): T {
+  const cu = x.tm + x.ck + x.the + x.app || 1
+  const [tm, ck, the, app] = chiaTheo(x.dt - giamThuePhieu(x), [x.tm / cu, x.ck / cu, x.the / cu, x.app / cu], 1)
+  return { ...x, tm, ck, the, app }
+}
+
+/** Cột theo phương pháp GTGT (T163, T450): theo % doanh thu bỏ Thuế suất, Tiền thuế, luôn hiện Giảm thuế GTGT; khấu trừ luôn hiện Thuế suất, Tiền thuế */
+const anTheoLoai = (an: string[], tyLe: boolean) => tyLe ? [...an.filter(k => k !== 'giamThue'), 'ts', 'thue'] : an.filter(k => k !== 'ts' && k !== 'thue')
 
 function dongMon(dt: number) {
   let con = dt
@@ -158,7 +165,6 @@ function dongMon(dt: number) {
 }
 
 // ── Cách đồng bộ bán hàng FABi (T113): mỗi hoá đơn một chứng từ, hoặc tổng hợp theo kênh mỗi ngày, cửa hàng ──
-type NgayPOS = (typeof DAILY)[number]
 /** Một chứng từ Xuất bán POS: số liệu của phần doanh thu ngày mà chứng từ gánh; loai 'don' là một hoá đơn FABi */
 export type XPos = NgayPOS & { kenh: string; gio: string; loai: 'don' | 'kenh'; seed: string }
 const KENH: [string, string][] = [['tq', 'Tại quán'], ['mv', 'Mang về'], ['app', 'App giao đồ ăn']]
@@ -244,8 +250,8 @@ export function ChungTuBanHang({ sc, mod }: ScreenProps) {
       dienGiai: x.loai === 'don' ? `Hoá đơn FABi ${x.kenh.toLowerCase()} ${x.gio} ngày ${dmy(x.date).slice(0, 5)}` : `Doanh thu ${x.kenh.toLowerCase()} ${x.don} đơn POS ngày ${dmy(x.date).slice(0, 5)}`,
       doiTuong: donPosCua(x).khach?.ten ?? 'Khách lẻ POS',
       tenHang: tomTatTenHang(monCua(x).map(m => m.ten)), _tenHangDu: [...new Set(monCua(x).map(m => m.ten))].join(', '),   // cột Diễn giải là tên món trong phiếu (T286)
-      // GTGT theo % doanh thu: không tiền thuế, tổng tiền = doanh thu − giảm thuế GTGT (T163)
-      tien: x.dt, thue: tyLe ? 0 : x.vat, giamThue: tyLe ? giamThueHkd(x.dt) : 0, tong: tyLe ? x.dt - giamThueHkd(x.dt) : x.dt + x.vat, nguon: 'FABi', tt: i < 3 ? 'nhap' : 'ghi',
+      // GTGT theo % doanh thu: không tiền thuế, tổng tiền = doanh thu − giảm thuế GTGT (T163, T780)
+      tien: x.dt, thue: tyLe ? 0 : x.vat, giamThue: tyLe ? giamThuePhieu(x) : 0, tong: tyLe ? x.dt - giamThuePhieu(x) : x.dt + x.vat, nguon: 'FABi', tt: i < 3 ? 'nhap' : 'ghi',
       ngayTao: `${dmy(x.date)} 23:30`, nguoiTao: 'Hệ thống',   // tạo khi đồng bộ FABi cuối ngày (T132)
     })), [tyLe])
   // Gói Plus: thêm chứng từ lập tay, nhập Excel; xếp chung với chứng từ FABi theo ngày mới nhất trước (T753)
@@ -641,21 +647,21 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
   )
 }
 
-/** Cột bật tắt được của bảng Hàng bán Xuất bán POS (T106); Giảm thuế GTGT, Phí vận chuyển ẩn sẵn, cần thì bật ở Tuỳ chỉnh giao diện */
+/** Cột bật tắt được của bảng Hàng bán Xuất bán POS (T106, T780); Giảm thuế GTGT, Phí vận chuyển, Giảm thuế theo quy định ẩn sẵn, cần thì bật ở Tuỳ chỉnh giao diện */
 const COT_POS: [string, string][] = [
   ['ma', 'Mã hàng'], ['dvt', 'ĐVT'], ['sl', 'Số lượng'], ['gia', 'Đơn giá'], ['thanh', 'Thành tiền'], ['pt', 'Giảm giá (%)'], ['giam', 'Tiền giảm giá'],
   ['ptCk', '% CK'], ['ck', 'Tiền CK'], ['ptPhiDv', '% Phí dịch vụ'], ['phiDv', 'Phí dịch vụ'], ['giamThue', 'Giảm thuế GTGT'], ['phiVc', 'Phí vận chuyển'],
-  ['dtTruocThue', 'Doanh thu tính thuế'], ['ts', 'Thuế suất'], ['thue', 'Tiền thuế'], ['tonKho', 'Theo dõi tồn kho'],
+  ['dtTruocThue', 'Doanh thu tính thuế'], ['ts', 'Thuế suất'], ['thue', 'Tiền thuế'], ['giamVat', 'Giảm thuế theo quy định'], ['tonKho', 'Theo dõi tồn kho'],
 ]
-const AN_POS_MAC_DINH = ['giamThue', 'phiVc']
+const AN_POS_MAC_DINH = ['giamThue', 'phiVc', 'giamVat']
 
 function NoiDungTab({ x, tab, kieu, an: an0 = AN_POS_MAC_DINH, tyLe = false, hienLoc = false }: { x: (typeof DAILY)[number]; tab: string; kieu: ReturnType<typeof kieuGhiSo>; an?: string[]; tyLe?: boolean; hienLoc?: boolean }) {
+  const { s } = useSession()
   const an = anTheoLoai(an0, tyLe)
   const dong0 = dongCuaPhieu(x)
   const doRong = useDoRongCot(`xuat-ban-pos:${tab}`)   // kéo giãn cột, nhớ riêng từng tab (T618)
-  // GTGT theo % doanh thu: giảm thuế GTGT của phiếu chia cho các món theo doanh thu tính thuế (T163)
-  const giam = tyLe ? chiaTheo(giamThueHkd(x.dt), dong0.map(d => d.dtTruocThue), 1) : []
-  const dong = tyLe ? dong0.map((d, i) => ({ ...d, giamThue: giam[i] })) : dong0
+  // GTGT theo % doanh thu: giảm thuế GTGT theo từng món đúng QD97 (T780)
+  const dong = tyLe ? dong0.map(d => ({ ...d, giamThue: giamThueHang(d.dtTruocThue, d.ma) })) : dong0
   const ht = [
     { dg: 'Thu tiền mặt', no: '1111', co: tyLe ? '5111' : '5111, 33311', tien: x.tm },
     { dg: 'Thu chuyển khoản, QR, thẻ', no: '1121', co: tyLe ? '5111' : '5111, 33311', tien: x.ck + x.the },
@@ -668,6 +674,7 @@ function NoiDungTab({ x, tab, kieu, an: an0 = AN_POS_MAC_DINH, tyLe = false, hie
     { so: 'Sổ tiền mặt', tien: x.tm },
     { so: 'Sổ tiền gửi ngân hàng', tien: x.ck + x.the },
   ]
+  const coGiam = tyLe && cauHinhGiamVat(s).bat
   const colsCt = ([
             // Thông tin hàng hoá đứng yên bên trái khi cuộn ngang (T106)
             { k: 'stt', t: '#', w: 40, cls: 'dim', dinh: 'trai' },
@@ -689,6 +696,10 @@ function NoiDungTab({ x, tab, kieu, an: an0 = AN_POS_MAC_DINH, tyLe = false, hie
             { k: 'dtTruocThue', t: 'Doanh thu tính thuế', num: true, w: 150 },
             { k: 'ts', t: 'Thuế suất', num: true, w: 80, r: r => `${r.ts}%` },
             { k: 'thue', t: 'Tiền thuế', num: true, w: 110 },
+            ...(coGiam ? [{
+              k: 'giamVat', t: 'Giảm thuế theo quy định', c: true, w: 140,
+              r: (r: (typeof dong)[number]) => <input type="checkbox" className="o-tich-xem" checked={hangDuocGiam(s, r.ma)} readOnly tabIndex={-1} aria-label="Giảm thuế theo quy định" />,
+            }] : []),
             // Theo danh mục hàng hoá: tích là mặt hàng theo dõi tồn kho, chỉ xem; cột cuối, cố định phải (T114)
             { k: 'tonKho', t: 'Theo dõi tồn kho', c: true, w: 120, dinh: 'phai', r: r => <input type="checkbox" className="o-tich-xem" checked={Boolean(r.tonKho)} readOnly tabIndex={-1} aria-label="Theo dõi tồn kho" /> },
           ] as Col[]).filter(c => !an.includes(c.k))
@@ -697,7 +708,7 @@ function NoiDungTab({ x, tab, kieu, an: an0 = AN_POS_MAC_DINH, tyLe = false, hie
   useEffect(() => { if (!hienLoc) setGtLoc({}) }, [hienLoc])
   const kieuCt = (c: Col): KieuLoc => c.num ? 'so' : 'chon'   // cột chữ lọc kiểu chọn (T466)
   const giaTri = (r: (typeof dong)[number], k: string) => (r as unknown as Record<string, unknown>)[k]
-  const locCt: LocCot | undefined = hienLoc ? { gt: gtLoc, dat: (k, g) => setGtLoc(t => ({ ...t, [k]: g })), bo: new Set(['stt', 'tonKho']), kieu: kieuCt,
+  const locCt: LocCot | undefined = hienLoc ? { gt: gtLoc, dat: (k, g) => setGtLoc(t => ({ ...t, [k]: g })), bo: new Set(['stt', 'tonKho', 'giamVat']), kieu: kieuCt,
     layLuaChon: k => dsGiaTri(dong, r => String(giaTri(r, k) ?? '')) } : undefined
   const dongLoc = !hienLoc ? dong : dong.filter(r => colsCt.every(c => !dangLoc(gtLoc[c.k])
     || khopLoc(kieuCt(c), gtLoc[c.k], String(giaTri(r, c.k) ?? ''), typeof giaTri(r, c.k) === 'number' ? giaTri(r, c.k) as number : undefined)))
@@ -780,7 +791,8 @@ function ChiTiet({ sc, mod, row }: ScreenProps & { row: Row }) {
   })
   // Cột thuế theo loại hình đơn vị, cố định nên không có trong Tuỳ chỉnh giao diện (T163)
   const tyLe = gtgtTyLe(s)
-  const cotChinh = tyLe ? ['ts', 'thue', 'giamThue'] : ['ts', 'thue']
+  // Giảm thuế theo quy định chỉ có khi theo % doanh thu và bật giảm thuế, không thì bỏ khỏi hộp chọn cột (T780)
+  const cotChinh = [...(tyLe ? ['ts', 'thue', 'giamThue'] : ['ts', 'thue']), ...(tyLe && cauHinhGiamVat(s).bat ? [] : ['giamVat'])]
   const [hopCot, setHopCot] = useState(false)
   const doiAnCot = (an: string[]) => {
     setAnCot(an)
@@ -791,8 +803,8 @@ function ChiTiet({ sc, mod, row }: ScreenProps & { row: Row }) {
   // Chân phiếu dạng phép tính (T613), cộng từ đúng các dòng Hàng bán nên khớp dòng Tổng cộng của lưới
   const cong = (k: 'thanh' | 'giam' | 'ck' | 'phiDv' | 'phiVc' | 'dtTruocThue') => dongCuaPhieu(x).reduce((a, d) => a + d[k], 0)
   const dtTinhThue = cong('dtTruocThue'), phiVc = cong('phiVc')
-  // GTGT theo % doanh thu: tổng thanh toán = doanh thu − giảm thuế GTGT, không cộng tiền thuế (T163); khấu trừ cộng thuế GTGT
-  const giamThue = tyLe ? giamThueHkd(x.dt) : 0
+  // GTGT theo % doanh thu: tổng thanh toán = doanh thu − giảm thuế GTGT, không cộng tiền thuế (T163, T780); khấu trừ cộng thuế GTGT
+  const giamThue = tyLe ? giamThuePhieu(x) : 0
   const tong = tyLe ? dtTinhThue - giamThue : dtTinhThue + x.vat
   const phepTinh: [string, string, number][] = [
     ['', 'Tiền hàng', cong('thanh')], ['−', 'Giảm giá', cong('giam')], ['−', 'Chiết khấu', cong('ck')], ['+', 'Phí dịch vụ', cong('phiDv')],

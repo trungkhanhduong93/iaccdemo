@@ -2,7 +2,7 @@
 import type { Col, Row } from '../types'
 import { CUA_HANG, HANG, daysOf, tongKy } from '../../data/mock'
 import { dm, dauThap } from '../../ui/format'
-import { giamThueHkd } from './giam-thue'
+import { giamThuePhieu } from './ChungTuBanHang'
 
 const TY_LE = [0.21, 0.09, 0.12, 0.14, 0.07, 0.15, 0.1, 0.09, 0.03]
 
@@ -38,7 +38,7 @@ export const baoCaoDoanhThu = {
     const rows: Row[] = ngay.map(d => {
       const n = ds.filter(x => +x.date === d)
       const r: Row = { ngay: dm(new Date(d)), dt: 0, vat: 0, giamThue: 0, don: 0 }
-      for (const x of n) { r[x.cn] = x.dt; r.dt += x.dt; r.vat += tyLe ? 0 : x.vat; r.giamThue += tyLe ? giamThueHkd(x.dt) : 0; r.don += x.don }   // T450
+      for (const x of n) { r[x.cn] = x.dt; r.dt += x.dt; r.vat += tyLe ? 0 : x.vat; r.giamThue += tyLe ? giamThuePhieu(x) : 0; r.don += x.don }   // T450, T780
       return r
     })
     const s = (k: string) => rows.reduce((a, r) => a + (r[k] ?? 0), 0)

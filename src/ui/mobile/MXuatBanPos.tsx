@@ -11,10 +11,9 @@ import { MChon } from './MChon'
 import { MChonKhoangNgay } from './MChonKhoangNgay'
 import {
   PTTT,
-  chiaTheo,
   dongCuaPhieu,
   donPosCua,
-  giamThueHkd,
+  giamThuePhieu,
   ptttCua,
   soFabi,
   theoDon,
@@ -23,6 +22,7 @@ import {
   MON_POS,
   type XPos,
 } from '../../modules/ban-hang/ChungTuBanHang'
+import { giamThueHang } from '../../modules/ban-hang/giam-thue'
 import { useDaXoa } from '../generic/daXoa'
 import { MDsChungTuChuan, MDsDongPhieu, HangTabsBanHang, layMaKh } from './MDsChungTuChuan'
 import { quayLaiMobile } from './quayLai'
@@ -74,8 +74,8 @@ export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
         doiTuong: 'Khách lẻ POS',
         tien: x.dt,
         thue: tyLe ? 0 : x.vat,
-        giamThue: tyLe ? giamThueHkd(x.dt) : 0,
-        tong: tyLe ? x.dt - giamThueHkd(x.dt) : x.dt + x.vat,
+        giamThue: tyLe ? giamThuePhieu(x) : 0,
+        tong: tyLe ? x.dt - giamThuePhieu(x) : x.dt + x.vat,
         nguon: 'FABi',
         tt: i < 3 ? 'nhap' : 'ghi',
         ngayTao: `${dmy(x.date)} 23:30`,
@@ -227,14 +227,13 @@ export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
     setTimHang('')
   }
 
-  // Dòng món của đơn đang xem
+  // Dòng món của đơn đang xem (T780)
   const dsMon = useMemo(() => {
     if (!donDangXem?.x) return []
     const x = donDangXem.x as XPos
     const dong0 = dongCuaPhieu(x)
     if (!tyLe) return dong0
-    const giam = chiaTheo(giamThueHkd(x.dt), dong0.map(d => d.dtTruocThue), 1)
-    return dong0.map((d, i) => ({ ...d, giamThue: giam[i] }))
+    return dong0.map(d => ({ ...d, giamThue: giamThueHang(d.dtTruocThue, d.ma) }))
   }, [donDangXem, tyLe])
 
   // Thông tin bổ trợ cho đơn đang xem

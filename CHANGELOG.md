@@ -2,6 +2,9 @@
 
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
+## 09/11/2026
+- T780: Đơn vị tính GTGT theo % doanh thu, Xuất bán POS tính Giảm thuế GTGT theo từng món: món không tích Giảm thuế theo quy định ở Danh mục hàng hoá thì không giảm, món bán lẻ tính theo tỷ lệ bán lẻ. Danh sách, chi tiết phiếu, báo cáo bán hàng, điện thoại cùng số. Bảng chi tiết có cột Giảm thuế theo quy định, ẩn sẵn.
+
 ## 08/11/2026
 - T779: Phiếu chuyển quỹ lưu đúng Từ quỹ, Đến quỹ đã chọn, mở lại không còn về quỹ mặc định. Màn xem phiếu chuyển quỹ trên điện thoại hiện Từ quỹ và Đến quỹ trong cùng một khung.
 
