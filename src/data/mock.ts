@@ -299,6 +299,8 @@ export const LY_DO = [
 export const LY_CAN_DOI_TUONG = LY_DO.filter(x => ['THU02', 'THU10', 'CHI02', 'CHI34'].includes(x.ma)).map(x => x.ten)
 /** Tên lý do chi tiền được tích là chi phí: báo cáo chi phí (Sổ chi phí, Chi phí trong tháng) chỉ lấy các lý do này (T231) */
 export const LY_CHI_PHI = LY_DO.filter(x => x.dung === 'Chi tiền' && x.chiPhi).map(x => x.ten)
+/** Tên lý do chi tích Chi phí phân bổ nhiều kỳ: Sổ chi phí không lấy phiếu chi, lấy số phân bổ từng tháng của thẻ chi phí (T700) */
+export const LY_PHAN_BO_TEN = LY_DO.filter(x => x.dung === 'Chi tiền' && x.phanBo).map(x => x.ten)
 /** Lý do nghiệp vụ kèm phần đã sửa trong phiên của đơn vị: Là chi phí, Chi phí phân bổ nhiều kỳ, nhóm lý do (T700) */
 export function ganLyDo<R extends { ma?: unknown }>(r: R, s: Pick<Session, 'donVi' | 'lyDoGhiDe'>): R {
   const g = s.lyDoGhiDe?.[s.donVi]?.[String(r.ma)]

@@ -4,6 +4,7 @@ import { soCai } from '../tong-hop/so-cai'
 import { createElement } from 'react'
 import { Link } from 'react-router-dom'
 import { CUA_HANG, LY_CHI_PHI, NVL, TK_NGAN_HANG, daysOf, kqkd, tongKy } from '../../data/mock'
+import { phanBoTrongThang } from '../ccdc'
 import { datLocDaXem } from '../../ui/bao-cao/tuyChinhBC'
 import { tenQuyTm, tenTkNh } from './danh-sach'
 import { between, pad, rng } from '../../ui/format'
@@ -748,6 +749,17 @@ function rows1043(thang: number): Row[] {
       nhomCp: x.nhomCp,
       cp: x.cp,
     }
+  })
+  // Lý do Chi phí phân bổ nhiều kỳ không lấy phiếu chi, lấy số phân bổ từng tháng của thẻ chi phí, ghi ngày cuối tháng (T700)
+  const cuoi = `${pad(new Date(2026, thang, 0).getDate())}/${pad(thang)}/2026`
+  phanBoTrongThang(thang).forEach(r => {
+    const ten = String(r.ten), cp = Number(r.kyNay)
+    tongCp += cp
+    rows.push({
+      so: String(r.soThe), ngay: cuoi, nd: `Phân bổ tháng ${thang}/2026: ${ten}`,
+      lyDo: /thuê|tiền nhà/i.test(ten) ? 'Chi tiền thuê nhà' : 'Chi phí chờ phân bổ',
+      kmcp: String(r.loai), nhomCp: 'Chi phí phân bổ', cp,
+    })
   })
   rows.push({
     nd: 'Tổng cộng',

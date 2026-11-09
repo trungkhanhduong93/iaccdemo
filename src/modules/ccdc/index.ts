@@ -57,6 +57,10 @@ export const theMauTheoGoc = (goc: string): string[] => THE_MAU.filter(t => '_go
 /** Thẻ mẫu theo số thẻ (T439) */
 export const theMauTheoSo = (so: string) => THE_MAU.find(t => t.soThe === so)
 
+/** Số phân bổ trong tháng (2026) của từng dòng thẻ mẫu, cho Sổ chi phí: mỗi dòng thẻ có phân bổ một hàng (T700) */
+export const phanBoTrongThang = (thang: number) => THE_MAU.filter(t => thangCua(t.ngay) <= 202600 + thang)
+  .flatMap(t => bangPhanBo(t, 202600 + thang)).filter(r => Number(r.kyNay) > 0)
+
 /** Tên kỳ yyyymm: tháng 10/2026 */
 const tenKy = (ky: number) => `tháng ${ky % 100}/${Math.floor(ky / 100)}`
 /** Kỳ yyyymm đã khoá sổ chưa: Phân bổ và Xoá phân bổ cùng một điều kiện (T438) */

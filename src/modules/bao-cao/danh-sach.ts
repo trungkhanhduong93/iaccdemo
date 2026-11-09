@@ -2,7 +2,7 @@
 import type { CheDo } from '../../app/che-do'
 import type { Goi } from '../../app/plan'
 import type { Kho } from '../../ui/bao-cao/ToGiay'
-import { CUA_HANG, LY_CHI_PHI, TK_NGAN_HANG } from '../../data/mock'
+import { CUA_HANG, LY_CHI_PHI, LY_PHAN_BO_TEN, TK_NGAN_HANG } from '../../data/mock'
 import { dsDonVi, loaiHinhDv, type Session } from '../../app/session'
 import { DON_VI } from '../../data/mock'
 import { thTT58 } from './tt58'
@@ -151,9 +151,10 @@ export const CAU_HINH_BC: Record<string, CauHinhBC> = {
   '10.4.2': { loai: 'so', kho: 'doc', anTam: ['TT152', 'TT133', 'TT99'], kyHieu: { TT58: 'S4d-DNSN', TT133: 'S23-DNN', TT99: 'S51-DN' } },
   '10.4.3': baoCao('doc', {
     loc: [
-      { k: 'kmcp', nhan: 'Khoản mục chi phí', kieu: 'chon', ds: () => ['Tiền điện', 'Tiền nước', 'Tiền gas công nghiệp', 'Thuê mặt bằng Lê Lợi', 'Thuê mặt bằng Nguyễn Trãi', 'Thuê mặt bằng Thảo Điền', 'Lương nhân viên bếp', 'Lương nhân viên phục vụ', 'Lương quản lý cửa hàng', 'Quảng cáo Facebook & TikTok', 'Phí giao hàng Grab & ShopeeFood', 'Dụng cụ vệ sinh & hoá chất', 'Văn phòng phẩm & in ấn'] },
-      { k: 'nhomCp', nhan: 'Nhóm khoản mục chi phí', kieu: 'chon', ds: () => ['Chi phí tiện ích', 'Chi phí mặt bằng', 'Chi phí nhân công', 'Chi phí bán hàng', 'Chi phí quản lý'] },
-      { k: 'lyDo', nhan: 'Lý do', kieu: 'chonNhieu', ds: () => LY_CHI_PHI },   // T221; chỉ lý do được tích là chi phí (T231)
+      { k: 'kmcp', nhan: 'Khoản mục chi phí', kieu: 'chon', ds: () => ['Tiền điện', 'Tiền nước', 'Tiền gas công nghiệp', 'Thuê mặt bằng Lê Lợi', 'Thuê mặt bằng Nguyễn Trãi', 'Thuê mặt bằng Thảo Điền', 'Lương nhân viên bếp', 'Lương nhân viên phục vụ', 'Lương quản lý cửa hàng', 'Quảng cáo Facebook & TikTok', 'Phí giao hàng Grab & ShopeeFood', 'Dụng cụ vệ sinh & hoá chất', 'Văn phòng phẩm & in ấn',
+        'Chi phí trả trước', 'Công cụ dụng cụ', 'Tài sản cố định'] },   // dòng phân bổ của thẻ chi phí lấy loại thẻ làm khoản mục (T700)
+      { k: 'nhomCp', nhan: 'Nhóm khoản mục chi phí', kieu: 'chon', ds: () => ['Chi phí tiện ích', 'Chi phí mặt bằng', 'Chi phí nhân công', 'Chi phí bán hàng', 'Chi phí quản lý', 'Chi phí phân bổ'] },
+      { k: 'lyDo', nhan: 'Lý do', kieu: 'chonNhieu', ds: () => [...LY_CHI_PHI, ...LY_PHAN_BO_TEN] },   // T221; lý do là chi phí (T231), lý do phân bổ nhiều kỳ (T700)
     ],
     nhomDuoc: ['nhomCp', 'kmcp', 'lyDo'],
     anKhongPS: true,
