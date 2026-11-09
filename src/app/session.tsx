@@ -148,7 +148,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const kieu = s.kieuSo?.[s.donVi] ?? 'vn'
   datKieuSo(kieu)
   datGiamVat(s, loaiHinhDv(s, donViHienTai(s)) !== 'hkd')   // T754
-  ngayLamViecHt = ngayDauNam(s)   // T782
+  ngayLamViecHt = ngayLamViec(s)   // T782
   return (
     <Ctx.Provider value={{ s, set, toast: setMsg }}>
       <Fragment key={kieu}>{children}</Fragment>

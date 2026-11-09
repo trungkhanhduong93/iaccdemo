@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState, type FC, type ReactNode } from 'react'
 import { quayLaiMobile } from './quayLai'
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import type { Row, ScreenProps } from '../../modules/types'
-import { cuaHangHienTai, dsKyNam, kyMacDinh, ngayDauNam, truocDauNam, useSession } from '../../app/session'
+import { cuaHangHienTai, dsKyNam, kyMacDinh, ngayDauNam, ngayLamViec, truocDauNam, useSession } from '../../app/session'
 import { hienMan, laBaoCao } from '../../app/registry'
 import { CUA_HANG } from '../../data/mock'
 import { money, fold } from '../format'
@@ -291,7 +291,7 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
     setFtNgayCt('')
     setFtGhiChuCt('')
     setFtNgay(ngay)
-    setFtNgayPb(ngayDauNam(s))
+    setFtNgayPb(ngayLamViec(s))   // thẻ dư đầu kỳ phân bổ từ Ngày bắt đầu làm việc (T782)
     setDaChonNgayPb(true)
     setCnGhiTang(cn)
     setMoGhiTang(true)
@@ -483,7 +483,7 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
                 <span className="m-mh-dong-ncc" title={dongPhu}>
                   {dongPhu}
                 </span>
-                <span className="m-cp645-ngay">Ghi tăng {String(item.ngay).split(' ')[0]} · PB từ {item.ngayPb}</span>
+                <span className="m-cp645-ngay">Ghi tăng {String(item.ngay).split(' ')[0]} · PB từ {item._kieu === 'dau' ? ngayLamViec(s) : item.ngayPb}</span>
               </div>
               <div className="m-the-cp-phai">
                 <span className={`m-the-ct-tag ${item.ttCls}`}>{item.ttNhan}</span>
