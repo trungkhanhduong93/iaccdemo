@@ -36,6 +36,8 @@ const THE_MAU_BASE: TheMobile[] = [
   { soThe: 'TPB2609-0009', loai: 'Công cụ dụng cụ', ngay: '15/09/2026', ten: 'Ly thuỷ tinh 300ml và tủ mát', cn: 'Phố Mây Nguyễn Tri Phương', gt: 40_500_000, ky: 12, soCt: 'PC2609-0243', ngayCt: '30/09/2026', ghiChuCt: 'Chi tiền gas tháng 10', _goc: '/app/tien/2-1-1/chi-5', dong: [{ ma: 'CCDC0006', ten: 'Ly thuỷ tinh 300ml', gt: 7_200_000, ky: 12, sl: 240, dg: 30_000, ngayPb: '15/09/2026' }, { ma: 'CCDC0007', ten: 'Tủ mát 2 cánh', gt: 28_500_000, ky: 24, sl: 1, dg: 28_500_000, ngayPb: '15/09/2026' }] },
   { soThe: 'TPB2610-0010', loai: 'Tài sản cố định', ngay: '01/10/2026', ten: 'Máy rửa chén công nghiệp', cn: 'Phố Mây Lê Lợi', gt: 310_000_000, ky: 60, soCt: 'UNC2609-0244', ngayCt: '28/09/2026', ghiChuCt: 'Nộp thuế GTGT tháng 9', _goc: '/app/tien/2-1-1/unc-5', dong: [{ ma: 'TSCD.0001', ten: 'Máy rửa chén công nghiệp', soHieu: 'MRC-HB-2026-01', moTa: 'Hobart AM15, công suất 1.000 đĩa/giờ, điện 3 pha, kèm bàn inox vào ra', gt: 186_000_000, ky: 60, sl: 1, dg: 186_000_000, ngayPb: '01/10/2026' }, { ma: 'TSCD.0002', ten: 'Hệ thống hút khói bếp', soHieu: 'HK-LL-02', moTa: 'Chụp hút inox 4 m, quạt ly tâm 7,5 kW, đường ống ra mái', gt: 124_000_000, ky: 60, sl: 1, dg: 124_000_000, ngayPb: '01/10/2026' }] },
   { soThe: 'TPB2601-0012', loai: 'Công cụ dụng cụ', _kieu: 'dau', ngay: '01/01/2026', ten: 'Bộ nồi inox và bếp á (dư đầu kỳ)', cn: 'Phố Mây Lê Lợi', gt: 39_000_000, ky: 24, dong: [{ ma: 'CCDC0008', ten: 'Bộ nồi inox 50 lít', dvt: 'Bộ', sl: 2, dg: 12_300_000, gt: 24_600_000, da: 8_200_000, ky: 24, kyDa: 8, ngayPb: '01/01/2026' }, { ma: 'CCDC0009', ten: 'Bếp á đôi công nghiệp', dvt: 'Cái', sl: 1, dg: 14_400_000, gt: 14_400_000, da: 7_200_000, ky: 24, kyDa: 12, ngayPb: '01/01/2026', ngung: true, ngayNgung: '30/09/2026' }] },
+  // Thẻ dư đầu kỳ Chi phí trả trước, gói Free cũng thấy; cùng số liệu thẻ TPBDK2512-0001 bên web (T782)
+  { soThe: 'TPBDK2512-0001', loai: 'Chi phí trả trước', _kieu: 'dau', ngay: '31/12/2025', ngayPb: '01/01/2026', ten: 'Tiền thuê kho tổng 24 tháng', cn: 'Phố Mây Thảo Điền', gt: 120_000_000, ky: 24, soCt: 'PC2501-0035', ngayCt: '02/01/2025', ghiChuCt: 'Trả trước tiền thuê kho tổng 2 năm', dong: [{ ma: 'CPTT.0005', ten: 'Tiền thuê kho tổng 24 tháng', gt: 120_000_000, da: 60_000_000, ky: 24, kyDa: 12, sl: 1, dg: 120_000_000, ngayPb: '01/01/2026' }] },
   { soThe: 'TPB2610-0011', loai: 'Chi phí trả trước', ngay: '07/10/2026', ten: 'Tiền nhà 6 tháng', cn: 'Phố Mây Lê Lợi', gt: 72_000_000, ky: 6, soCt: 'PC2610-0261', ngayCt: '07/10/2026', ghiChuCt: 'Tiền nhà 6 tháng', _goc: '/app/tien/2-1-1/chi-cpb', dong: [{ ma: 'CPTT.0004', ten: 'Tiền nhà 6 tháng', gt: 72_000_000, ky: 6, sl: 1, dg: 72_000_000, ngayPb: '07/10/2026' }] },
 ]
 
@@ -699,28 +701,31 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
                     <Icon n="clock" className="ic sm m-lp-dong-ic" kieu="net" />
                     Ngày ghi tăng
                   </span>
-                  <span className="m-gt-tri">
+                  {/* Ô ngày như phiếu thu chi điện thoại (T782) */}
+                  <span className="m-tpb-ngay">
                     <span>{ftNgay}</span>
-                    <Icon n="chevr" className="ic sm" kieu="net" />
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
                   </span>
                 </div>
                 {ftDau && <div className="m-gt-ghi-chu">Ngày ghi tăng phải trước ngày bắt đầu năm tài chính ban đầu.</div>}
 
-                {/* Bắt đầu phân bổ */}
+                {/* Bắt đầu phân bổ; thẻ dư đầu kỳ theo Ngày bắt đầu làm việc, chỉ xem (T782) */}
                 <div
-                  className="m-pb-dong m-gt-bam"
-                  onClick={() => setMoLichPb(true)}
-                  role="button"
-                  tabIndex={0}
+                  className={`m-pb-dong${ftDau ? '' : ' m-gt-bam'}`}
+                  onClick={ftDau ? undefined : () => setMoLichPb(true)}
+                  role={ftDau ? undefined : 'button'}
+                  tabIndex={ftDau ? undefined : 0}
                 >
                   <span className="m-gt-nhan">
                     <Icon n="calendar" className="ic sm m-lp-dong-ic" kieu="net" />
                     Ngày bắt đầu phân bổ
                   </span>
-                  <span className="m-gt-tri">
-                    <span>{ftNgayPb}</span>
-                    <Icon n="chevr" className="ic sm" kieu="net" />
-                  </span>
+                  {ftDau ? <span className="m-gt-tri m-gt-tinh">{ftNgayPb}</span> : (
+                    <span className="m-tpb-ngay">
+                      <span>{ftNgayPb}</span>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
+                    </span>
+                  )}
                 </div>
 
                 {/* Thẻ dư đầu kỳ: giá trị đã phân bổ, còn cần phân bổ, thứ tự như cột trên web (T644) */}
@@ -827,9 +832,9 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
                     </div>
                     <div className="m-pb-dong m-gt-bam" onClick={() => setMoLichCt(true)} role="button" tabIndex={0}>
                       <span className="m-gt-nhan">Ngày chứng từ</span>
-                      <span className="m-gt-tri">
-                        <span>{ftNgayCt || 'Chọn ngày'}</span>
-                        <Icon n="chevr" className="ic sm" kieu="net" />
+                      <span className="m-tpb-ngay">
+                        <span className={ftNgayCt ? undefined : 'trong'}>{ftNgayCt || 'Chọn ngày'}</span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
                       </span>
                     </div>
                     <div className="m-pb-dong m-gt-dong-ten">

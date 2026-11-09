@@ -11,6 +11,8 @@
 - Cột Ngày bắt đầu PB của thẻ dư đầu kỳ chỉ xem, không gõ được nữa. Thẻ ghi tăng trong kỳ giữ nguyên.
 - Điện thoại `MThePhanBo.tsx`: dùng `ngayBd` (xuất từ `the-phan-bo.tsx`) cho Ngày bắt đầu phân bổ ở chi tiết, dòng "Phân bổ: n tháng từ", lịch sử mẫu, kiểm khi lưu. Form sửa thẻ dư đầu kỳ hiện ngày chỉ xem, không mở lịch chọn ngày.
 - Điện thoại, form sửa thẻ: ô số tiền, số tháng, ô ngày (ghi tăng, bắt đầu, ngừng phân bổ) đổi cùng kiểu phiếu thu chi: ô viền trắng cao 38px, "đ" và "tháng" nằm trong ô, ô ngày chữ xanh kèm mũi tên xuống (`ONgayO`, mục CSS T782 cuối `app.css`).
+- Điện thoại, form Thêm thẻ chi phí (`MCcdc.tsx`, Trum đồng ý sửa dù đang giữ ở T552): ô Số tiền, Giá trị đã phân bổ, Số tháng, ô Ngày ghi tăng, Ngày bắt đầu phân bổ, Ngày chứng từ cùng kiểu phiếu thu chi. Thẻ dư đầu kỳ: Ngày bắt đầu phân bổ chỉ xem.
+- Dữ liệu mẫu điện thoại thêm thẻ dư đầu kỳ TPBDK2512-0001 loại Chi phí trả trước (cùng số liệu bên web), để gói Free cũng có thẻ dư đầu kỳ thử.
 
 ## Đã kiểm
 

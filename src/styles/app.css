@@ -47494,3 +47494,9 @@ textarea.m-tpb-inp { height: auto; padding: 8px 12px; }
 .m-tpb-ngay > span { flex: 1; text-align: right; }
 .m-tpb-ngay svg { flex: none; }
 .m-tpb-ngay.do { color: var(--red); }
+/* Form Thêm thẻ chi phí điện thoại (MCcdc): ô số, ô ngày cùng kiểu phiếu thu chi */
+.m-pb-man .m-pb-dong .m-gt-tri.m-gt-o-nhap { flex: 0 1 62%; width: auto; height: 38px; padding: 0 12px; gap: 4px; border: 1px solid var(--line); border-radius: 10px; background: var(--white); }
+.m-pb-man .m-pb-dong .m-gt-tri.m-gt-o-nhap:focus-within { border-color: var(--blue); box-shadow: none; }
+.m-pb-man .m-pb-dong .m-gt-o-nhap .m-gt-inp { height: 100%; border: none !important; background: transparent !important; box-shadow: none !important; font-weight: 400 !important; font-variant-numeric: tabular-nums; }
+.m-pb-man .m-pb-dong .m-gt-o-nhap .m-gt-donvi { font-size: 14px; font-weight: 400; color: var(--muted); }
+.m-tpb-ngay > span.trong { color: var(--muted); }
