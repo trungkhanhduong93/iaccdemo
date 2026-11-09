@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T783 | Hộp chào mừng Hướng dẫn ở Trang chủ: nút "Bỏ qua" đổi thành "Bắt đầu ngay", "Khám phá ngay" đổi thành "Xem hướng dẫn"; câu thông báo nêu rõ 3 thông tin Kết quả kinh doanh, Quỹ tiền, Kê khai thuế; tiêu đề không ngắt giữa "iPOS Accounting" (`HuongDan.tsx`) | dinhlanphuongipacc | 09/11/2026 | [nhật ký](../nhat-ky/2026-11-09-dinhlanphuongipacc-hop-chao-mung.md) |
 | T782 | Thẻ chi phí phân bổ dư đầu kỳ: lịch phân bổ bắt đầu từ kỳ của Ngày bắt đầu làm việc (Hệ thống, Thông tin đơn vị), số kỳ = số kỳ còn, mỗi kỳ = (Số tiền − Đã phân bổ khai trên thẻ) ÷ số kỳ còn, kỳ cuối nhận phần lẻ; cột Ngày bắt đầu PB của thẻ dư đầu kỳ chỉ xem | dinhlanphuongipacc | 09/11/2026 | [nhật ký](../nhat-ky/2026-11-09-dinhlanphuongipacc-lich-phan-bo-du-dau-ky.md) |
 | T780 | Giảm thuế GTGT theo từng món ở Xuất bán POS (tiếp T754, QD97): mỗi dòng = doanh thu tính thuế × % GTGT của hàng × % giảm, hàng không tích Giảm thuế theo quy định thì 0; tổng phiếu, danh sách, thanh toán, báo cáo bán hàng, điện thoại cộng từ từng dòng; bảng chi tiết POS thêm cột tích chỉ xem Giảm thuế theo quy định, ẩn sẵn | Trum | Xong | Giảm thuế từng dòng theo `giamThueHang`, cột Giảm thuế theo quy định ẩn sẵn ở bảng chi tiết POS |
 | T778 | Favicon và dấu logo vuông ở sidebar đổi sang logo ACC iPOS, logo chữ ngang giữ nguyên (`favicon.png`, `acc-dau.webp`) | Trum | 07/11/2026 | 2026-11-07-trum-logo-vuong.md |

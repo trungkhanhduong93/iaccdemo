@@ -64,7 +64,7 @@ const KHEN: Record<Viec, (ten: string) => { tieuDe: string; noiDung: string }> =
 }
 
 const BUOC: Buoc[] = [
-  { tieuDe: 'Chào mừng bạn đến với iPOS Accounting', noiDung: 'Sổ sách của quán đã sẵn sàng! Cùng điểm nhanh 3 thông tin quan trọng nhất để nắm trọn tình hình kinh doanh và dòng tiền.' },
+  { tieuDe: 'Chào mừng bạn đến với iPOS Accounting', noiDung: 'Sổ sách của quán đã sẵn sàng. Xem nhanh 3 thông tin quan trọng: Kết quả kinh doanh, Quỹ tiền và Kê khai thuế.' },
   { chon: '.tq-col-12 .bbt-cot', ...KQKD, chonKhen: '.tq-col-12 .bbt-kqkd-row[title="Xem chi phí hoạt động"]' },
   { chon: '.tq-col-12 .bbt-cot', so: 1, ...QUY, chonKhen: '.tq-col-12 .bbt-o-ton-quy' },
   { chon: '.sb-nav a[href="#/app/thue/to-khai"]', ...THUE },
@@ -281,9 +281,9 @@ export function HuongDan({ sang }: { sang?: string }) {
         <div className="row hdan-nut">
           {i > 0 && <span className="muted hdan-dem">{i}/{ds.length - 1}</span>}
           <span className="grow" />
-          <button className="btn ghost sm" onClick={() => setNhacNut(true)}>Bỏ qua</button>{/* cả bước cuối (PhuongXT 30/10/2026) */}
+          <button className="btn ghost sm" onClick={() => setNhacNut(true)}>{i === 0 ? 'Bắt đầu ngay' : 'Bỏ qua'}</button>{/* cả bước cuối (PhuongXT 30/10/2026); hộp chào mừng ghi Bắt đầu ngay (dinhlanphuongipacc 09/11/2026) */}
           {i > 1 && <button className="btn sm" onClick={() => setI(i - 1)}>Quay lại</button>}
-          <button className="btn pri sm" onClick={cuoi ? xong : i === 0 && sang ? () => { luuTiep({ dv: s.donVi, b: 1, moLai }); nav(sang) } : () => setI(i + 1)}>{i === 0 ? 'Khám phá ngay' : cuoi ? 'Bắt đầu dùng' : 'Tiếp'}</button>
+          <button className="btn pri sm" onClick={cuoi ? xong : i === 0 && sang ? () => { luuTiep({ dv: s.donVi, b: 1, moLai }); nav(sang) } : () => setI(i + 1)}>{i === 0 ? 'Xem hướng dẫn' : cuoi ? 'Bắt đầu dùng' : 'Tiếp'}</button>
         </div>
         )}
       </div>
