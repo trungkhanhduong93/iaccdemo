@@ -287,7 +287,7 @@ export const MTheSua: FC<{ t: TheMobile; goi: Goi; onHuy: () => void; onLuu: (mo
   const [sheet, setSheet] = useState<number | null>(null)
   const [kyDong, setKyDong] = useState<number | null>(null)
   const [hoi, setHoi] = useState<number | null>(null)
-  const [lich, setLich] = useState<null | { k: 'ngay' } | { k: 'ngayPb' | 'ngayNgung'; i: number }>(null)
+  const [lich, setLich] = useState<null | { k: 'ngay' | 'ngayCt' } | { k: 'ngayPb' | 'ngayNgung'; i: number }>(null)
   const kieu = kieuDong(dr.loai), dau = laDau(dr)
 
   const suaDong = (i: number, moi: Partial<DongPb>, giuKy = false) => setDr(x => ({
@@ -395,7 +395,7 @@ export const MTheSua: FC<{ t: TheMobile; goi: Goi; onHuy: () => void; onLuu: (mo
 
         <div className="m-pb-nhom">Mục phân bổ ({dr.dong.length})</div>
         {dr.dong.map((d, i) => {
-          const { can, kyCon } = tinhDong(dr, d), lech = Math.round(lechDong(dr, d))
+          const { can, kyCon, tienKy } = tinhDong(dr, d), lech = Math.round(lechDong(dr, d))
           return (
             <div key={i} className="m-t449-hang-the">
               <div className="m-t449-hang-dau">
@@ -403,8 +403,20 @@ export const MTheSua: FC<{ t: TheMobile; goi: Goi; onHuy: () => void; onLuu: (mo
                 <div className="m-t449-hang-actions"><button type="button" className="m-t449-btn-sua-hang" onClick={() => setSheet(i)}>Sửa</button></div>
               </div>
               <div className="m-t449-hang-than">
-                <Dong n={dau ? 'Cần phân bổ:' : 'Số tiền:'} v={`${money(can)} đ`} dam />
-                <Dong n="Phân bổ:" v={`${kyCon} tháng từ ${ngayBd(dr, d)}`} />
+                {/* Thẻ dư đầu kỳ: đủ thông tin như màn Thêm mới (T782) */}
+                {dau ? <>
+                  <Dong n="Số tiền:" v={`${money(so(d.gt))} đ`} />
+                  <Dong n="Giá trị đã phân bổ:" v={`${money(so(d.da))} đ`} />
+                  <Dong n="Giá trị còn cần phân bổ:" v={`${money(can)} đ`} dam />
+                  <Dong n="Số tháng phân bổ:" v={`${so(d.ky)} tháng`} />
+                  <Dong n="Số tháng đã phân bổ:" v={`${so(d.kyDa)} tháng`} />
+                  <Dong n="Số tháng còn phân bổ:" v={`${kyCon} tháng`} />
+                  <Dong n="Mỗi tháng phân bổ:" v={`${money(tienKy)} đ`} />
+                  <Dong n="Ngày bắt đầu phân bổ:" v={ngayBd(dr, d)} />
+                </> : <>
+                  <Dong n="Số tiền:" v={`${money(can)} đ`} dam />
+                  <Dong n="Phân bổ:" v={`${kyCon} tháng từ ${ngayBd(dr, d)}`} />
+                </>}
                 {d.ngung && <Dong n="Ngừng phân bổ từ:" v={String(d.ngayNgung ?? '')} cls="ngung" />}
               </div>
               <button type="button" className="m-tpb-mo-lich" onClick={() => setKyDong(i)}>
@@ -415,7 +427,18 @@ export const MTheSua: FC<{ t: TheMobile; goi: Goi; onHuy: () => void; onLuu: (mo
           )
         })}
 
-        {dr.soCt && (
+        {/* Thẻ dư đầu kỳ: Thông tin mua nhập tay, sửa được như màn Thêm mới (T782) */}
+        {dau && (
+          <>
+            <div className="m-pb-nhom">Thông tin mua</div>
+            <div className="m-pb-the m-pb-the-gon">
+              <label className="m-pb-dong" htmlFor="tpb-so-ct"><span className="n">Số chứng từ</span><ONhap id="tpb-so-ct" nhan="Số chứng từ" v={dr.soCt ?? ''} onDoi={s => setDr(x => ({ ...x, soCt: s.toUpperCase() }))} /></label>
+              <div className="m-pb-dong m-gt-bam" role="button" tabIndex={0} onClick={() => setLich({ k: 'ngayCt' })}><span className="n">Ngày chứng từ</span><ONgayO v={dr.ngayCt || 'Chọn ngày'} /></div>
+              <label className="m-pb-dong" htmlFor="tpb-ghi-chu-ct"><span className="n">Ghi chú</span><ONhap id="tpb-ghi-chu-ct" nhan="Ghi chú" v={dr.ghiChuCt ?? ''} onDoi={s => setDr(x => ({ ...x, ghiChuCt: s }))} /></label>
+            </div>
+          </>
+        )}
+        {!dau && dr.soCt && (
           <>
             <div className="m-pb-nhom">Thông tin mua</div>
             <div className="m-pb-the m-pb-the-gon">
@@ -485,8 +508,8 @@ export const MTheSua: FC<{ t: TheMobile; goi: Goi; onHuy: () => void; onLuu: (mo
 
       {lich && (
         <LichDon
-          value={lich.k === 'ngay' ? dr.ngay : String(dr.dong[lich.i][lich.k] ?? '')}
-          onChange={v => { if (lich.k === 'ngay') setDr(x => ({ ...x, ngay: v })); else suaDong(lich.i, { [lich.k]: v } as Partial<DongPb>) }}
+          value={'i' in lich ? String(dr.dong[lich.i][lich.k] ?? '') : String(dr[lich.k] ?? '')}
+          onChange={v => { if ('i' in lich) suaDong(lich.i, { [lich.k]: v } as Partial<DongPb>); else { const k = lich.k; setDr(x => ({ ...x, [k]: v })) } }}
           onDong={() => setLich(null)}
         />
       )}

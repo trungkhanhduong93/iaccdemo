@@ -12,6 +12,7 @@
 - Điện thoại `MThePhanBo.tsx`: dùng `ngayBd` (xuất từ `the-phan-bo.tsx`) cho Ngày bắt đầu phân bổ ở chi tiết, dòng "Phân bổ: n tháng từ", lịch sử mẫu, kiểm khi lưu. Form sửa thẻ dư đầu kỳ hiện ngày chỉ xem, không mở lịch chọn ngày.
 - Điện thoại, form sửa thẻ: ô số tiền, số tháng, ô ngày (ghi tăng, bắt đầu, ngừng phân bổ) đổi cùng kiểu phiếu thu chi: ô viền trắng cao 38px, "đ" và "tháng" nằm trong ô, ô ngày chữ xanh kèm mũi tên xuống (`ONgayO`, mục CSS T782 cuối `app.css`).
 - Điện thoại, form Thêm thẻ chi phí (`MCcdc.tsx`, Trum đồng ý sửa dù đang giữ ở T552): ô Số tiền, Giá trị đã phân bổ, Số tháng, ô Ngày ghi tăng, Ngày bắt đầu phân bổ, Ngày chứng từ cùng kiểu phiếu thu chi. Thẻ dư đầu kỳ: Ngày bắt đầu phân bổ chỉ xem.
+- Điện thoại, form Sửa thẻ dư đầu kỳ (`MThePhanBo.tsx`): mỗi mục hiện đủ Số tiền, Giá trị đã phân bổ, còn cần phân bổ, số tháng phân bổ, đã phân bổ, còn phân bổ, mỗi tháng, ngày bắt đầu như màn Thêm mới; mục Thông tin mua sửa được (Số chứng từ, Ngày chứng từ, Ghi chú). Ô số, ô ngày rộng 140px để nhãn nằm một dòng.
 - Dữ liệu mẫu điện thoại thêm thẻ dư đầu kỳ TPBDK2512-0001 loại Chi phí trả trước (cùng số liệu bên web), để gói Free cũng có thẻ dư đầu kỳ thử.
 
 ## Đã kiểm
