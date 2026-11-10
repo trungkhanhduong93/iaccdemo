@@ -1149,3 +1149,5 @@ Trum chốt 07/11/2026 (T774). Thay ý "không đem sang cờ đổi ngôn ngữ
 - Góc phải thanh logo trang Đăng nhập, Quên mật khẩu có nút cờ, menu 4 ngôn ngữ: Tiếng Việt, English, 한국어, 中文.
 - Bản mẫu chưa có bản dịch: chọn ngôn ngữ chỉ đổi cờ trên nút, chữ trên trang giữ tiếng Việt.
 - Cờ vẽ bằng SVG, không dùng emoji cờ.
+
+## QD106. Luồng hoá đơn điện tử: khai báo, chứng từ bán hàng, menu Hoá đơn điện tử (đang soạn)
