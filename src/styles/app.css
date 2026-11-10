@@ -47622,24 +47622,21 @@ textarea.m-tpb-inp { height: auto; padding: 8px 12px; }
 .hdx-tom.ba { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .hdx-tom > div > b.hdx-do { color: var(--red); }
 .hdx-tom small { color: var(--muted); font-size: 12px; font-weight: 400; }
-.hdx-the { border: 1px solid var(--line); border-radius: 10px; background: var(--white); min-width: 0; }
-.hdx-the h4 { display: flex; align-items: center; gap: 8px; margin: 0; padding: 9px 14px; border-bottom: 1px solid var(--line-2); font-size: 13.5px; font-weight: 600; color: var(--ink); }
-.hdx-luoi { display: grid; grid-template-columns: 140px minmax(0, 1fr); gap: 8px 10px; padding: 11px 14px; font-size: 13px; }
+.hdx-the { min-width: 0; }
+.hdx-the h4 { display: flex; align-items: center; gap: 8px; margin: 0; padding: 4px 2px 2px; font-size: 13.5px; font-weight: 600; color: var(--ink); }
+.hdx-luoi { display: grid; grid-template-columns: 140px minmax(0, 1fr); gap: 8px 10px; padding: 8px 2px; font-size: 13px; }
 .hdx-luoi > span { color: var(--muted); }
 .hdx-luoi > b { color: var(--ink); font-weight: 500; overflow-wrap: anywhere; }
 .hdx-luoi > b em { color: var(--faint); font-style: normal; font-weight: 400; }
-.hdx-hai-cot { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.hdx-hai-cot > .hdx-luoi + .hdx-luoi { border-left: 1px solid var(--line-2); }
+.hdx-hai-cot { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
 .hdx-so-tien { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
-.hdx-so-tien > div { display: flex; flex-direction: column; gap: 4px; padding: 11px 14px; text-align: right; }
-.hdx-so-tien > div + div { border-left: 1px solid var(--line-2); }
+.hdx-so-tien > div { display: flex; flex-direction: column; gap: 4px; padding: 8px 2px; text-align: right; }
 .hdx-so-tien span { font-size: 12px; color: var(--muted); }
 .hdx-so-tien b { font-size: 14.5px; font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; }
-.hdx-so-tien .tong { background: var(--tint); border-radius: 0 0 10px 0; }
 .hdx-so-tien .tong b { font-size: 17px; font-weight: 700; color: var(--blue); }
 @media (max-width: 640px) {
   .hdx-tom, .hdx-tom.ba, .hdx-hai-cot, .hdx-so-tien { grid-template-columns: 1fr; }
-  .hdx-tom > div + div, .hdx-hai-cot > .hdx-luoi + .hdx-luoi, .hdx-so-tien > div + div { border-left: 0; border-top: 1px solid var(--line-2); }
+  .hdx-tom > div + div { border-left: 0; border-top: 1px solid var(--line-2); }
 }
 
 /* Bản hoá đơn điện tử nhà cung cấp trả về */

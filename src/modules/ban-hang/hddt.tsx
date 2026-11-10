@@ -544,7 +544,8 @@ export function HopXemHd({ s, r, hd, onDong, toast }: { s: Session; r: Row; hd: 
     return () => { cancelAnimationFrame(r1); window.removeEventListener('afterprint', xong); document.body.classList.remove('in-hdx') }
   }, [dangIn])
   const daGuiMail = t.h.guiEmail && !t.khongLay && Boolean(k.email)
-  const tieuDe = (ban: boolean) => <>{ban ? 'Hoá đơn điện tử' : t.tenMau} <span className="code">{hd.mau}{hd.kyHieu}</span> số <span className="code hdx-do">{hd.so}</span>
+  // Popup thông tin: tiêu đề chung, số hoá đơn nằm ở dải dưới; bản hoá đơn: ghi ký hiệu, số
+  const tieuDe = (ban: boolean) => <>{ban ? <>Hoá đơn điện tử <span className="code">{hd.mau}{hd.kyHieu}</span> số <span className="code hdx-do">{hd.so}</span></> : 'Thông tin hoá đơn điện tử'}
     <span className="ph-tt da">Hợp lệ</span>{!ban && daGuiMail && <span className="ph-tt hdx-mail">Đã gửi email</span>}</>
   const nutTai = <>
     <button type="button" className="xp-btn-outline" onClick={layNcc(() => toast(`Đã tải PDF hoá đơn số ${hd.so}`))}><Icon n="download" className="ic sm" />Tải PDF</button>
@@ -564,7 +565,8 @@ export function HopXemHd({ s, r, hd, onDong, toast }: { s: Session; r: Row; hd: 
     </Vo>
   )
 
-  const o = (nhan: string, gt: ReactNode, lop = '') => <><span>{nhan}</span><b className={lop}>{gt || <em>Không có</em>}</b></>
+  // Thông tin nào trống thì ẩn cả dòng
+  const o = (nhan: string, gt: ReactNode, lop = '') => (gt ? <><span>{nhan}</span><b className={lop}>{gt}</b></> : null)
   return (
     <Vo lop="hdx" tieuDe={tieuDe(false)} onDong={onDong} chan={<>
       {nutTai}
@@ -595,11 +597,11 @@ export function HopXemHd({ s, r, hd, onDong, toast }: { s: Session; r: Row; hd: 
       </section>
       <section className="hdx-the">
         <h4>Tiền hoá đơn</h4>
-        {/* Khấu trừ: thuế suất trên hoá đơn đã là mức giảm, không có giảm trừ thuế (QD106); mẫu 2 không có tiền thuế, có giảm trừ thuế */}
+        {/* Khấu trừ: thuế suất trên hoá đơn đã là mức giảm, không có giảm trừ thuế (QD106); tiền thuế luôn hiện, giảm trừ thuế chỉ mẫu 2 (hoá đơn bán hàng) */}
         <div className="hdx-so-tien">
           <div><span>Tổng tiền trước thuế</span><b>{money(t.congHang)}</b></div>
           <div><span>Tiền thuế{!mau2 && ` (${t.ts}%)`}</span><b>{money(mau2 ? 0 : tien.thue)}</b></div>
-          <div><span>Giảm trừ thuế</span><b>{mau2 && t.giamTru ? `-${money(t.giamTru)}` : money(0)}</b></div>
+          {mau2 && <div><span>Giảm trừ thuế</span><b>{t.giamTru ? `-${money(t.giamTru)}` : money(0)}</b></div>}
           <div className="tong"><span>Tổng tiền hoá đơn</span><b>{money(tien.tong)}</b></div>
         </div>
       </section>
