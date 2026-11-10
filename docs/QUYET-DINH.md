@@ -1150,4 +1150,15 @@ Trum chốt 07/11/2026 (T774). Thay ý "không đem sang cờ đổi ngôn ngữ
 - Bản mẫu chưa có bản dịch: chọn ngôn ngữ chỉ đổi cờ trên nút, chữ trên trang giữ tiếng Việt.
 - Cờ vẽ bằng SVG, không dùng emoji cờ.
 
-## QD106. Luồng hoá đơn điện tử: khai báo, chứng từ bán hàng, menu Hoá đơn điện tử (đang soạn)
+## QD106. Luồng hoá đơn điện tử: khai báo, chứng từ bán hàng, menu Hoá đơn điện tử (10/11/2026, chờ Trum duyệt)
+
+dinhlanphuongipacc chốt trên mẫu https://claude.ai/artifact/PSzKNtzwTpuy2574UbmwQX, bản lưu `docs/thiet-ke/T784-T786-hoa-don-dien-tu.html` (T784, T785, T786). Thay một phần QD102.
+
+- Khai báo ở Cấu hình kế toán: chỉ kết nối iPOS Invoice, bỏ ô chọn nhà cung cấp (có thêm nhà cung cấp thì thêm lại). Có tài khoản, mật khẩu, Kiểm tra kết nối; tên người mua khi khách không lấy hoá đơn, mặc định "Bán cho người tiêu dùng"; mẫu số, ký hiệu chung; bật tắt áp dụng giảm thuế theo nghị quyết đang khai (NQ 204/2025/QH15); bảng mẫu số, ký hiệu từng cửa hàng, để trống thì theo khai báo chung. Ký hiệu lấy theo thông báo phát hành trên phần mềm hoá đơn điện tử, nhận cả chữ M ở vị trí thứ 4 (máy tính tiền).
+- Mẫu số gợi ý theo phương pháp thuế nhưng cho chọn 1 hoặc 2. Trên chứng từ, mẫu số gộp vào ký hiệu (vd 1C26TAA), chọn từ danh sách ký hiệu đã khai báo hoặc gõ tay.
+- Form chứng từ bán hàng lập tay giữ bố cục cũ. Ô tích Lập kèm hoá đơn thành công tắc Phát hành HĐĐT cùng chỗ. Bật thì: cột hoá đơn Ngày hoá đơn, Ký hiệu, Số hoá đơn (cấp khi phát hành); ô một dòng "Xuất HĐ cho" dưới Địa chỉ, link Sửa mở popup người mua; ngay dưới là ô tích Người mua không lấy hoá đơn, tự tích với khách lẻ, khách cá nhân; dải tổng có nhóm tạm tính Tiền trước thuế HĐ, Tiền thuế HĐ, Tổng tiền hoá đơn; nút Lưu và phát hành, Lưu, phát hành và thêm.
+- Popup người mua: Cá nhân có tên người mua (bắt buộc), địa chỉ, số điện thoại, CCCD, số hộ chiếu, email; Công ty có MST (không bắt buộc), tên đơn vị, địa chỉ (bắt buộc), tên người mua hàng, email, mã QHNS.
+- Chứng từ đã xuất HĐĐT không sửa, không xoá; đổi tiền, hàng, người mua thì lập hoá đơn điều chỉnh, thay thế. Màn xem: nhãn "Đã xuất HĐĐT · Mã tra cứu" chỉ là chữ; ô Số hoá đơn là link kèm biểu tượng mắt mở popup xem hoá đơn (ngày hoá đơn, người mua, tiền, thuế suất, mã tra cứu, mã CQT; nút Tải PDF, Tải XML, Xem hoá đơn điện tử); tham chiếu không có link hoá đơn; nhóm tiền hoá đơn cùng dòng dải tổng; chân form như Nhập mua, không có nút Sửa.
+- Danh sách bán hàng: cột Trạng thái xuất HĐĐT (Đã xuất, Chưa xuất). Chọn dòng bấm Xuất HĐĐT; dòng đã xuất thì báo và bỏ qua. Popup xuất nhiều: sửa ngày hoá đơn, ký hiệu; cột Người mua trên hoá đơn hiện thông tin nào có; Sửa mở popup Thông tin hoá đơn (Ngày hoá đơn và Mẫu số - Ký hiệu cùng dòng, rồi người mua).
+- Menu lớn Hoá đơn điện tử trên Kê khai thuế, 3 tab: Hoá đơn điện tử, Điều chỉnh thay thế, Thông báo sai sót. Bỏ tab Hoá đơn điện tử, Điều chỉnh thay thế ở Bán hàng. Tab Hoá đơn điện tử lọc như danh sách chứng từ (thời gian, tìm nhanh, chip trạng thái, lọc từng cột); thao tác từng hoá đơn ở menu ⋯ cột cuối ghim phải, chức năng không hợp lệ thì mờ; chọn nhiều chỉ Gửi CQT, Tải XML, Tải PDF.
+- Hoá đơn dự thảo: popup phát hành có Lưu dự thảo; phát hành lỗi kết nối cũng thành dự thảo.

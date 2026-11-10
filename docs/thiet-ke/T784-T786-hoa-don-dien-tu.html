@@ -1,0 +1,773 @@
+<title>Luồng hoá đơn điện tử IACC</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
+<style>
+/* Bố cục: trang đặc tả dọc, mỗi phần = lời mô tả ngắn + mockup màn hình đúng kiểu app IACC (xanh #0560a6, cam #f28020, Be Vietnam Pro) */
+:root{
+  --bg:#f3f5f8; --paper:#ffffff; --ink:#1f2225; --body:#363636; --muted:#6b7280; --faint:#9ca3af;
+  --line:#e5e7eb; --soft:#f5f6f8; --th:#e6eff7; --blue:#0560a6; --blue-d:#044a80; --tint:#e6eff7;
+  --orange:#f28020; --orange-t:#fff5ea; --orange-b:#f9d6ad;
+  --green:#138a52; --green-t:#e3f4ea; --red:#c2362b; --red-t:#fcebea; --amber:#a86a0c; --amber-t:#fcf1de;
+  --gray-t:#eef1f5; --navy:#06365e; --ro:#f1f3f6; --shadow:0 18px 50px rgba(14,26,43,.16),0 2px 6px rgba(14,26,43,.08);
+  --fs:'Be Vietnam Pro',-apple-system,'Segoe UI',Roboto,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#12161d; --paper:#1a2029; --ink:#eef1f5; --body:#d3d8df; --muted:#9aa3af; --faint:#6b7480;
+  --line:#2c3440; --soft:#212833; --th:#1d2d40; --blue:#5aa6e8; --blue-d:#8cc2f2; --tint:#1b2f45;
+  --orange:#f59a4a; --orange-t:#3a2a18; --orange-b:#6b4520;
+  --green:#4cc58a; --green-t:#173326; --red:#ee7a70; --red-t:#3a1e1c; --amber:#e3b25a; --amber-t:#3a2e17;
+  --gray-t:#262d38; --navy:#0b2a47; --ro:#232a35; --shadow:0 18px 50px rgba(0,0,0,.5); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12161d; --paper:#1a2029; --ink:#eef1f5; --body:#d3d8df; --muted:#9aa3af; --faint:#6b7480;
+  --line:#2c3440; --soft:#212833; --th:#1d2d40; --blue:#5aa6e8; --blue-d:#8cc2f2; --tint:#1b2f45;
+  --orange:#f59a4a; --orange-t:#3a2a18; --orange-b:#6b4520;
+  --green:#4cc58a; --green-t:#173326; --red:#ee7a70; --red-t:#3a1e1c; --amber:#e3b25a; --amber-t:#3a2e17;
+  --gray-t:#262d38; --navy:#0b2a47; --ro:#232a35; --shadow:0 18px 50px rgba(0,0,0,.5); color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--body);font-family:var(--fs);font-size:14px;line-height:1.55;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1360px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 64px}
+h1,h2,h3{color:var(--ink);text-wrap:balance;margin:0}
+h1{font-size:28px;font-weight:800;letter-spacing:-.3px}
+h2{font-size:20px;font-weight:800;display:flex;gap:10px;align-items:baseline}
+h2 .so{color:var(--orange);font-size:15px;font-weight:800}
+h3{font-size:15px;font-weight:700}
+p{margin:0;max-width:72ch}
+.lead{color:var(--muted);margin-top:6px}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.chip{display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 10px;border-radius:999px;font-size:12px;font-weight:600;background:var(--gray-t);color:var(--muted);white-space:nowrap}
+.chip.b{background:var(--tint);color:var(--blue)} .chip.g{background:var(--green-t);color:var(--green)}
+.chip.o{background:var(--orange-t);color:var(--orange)} .chip.r{background:var(--red-t);color:var(--red)}
+.chip.a{background:var(--amber-t);color:var(--amber)}
+nav.toc{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line);margin:22px 0 0;padding:8px 0;display:flex;gap:6px;overflow-x:auto}
+nav.toc a{flex:none;padding:6px 12px;border-radius:8px;color:var(--ink);font-weight:600;font-size:13px;text-decoration:none}
+nav.toc a:hover{background:var(--paper)}
+section{display:grid;gap:16px;margin-top:40px;scroll-margin-top:60px}
+.cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
+@media (max-width:860px){.cols{grid-template-columns:minmax(0,1fr)}}
+ul.rule{margin:0;padding-left:18px;display:grid;gap:5px;max-width:80ch}
+ul.rule b{color:var(--ink)}
+.note{background:var(--orange-t);border:1px solid var(--orange-b);border-radius:10px;padding:10px 14px;color:var(--body);font-size:13px}
+.note b{color:var(--ink)}
+/* ── mockup kiểu app ── */
+.screen{background:var(--paper);border:1px solid var(--line);border-radius:12px;overflow:hidden;min-width:0}
+.scr-cap{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 14px;background:var(--soft);border-bottom:1px solid var(--line);font-size:12px;color:var(--muted);font-weight:600}
+.tabs{display:flex;gap:2px;padding:0 10px;border-bottom:1px solid var(--line);overflow-x:auto}
+.tabs span{flex:none;padding:10px 10px 8px;font-size:13px;color:var(--ink);border-bottom:2.5px solid transparent;cursor:pointer;white-space:nowrap}
+.tabs span.on{color:var(--blue);border-bottom-color:var(--blue);font-weight:600}
+.tabs span.new::after{content:"mới";margin-left:6px;font-size:10px;font-weight:700;color:var(--orange);background:var(--orange-t);padding:1px 6px;border-radius:999px}
+.pad{padding:14px}
+.card-t{padding:12px 14px;border-bottom:1px solid var(--line);font-weight:700;color:var(--ink);font-size:13.5px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px 14px}
+@media (max-width:560px){.grid2,.grid3{grid-template-columns:1fr}}
+.f label,.f .lb{display:block;font-size:12px;color:var(--muted);margin-bottom:4px;font-weight:500}
+.f .lb em,.f label em{color:var(--red);font-style:normal}
+.inp{height:34px;border:1px solid var(--line);border-radius:8px;padding:0 10px;display:flex;align-items:center;justify-content:space-between;gap:6px;background:var(--paper);color:var(--ink);font-size:13px;width:100%;font-family:inherit}
+.inp.ro{background:var(--ro);color:var(--muted)}
+.inp.sel::after{content:"";width:7px;height:7px;border-right:1.5px solid var(--muted);border-bottom:1.5px solid var(--muted);transform:rotate(45deg) translate(-2px,-2px);flex:none}
+.inp.hi{border-color:var(--blue);box-shadow:0 0 0 3px var(--tint)}
+.full{grid-column:1/-1}
+.btn{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;border-radius:8px;border:1px solid var(--line);background:var(--paper);color:var(--ink);font-weight:600;font-size:12.5px;cursor:pointer;font-family:inherit;white-space:nowrap}
+.btn.p{background:var(--blue);border-color:var(--blue);color:#fff}
+.btn.o{background:var(--orange);border-color:var(--orange);color:#fff}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn:focus-visible,.tabs span:focus-visible,input:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
+.sw{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--ink);font-weight:500;cursor:pointer}
+.sw i{width:34px;height:20px;border-radius:999px;background:var(--blue);position:relative;flex:none}
+.sw i::after{content:"";position:absolute;top:3px;right:3px;width:14px;height:14px;border-radius:50%;background:#fff}
+.sw.off i{background:var(--faint)} .sw.off i::after{right:auto;left:3px}
+.ck{display:inline-flex;align-items:center;gap:7px;font-size:13px;color:var(--ink);cursor:pointer}
+.ck input{width:15px;height:15px;accent-color:var(--blue)}
+.hint{display:flex;gap:8px;background:var(--soft);border-radius:8px;padding:9px 12px;font-size:12px;color:var(--muted)}
+.tbl-wrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:12.5px;font-variant-numeric:tabular-nums}
+th{background:var(--th);color:var(--ink);font-weight:600;text-align:left;padding:8px 10px;white-space:nowrap;border-bottom:1px solid var(--line)}
+td{padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap;color:var(--body)}
+td.n,th.n{text-align:right}
+td a{color:var(--blue);font-weight:600;text-decoration:none}
+tr.sel td{background:var(--tint)}
+.cell-inp{height:28px;border:1px solid var(--line);border-radius:6px;padding:0 8px;display:inline-flex;align-items:center;gap:6px;background:var(--paper);color:var(--ink);min-width:110px;justify-content:space-between}
+.cell-inp.sel::after{content:"";width:6px;height:6px;border-right:1.5px solid var(--muted);border-bottom:1.5px solid var(--muted);transform:rotate(45deg)}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:10px 14px;border-bottom:1px solid var(--line)}
+.bar .sp{flex:1}
+.selbar{display:flex;align-items:center;gap:10px;padding:8px 14px;background:var(--tint);color:var(--blue-d);font-weight:600;font-size:12.5px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.toast{position:relative;display:none;margin:10px 14px 0;padding:9px 12px;border-radius:8px;background:var(--amber-t);color:var(--amber);font-weight:600;font-size:12.5px}
+.toast.on{display:block}
+.modal{border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);background:var(--paper);overflow:hidden}
+.modal-h{padding:12px 16px;border-bottom:1px solid var(--line);font-weight:700;color:var(--ink);display:flex;justify-content:space-between;gap:8px}
+.modal-f{padding:10px 16px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:8px;background:var(--soft)}
+.kv{display:grid;grid-template-columns:max-content 1fr;gap:6px 16px;font-size:13px}
+.kv dt{color:var(--muted)} .kv dd{margin:0;color:var(--ink);font-weight:600}
+.flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:12.5px}
+.flow .st{padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:var(--paper);color:var(--ink);font-weight:600}
+.flow .ar{color:var(--faint)}
+.qs{display:grid;gap:10px;counter-reset:q}
+.q{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:grid;gap:4px}
+.q h3{font-size:14px}
+.q .de{color:var(--blue);font-size:13px}
+.q .de b{color:var(--blue-d)}
+.legend{display:flex;flex-wrap:wrap;gap:6px}
+.mini-side{display:flex;gap:0;min-width:0}
+.side{width:200px;flex:none;background:var(--navy);padding:10px 8px;display:grid;gap:2px;align-content:start}
+.side span{color:#cfd9e6;font-size:13px;padding:7px 10px;border-radius:7px}
+.side span.on{background:#0560a6;color:#fff;font-weight:600}
+.side span.nw{color:#fff;font-weight:600;outline:1.5px dashed #f5a042;outline-offset:-2px}
+@media (max-width:640px){.side{width:150px}}
+.dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:currentColor;margin-right:2px}
+.actions{display:flex;gap:6px;flex-wrap:wrap}
+.kbdk{font-size:11px;color:var(--muted)}
+footer{margin-top:48px;color:var(--muted);font-size:12px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+/* ── form bán hàng theo bố cục hiện có ── */
+.frm{display:grid;gap:10px;padding:12px;background:var(--bg)}
+.fcard{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:10px 16px;min-width:0}
+.frow{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center}
+.sm-t{font-size:13px;color:var(--ink)} .lb-i{font-size:12.5px;color:var(--muted)} .sm-i{width:auto;height:30px;min-width:170px}
+.grow{flex:1}
+.ttc{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1.2fr) 250px;gap:10px 16px;align-items:start}
+.ttc.co-hd{grid-template-columns:minmax(0,1.4fr) minmax(0,1.2fr) 250px 250px}
+@media (max-width:980px){.ttc,.ttc.co-hd{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
+@media (max-width:600px){.ttc,.ttc.co-hd{grid-template-columns:minmax(0,1fr)}}
+.ttc-c{display:grid;gap:8px;min-width:0;position:relative}
+.lf{display:grid;grid-template-columns:104px minmax(0,1fr);align-items:center;gap:8px;font-size:12.5px}
+.lf>span{color:var(--muted)} .lf em{color:var(--red);font-style:normal}
+.lf .inp{height:32px;min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.code{font-family:ui-monospace,Consolas,monospace;letter-spacing:.3px}
+.moi{position:relative;outline:2px dashed var(--orange);outline-offset:4px;border-radius:8px}
+.tag{position:absolute;top:-12px;right:-10px;width:20px;height:20px;border-radius:50%;background:var(--orange);color:#fff;font-size:11px;font-weight:800;display:grid;place-items:center}
+.sw.moi{padding:2px 4px}
+.xhd{margin-left:112px;display:grid;gap:4px;padding:8px 10px;background:var(--tint);border-radius:8px;font-size:12.5px}
+@media (max-width:600px){.xhd{margin-left:0}}
+.xhd-t{display:flex;justify-content:space-between;gap:8px;color:var(--blue-d)} .xhd-t a{color:var(--blue);font-weight:600}
+.xhd-s{color:var(--ink);font-weight:600}
+.lf .o-xhd{display:flex;justify-content:space-between;gap:8px;background:var(--tint);border-color:var(--tint)}
+.o-xhd>span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink);font-weight:500}
+.o-xhd a{flex:none;color:var(--blue);font-weight:600}
+.lf .o-so{display:flex;justify-content:space-between;align-items:center;gap:6px}
+.o-so a{color:var(--blue);font-weight:600;text-decoration:underline;text-underline-offset:2px}
+.o-so a.mat{display:grid;place-items:center;width:24px;height:24px;border-radius:6px;text-decoration:none;flex:none}
+.o-so a.mat:hover{background:var(--tint)}
+.ck-kl{margin:-2px 0 0 112px;font-size:12.5px} @media (max-width:600px){.ck-kl{margin-left:0}}
+.dtong{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px 24px;padding:10px 16px;border-top:1px solid var(--line);font-size:13px;color:var(--muted)}
+.dtong b{color:var(--ink);margin-left:6px;font-variant-numeric:tabular-nums} .dtong b.xanh{color:var(--blue)}
+.dt2{display:flex;flex-wrap:wrap;justify-content:flex-end;align-items:center;gap:6px 10px;padding:10px 16px;border-top:1px solid var(--line);font-variant-numeric:tabular-nums}
+.dt2>div{display:grid;justify-items:end;gap:2px;padding:4px 8px;border-radius:8px}
+.dt2 small{font-size:11.5px;color:var(--muted)} .dt2 b{font-size:13.5px;color:var(--ink)}
+.dt2 i{font-style:normal;color:var(--faint);font-size:13px}
+.dt2 .nen{background:var(--soft)}
+.dt2 .tong{background:var(--tint);padding:6px 12px} .dt2 .tong small{color:var(--ink);font-weight:600} .dt2 .tong b{color:var(--blue);font-size:17px}
+.dt2 .dt2-hd{display:flex;gap:4px;align-items:center;margin-right:auto;padding:4px 6px;border:1px solid var(--line);border-radius:10px;background:var(--soft)}
+.dt2-hd>div{display:grid;justify-items:end;gap:2px;padding:2px 8px}
+.dt2-hd .tong-hd b{color:var(--blue)}
+.dt2.hd{border:1px solid var(--line);border-radius:10px;background:var(--paper)}
+.dt2-nhan{margin-right:auto;font-size:12.5px;color:var(--muted)} .dt2-nhan a{color:var(--blue);font-weight:600}
+.thamchieu{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12.5px;align-items:center} .thamchieu a{color:var(--blue);font-weight:600}
+.nm{display:grid;gap:2px;white-space:normal;font-size:12.5px;color:var(--muted)} .nm b{color:var(--ink)}
+.nm-t{display:flex;justify-content:space-between;gap:12px} .nm-t a{color:var(--blue);font-weight:600;flex:none}
+.nm .chip{justify-self:start}
+.nm-sua{display:grid;gap:10px;padding:10px 12px;margin:-2px 0 4px;border:1px solid var(--blue);border-radius:10px;background:var(--tint);white-space:normal}
+input.inp{height:34px}
+th.tt,td.tt{position:sticky;right:0;background:var(--paper);box-shadow:-1px 0 0 var(--line);text-align:center;z-index:1}
+th.tt{background:var(--th)} tr.sel td.tt{background:var(--tint)}
+.btn-3c{width:30px;height:26px;border-radius:6px;border:1px solid var(--line);background:var(--paper);color:var(--ink);font-weight:800;cursor:pointer;line-height:1}
+.btn-3c:hover,.btn-3c.on{border-color:var(--blue);color:var(--blue)}
+.menu3c{position:fixed;z-index:20;min-width:170px;background:var(--paper);border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow);padding:4px;display:grid}
+.menu3c button{text-align:left;padding:7px 12px;border:0;background:none;border-radius:6px;font:inherit;font-size:13px;color:var(--ink);cursor:pointer}
+.menu3c button:hover:not(:disabled){background:var(--tint);color:var(--blue-d)}
+.menu3c button:disabled{color:var(--faint);cursor:not-allowed}
+.menu3c button.do:not(:disabled){color:var(--red)}
+.menu3c hr{border:0;border-top:1px solid var(--line);margin:4px 2px}
+.bng{border:1px solid var(--line);border-radius:10px;overflow:hidden;display:grid}
+.bng-r{display:grid;grid-template-columns:170px minmax(0,1fr);border-bottom:1px solid var(--line);font-size:13px}
+.bng-r:last-child{border-bottom:0}
+.bng-r>span{background:var(--soft);padding:9px 12px;color:var(--ink);border-right:1px solid var(--line)} .bng-r em{color:var(--red);font-style:normal}
+.bng-o{border:0;background:var(--paper);padding:9px 12px;font:inherit;font-size:13px;color:var(--ink);min-width:0;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.bng-o:focus-visible{outline:2px solid var(--blue);outline-offset:-2px}
+.bng-o.chon{cursor:pointer} .bng-o.chon::after{content:"";width:7px;height:7px;border-right:1.5px solid var(--muted);border-bottom:1.5px solid var(--muted);transform:rotate(45deg) translate(-2px,-2px)}
+.lich{width:14px;height:13px;border:1.5px solid var(--muted);border-radius:3px;border-top-width:3px}
+.bng-2{grid-template-columns:1fr 1fr} .bng-2 .bng-r{border-bottom:0} .bng-2 .bng-r+.bng-r{border-left:1px solid var(--line)}
+.bng-2 .bng-r{grid-template-columns:140px minmax(0,1fr)}
+@media (max-width:640px){.bng-2{grid-template-columns:1fr}.bng-2 .bng-r+.bng-r{border-left:0;border-top:1px solid var(--line)}.bng-r{grid-template-columns:130px minmax(0,1fr)}}
+.bng-kh{display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center;margin-top:4px} .bng-kh b{color:var(--ink);font-size:14px}
+.cb-list{margin:-6px 0 0 auto;width:min(100%,360px);border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow);background:var(--paper);padding:4px;display:grid}
+.cb-tim{padding:7px 10px;color:var(--faint);font-size:12.5px;border-bottom:1px solid var(--line);margin-bottom:4px}
+.cb-i{display:grid;gap:1px;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;color:var(--muted)} .cb-i b{color:var(--ink);font-family:ui-monospace,Consolas,monospace;font-size:13px}
+.cb-i:hover,.cb-i.on{background:var(--tint)}
+.ic-btn{width:32px;height:32px;border-radius:8px;border:1px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer;font-size:14px}
+.chips-tt{display:flex;gap:8px;flex-wrap:wrap;padding:8px 14px;border-bottom:1px solid var(--line)}
+.chip-tt{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 10px;border:1px solid var(--line);border-radius:8px;font-size:12.5px;font-weight:600;color:var(--ink);background:var(--paper)}
+.chip-tt b{color:var(--muted);font-weight:600} .chip-tt.on{border-color:var(--blue);background:var(--tint);color:var(--blue-d)}
+tr.loc-hang th{background:var(--paper);padding:5px 8px;border-bottom:1px solid var(--line)}
+.lc{display:flex;align-items:center;justify-content:flex-end;gap:4px;height:26px;padding:0 8px;border:1px solid var(--line);border-radius:6px;font-size:11.5px;font-weight:500;color:var(--faint);min-width:70px}
+.lc.sel{justify-content:space-between;color:var(--muted)} .lc.sel::after{content:"";width:5px;height:5px;border-right:1.5px solid var(--muted);border-bottom:1.5px solid var(--muted);transform:rotate(45deg)}
+.xp-f{background:var(--paper)}
+.btn.ic1{width:32px;justify-content:center;padding:0;font-size:16px}
+.tienich{position:relative;display:inline-flex}
+.ti-menu{position:absolute;bottom:38px;left:0;z-index:5;min-width:180px;background:var(--paper);border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow);padding:4px;display:grid}
+.ti-menu span{padding:7px 12px;border-radius:6px;font-size:13px;color:var(--ink);cursor:pointer;white-space:nowrap} .ti-menu span:hover{background:var(--tint)}
+.ti-menu span.mo{color:var(--faint);cursor:not-allowed} .ti-menu span.mo:hover{background:none}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="meta" style="margin:0 0 10px"><span class="chip o">Bản đề xuất, chưa code</span><span class="chip b">Gói Plus, Pro</span><span class="chip">10/11/2026</span></div>
+    <h1>Luồng hoá đơn điện tử</h1>
+    <p class="lead">Thiết kế 4 phần theo mô tả của chị Lan Phương: khai báo kết nối và ký hiệu, xuất hoá đơn ngay khi lập chứng từ bán hàng, xuất tiếp từ danh sách, và menu riêng Hoá đơn điện tử. Dữ liệu trong mockup là dữ liệu mẫu của đơn vị Phố Mây.</p>
+    <div class="flow" style="margin-top:14px">
+      <span class="st">Hệ thống: kết nối, ký hiệu</span><span class="ar">→</span>
+      <span class="st">Chứng từ bán hàng: tích Phát hành HĐĐT</span><span class="ar">→</span>
+      <span class="st">Danh sách bán hàng: xuất tiếp</span><span class="ar">→</span>
+      <span class="st">Menu Hoá đơn điện tử: theo dõi, điều chỉnh, TBSS</span>
+    </div>
+  </header>
+
+  <nav class="toc" aria-label="Mục lục">
+    <a href="#p1">1. Khai báo HĐĐT</a><a href="#p2">2. Form bán hàng</a><a href="#p3">3. Danh sách bán hàng</a><a href="#p4">4. Menu Hoá đơn điện tử</a><a href="#hoi">Cần chốt</a>
+  </nav>
+
+  <!-- ═════════ PHẦN 1 ═════════ -->
+  <section id="p1">
+    <h2><span class="so">1</span>Khai báo hoá đơn điện tử ở Hệ thống</h2>
+    <p>Giữ chỗ hiện tại: <b>Hệ thống › Cấu hình kế toán › thẻ Hoá đơn điện tử</b>. Thẻ chia 3 khối: Kết nối, Thông tin mặc định, Mẫu số và ký hiệu theo cửa hàng.</p>
+    <ul class="rule">
+      <li><b>Kết nối iPOS Invoice</b>: chỉ kết nối iPOS Invoice nên bỏ ô chọn nhà cung cấp. Còn tài khoản, mật khẩu, nút Kiểm tra kết nối. Sau này có thêm nhà cung cấp thì thêm lại ô chọn.</li>
+      <li><b>Khách mặc định</b>: tên người mua dùng khi khách không lấy hoá đơn. Mặc định <b>“Bán cho người tiêu dùng”</b>, sửa được.</li>
+      <li><b>Mẫu số, ký hiệu chung</b>: mẫu số 1 hoặc 2 (gợi ý theo phương pháp thuế), ký hiệu 6 ký tự. Dùng cho cửa hàng chưa đặt riêng.</li>
+      <li><b>Áp dụng giảm thuế GTGT</b>: bật thì hoá đơn ghi giảm thuế theo nghị quyết đang khai ở thẻ Giảm thuế GTGT (hiện là <b>Nghị quyết 204/2025/QH15</b>).</li>
+      <li><b>Bảng cửa hàng</b>: mỗi cửa hàng chọn mẫu số, ký hiệu riêng. Để trống thì hiện mờ “Theo khai báo chung (1C26TAA)”.</li>
+    </ul>
+
+    <div class="screen">
+      <div class="scr-cap"><span>Hệ thống › Cấu hình kế toán</span><span>mockup</span></div>
+      <div class="card-t">Hoá đơn điện tử <label class="sw"><i></i>Xuất hoá đơn điện tử từ chứng từ bán hàng</label></div>
+      <div class="pad" style="display:grid;gap:18px">
+        <div>
+          <h3 style="font-size:13px;margin-bottom:10px">Kết nối iPOS Invoice</h3>
+          <div class="grid2">
+            <div class="f"><span class="lb">Tài khoản <em>*</em></span><div class="inp">phomay_hddt</div></div>
+            <div class="f"><span class="lb">Mật khẩu <em>*</em></span><div class="inp">••••••••••</div></div>
+          </div>
+          <div class="actions" style="margin-top:10px"><button class="btn" type="button">Kiểm tra kết nối</button><span class="chip g">Đã kết nối</span></div>
+        </div>
+        <div>
+          <h3 style="font-size:13px;margin-bottom:10px">Thông tin mặc định</h3>
+          <div class="grid3">
+            <div class="f"><span class="lb">Tên người mua khi khách không lấy hoá đơn</span><div class="inp">Bán cho người tiêu dùng</div></div>
+            <div class="f"><span class="lb">Mẫu số chung</span><div class="inp sel">1 · Hoá đơn GTGT</div></div>
+            <div class="f"><span class="lb">Ký hiệu chung</span><div class="inp">C26TAA</div></div>
+            <div class="f full"><label class="sw"><i></i>Áp dụng giảm thuế GTGT trên hoá đơn theo Nghị quyết 204/2025/QH15 (khai ở thẻ Giảm thuế GTGT)</label></div>
+          </div>
+        </div>
+        <div>
+          <h3 style="font-size:13px;margin-bottom:10px">Mẫu số, ký hiệu theo cửa hàng</h3>
+          <div class="tbl-wrap"><table>
+            <thead><tr><th>Cửa hàng</th><th>Mẫu số</th><th>Ký hiệu</th><th>Đang dùng khi xuất</th></tr></thead>
+            <tbody>
+              <tr><td>Phố Mây Lê Lợi</td><td><span class="cell-inp sel">1</span></td><td><span class="cell-inp">C26TAA</span></td><td><b>1C26TAA</b></td></tr>
+              <tr><td>Phố Mây Nguyễn Trãi</td><td><span class="cell-inp sel">1</span></td><td><span class="cell-inp">C26MAB</span></td><td><b>1C26MAB</b> <span class="chip a">Máy tính tiền</span></td></tr>
+              <tr><td>Phố Mây Thảo Điền</td><td><span class="cell-inp sel" style="color:var(--faint)">Trống</span></td><td><span class="cell-inp" style="color:var(--faint)">Trống</span></td><td style="color:var(--muted)">Theo khai báo chung (1C26TAA)</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+        <div class="hint">ⓘ Ký hiệu lấy theo thông báo phát hành trên phần mềm hoá đơn điện tử. Đây chỉ là mặc định: khi lập chứng từ vẫn gõ được mẫu số, ký hiệu khác. Ký hiệu có chữ M ở vị trí thứ 4 (vd C26MAB) là hoá đơn khởi tạo từ máy tính tiền.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═════════ PHẦN 2 ═════════ -->
+  <section id="p2">
+    <h2><span class="so">2</span>Form chứng từ bán hàng lập tay</h2>
+    <p>Giữ nguyên form đang có: thanh <b>Thanh toán</b>, khối thông tin chung nhãn bên trái ô, cột hoá đơn, cột Ngày chứng từ, tab Chi tiết, dải tổng. Chỉ thêm 3 chỗ, đánh dấu viền cam trong mockup. Bấm thử công tắc và đổi khách.</p>
+    <ul class="rule">
+      <li><b>Chỗ A, thanh Thanh toán</b>: ô tích <b>Lập kèm hoá đơn</b> ở góc phải đổi thành công tắc <b>Phát hành HĐĐT</b>, cùng vị trí. Tắt thì Lưu là lưu bán hàng thông thường, không có cột hoá đơn.</li>
+      <li><b>Chỗ B, cột hoá đơn</b>: bật công tắc thì cột hoá đơn hiện như khi tích Lập kèm hoá đơn bây giờ, đổi thứ tự cho hợp lúc lập: <b>Ngày hoá đơn</b>, <b>Ký hiệu</b> (gồm mẫu số, vd 1C26TAA, như form hiện tại; mặc định theo cửa hàng rồi khai báo chung; chọn ký hiệu khác trong danh sách hoặc gõ tay), <b>Số hoá đơn</b> mờ “Cấp khi phát hành”.</li>
+      <li><b>Chỗ C, dưới Địa chỉ</b>: thêm một ô một dòng <b>Xuất HĐ cho</b>, cao bằng các ô khác nên form giữ 3 hàng đều nhau, không phình. Ô ghi người mua sẽ in trên hoá đơn (dài thì cắt “…”, rê chuột thấy đủ), cuối ô có link <b>Sửa</b> mở popup Thông tin xuất hoá đơn: Cá nhân điền tên người mua hàng, địa chỉ, số điện thoại, số CCCD, số hộ chiếu, email nhận hoá đơn; Công ty điền MST (không bắt buộc), tên đơn vị, địa chỉ, tên người mua hàng, email nhận hoá đơn, mã QHNS. Thừa kế từ khách: khách tổ chức là Công ty với MST, địa chỉ; khách cá nhân, khách lẻ là Cá nhân.</li>
+      <li>Ô tích <b>Người mua không lấy hoá đơn</b> nằm ngay dưới ô Xuất HĐ cho, thẳng cột ô nhập, chỉ hiện khi bật công tắc: tự tích khi bật Phát hành HĐĐT và khách là cá nhân hoặc khách lẻ. Đang tích thì người mua trên hoá đơn là “Bán cho người tiêu dùng”.</li>
+      <li>Chân form như các chứng từ khác: trái <b>Huỷ</b>; phải <b>Lưu (Ctrl+S)</b>, <b>Lưu và thêm (Ctrl+Shift+S)</b>. Bật công tắc thì đổi thành <b>Lưu và phát hành</b>, <b>Lưu, phát hành và thêm</b>. Bật công tắc thì dải tổng có thêm nhóm <b>D</b> tạm tính tiền hoá đơn (trước thuế, thuế, tổng tiền hoá đơn) để xem trước khi phát hành.</li>
+      <li>Phát hành xong: form chuyển sang chế độ xem, vẽ đầy đủ ở mockup <b>Xem chứng từ bán hàng đã xuất HĐĐT</b> bên dưới.</li>
+      <li><b>Chỗ D, cùng dòng dải tổng</b>: chỉ chứng từ đã có hoá đơn mới hiện nhóm tiền hoá đơn ở đầu trái dải tổng: Tiền trước thuế HĐ, Tiền thuế HĐ, Tổng tiền hoá đơn, lấy theo hoá đơn nhà cung cấp trả về. Không lặp ký hiệu, số hoá đơn. Dải tổng của chứng từ giữ nguyên. Hai nhóm lệch nhau (vd hoá đơn làm tròn khác, sửa chứng từ sau khi xuất) thì số lệch tô đỏ để kế toán thấy cần điều chỉnh hoá đơn. Hoá đơn bán hàng mẫu số 2 không có dòng thuế: ô Tiền thuế đổi thành Giảm trừ thuế.</li>
+      <li>Chứng từ đã lưu mà chưa phát hành: chân form có nút <b>Phát hành HĐĐT</b> như hiện tại.</li>
+    </ul>
+
+    <div class="screen" id="demoForm">
+      <div class="scr-cap"><span>Bán hàng › Thêm chứng từ bán hàng · BH2611-0004 · Phố Mây Lê Lợi</span><span>bấm thử</span></div>
+      <div class="frm">
+        <!-- Thanh Thanh toán -->
+        <div class="fcard frow">
+          <b class="sm-t">Thanh toán:</b>
+          <label class="ck"><input type="radio" name="tt"> Chưa thanh toán</label>
+          <label class="ck"><input type="radio" name="tt" checked> Tiền mặt ngay</label>
+          <label class="ck"><input type="radio" name="tt"> Chuyển khoản ngay</label>
+          <span class="lb-i">Quỹ tiền mặt:</span><span class="inp sel sm-i">Quỹ tiền mặt Lê Lợi</span>
+          <span class="grow"></span>
+          <label class="sw moi" id="swPh"><i></i><b>Phát hành HĐĐT</b><span class="tag">A</span></label>
+        </div>
+        <!-- Khối thông tin chung -->
+        <div class="fcard ttc" id="ttc">
+          <div class="ttc-c">
+            <div class="lf"><span>Khách hàng <em>*</em></span>
+              <select class="inp" id="selKh" aria-label="Khách hàng">
+                <option value="le">KL · Khách lẻ</option>
+                <option value="cn">KH009 · Nguyễn Minh Anh</option>
+                <option value="cty">KH001 · Công ty TNHH Sao Việt</option>
+              </select></div>
+            <div class="lf"><span>Địa chỉ</span><div class="inp" id="dc">&nbsp;</div></div>
+            <div class="lf moi" id="xhd"><span class="tag">C</span><span>Xuất HĐ cho</span>
+              <div class="inp o-xhd"><span id="xhdS">Bán cho người tiêu dùng</span><a href="#popKh">Sửa</a></div></div>
+            <label class="ck ck-kl" id="lbKl"><input type="checkbox" id="ckKl" checked> Người mua không lấy hoá đơn</label>
+          </div>
+          <div class="ttc-c">
+            <div class="lf2"><div class="lf"><span>Mã số thuế</span><div class="inp" id="mst">&nbsp;</div></div></div>
+            <div class="lf"><span>Người giao dịch</span><div class="inp" id="ngd">Khách lẻ</div></div>
+            <div class="lf"><span>Ghi chú</span><div class="inp">Bán tiệc sinh nhật</div></div>
+          </div>
+          <div class="ttc-c moi" id="cotHd"><span class="tag">B</span>
+            <div class="lf"><span>Ngày hoá đơn <em>*</em></span><div class="inp">10/11/2026</div></div>
+            <div class="lf"><span>Ký hiệu <em>*</em></span><div class="inp sel code">1C26TAA</div></div>
+            <div class="lf"><span>Số hoá đơn</span><div class="inp ro" style="color:var(--faint)">Cấp khi phát hành</div></div>
+          </div>
+          <div class="ttc-c">
+            <div class="lf"><span>Ngày chứng từ <em>*</em></span><div class="inp">10/11/2026</div></div>
+          </div>
+        </div>
+        <!-- Tab chi tiết -->
+        <div class="fcard" style="padding:0">
+          <div class="tabs"><span class="on">Chi tiết</span><span>Hạch toán</span><span>Đính kèm</span><span>Lịch sử</span></div>
+          <div class="tbl-wrap"><table>
+            <thead><tr><th>#</th><th>Mã hàng</th><th>Tên hàng</th><th>ĐVT</th><th class="n">SL</th><th class="n">Đơn giá</th><th class="n">Thành tiền</th><th class="n">% thuế</th><th class="n">Tiền thuế</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>SET-L4</td><td>Set lẩu Phố Mây 4 người</td><td>Set</td><td class="n">2</td><td class="n">680.000</td><td class="n">1.360.000</td><td class="n">8%</td><td class="n">108.800</td></tr>
+              <tr><td>2</td><td>TRA-TMO</td><td>Trà tắc mật ong</td><td>Ly</td><td class="n">4</td><td class="n">35.000</td><td class="n">140.000</td><td class="n">8%</td><td class="n">11.200</td></tr>
+            </tbody>
+          </table></div>
+          <div class="dt2">
+            <div class="dt2-hd moi" id="dHd"><span class="tag">D</span>
+              <div><small>Tiền trước thuế HĐ</small><b>1.500.000</b></div>
+              <div><small>Tiền thuế HĐ</small><b>120.000</b></div>
+              <div class="tong-hd"><small>Tổng tiền hoá đơn</small><b>1.620.000</b></div>
+            </div>
+            <div><small>Tiền hàng</small><b>1.500.000</b></div><i>−</i>
+            <div><small>Giảm giá</small><b>0</b></div><i>−</i>
+            <div><small>Chiết khấu</small><b>0</b></div><i>+</i>
+            <div><small>Phí dịch vụ</small><b>0</b></div><i>=</i>
+            <div class="nen"><small>Doanh thu tính thuế</small><b>1.500.000</b></div><i>+</i>
+            <div><small>Thuế GTGT</small><b>120.000</b></div><i>=</i>
+            <div class="tong"><small>Tổng thanh toán</small><b>1.620.000 đ</b></div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-f xp-f"><button class="btn" type="button">Huỷ</button><span class="grow"></span><button class="btn" type="button" id="btnLuu">Lưu và phát hành (Ctrl+S)</button><button class="btn p" type="button" id="btnLuuThem">Lưu, phát hành và thêm (Ctrl+Shift+S)</button></div>
+    </div>
+
+    <h3 style="margin-top:8px">Xem chứng từ bán hàng đã xuất HĐĐT</h3>
+    <p>Cùng form trên, ở chế độ xem. Phần liên quan hoá đơn đánh dấu viền cam.</p>
+    <div class="screen">
+      <div class="scr-cap"><span>Bán hàng › Chứng từ bán hàng BH2611-0004 · Phố Mây Lê Lợi</span><span>chế độ xem</span></div>
+      <div class="frm">
+        <div class="fcard frow">
+          <b class="sm-t">Thanh toán:</b><span style="font-size:13px;color:var(--ink)">Tiền mặt ngay</span>
+          <span class="lb-i">Quỹ tiền mặt:</span><span style="font-size:13px;color:var(--ink)">Quỹ tiền mặt Lê Lợi</span>
+          <span class="grow"></span>
+          <span class="moi" style="padding:2px 4px"><span class="tag">A</span><span class="chip g"><span class="dot"></span>Đã xuất HĐĐT · Mã tra cứu <b class="code">PM7K2X9QWA</b></span></span>
+        </div>
+        <div class="fcard ttc co-hd">
+          <div class="ttc-c">
+            <div class="lf"><span>Khách hàng</span><div class="inp ro">KH001 · Công ty TNHH Sao Việt</div></div>
+            <div class="lf"><span>Địa chỉ</span><div class="inp ro">25 Nguyễn Thị Minh Khai, phường Sài Gòn, TP.HCM</div></div>
+            <div class="lf moi"><span class="tag">C</span><span>Xuất HĐ cho</span>
+              <div class="inp ro o-xhd" title="Công ty TNHH Sao Việt · MST 0312456789 · Người mua: Trần Thu Hà · ketoan@saoviet.vn"><span>Công ty TNHH Sao Việt · MST 0312456789 · Trần Thu Hà</span><a href="#popKh">Xem</a></div></div>
+          </div>
+          <div class="ttc-c">
+            <div class="lf"><span>Mã số thuế</span><div class="inp ro">0312456789</div></div>
+            <div class="lf"><span>Người giao dịch</span><div class="inp ro">Trần Thu Hà</div></div>
+            <div class="lf"><span>Ghi chú</span><div class="inp ro">Bán tiệc sinh nhật</div></div>
+          </div>
+          <div class="ttc-c moi"><span class="tag">B</span>
+            <div class="lf"><span>Số hoá đơn</span><div class="inp ro code o-so"><a href="#xemHd" title="Xem hoá đơn">00000130</a><a href="#xemHd" class="mat" title="Xem hoá đơn" aria-label="Xem hoá đơn"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></a></div></div>
+            <div class="lf"><span>Ký hiệu</span><div class="inp ro code">1C26TAA</div></div>
+            <div class="lf"><span>Ngày hoá đơn</span><div class="inp ro">10/11/2026</div></div>
+          </div>
+          <div class="ttc-c">
+            <div class="lf"><span>Ngày chứng từ</span><div class="inp ro">10/11/2026</div></div>
+          </div>
+          <div class="thamchieu" style="grid-column:1/-1"><span class="muted" style="width:104px">Tham chiếu</span><a href="#xemHd">PT2611-0012</a></div>
+        </div>
+        <div class="fcard" style="padding:0">
+          <div class="tabs"><span class="on">Chi tiết</span><span>Hạch toán</span><span>Đính kèm</span><span>Lịch sử</span></div>
+          <div class="tbl-wrap"><table>
+            <thead><tr><th>#</th><th>Mã hàng</th><th>Tên hàng</th><th>ĐVT</th><th class="n">SL</th><th class="n">Đơn giá</th><th class="n">Thành tiền</th><th class="n">% thuế</th><th class="n">Tiền thuế</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>SET-L4</td><td>Set lẩu Phố Mây 4 người</td><td>Set</td><td class="n">2</td><td class="n">680.000</td><td class="n">1.360.000</td><td class="n">8%</td><td class="n">108.800</td></tr>
+              <tr><td>2</td><td>TRA-TMO</td><td>Trà tắc mật ong</td><td>Ly</td><td class="n">4</td><td class="n">35.000</td><td class="n">140.000</td><td class="n">8%</td><td class="n">11.200</td></tr>
+            </tbody>
+          </table></div>
+          <div class="dt2">
+            <div class="dt2-hd moi"><span class="tag">D</span>
+              <div><small>Tiền trước thuế HĐ</small><b>1.500.000</b></div>
+              <div><small>Tiền thuế HĐ</small><b>120.000</b></div>
+              <div class="tong-hd"><small>Tổng tiền hoá đơn</small><b>1.620.000</b></div>
+            </div>
+            <div><small>Tiền hàng</small><b>1.500.000</b></div><i>−</i>
+            <div><small>Giảm giá</small><b>0</b></div><i>−</i>
+            <div><small>Chiết khấu</small><b>0</b></div><i>+</i>
+            <div><small>Phí dịch vụ</small><b>0</b></div><i>=</i>
+            <div class="nen"><small>Doanh thu tính thuế</small><b>1.500.000</b></div><i>+</i>
+            <div><small>Thuế GTGT</small><b>120.000</b></div><i>=</i>
+            <div class="tong"><small>Tổng thanh toán</small><b>1.620.000 đ</b></div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-f xp-f" style="justify-content:space-between;flex-wrap:wrap">
+        <div class="actions">
+          <button class="btn ic1" type="button" aria-label="Chứng từ trước">‹</button><button class="btn ic1" type="button" aria-label="Chứng từ sau">›</button>
+          <span class="tienich"><button class="btn" type="button" id="btnTi">Tiện ích ▾</button>
+            <span class="ti-menu" id="tiMenu" hidden><span>Sao chép</span><span>Xuất Excel</span><span>Tải PDF hoá đơn</span><span>Tải XML hoá đơn</span><span class="mo" title="Chứng từ đã xuất HĐĐT">Xoá chứng từ</span></span></span>
+          <button class="btn" type="button">In phiếu</button>
+        </div>
+        <span class="chip g" title="Muốn đổi tiền, hàng, người mua thì lập hoá đơn điều chỉnh hoặc thay thế ở menu Hoá đơn điện tử">Đã xuất HĐĐT · không sửa được</span>
+      </div>
+    </div>
+    </div>
+    <ul class="rule">
+      <li><b>A</b>: góc phải thanh Thanh toán là nhãn <b>Đã xuất HĐĐT</b> kèm <b>mã tra cứu</b>, chỉ hiện chữ, không bấm.</li>
+      <li><b>B</b>: cột hoá đơn chỉ xem: Số hoá đơn, Ký hiệu, Ngày hoá đơn. <b>Số hoá đơn là link</b>, cuối ô có <b>biểu tượng mắt</b>; bấm số hoặc mắt đều mở popup xem hoá đơn. Đây là chỗ duy nhất mở hoá đơn trên chứng từ: dòng Tham chiếu không có link hoá đơn, chân form không có nút Xem hoá đơn.</li>
+      <li><b>C</b>: ô <b>Xuất HĐ cho</b> một dòng dưới Địa chỉ, ghi người mua đã in trên hoá đơn; rê chuột thấy đủ, link <b>Xem</b> mở popup chỉ đọc.</li>
+      <li><b>D</b>: tiền trên hoá đơn nằm cùng dòng dải tổng, sát trái: Tiền trước thuế HĐ, Tiền thuế HĐ, Tổng tiền hoá đơn. Không lặp ký hiệu, số hoá đơn vì đã có ở cột B. Chứng từ chưa có hoá đơn thì không có nhóm này.</li>
+      <li>Chân form như các chứng từ khác (Nhập mua): trái là chứng từ trước, sau, <b>Tiện ích</b> (Sao chép, Xuất Excel, Tải PDF, Tải XML hoá đơn), <b>In phiếu</b>. Chứng từ đã xuất HĐĐT <b>không có nút Sửa</b>, Xoá chứng từ trong Tiện ích hiện mờ; bên phải là nhãn “Đã xuất HĐĐT · không sửa được”, rê chuột thấy hướng dẫn lập hoá đơn điều chỉnh, thay thế.</li>
+    </ul>
+
+    <div class="modal" id="popKh" style="max-width:640px">
+      <div class="modal-h"><span>Thông tin xuất hoá đơn</span><span class="kbdk">mở từ link Sửa ở dòng C</span></div>
+      <div class="pad" style="display:grid;gap:10px">
+          <div class="bng-kh"><b>Thông tin khách hàng</b><label class="ck"><input type="radio" name="lk" value="cn"> Cá nhân</label><label class="ck"><input type="radio" name="lk" value="cty" checked> Công ty</label></div>
+          <div class="bng" data-loai="cn" hidden><div class="bng-r"><span>Tên người mua <em>*</em></span><input class="bng-o" value="" placeholder="Nhập tên người mua"></div><div class="bng-r"><span>Địa chỉ</span><input class="bng-o" value="" placeholder="Nhập địa chỉ"></div><div class="bng-r"><span>Số điện thoại</span><input class="bng-o" value="" placeholder="Nhập số điện thoại"></div><div class="bng-r"><span>Căn cước công dân</span><input class="bng-o" value="" placeholder="Nhập căn cước công dân"></div><div class="bng-r"><span>Số hộ chiếu</span><input class="bng-o" value="" placeholder="Nhập số hộ chiếu"></div><div class="bng-r"><span>Email nhận hoá đơn</span><input class="bng-o" value="" placeholder="Nhập email"></div></div>
+          <div class="bng" data-loai="cty"><div class="bng-r"><span>Mã số thuế</span><input class="bng-o" value="0312456789" placeholder="Nhập mã số thuế"></div><div class="bng-r"><span>Tên đơn vị <em>*</em></span><input class="bng-o" value="Công ty TNHH Sao Việt" placeholder=""></div><div class="bng-r"><span>Địa chỉ <em>*</em></span><input class="bng-o" value="25 Nguyễn Thị Minh Khai, phường Sài Gòn, TP.HCM" placeholder=""></div><div class="bng-r"><span>Tên người mua hàng</span><input class="bng-o" value="Trần Thu Hà" placeholder="Nhập tên người mua"></div><div class="bng-r"><span>Email nhận hoá đơn</span><input class="bng-o" value="ketoan@saoviet.vn" placeholder=""></div><div class="bng-r"><span>Mã đơn vị QHNS</span><input class="bng-o" value="" placeholder="Nhập mã đơn vị quan hệ ngân sách"></div></div>
+      </div>
+      <div class="modal-f"><button class="btn" type="button">Huỷ</button><button class="btn p" type="button">Đồng ý</button></div>
+    </div>
+
+    <div class="modal" id="xemHd" style="max-width:560px">
+      <div class="modal-h"><span>Hoá đơn 1C26TAA số 00000130</span><span class="chip g">Hợp lệ</span></div>
+      <div class="pad" style="display:grid;gap:10px">
+        <dl class="kv">
+          <dt>Ngày hoá đơn</dt><dd>10/11/2026</dd>
+          <dt>Người mua</dt><dd>Bán cho người tiêu dùng</dd>
+          <dt>Tiền trước thuế</dt><dd>1.500.000</dd>
+          <dt>Thuế suất</dt><dd>8% (giảm 2% theo NQ 204/2025/QH15)</dd>
+          <dt>Tiền thuế</dt><dd>120.000</dd>
+          <dt>Tổng tiền thanh toán</dt><dd style="color:var(--blue)">1.620.000</dd>
+          <dt>Mã tra cứu · Mã CQT</dt><dd>PM7K2X9QWA · M26-3A8E5B</dd>
+        </dl>
+      </div>
+      <div class="modal-f"><button class="btn" type="button">Tải PDF</button><button class="btn" type="button">Tải XML</button><button class="btn p" type="button" title="Mở bản thể hiện hoá đơn điện tử do iPOS Invoice trả về">Xem hoá đơn điện tử</button></div>
+    </div>
+  </section>
+
+  <!-- ═════════ PHẦN 3 ═════════ -->
+  <section id="p3">
+    <h2><span class="so">3</span>Danh sách bán hàng: xuất tiếp hoá đơn</h2>
+    <ul class="rule">
+      <li>Cột <b>Trạng thái phát hành</b> đổi tên thành <b>Trạng thái xuất HĐĐT</b>, vẫn ghim bên phải. Hai trạng thái: <span class="chip g">Đã xuất</span> kèm số hoá đơn bấm mở xem; <span class="chip">Chưa xuất</span>.</li>
+      <li>Bỏ link Phát hành ở từng dòng. Tích chọn một hay nhiều dòng rồi bấm <b>Xuất HĐĐT</b> trên thanh công cụ (thanh chọn hiện số dòng đã chọn).</li>
+      <li>Chỉ chọn dòng đã xuất: báo <b>“Chứng từ BH2610-0003 đã xuất hoá đơn điện tử.”</b> Chọn lẫn: bỏ qua dòng đã xuất, báo số dòng bỏ qua, mở popup cho phần còn lại.</li>
+      <li>Popup: mỗi chứng từ một dòng. Sửa được <b>Ngày hoá đơn</b>, <b>Ký hiệu</b> (có dòng “Áp dụng cho tất cả” ở trên). Tiền trước thuế, tiền thuế, tổng tiền chỉ đọc, lấy theo chứng từ.</li>
+      <li>Cột <b>Người mua trên hoá đơn</b> hiện đủ tên đơn vị, MST, địa chỉ, tên người mua hàng. Có thông tin nào hiện thông tin đó, không có thì ẩn. Mặc định: khách lẻ là “Bán cho người tiêu dùng”; khách cá nhân là tên cá nhân; khách công ty là tên công ty, MST, địa chỉ.</li>
+      <li>Link <b>Sửa</b> ở từng dòng mở popup <b>Thông tin hoá đơn</b> của chứng từ đó, kiểu bảng nhãn như popup phát hành đang có. Hàng đầu là <b>Ngày hoá đơn</b> và <b>Mẫu số - Ký hiệu</b> cùng một dòng; Mẫu số - Ký hiệu là một ô chọn từ danh sách ký hiệu đã khai báo (gõ để lọc). Dưới là Thông tin khách hàng Cá nhân hoặc Công ty. Đồng ý thì lưu luôn vào chứng từ.</li>
+    </ul>
+
+    <div class="screen" id="demoDs">
+      <div class="scr-cap"><span>Bán hàng › Bán hàng (lập tay)</span><span>tích dòng rồi bấm Xuất HĐĐT</span></div>
+      <div class="bar"><span class="inp" style="width:auto">01/11/2026 – 30/11/2026</span><span class="sp"></span><button class="btn o" type="button" id="btnXuat" disabled>Xuất HĐĐT</button><button class="btn p" type="button">+ Thêm mới</button></div>
+      <div class="selbar" id="selbar" hidden><span id="selN">Đã chọn 0</span><a href="#demoDs" id="boChon" style="color:var(--blue);font-weight:600">Bỏ chọn</a></div>
+      <div class="toast" id="toast" role="status"></div>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th></th><th>Ngày</th><th>Số chứng từ</th><th>Khách hàng</th><th class="n">Tiền thuế</th><th class="n">Tổng tiền</th><th>Trạng thái xuất HĐĐT</th></tr></thead>
+        <tbody id="dsBody">
+          <tr data-da="1" data-so="BH2611-0001"><td><input type="checkbox" aria-label="Chọn BH2611-0001"></td><td>02/11/2026</td><td><a href="#demoDs">BH2611-0001</a></td><td>Công ty TNHH Sao Việt</td><td class="n">96.000</td><td class="n">1.296.000</td><td><span class="chip g">Đã xuất</span> <a href="#xemHd" style="font-size:12px">00000127</a></td></tr>
+          <tr data-so="BH2611-0002"><td><input type="checkbox" aria-label="Chọn BH2611-0002"></td><td>05/11/2026</td><td><a href="#demoDs">BH2611-0002</a></td><td>Khách lẻ</td><td class="n">31.200</td><td class="n">421.200</td><td><span class="chip">Chưa xuất</span></td></tr>
+          <tr data-so="BH2611-0003"><td><input type="checkbox" aria-label="Chọn BH2611-0003"></td><td>07/11/2026</td><td><a href="#demoDs">BH2611-0003</a></td><td>Nguyễn Minh Anh</td><td class="n">54.400</td><td class="n">734.400</td><td><span class="chip">Chưa xuất</span></td></tr>
+          <tr data-so="BH2611-0004"><td><input type="checkbox" aria-label="Chọn BH2611-0004"></td><td>08/11/2026</td><td><a href="#demoDs">BH2611-0004</a></td><td>Công ty CP Biển Xanh</td><td class="n">168.000</td><td class="n">2.268.000</td><td><span class="chip">Chưa xuất</span></td></tr>
+        </tbody>
+      </table></div>
+    </div>
+
+    <div class="modal" id="popNhieu">
+      <div class="modal-h"><span>Xuất hoá đơn điện tử · <span id="popN">3</span> chứng từ</span><span class="kbdk">Esc để đóng</span></div>
+      <div class="pad" style="display:grid;gap:10px">
+        <div class="grid3">
+          <div class="f"><span class="lb">Ngày hoá đơn, áp dụng cho tất cả</span><div class="inp">10/11/2026</div></div>
+          <div class="f"><span class="lb">Ký hiệu, áp dụng cho tất cả</span><div class="inp sel" style="color:var(--faint)">Theo cửa hàng của chứng từ</div></div>
+        </div>
+        <div class="tbl-wrap"><table>
+          <thead><tr><th>Số chứng từ</th><th>Ngày hoá đơn</th><th>Mẫu số · Ký hiệu</th><th style="min-width:300px">Người mua trên hoá đơn</th><th class="n">Trước thuế</th><th class="n">Tiền thuế</th><th class="n">Tổng tiền</th></tr></thead>
+          <tbody id="popBody">
+            <tr><td>BH2611-0002</td><td><span class="cell-inp">10/11/2026</span></td><td><span class="cell-inp sel">1C26TAA</span></td>
+              <td><div class="nm"><div class="nm-t"><b>Bán cho người tiêu dùng</b><a href="#popSua">Sửa</a></div><span class="chip">Khách lẻ, không lấy hoá đơn</span></div></td>
+              <td class="n">390.000</td><td class="n">31.200</td><td class="n">421.200</td></tr>
+            <tr><td>BH2611-0003</td><td><span class="cell-inp">10/11/2026</span></td><td><span class="cell-inp sel">1C26TAA</span></td>
+              <td><div class="nm"><div class="nm-t"><b>Nguyễn Minh Anh</b><a href="#popSua">Sửa</a></div><span>12 Lý Tự Trọng, phường Sài Gòn, TP.HCM</span></div></td>
+              <td class="n">680.000</td><td class="n">54.400</td><td class="n">734.400</td></tr>
+            <tr><td>BH2611-0004</td><td><span class="cell-inp">10/11/2026</span></td><td><span class="cell-inp sel">1C26MAB</span></td>
+              <td><div class="nm"><div class="nm-t"><b>Công ty CP Biển Xanh</b><a href="#popSua">Sửa</a></div><span>MST 4201789456</span><span>118 Trần Phú, phường Nha Trang, Khánh Hoà</span><span>Người mua: Lê Văn Nam</span></div></td>
+              <td class="n">2.100.000</td><td class="n">168.000</td><td class="n">2.268.000</td></tr>
+          </tbody>
+        </table></div>
+        <div class="hint">ⓘ Mỗi chứng từ một hoá đơn. Cột người mua hiện thông tin nào có (tên đơn vị, MST, địa chỉ, người mua hàng), thiếu thì ẩn dòng đó. Bấm Sửa ở dòng nào thì mở popup Thông tin hoá đơn của chứng từ đó; Đồng ý thì lưu luôn vào chứng từ.</div>
+      </div>
+      <div class="modal-f"><button class="btn" type="button">Huỷ</button><button class="btn p" type="button">Phát hành 3 hoá đơn</button></div>
+    </div>
+
+    <div class="modal" id="popSua" style="max-width:720px">
+      <div class="modal-h"><span>Thông tin hoá đơn · BH2611-0004</span><span class="kbdk">mở từ link Sửa trong popup xuất nhiều</span></div>
+      <div class="pad" style="display:grid;gap:10px">
+        <div class="bng bng-2">
+          <div class="bng-r"><span>Ngày hoá đơn <em>*</em></span><div class="bng-o">10/11/2026<i class="lich"></i></div></div>
+          <div class="bng-r"><span>Mẫu số - Ký hiệu <em>*</em></span><div class="bng-o chon" id="cbKh">1C26MAB</div></div>
+        </div>
+        <div class="cb-list" id="cbList">
+          <div class="cb-tim">Gõ để lọc ký hiệu…</div>
+          <div class="cb-i"><b>1C26TAA</b><span>Hoá đơn GTGT · Phố Mây Lê Lợi · khai báo chung</span></div>
+          <div class="cb-i on"><b>1C26MAB</b><span>Hoá đơn GTGT máy tính tiền · Phố Mây Nguyễn Trãi</span></div>
+          <div class="cb-i"><b>1C26TAC</b><span>Hoá đơn GTGT · dùng cho tiệc, hội nghị</span></div>
+          <div class="cb-i"><b>2C26TAA</b><span>Hoá đơn bán hàng</span></div>
+        </div>
+          <div class="bng-kh"><b>Thông tin khách hàng</b><label class="ck"><input type="radio" name="lk4" value="cn"> Cá nhân</label><label class="ck"><input type="radio" name="lk4" value="cty" checked> Công ty</label></div>
+          <div class="bng" data-loai="cn" hidden><div class="bng-r"><span>Tên người mua <em>*</em></span><input class="bng-o" value="" placeholder="Nhập tên người mua"></div><div class="bng-r"><span>Địa chỉ</span><input class="bng-o" value="" placeholder="Nhập địa chỉ"></div><div class="bng-r"><span>Số điện thoại</span><input class="bng-o" value="" placeholder="Nhập số điện thoại"></div><div class="bng-r"><span>Căn cước công dân</span><input class="bng-o" value="" placeholder="Nhập căn cước công dân"></div><div class="bng-r"><span>Số hộ chiếu</span><input class="bng-o" value="" placeholder="Nhập số hộ chiếu"></div><div class="bng-r"><span>Email nhận hoá đơn</span><input class="bng-o" value="" placeholder="Nhập email"></div></div>
+          <div class="bng" data-loai="cty"><div class="bng-r"><span>Mã số thuế</span><input class="bng-o" value="4201789456" placeholder="Nhập mã số thuế"></div><div class="bng-r"><span>Tên đơn vị <em>*</em></span><input class="bng-o" value="Công ty CP Biển Xanh" placeholder=""></div><div class="bng-r"><span>Địa chỉ <em>*</em></span><input class="bng-o" value="118 Trần Phú, phường Nha Trang, Khánh Hoà" placeholder=""></div><div class="bng-r"><span>Tên người mua hàng</span><input class="bng-o" value="Lê Văn Nam" placeholder="Nhập tên người mua"></div><div class="bng-r"><span>Email nhận hoá đơn</span><input class="bng-o" value="hoadon@bienxanh.vn" placeholder=""></div><div class="bng-r"><span>Mã đơn vị QHNS</span><input class="bng-o" value="" placeholder="Nhập mã đơn vị quan hệ ngân sách"></div></div>
+      </div>
+      <div class="modal-f"><button class="btn" type="button">Huỷ</button><button class="btn p" type="button">Đồng ý</button></div>
+    </div>
+  </section>
+
+  <!-- ═════════ PHẦN 4 ═════════ -->
+  <section id="p4">
+    <h2><span class="so">4</span>Menu Hoá đơn điện tử</h2>
+    <p>Menu lớn mới nằm ngay trên <b>Kê khai thuế</b>, 3 tab. Hai tab cũ “Hoá đơn điện tử”, “Điều chỉnh, thay thế” ở phân hệ Bán hàng chuyển sang đây (xem câu 1 ở mục Cần chốt).</p>
+
+    <div class="screen">
+      <div class="scr-cap"><span>Hoá đơn điện tử</span><span>bấm tab để xem</span></div>
+      <div class="mini-side">
+        <div class="side" aria-hidden="true">
+          <span>Trang chủ</span><span>Thu chi</span><span>Bán hàng</span><span>Mua hàng</span><span>Kho</span><span>Chi phí phân bổ</span>
+          <span class="on nw">Hoá đơn điện tử</span><span>Kê khai thuế</span><span>Tổng hợp</span><span>Báo cáo</span>
+        </div>
+        <div style="min-width:0;flex:1">
+          <div class="tabs" role="tablist">
+            <span class="on new" role="tab" tabindex="0" data-t="t1">Hoá đơn điện tử</span>
+            <span class="new" role="tab" tabindex="0" data-t="t2">Điều chỉnh, thay thế</span>
+            <span class="new" role="tab" tabindex="0" data-t="t3">Thông báo sai sót</span>
+          </div>
+
+          <!-- Tab 1 -->
+          <div data-p="t1">
+            <div class="bar">
+              <button class="ic-btn" type="button" aria-label="Lọc nâng cao">⛛</button>
+              <span class="inp" style="width:auto"><span class="muted" style="font-size:11.5px">Thời gian</span> 01/11/2026 – 30/11/2026</span>
+              <span class="inp" style="width:240px;color:var(--faint)">⌕ Số HĐ, tên đơn vị, MST, người mua</span>
+              <button class="btn p" type="button">Lọc</button>
+              <span class="sp"></span>
+              <button class="ic-btn" type="button" aria-label="Tải lại">⟳</button><button class="ic-btn" type="button" aria-label="Xuất Excel">⤓</button><button class="ic-btn" type="button" aria-label="Chọn cột">☷</button>
+            </div>
+            <div class="chips-tt"><span class="chip-tt on">Tất cả <b>6</b></span><span class="chip-tt"><span class="dot" style="color:var(--amber)"></span>Dự thảo <b>1</b></span><span class="chip-tt"><span class="dot" style="color:var(--green)"></span>Đã phát hành <b>5</b></span></div>
+            <div class="selbar" id="hdSel"><span id="hdSelN">Đã chọn 2</span>
+              <span class="sp" style="flex:1"></span>
+              <button class="btn" type="button">Gửi CQT</button>
+              <button class="btn" type="button">Tải XML</button>
+              <button class="btn" type="button">Tải PDF</button>
+            </div>
+            <div class="toast" id="hdToast" role="status"></div>
+            <div class="tbl-wrap"><table id="hdTbl">
+              <thead><tr><th></th><th>Loại hoá đơn</th><th>Trạng thái HĐĐT</th><th>Mẫu số</th><th>Ký hiệu</th><th>Số HĐ</th><th>Ngày HĐ</th><th>Số chứng từ</th><th>Tên đơn vị</th><th>MST</th><th>Địa chỉ</th><th>Người mua</th><th>Mã QHNS</th><th>Trạng thái thuế</th><th class="n">Trước thuế</th><th class="n">Tiền thuế</th><th class="n">Tổng tiền</th><th>Mã CQT</th><th>Mã tra cứu</th><th>Hoá đơn gốc</th><th class="tt">Thao tác</th></tr><tr class="loc-hang"><th></th><th><span class="lc sel">Tất cả</span></th><th><span class="lc sel">Tất cả</span></th><th><span class="lc sel">Tất cả</span></th><th><span class="lc">⛛</span></th><th><span class="lc">⛛</span></th><th><span class="lc">dd/mm/yy</span></th><th><span class="lc">⛛</span></th><th><span class="lc">⛛</span></th><th><span class="lc">⛛</span></th><th><span class="lc">⛛</span></th><th><span class="lc">⛛</span></th><th><span class="lc">⛛</span></th><th><span class="lc sel">Tất cả</span></th><th><span class="lc">≥ ≤</span></th><th><span class="lc">≥ ≤</span></th><th><span class="lc">≥ ≤</span></th><th><span class="lc">⛛</span></th><th><span class="lc">⛛</span></th><th><span class="lc">⛛</span></th><th class="tt"></th></tr></thead>
+              <tbody id="hdBody">
+                <tr class="sel" data-act="dc tt tbss xml pdf mail share" data-ten="1C26TAA 00000127"><td><input type="checkbox" checked aria-label="Chọn"></td><td>Hoá đơn gốc</td><td><span class="chip g">Đã phát hành</span></td><td>1</td><td>C26TAA</td><td>00000127</td><td>02/11/2026</td><td><a href="#p4">BH2611-0001</a></td><td>Công ty TNHH Sao Việt</td><td>0312456789</td><td>25 Nguyễn Thị Minh Khai…</td><td>Trần Thu Hà</td><td></td><td><span class="chip g">Hợp lệ</span></td><td class="n">1.200.000</td><td class="n">96.000</td><td class="n">1.296.000</td><td>M26-3A7F21</td><td>PM4H8D2KQL</td><td></td><td class="tt"><button class="btn-3c" type="button" aria-label="Thao tác">⋯</button></td></tr>
+                <tr data-act="ph xoa" data-ten="dự thảo BH2611-0005"><td><input type="checkbox" aria-label="Chọn"></td><td>Hoá đơn gốc</td><td><span class="chip a">Dự thảo</span></td><td>1</td><td>C26MAB</td><td></td><td>08/11/2026</td><td><a href="#p4">BH2611-0005</a></td><td></td><td></td><td></td><td>Bán cho người tiêu dùng</td><td></td><td><span class="chip">Chưa gửi TCTN</span></td><td class="n">450.000</td><td class="n">36.000</td><td class="n">486.000</td><td></td><td></td><td></td><td class="tt"><button class="btn-3c" type="button" aria-label="Thao tác">⋯</button></td></tr>
+                <tr class="sel" data-act="cqt xml pdf mail share" data-ten="1C26MAB 00000052"><td><input type="checkbox" checked aria-label="Chọn"></td><td>Hoá đơn gốc</td><td><span class="chip g">Đã phát hành</span></td><td>1</td><td>C26MAB</td><td>00000052</td><td>09/11/2026</td><td><a href="#p4">BH2611-0006</a></td><td></td><td></td><td></td><td>Bán cho người tiêu dùng</td><td></td><td><span class="chip">Chưa gửi TCTN</span></td><td class="n">820.000</td><td class="n">65.600</td><td class="n">885.600</td><td></td><td>PM3D5S8VNE</td><td></td><td class="tt"><button class="btn-3c" type="button" aria-label="Thao tác">⋯</button></td></tr>
+                <tr data-act="dc tt tbss xml pdf mail share" data-ten="1C26TAA 00000121"><td><input type="checkbox" aria-label="Chọn"></td><td>Hoá đơn bị điều chỉnh</td><td><span class="chip g">Đã phát hành</span></td><td>1</td><td>C26TAA</td><td>00000121</td><td>28/10/2026</td><td><a href="#p4">BH2610-0003</a></td><td>Công ty CP Biển Xanh</td><td>4201789456</td><td>118 Trần Phú…</td><td>Lê Văn Nam</td><td></td><td><span class="chip g">Hợp lệ</span></td><td class="n">2.700.000</td><td class="n">216.000</td><td class="n">2.916.000</td><td>M26-3AE3F8</td><td>PM2Q7Z1TRB</td><td></td><td class="tt"><button class="btn-3c" type="button" aria-label="Thao tác">⋯</button></td></tr>
+                <tr data-act="xml pdf mail share" data-ten="1C26TAA 00000129"><td><input type="checkbox" aria-label="Chọn"></td><td>Hoá đơn điều chỉnh</td><td><span class="chip g">Đã phát hành</span></td><td>1</td><td>C26TAA</td><td>00000129</td><td>06/11/2026</td><td><a href="#p4">BH2610-0003</a></td><td>Công ty CP Biển Xanh</td><td>4201789456</td><td>118 Trần Phú…</td><td>Lê Văn Nam</td><td></td><td><span class="chip b">Đã gửi TCTN</span></td><td class="n">-200.000</td><td class="n">-16.000</td><td class="n">-216.000</td><td>M26-3B21C0</td><td>PM9W3N6YHC</td><td>1C26TAA · 00000121 · 28/10/2026</td><td class="tt"><button class="btn-3c" type="button" aria-label="Thao tác">⋯</button></td></tr>
+                <tr data-act="cqt xml pdf mail share" data-ten="1C26MAC 00000044"><td><input type="checkbox" aria-label="Chọn"></td><td>Hoá đơn thay thế</td><td><span class="chip g">Đã phát hành</span></td><td>1</td><td>C26MAC</td><td>00000044</td><td>04/11/2026</td><td><a href="#p4">BH2610-0011</a></td><td>Công ty TNHH Hạ Long Tech</td><td>5701234567</td><td>9 Hạ Long…</td><td>Phạm Quốc Bảo</td><td>1234567</td><td><span class="chip r">TCTN từ chối</span></td><td class="n">900.000</td><td class="n">72.000</td><td class="n">972.000</td><td></td><td>PM6E1R4UJD</td><td>1C26MAC · 00000038 · 30/10/2026</td><td class="tt"><button class="btn-3c" type="button" aria-label="Thao tác">⋯</button></td></tr>
+              </tbody>
+            </table></div>
+            <div class="menu3c" id="menu3c" role="menu" hidden>
+              <button type="button" data-k="ph">Phát hành</button>
+              <button type="button" data-k="dc">Điều chỉnh</button>
+              <button type="button" data-k="tt">Thay thế</button>
+              <button type="button" data-k="tbss">Tạo TBSS</button>
+              <button type="button" data-k="cqt">Gửi CQT</button>
+              <hr>
+              <button type="button" data-k="xml">Tải XML</button>
+              <button type="button" data-k="pdf">Tải PDF</button>
+              <button type="button" data-k="mail">Gửi email</button>
+              <button type="button" data-k="share">Chia sẻ PDF</button>
+              <hr>
+              <button type="button" data-k="xoa" class="do">Xoá</button>
+            </div>
+          </div>
+
+          <!-- Tab 2 -->
+          <div data-p="t2" hidden>
+            <div class="tbl-wrap"><table>
+              <thead>
+                <tr><th rowspan="2">Loại</th><th colspan="6" style="text-align:center;background:var(--gray-t)">Hoá đơn bị điều chỉnh, thay thế</th><th colspan="8" style="text-align:center">Hoá đơn điều chỉnh, thay thế</th></tr>
+                <tr><th style="background:var(--gray-t)">Mẫu số</th><th style="background:var(--gray-t)">Ký hiệu</th><th style="background:var(--gray-t)">Số HĐ</th><th style="background:var(--gray-t)">Ngày HĐ</th><th class="n" style="background:var(--gray-t)">Tổng tiền</th><th style="background:var(--gray-t)"></th>
+                  <th>Mẫu số</th><th>Ký hiệu</th><th>Số HĐ</th><th>Ngày HĐ</th><th class="n">Tổng tiền</th><th>Trạng thái thuế</th><th></th><th></th></tr>
+              </thead>
+              <tbody>
+                <tr><td><span class="chip b">Điều chỉnh</span></td><td>1</td><td>C26TAA</td><td>00000121</td><td>28/10/2026</td><td class="n">2.916.000</td><td><a href="#p4">Xem</a></td><td>1</td><td>C26TAA</td><td>00000129</td><td>06/11/2026</td><td class="n">-216.000</td><td><span class="chip b">Đã gửi TCTN</span></td><td><a href="#p4">Xem</a></td><td><button class="btn" type="button" disabled>Gửi CQT</button></td></tr>
+                <tr><td><span class="chip o">Thay thế</span></td><td>1</td><td>C26MAC</td><td>00000038</td><td>30/10/2026</td><td class="n">972.000</td><td><a href="#p4">Xem</a></td><td>1</td><td>C26MAC</td><td>00000044</td><td>04/11/2026</td><td class="n">972.000</td><td><span class="chip r">TCTN từ chối</span></td><td><a href="#p4">Xem</a></td><td><button class="btn" type="button">Gửi CQT</button></td></tr>
+              </tbody>
+            </table></div>
+            <div class="pad"><div class="hint">ⓘ Lập điều chỉnh, thay thế từ tab Hoá đơn điện tử (chọn hoá đơn hợp lệ, bấm Điều chỉnh hoặc Thay thế). Tab này để theo dõi cặp hoá đơn gốc và hoá đơn mới.</div></div>
+          </div>
+
+          <!-- Tab 3 -->
+          <div data-p="t3" hidden>
+            <div class="bar"><span class="inp sel" style="width:auto">Trạng thái gửi CQT: Tất cả</span><span class="sp"></span><button class="btn" type="button">Gửi CQT</button><button class="btn" type="button">Xoá</button></div>
+            <div class="tbl-wrap"><table>
+              <thead><tr><th></th><th>Mẫu số</th><th>Ký hiệu</th><th>Số HĐ</th><th>Ngày HĐ</th><th>Loại hoá đơn</th><th>Nội dung thông báo sai sót</th><th>Trạng thái gửi CQT</th><th>Ngày tạo</th><th></th></tr></thead>
+              <tbody>
+                <tr><td><input type="checkbox" aria-label="Chọn"></td><td>1</td><td>C26TAA</td><td>00000118</td><td>25/10/2026</td><td>Hoá đơn gốc</td><td>Sai địa chỉ người mua</td><td><span class="chip">Lưu nháp</span></td><td>09/11/2026</td><td><a href="#p4">Xem TBSS</a></td></tr>
+                <tr><td><input type="checkbox" aria-label="Chọn"></td><td>1</td><td>C26MAC</td><td>00000038</td><td>30/10/2026</td><td>Hoá đơn bị thay thế</td><td>Sai mã số thuế người mua, đã lập hoá đơn thay thế</td><td><span class="chip g">CQT đã tiếp nhận</span></td><td>04/11/2026</td><td><a href="#p4">Xem TBSS</a></td></tr>
+              </tbody>
+            </table></div>
+            <div class="pad"><div class="hint">ⓘ Gửi CQT và Xoá chỉ bật với thông báo sai sót đang lưu nháp, chưa gửi.</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h3>Bộ lọc danh sách hoá đơn</h3>
+    <ul class="rule">
+      <li>Giống các danh sách Bán hàng, Mua hàng: nút lọc nâng cao, ô <b>Thời gian</b> (theo ngày hoá đơn), ô tìm nhanh số hoá đơn, tên đơn vị, MST, người mua, nút <b>Lọc</b>; bên phải tải lại, xuất Excel, chọn cột.</li>
+      <li>Hàng chip theo <b>Trạng thái HĐĐT</b>: Tất cả, Dự thảo, Đã phát hành, kèm số hoá đơn.</li>
+      <li>Hàng lọc ngay dưới tiêu đề cột, đủ mọi cột: chọn từ danh sách cho Loại hoá đơn, Trạng thái HĐĐT, Mẫu số, Trạng thái thuế; lịch cho Ngày HĐ; khoảng số cho Trước thuế, Tiền thuế, Tổng tiền; gõ chữ cho các cột còn lại (Ký hiệu, Số HĐ, Số chứng từ, Tên đơn vị, MST, Địa chỉ, Người mua, Mã QHNS, Mã CQT, Mã tra cứu, Hoá đơn gốc).</li>
+    </ul>
+
+    <h3>Thao tác trên danh sách hoá đơn</h3>
+    <ul class="rule">
+      <li><b>Từng hoá đơn</b>: cột <b>Thao tác</b> ghim cố định cuối bên phải, bấm <b>⋯</b> mở menu dọc ngay tại dòng. Chức năng không dùng được với hoá đơn đó thì hiện mờ, rê chuột thấy lý do.</li>
+      <li><b>Nhiều hoá đơn</b>: tích chọn dòng thì thanh chọn chỉ có <b>Gửi CQT</b>, <b>Tải XML</b>, <b>Tải PDF</b>. Hoá đơn không đủ điều kiện thì bỏ qua và báo số hoá đơn bỏ qua.</li>
+      <li>Bỏ dải chú thích loại hoá đơn, trạng thái ở cuối bảng: các giá trị này nằm sẵn trong 3 ô lọc trên thanh lọc.</li>
+    </ul>
+    <div class="tbl-wrap"><table style="background:var(--paper);border:1px solid var(--line)">
+      <thead><tr><th>Chức năng</th><th>Dùng được khi</th><th>Chọn nhiều</th></tr></thead>
+      <tbody>
+        <tr><td>Phát hành, Xoá</td><td>Hoá đơn dự thảo</td><td>Không</td></tr>
+        <tr><td>Điều chỉnh, Thay thế, Tạo TBSS</td><td>Đã phát hành và trạng thái thuế Hợp lệ</td><td>Không</td></tr>
+        <tr><td>Gửi CQT</td><td>Ký hiệu có chữ M ở vị trí thứ 4 (máy tính tiền, vd C26MAA), chưa gửi hoặc bị từ chối</td><td>Có</td></tr>
+        <tr><td>Tải XML, Tải PDF</td><td>Đã phát hành</td><td>Có</td></tr>
+        <tr><td>Gửi email, Chia sẻ PDF</td><td>Đã phát hành</td><td>Không</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <!-- ═════════ CẦN CHỐT ═════════ -->
+  <section id="hoi">
+    <h2>Cần chốt trước khi code</h2>
+    <div class="qs">
+      <div class="q"><h3>1. Hai tab cũ ở phân hệ Bán hàng</h3><p>Bán hàng đang có tab “Hoá đơn điện tử” (3.1.5) và “Điều chỉnh, thay thế” (3.1.6) dạng chứng từ mẫu.</p><p class="de">Đề xuất: <b>bỏ hai tab này khỏi Bán hàng</b>, chỉ còn ở menu Hoá đơn điện tử, tránh trùng.</p></div>
+      <div class="q"><h3>2. Hoá đơn dự thảo sinh ra khi nào</h3><p>Luồng mới tích Phát hành HĐĐT là phát hành ngay, nên chưa có chỗ tạo dự thảo.</p><p class="de">Đề xuất: popup phát hành có thêm nút <b>Lưu dự thảo</b> (đẩy lên nhà cung cấp, chưa ký). Phát hành lỗi kết nối cũng thành dự thảo.</p></div>
+      <div class="q"><h3>3. Ký hiệu máy tính tiền ở Cấu hình</h3><p>Ràng buộc hiện tại chỉ nhận ký hiệu chữ T ở vị trí thứ 4 và loại có mã CQT.</p><p class="de">Đề xuất: <b>mở nhận cả chữ M</b> để có hoá đơn MTT, nút Gửi CQT mới dùng được.</p></div>
+      <div class="q"><h3>4. Mẫu số theo phương pháp thuế</h3><p>QD102 khoá mẫu số theo phương pháp thuế (khấu trừ = 1, % doanh thu = 2).</p><p class="de">Đề xuất: <b>giữ gợi ý theo phương pháp thuế nhưng cho chọn</b> 1 hoặc 2 ở khai báo chung và từng cửa hàng.</p></div>
+      <div class="q"><h3>5. Chia việc</h3><p>Phần lớn sửa chung <code>ChungTuBanHang.tsx</code>, <code>hddt.tsx</code>, <code>HeThong.tsx</code>, <code>app.css</code>.</p><p class="de">Đề xuất 3 việc nối nhau: <b>T784</b> khai báo và ký hiệu cửa hàng; <b>T785</b> form và danh sách bán hàng; <b>T786</b> menu Hoá đơn điện tử 3 tab. Ghi QD106 thay một phần QD102.</p></div>
+      <div class="q"><h3>6. Sửa, xoá chứng từ đã xuất HĐĐT <span class="chip g">Đã chốt</span></h3><p>Chứng từ bán hàng đã xuất HĐĐT không sửa, không xoá. Muốn đổi tiền, hàng, người mua thì lập hoá đơn điều chỉnh hoặc thay thế ở menu Hoá đơn điện tử.</p></div>
+    </div>
+  </section>
+
+  <footer>Bản đề xuất cho repo iaccdemo. Mockup minh hoạ bố cục, chưa phải màn thật.</footer>
+</div>
+
+<script>
+(function(){
+  // Phần 2: công tắc Phát hành HĐĐT và đổi khách, theo bố cục form hiện có
+  var sw=document.getElementById('swPh'), ckKl=document.getElementById('ckKl'), sel=document.getElementById('selKh');
+  var cotHd=document.getElementById('cotHd'), xhd=document.getElementById('xhd'), btn=document.getElementById('btnLuu'), ttc=document.getElementById('ttc');
+  var KH={
+    le:{t:'Khách lẻ',ngd:'Khách lẻ',cty:false,dc:'',mst:''},
+    cn:{t:'Nguyễn Minh Anh',ngd:'Nguyễn Minh Anh',cty:false,dc:'12 Lý Tự Trọng, phường Sài Gòn, TP.HCM',mst:''},
+    cty:{t:'Công ty TNHH Sao Việt',ngd:'Trần Thu Hà',cty:true,dc:'25 Nguyễn Thị Minh Khai, phường Sài Gòn, TP.HCM',mst:'0312456789'}};
+  var MAC='Bán cho người tiêu dùng', bat=true;
+  function ve(){
+    var k=KH[sel.value];
+    document.getElementById('ngd').textContent=k.ngd;
+    document.getElementById('dc').innerHTML=k.dc||'&nbsp;';
+    document.getElementById('mst').innerHTML=k.mst||'&nbsp;';
+    sw.classList.toggle('off',!bat); cotHd.hidden=!bat; xhd.hidden=!bat; document.getElementById('lbKl').hidden=!bat; ttc.classList.toggle('co-hd',bat);
+    btn.textContent=bat?'Lưu và phát hành (Ctrl+S)':'Lưu (Ctrl+S)';
+    document.getElementById('btnLuuThem').textContent=bat?'Lưu, phát hành và thêm (Ctrl+Shift+S)':'Lưu và thêm (Ctrl+Shift+S)';
+    document.getElementById('dHd').hidden=!bat;
+    document.getElementById('xhdS').textContent=ckKl.checked?MAC:(k.cty?k.t+' · MST '+k.mst+' · '+k.ngd:k.t);
+  }
+  function macDinhKl(){ ckKl.checked=bat && !KH[sel.value].cty; ve(); }
+  sw.addEventListener('click',function(e){e.preventDefault();bat=!bat;macDinhKl();});
+  sel.addEventListener('change',macDinhKl); ckKl.addEventListener('change',ve);
+  macDinhKl();
+
+  // Tiện ích ở chân màn xem
+  var bti=document.getElementById('btnTi'), tim=document.getElementById('tiMenu');
+  bti.addEventListener('click',function(e){e.stopPropagation();tim.hidden=!tim.hidden;});
+  document.addEventListener('click',function(){tim.hidden=true;});
+
+  // Ô chọn Mẫu số - Ký hiệu: bấm mở, chọn dòng
+  var cb=document.getElementById('cbKh'), cbl=document.getElementById('cbList');
+  cbl.hidden=true;
+  cb.addEventListener('click',function(){cbl.hidden=!cbl.hidden;});
+  cbl.addEventListener('click',function(e){var i=e.target.closest('.cb-i'); if(!i) return;
+    cbl.querySelectorAll('.cb-i').forEach(function(x){x.classList.toggle('on',x===i)}); cb.textContent=i.querySelector('b').textContent; cbl.hidden=true;});
+
+  // Cá nhân, Công ty: đổi bộ ô theo loại người mua
+  document.addEventListener('change',function(e){
+    var r=e.target; if(r.type!=='radio'||!r.value||!/^(cn|cty)$/.test(r.value)) return;
+    var hop=r.closest('.nm-sua,.modal'); if(!hop) return;
+    hop.querySelectorAll('[data-loai]').forEach(function(g){g.hidden=g.dataset.loai!==r.value});
+  });
+
+  // Menu HĐĐT tab 1: menu dọc ⋯ tại dòng, chọn nhiều chỉ Gửi CQT, Tải XML, Tải PDF
+  var hdBody=document.getElementById('hdBody'), menu=document.getElementById('menu3c'), nutMo=null;
+  var LYDO={ph:'Chỉ hoá đơn dự thảo',xoa:'Chỉ hoá đơn dự thảo',dc:'Chỉ hoá đơn hợp lệ',tt:'Chỉ hoá đơn hợp lệ',tbss:'Chỉ hoá đơn hợp lệ',cqt:'Chỉ ký hiệu máy tính tiền (chữ M thứ 4), chưa gửi hoặc bị từ chối',xml:'Chỉ hoá đơn đã phát hành',pdf:'Chỉ hoá đơn đã phát hành',mail:'Chỉ hoá đơn đã phát hành',share:'Chỉ hoá đơn đã phát hành'};
+  function dongMenu(){ menu.hidden=true; if(nutMo){nutMo.classList.remove('on');nutMo=null;} }
+  hdBody.addEventListener('click',function(e){
+    var b=e.target.closest('.btn-3c'); if(!b) return;
+    if(nutMo===b){dongMenu();return;}
+    dongMenu(); nutMo=b; b.classList.add('on');
+    var bat=b.closest('tr').dataset.act.split(' ');
+    menu.querySelectorAll('button').forEach(function(x){var ok=bat.indexOf(x.dataset.k)>=0; x.disabled=!ok; x.title=ok?'':LYDO[x.dataset.k];});
+    menu.hidden=false;
+    var r=b.getBoundingClientRect(), h=menu.offsetHeight, w=menu.offsetWidth;
+    var top=r.bottom+4; if(top+h>window.innerHeight-8) top=Math.max(8,r.top-h-4);
+    menu.style.top=top+'px'; menu.style.left=Math.max(8,r.right-w)+'px';
+  });
+  document.addEventListener('click',function(e){ if(!menu.hidden&&!e.target.closest('#menu3c,.btn-3c')) dongMenu(); });
+  window.addEventListener('scroll',dongMenu,true);
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape') dongMenu(); });
+  menu.addEventListener('click',function(e){ if(e.target.closest('button:not(:disabled)')) dongMenu(); });
+  hdBody.addEventListener('change',function(){
+    var c=hdBody.querySelectorAll('input:checked').length;
+    hdBody.querySelectorAll('tr').forEach(function(tr){tr.classList.toggle('sel',tr.querySelector('input').checked)});
+    document.getElementById('hdSel').hidden=!c; document.getElementById('hdSelN').textContent='Đã chọn '+c;
+  });
+
+  // Phần 3: chọn dòng, bấm Xuất HĐĐT
+  var body=document.getElementById('dsBody'), bx=document.getElementById('btnXuat'), sb=document.getElementById('selbar'), toast=document.getElementById('toast');
+  function chon(){ return Array.prototype.filter.call(body.querySelectorAll('tr'),function(tr){return tr.querySelector('input').checked}); }
+  function capNhat(){
+    var c=chon(); bx.disabled=!c.length; sb.hidden=!c.length; toast.classList.remove('on');
+    document.getElementById('selN').textContent='Đã chọn '+c.length;
+    body.querySelectorAll('tr').forEach(function(tr){tr.classList.toggle('sel',tr.querySelector('input').checked)});
+  }
+  body.addEventListener('change',capNhat);
+  document.getElementById('boChon').addEventListener('click',function(e){e.preventDefault();body.querySelectorAll('input').forEach(function(i){i.checked=false});capNhat();});
+  bx.addEventListener('click',function(){
+    var c=chon(), da=c.filter(function(tr){return tr.dataset.da}), con=c.length-da.length;
+    if(!con){ toast.textContent='Chứng từ '+da.map(function(t){return t.dataset.so}).join(', ')+' đã xuất hoá đơn điện tử.'; toast.classList.add('on'); return; }
+    toast.textContent=(da.length?'Bỏ qua '+da.length+' chứng từ đã xuất hoá đơn. ':'')+'Mở popup cho '+con+' chứng từ bên dưới.';
+    toast.classList.add('on');
+    document.getElementById('popN').textContent=con;
+    document.getElementById('popNhieu').scrollIntoView({behavior:'smooth',block:'center'});
+  });
+
+  // Phần 4: tab
+  var tabs=document.querySelectorAll('[role=tab]');
+  function mo(t){ tabs.forEach(function(x){x.classList.toggle('on',x===t)}); document.querySelectorAll('[data-p]').forEach(function(p){p.hidden=p.dataset.p!==t.dataset.t}); }
+  tabs.forEach(function(t){ t.addEventListener('click',function(){mo(t)}); t.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();mo(t)}}); });
+})();
+</script>
