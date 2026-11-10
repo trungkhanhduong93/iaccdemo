@@ -4,14 +4,14 @@ import { createPortal } from 'react-dom'
 import { Icon } from '../../ui/Icon'
 import type { Row } from '../types'
 import { gtgtTyLe, type Session } from '../../app/session'
-import { CUA_HANG, HOM_NAY, KHACH, NHAN_VIEN } from '../../data/mock'
+import { CUA_HANG, DON_VI, HOM_NAY, KHACH, NHAN_VIEN } from '../../data/mock'
 import { Select } from '../../ui/Dropdown'
 import { Note } from '../../ui/Page'
-import { dmy, money } from '../../ui/format'
+import { dmy, docSoTien, money } from '../../ui/format'
 import { useDongEsc } from '../../ui/LocNangCao'
 import { ONgay } from '../../ui/ChonNgay'
 import { suaPhieu } from '../../ui/generic/daXoa'
-import { ttNghiepVu } from '../../ui/generic/gen'
+import { ttNghiepVu, type Dong } from '../../ui/generic/gen'
 
 /** Nhà cung cấp hoá đơn điện tử: chỉ kết nối iPOS Invoice (QD106), có thêm nhà cung cấp thì thêm lại ô chọn */
 export const NCC_HDDT = 'iPOS Invoice'
@@ -351,10 +351,10 @@ export function FormKhach({ k, dat, daThu, chiXem }: { k: TtKhach; dat: (p: Part
 }
 
 /** Khung popup phát hành: tiêu đề, nút đóng, thân, chân */
-export function Vo({ rong, hep, tieuDe = 'Xuất hoá đơn điện tử', onDong, chan, children }: { rong?: boolean; hep?: boolean; tieuDe?: ReactNode; onDong: () => void; chan?: ReactNode; children: ReactNode }) {
+export function Vo({ rong, hep, lop, tieuDe = 'Xuất hoá đơn điện tử', onDong, chan, children }: { rong?: boolean; hep?: boolean; lop?: string; tieuDe?: ReactNode; onDong: () => void; chan?: ReactNode; children: ReactNode }) {
   return createPortal(
     <div className="overlay ds-hop-nen" onMouseDown={e => { if (e.target === e.currentTarget) onDong() }}>
-      <div className={`ds-hop hddt-hop${rong ? ' rong' : ''}${hep ? ' hep' : ''}`} role="dialog" aria-modal="true" aria-label={typeof tieuDe === 'string' ? tieuDe : 'Hoá đơn điện tử'}>
+      <div className={`ds-hop hddt-hop${rong ? ' rong' : ''}${hep ? ' hep' : ''}${lop ? ` ${lop}` : ''}`} role="dialog" aria-modal="true" aria-label={typeof tieuDe === 'string' ? tieuDe : 'Hoá đơn điện tử'}>
         <div className="ds-hop-dau"><b>{tieuDe}</b><span className="grow" />
           <button type="button" className="icon-btn" aria-label="Đóng" title="Đóng" onClick={onDong}>×</button></div>
         <div className="hddt-than">{children}</div>
@@ -399,33 +399,251 @@ export function HopNguoiMua({ h, k0, khongLay, ngay0, kyHieu0, onDong, onDongY }
   )
 }
 
-/** Popup xem hoá đơn đã phát hành (T785): mở từ ô Số hoá đơn trên form, cột Trạng thái xuất HĐĐT ở danh sách */
-export function HopXemHd({ s, r, hd, onDong, toast }: { s: Session; r: Row; hd: HdDaXuat; onDong: () => void; toast: (m: string) => void }) {
-  useDongEsc(onDong)
+/** Hoá đơn điện tử lấy từ nhà cung cấp (T789): chưa kết nối, hoặc thông tin hoá đơn chưa khớp (thiếu mã CQT, số, ký hiệu sai)
+ *  thì không lấy được bản hoá đơn, không tải PDF, XML. Trả lý do, lấy được thì null */
+function loiLayHd(s: Session, hd: HdDaXuat): string | null {
+  const h = cauHinhHddt(s)
+  if (!h.bat || !h.daKetNoi) return `Chưa kết nối ${NCC_HDDT} nên không lấy được hoá đơn. Kết nối ở Cấu hình kế toán, thẻ Hoá đơn điện tử`
+  if (!/^\d{8}$/.test(hd.so) || !KY_HIEU_DU.test(hd.mau + hd.kyHieu) || (hd.kyHieu[0] === 'C' && !hd.ma))
+    return `Thông tin hoá đơn số ${hd.so} chưa khớp với ${NCC_HDDT} nên không lấy được bản hoá đơn`
+  return null
+}
+
+/** Thông tin đủ của hoá đơn đã xuất để xem (T789): tiền, người mua, người bán, dòng hàng của chứng từ */
+function ttXemHd(s: Session, r: Row, hd: HdDaXuat) {
+  const h = cauHinhHddt(s)
   const tien = { ...tienCua(r), ...(hd.truoc !== undefined ? { truoc: hd.truoc, thue: hd.thue ?? 0, tong: hd.tong ?? 0 } : {}) }
   const mau2 = hd.mau === '2'
-  const ts = tien.truoc ? Math.round((tien.thue / tien.truoc) * 100) : 0
-  const h = cauHinhHddt(s)
-  const nguoiMua = hd.nguoiMua ?? nguoiMuaMotDong(khachMacDinh(r), khongLayCua(r), h.tenKhachLe)
-  const dong = (nhan: string, gt: ReactNode, lop = '') => <><span>{nhan}</span><b className={lop}>{gt}</b></>
+  // Mẫu 2: tiền thuế trên hoá đơn bằng 0, giảm trừ thuế lấy theo chứng từ, cộng tiền hàng là tổng cộng giảm trừ
+  const giamTru = mau2 ? Number(r.giamThue) || tien.thue : 0
+  const congHang = mau2 ? tien.tong + giamTru : tien.truoc
+  const khongLay = khongLayCua(r)
+  const k: TtKhach = khongLay ? { ...KHACH_TRONG, tenNm: h.tenKhachLe || KHACH_LE_HD } : khachMacDinh(r)
+  const dong = ((r._dong as Dong[] | undefined) ?? []).filter(d => d.ten)
+  return {
+    h, tien, mau2, giamTru, congHang, khongLay, k, dong,
+    ts: tien.truoc ? Math.round((tien.thue / tien.truoc) * 100) : 0,
+    giamCk: dong.reduce((a, d) => a + (d.giam || 0) + (d.ck || 0), 0),
+    phiDv: dong.reduce((a, d) => a + (d.phiDv || 0), 0),
+    dv: DON_VI.find(d => d.id === s.donVi) ?? DON_VI[0],
+    tenMau: TEN_MAU[mau2 ? 2 : 1],
+  }
+}
+type TtXem = ReturnType<typeof ttXemHd>
+const boCach = (v: string) => v.replace(/\s/g, '')
+const ngayChu = (d: string) => { const [n, t, y] = d.split('/'); return `Ngày ${n} tháng ${t} năm ${y}` }
+
+/** Mã QR tra cứu giả lập: 3 ô định vị ở góc, phần còn lại sinh theo số hoá đơn */
+function MaQr({ so }: { so: string }) {
+  const n = 21
+  let hat = Number(so) || 1
+  const o: ReactNode[] = []
+  const goc = (r: number, c: number): number => {
+    for (const [gr, gc] of [[0, 0], [0, 14], [14, 0]]) {
+      const dr = r - gr, dc = c - gc
+      if (dr >= 0 && dr < 7 && dc >= 0 && dc < 7) return dr === 0 || dr === 6 || dc === 0 || dc === 6 || (dr >= 2 && dr <= 4 && dc >= 2 && dc <= 4) ? 1 : 0
+      if (dr >= -1 && dr <= 7 && dc >= -1 && dc <= 7) return 0
+    }
+    return -1
+  }
+  for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) {
+    hat = (hat * 9301 + 49297) % 233280
+    const g = goc(r, c)
+    if (g === 1 || (g === -1 && hat / 233280 > 0.52)) o.push(<rect key={r * n + c} x={c} y={r} width={1.02} height={1.02} />)
+  }
+  return <svg className="hdx-qr" viewBox="-1 -1 23 23" role="img" aria-label="Mã QR tra cứu hoá đơn">{o}</svg>
+}
+
+/** Bản thể hiện hoá đơn điện tử như nhà cung cấp trả về (T789): khung viền, người bán, tiêu đề, ký hiệu, số, mã CQT,
+ *  người mua, bảng hàng có hàng số cột, tổng, bằng chữ, mã QR, chữ ký số người bán */
+function BanHd({ hd, t }: { hd: HdDaXuat; t: TtXem }) {
+  const { k, dv, mau2, tien } = t
+  const cty = k.loai === 'cty' && !t.khongLay
+  const coTs = !mau2
+  const soCot = coTs ? 7 : 6
   return (
-    <Vo hep tieuDe={<>Hoá đơn <span className="code">{hd.mau}{hd.kyHieu}</span> số <span className="code">{hd.so}</span> <span className="ph-tt da">Hợp lệ</span></>}
-      onDong={onDong} chan={<>
-        <button type="button" className="btn" onClick={() => toast(`Đã tải PDF hoá đơn số ${hd.so}`)}>Tải PDF</button>
-        <button type="button" className="btn" onClick={() => toast(`Đã tải XML hoá đơn số ${hd.so}`)}>Tải XML</button>
-        <button type="button" className="btn pri" onClick={() => toast(`Mở hoá đơn số ${hd.so} trên ${NCC_HDDT}`)}>Xem hoá đơn điện tử</button>
-      </>}>
-      <div className="hddt-xem">
-        {dong('Ngày hoá đơn', hd.ngay)}
-        {dong('Hình thức thanh toán', 'TM/CK')}
-        {dong('Người mua', nguoiMua)}
-        {dong('Tiền trước thuế', money(tien.truoc), 'num')}
-        {/* Khấu trừ: thuế suất trên hoá đơn đã là mức giảm, không ghi thêm giảm thuế (QD106) */}
-        {!mau2 && dong('Thuế suất', `${ts}%`)}
-        {dong(mau2 ? 'Giảm trừ thuế' : 'Tiền thuế', money(tien.thue), 'num')}
-        {dong('Tổng tiền thanh toán', money(tien.tong), 'num lon')}
-        {dong('Mã tra cứu · Mã CQT', <span className="code">{hd.traCuu ?? '—'} · {hd.ma}</span>)}
+    <div className="hdx-giay">
+      <div className="hdx-vien"><div className="hdx-vien2">
+        <div className="hdx-ban">
+          <div className="hdx-logo">{dv.viettat}</div>
+          <div>
+            <b className="hdx-ten-ban">{dv.ten}</b>
+            <div>Mã số thuế: <b className="hdx-mst">{boCach(dv.mst)}</b></div>
+            <div>Địa chỉ: {dv.diaChi}</div>
+          </div>
+        </div>
+        <div className="hdx-tieu">
+          <span />
+          <div className="hdx-tieu-giua">
+            <b>{t.tenMau.toUpperCase().replace('GTGT', 'GIÁ TRỊ GIA TĂNG')}</b>
+            <i>(Bản thể hiện của hoá đơn điện tử)</i>
+            <i>{ngayChu(hd.ngay)}</i>
+            {hd.ma && <span>Mã của cơ quan thuế: <b className="code">{hd.ma}</b></span>}
+          </div>
+          <div className="hdx-so">
+            <span>Ký hiệu: <b className="code">{hd.kyHieu}</b></span>
+            <span>Số: <b className="code do">{hd.so}</b></span>
+          </div>
+        </div>
+        <div className="hdx-mua">
+          <div><span>Họ tên người mua hàng:</span><b>{k.tenNm}</b></div>
+          {cty && <div><span>Tên đơn vị:</span><b>{k.tenDv.toUpperCase()}</b></div>}
+          <div><span>Mã số thuế:</span><b className="hdx-mst">{cty ? k.mst : ''}</b>
+            {cty ? <><span>Mã ĐV QHNS:</span><b className="hep">{k.maQhns}</b></> : <><span>CCCD:</span><b className="hep">{k.cccd}</b></>}</div>
+          <div><span>Địa chỉ:</span><b>{k.diaChi}</b></div>
+          <div><span>Hình thức thanh toán:</span><b>TM/CK</b><span>Đồng tiền:</span><b className="hep">VND</b></div>
+        </div>
+        <table className="hdx-bh">
+          <thead>
+            <tr><th>STT</th><th>Tên hàng hoá, dịch vụ</th><th>Đơn vị tính</th><th>Số lượng</th><th>Đơn giá</th>{coTs && <th>Thuế suất</th>}<th>Thành tiền</th></tr>
+            <tr className="cs"><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td>{coTs && <td>6</td>}<td>{coTs ? '7 = 4 x 5' : '6 = 4 x 5'}</td></tr>
+          </thead>
+          <tbody>
+            {t.dong.map((d, i) => (
+              <tr key={i}><td className="g">{i + 1}</td><td>{d.ten}</td><td className="g">{d.dvt}</td><td className="num">{money(d.sl)}</td>
+                <td className="num">{money(d.gia)}</td>{coTs && <td className="g">{d.ts}%</td>}<td className="num">{money(d.tien)}</td></tr>
+            ))}
+            {t.giamCk > 0 && <tr><td className="g">{t.dong.length + 1}</td><td><i>Chiết khấu thương mại</i></td><td /><td /><td />{coTs && <td />}<td className="num">-{money(t.giamCk)}</td></tr>}
+            {t.phiDv > 0 && <tr><td className="g">{t.dong.length + (t.giamCk > 0 ? 2 : 1)}</td><td><i>Phí dịch vụ</i></td><td /><td /><td />{coTs && <td />}<td className="num">{money(t.phiDv)}</td></tr>}
+            <tr className="trong"><td colSpan={soCot} /></tr>
+            <tr><td colSpan={soCot - 1} className="phai">Cộng tiền hàng:</td><td className="num b">{money(t.congHang)}</td></tr>
+            {mau2
+              ? <tr><td colSpan={soCot - 1} className="phai">Giảm trừ thuế (20% mức tỷ lệ % để tính thuế GTGT):</td><td className="num b">-{money(t.giamTru)}</td></tr>
+              : <tr><td colSpan={3}>Thuế suất GTGT: <b>{t.ts}%</b></td><td colSpan={soCot - 4} className="phai">Tiền thuế GTGT:</td><td className="num b">{money(tien.thue)}</td></tr>}
+            <tr><td colSpan={soCot - 1} className="phai b">Tổng tiền thanh toán:</td><td className="num b">{money(tien.tong)}</td></tr>
+            <tr><td colSpan={soCot}>Số tiền viết bằng chữ: <i className="b">{docSoTien(tien.tong)}.</i></td></tr>
+          </tbody>
+        </table>
+        <div className="hdx-ky">
+          <div><b>NGƯỜI MUA HÀNG</b><i>(Chữ ký số (nếu có))</i></div>
+          <div className="hdx-qr-o"><MaQr so={hd.so} /><small>Quét để tra cứu</small></div>
+          <div><b>NGƯỜI BÁN HÀNG</b><i>(Chữ ký điện tử, chữ ký số)</i>
+            <div className="hdx-dau"><Icon n="check" className="ic" />
+              <span><b>Signature Valid</b><br />Ký bởi: {dv.ten.toUpperCase()}<br />Ký ngày: {hd.ngay}</span></div>
+          </div>
+        </div>
+        <div className="hdx-chan-giay">
+          Tra cứu hoá đơn tại trang tra cứu của {NCC_HDDT}{hd.traCuu && <> · Mã tra cứu: <b className="code">{hd.traCuu}</b></>}<br />
+          <i>(Cần kiểm tra, đối chiếu khi lập, giao, nhận hoá đơn)</i>
+        </div>
+      </div></div>
+    </div>
+  )
+}
+
+/** Popup xem hoá đơn đã xuất (T785, T789): mở từ ô Số hoá đơn trên form, cột Trạng thái xuất HĐĐT ở danh sách, menu Hoá đơn điện tử.
+ *  Dải tóm tắt, thẻ Hoá đơn, Người bán, Người mua, bảng hàng hoá và tiền. Nút Xem hoá đơn điện tử mở bản hoá đơn nhà cung cấp trả về */
+export function HopXemHd({ s, r, hd, onDong, toast }: { s: Session; r: Row; hd: HdDaXuat; onDong: () => void; toast: (m: string) => void }) {
+  const [xemBan, setXemBan] = useState(false)
+  const [dangIn, setDangIn] = useState(false)
+  const dongEsc = useCallback(() => (xemBan ? setXemBan(false) : onDong()), [xemBan, onDong])
+  useDongEsc(dongEsc)
+  const t = ttXemHd(s, r, hd)
+  const { k, tien, mau2, dv } = t
+  const loi = loiLayHd(s, hd)
+  /** Thao tác cần bản hoá đơn từ nhà cung cấp: lấy không được thì báo lý do */
+  const layNcc = (lam: () => void) => () => (loi ? toast(loi) : lam())
+  const chep = (ma: string, ten: string) => { void navigator.clipboard?.writeText(ma).catch(() => undefined); toast(`Đã chép ${ten} ${ma}`) }
+  // In: chỉ in vùng hoá đơn, xong thì bỏ lớp in khỏi body
+  useEffect(() => {
+    if (!dangIn) return
+    document.body.classList.add('in-hdx')
+    const xong = () => setDangIn(false)
+    window.addEventListener('afterprint', xong)
+    const r1 = requestAnimationFrame(() => window.print())
+    return () => { cancelAnimationFrame(r1); window.removeEventListener('afterprint', xong); document.body.classList.remove('in-hdx') }
+  }, [dangIn])
+  const daGuiMail = t.h.guiEmail && !t.khongLay && Boolean(k.email)
+  const tieuDe = (ban: boolean) => <>{ban ? 'Hoá đơn điện tử' : t.tenMau} <span className="code">{hd.mau}{hd.kyHieu}</span> số <span className="code hdx-do">{hd.so}</span>
+    <span className="ph-tt da">Hợp lệ</span>{!ban && daGuiMail && <span className="ph-tt hdx-mail">Đã gửi email</span>}</>
+  const nutTai = <>
+    <button type="button" className="xp-btn-outline" onClick={layNcc(() => toast(`Đã tải PDF hoá đơn số ${hd.so}`))}><Icon n="download" className="ic sm" />Tải PDF</button>
+    <button type="button" className="xp-btn-outline" onClick={layNcc(() => toast(`Đã tải XML hoá đơn số ${hd.so}`))}><Icon n="download" className="ic sm" />Tải XML</button>
+  </>
+
+  if (xemBan) return (
+    <Vo lop="hdx hdx-xem-ban" tieuDe={<><button type="button" className="xp-btn-outline xp-btn-ic" title="Quay lại thông tin hoá đơn" aria-label="Quay lại thông tin hoá đơn"
+      onClick={() => setXemBan(false)}><Icon n="chevl" className="ic sm" /></button>{tieuDe(true)}</>} onDong={onDong} chan={<>
+      {nutTai}
+      <button type="button" className="xp-btn-outline" onClick={() => toast(`Đã tạo link chia sẻ PDF hoá đơn số ${hd.so}`)}><Icon n="link" className="ic sm" />Chia sẻ PDF</button>
+      <span className="grow" />
+      <button type="button" className="xp-btn-outline" onClick={onDong}>Đóng</button>
+      <button type="button" className="xp-btn-sua" onClick={() => setDangIn(true)}><Icon n="printer" className="ic sm" />In hoá đơn</button>
+    </>}>
+      <div className="hdx-nen-giay"><BanHd hd={hd} t={t} /></div>
+    </Vo>
+  )
+
+  const o = (nhan: string, gt: ReactNode, lop = '') => <><span>{nhan}</span><b className={lop}>{gt || <em>Không có</em>}</b></>
+  const maChep = (nhan: string, ma: string | undefined, ten: string) => (
+    <div><span>{nhan}</span><b className="hdx-ma">{ma ? <><span className="code">{ma}</span>
+      <button type="button" className="icon-btn" title={`Chép ${ten}`} aria-label={`Chép ${ten}`} onClick={() => chep(ma, ten)}><Icon n="copy" className="ic sm" /></button></> : '—'}</b></div>
+  )
+  return (
+    <Vo lop="hdx" tieuDe={tieuDe(false)} onDong={onDong} chan={<>
+      {nutTai}
+      <span className="grow" />
+      <button type="button" className="xp-btn-outline" onClick={onDong}>Đóng</button>
+      <button type="button" className="xp-btn-sua" onClick={layNcc(() => setXemBan(true))}><Icon n="eye" className="ic sm" />Xem hoá đơn điện tử</button>
+    </>}>
+      <div className="hdx-tom">
+        <div><span>Ngày hoá đơn</span><b>{hd.ngay}</b></div>
+        {maChep('Mã của CQT', hd.ma, 'mã CQT')}
+        {maChep('Mã tra cứu', hd.traCuu, 'mã tra cứu')}
+        <div className="phai"><span>Tổng tiền thanh toán</span><b className="hdx-tong">{money(tien.tong)}</b></div>
       </div>
+      <div className="hdx-hai">
+        <section className="hdx-the">
+          <h4>Hoá đơn</h4>
+          <div className="hdx-luoi">
+            {o('Mẫu số - Ký hiệu', `${hd.mau}${hd.kyHieu} · ${t.tenMau}`)}
+            {o('Số hoá đơn', <span className="code">{hd.so}</span>)}
+            {o('Ngày hoá đơn', hd.ngay)}
+            {o('Hình thức thanh toán', 'TM/CK')}
+            {o('Đồng tiền', 'VND')}
+            {o('Chứng từ gốc', r.so ? <span className="code">{String(r.so)}</span> : '')}
+            {o('Nhà cung cấp', NCC_HDDT)}
+          </div>
+        </section>
+        <section className="hdx-the">
+          <h4>Người bán</h4>
+          <div className="hdx-luoi">
+            {o('Tên đơn vị', dv.ten)}
+            {o('Mã số thuế', <span className="code">{boCach(dv.mst)}</span>)}
+            {o('Địa chỉ', dv.diaChi)}
+            {o('Cửa hàng', String(r.cn ?? ''))}
+            {o('Phương pháp thuế', mau2 ? 'Tỷ lệ % trên doanh thu' : 'Khấu trừ')}
+          </div>
+        </section>
+      </div>
+      <section className="hdx-the">
+        <h4>Người mua <span className="ph-tt">{k.loai === 'cty' ? 'Công ty' : 'Cá nhân'}</span></h4>
+        {t.khongLay
+          ? <div className="hdx-luoi">{o('Tên người mua', k.tenNm)}{o('Ghi chú', 'Người mua không lấy hoá đơn')}</div>
+          : <div className="hdx-hai-cot">
+            <div className="hdx-luoi">
+              {k.loai === 'cty' ? <>{o('Tên đơn vị', k.tenDv)}{o('Mã số thuế', k.mst && <span className="code">{k.mst}</span>)}</>
+                : <>{o('Tên người mua', k.tenNm)}{o('Căn cước công dân', k.cccd)}</>}
+              {o('Địa chỉ', k.diaChi)}
+            </div>
+            <div className="hdx-luoi">
+              {k.loai === 'cty' ? <>{o('Người mua hàng', k.tenNm)}{o('Email nhận hoá đơn', k.email)}{o('Mã ĐV QHNS', k.maQhns)}</>
+                : <>{o('Số điện thoại', k.sdt)}{o('Email nhận hoá đơn', k.email)}{o('Số hộ chiếu', k.hoChieu)}</>}
+            </div>
+          </div>}
+      </section>
+      <section className="hdx-the">
+        <h4>Tiền hoá đơn</h4>
+        <div className="hdx-so-tien">
+          <div><span>{mau2 ? 'Cộng tiền hàng' : 'Tổng tiền trước thuế'}</span><b>{money(t.congHang)}</b></div>
+          {/* Khấu trừ: thuế suất trên hoá đơn đã là mức giảm, không ghi thêm giảm thuế (QD106); mẫu 2 là giảm trừ thuế */}
+          {mau2
+            ? <div><span>Giảm trừ thuế</span><b>-{money(t.giamTru)}</b></div>
+            : <><div><span>Thuế suất GTGT</span><b>{t.ts}%</b></div><div><span>Tiền thuế GTGT</span><b>{money(tien.thue)}</b></div></>}
+          <div className="tong"><span>Tổng tiền thanh toán</span><b>{money(tien.tong)}</b></div>
+        </div>
+        <div className="hdx-chu"><span>Số tiền viết bằng chữ:</span><i>{docSoTien(tien.tong)}.</i></div>
+      </section>
     </Vo>
   )
 }
