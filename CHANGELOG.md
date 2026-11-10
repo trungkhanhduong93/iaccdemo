@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 10/11/2026
+- T785: Bán hàng gói Plus, chứng từ lập tay: công tắc Phát hành HĐĐT thay ô Lập kèm hoá đơn; ô Xuất HĐ cho (Sửa mở thông tin người mua Cá nhân, Công ty) và ô tích Người mua không lấy hoá đơn, tự tích với khách lẻ, cá nhân; ký hiệu lấy theo cửa hàng rồi khai báo chung; dải tổng có Tiền trước thuế, Tiền thuế, Tổng tiền hoá đơn; nút Lưu và phát hành. Chứng từ đã xuất không sửa, không xoá, số hoá đơn bấm mở xem hoá đơn. Danh sách: cột Trạng thái xuất HĐĐT, tích nhiều dòng bấm Xuất HĐĐT, popup sửa ngày, ký hiệu, người mua từng dòng.
 - T784: Hệ thống, Cấu hình kế toán, thẻ Hoá đơn điện tử: chỉ kết nối iPOS Invoice, bỏ ô chọn nhà cung cấp. Thêm tên người mua khi khách không lấy hoá đơn (mặc định "Bán cho người tiêu dùng"), mẫu số và ký hiệu chung, công tắc áp dụng giảm thuế GTGT theo nghị quyết đang khai. Bảng cửa hàng chọn mẫu số, ký hiệu riêng; để trống thì theo khai báo chung. Nhận ký hiệu máy tính tiền (chữ M ở vị trí thứ 4). Popup phát hành lấy mẫu số, ký hiệu theo khai báo này.
 
 ## 09/11/2026

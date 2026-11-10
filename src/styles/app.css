@@ -47526,3 +47526,44 @@ textarea.m-tpb-inp { height: auto; padding: 8px 12px; }
   .ch-hd-dong { grid-template-columns: 1fr 70px 90px; }
   .ch-hd-dong > :last-child { grid-column: 1 / -1; }
 }
+
+/* ── Chứng từ bán hàng lập tay phát hành HĐĐT, popup xuất nhiều, xem hoá đơn (T785) ── */
+.ct-ttc .ct-xhd { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.ct-xhd > span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ct-ttc .ct-kl { display: flex; align-items: center; gap: 6px; margin-left: 120px; font-size: 13px; color: var(--body); cursor: pointer; }
+.ct-kl input { margin: 0; cursor: pointer; }
+.ct-so-hd { display: flex; align-items: center; justify-content: space-between; gap: 6px; background: var(--soft); }
+.ct-so-hd .ct-mat { width: 24px; height: 24px; padding: 0; color: var(--blue); }
+.ct-hd-nhan { display: inline-flex; align-items: center; gap: 4px; height: 24px; padding: 0 10px; border-radius: 12px; font-size: 12.5px; background: var(--green-t); color: var(--green); }
+.ct-hd-nhan b { font-weight: 600; }
+.ct-hd-khoa { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); cursor: help; }
+.ban-phep:has(.ct-tien-hd) { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 8px 16px; }
+.ct-tien-hd { display: flex; align-items: flex-end; gap: 14px; padding: 3px 12px; border: 1px dashed var(--line); border-radius: 8px; font-variant-numeric: tabular-nums; }
+.ct-tien-hd .pos-phep-o { align-items: flex-start; }
+.fsf-f-pos .pos-phep-o.lech b { color: var(--red); }
+.hddt-hop.hep { width: 640px; }
+.hddt-hai { display: grid; grid-template-columns: 1fr 1fr; }
+.hddt-hai > .hddt-o { grid-template-columns: 180px 1fr; }
+.hddt-hai > .hddt-o + .hddt-o { border-top: 0; border-left: 1px solid var(--line); }
+.hddt-kl { display: flex; align-items: center; gap: 6px; font-size: 13.5px; color: var(--body); cursor: pointer; }
+.hddt-kl input { margin: 0; }
+.hddt-xem { display: grid; grid-template-columns: 170px 1fr; gap: 8px 12px; font-size: 13.5px; }
+.hddt-xem > span { color: var(--muted); }
+.hddt-xem > b { color: var(--ink); font-weight: 500; }
+.hddt-xem > b.lon { font-size: 15px; font-weight: 600; }
+.hddt-lo .hddt-dong { grid-template-columns: 110px 130px 110px minmax(260px, 1fr) 110px 100px 110px; align-items: start; min-width: 1000px; }
+.hddt-lo .hddt-dong.hddt-dau, .hddt-lo .hddt-dong.hddt-cong { align-items: center; }
+.hddt-lo .hddt-dong.thieu { box-shadow: inset 3px 0 0 var(--red); }
+.hddt-lo .hddt-dong > span.num { padding-top: 6px; }
+.hddt-lo .hddt-dong > span.code:first-child { padding-top: 6px; }
+.hddt-inp.nho { min-height: 30px; border: 1px solid var(--line); border-radius: 6px; padding: 0 8px; background: var(--white); }
+.hddt-lo .hddt-dong > span.hddt-nm { display: flex; align-items: flex-start; gap: 8px; white-space: normal; }
+.hddt-nm-tt { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; padding-top: 5px; }
+.hddt-nm-tt b { color: var(--ink); font-weight: 600; }
+.hddt-nm-tt small { font-size: 12px; color: var(--muted); }
+.hddt-nm .ph-nut { padding-top: 5px; }
+@media (max-width: 640px) {
+  .hddt-hai { grid-template-columns: 1fr; }
+  .hddt-hai > .hddt-o + .hddt-o { border-left: 0; border-top: 1px solid var(--line); }
+  .ct-ttc .ct-kl { margin-left: 0; }
+}

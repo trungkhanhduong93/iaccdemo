@@ -31,7 +31,7 @@ import { dongTuHang, tinhDong } from './BangHangBan'
 import { HopCotPhieu } from '../../ui/generic/BangSua'
 import { DS_PTTT } from '../danh-muc/data'
 import { cauHinhGiamVat, giamThueHang, giamThueHkd, hangDuocGiam } from './giam-thue'
-import { HopXuatHddt, hdCua, tenHd } from './hddt'
+import { HopXemHd, HopXuatHddt, hdCua, tenHd } from './hddt'
 
 /** Bán hàng ngoài POS: tiệc mang về, khách công ty đặt trước. Lập tay, không qua FABi; là tab Bán hàng 3.1.7 từ gói Plus (T52) */
 export const NGOAI_POS: VoucherCfg = {
@@ -72,7 +72,7 @@ function hangTay(r: Row, tyLe: boolean): Row {
     _cnId: CUA_HANG.find(c => c.ten === r.cn)?.id ?? '', kenh: r.kenh ?? '',
     tenHang: tomTatTenHang(dong.map(d => d.ten)), _tenHangDu: [...new Set(dong.map(d => d.ten))].join(', '),
     tien: dt, thue: tyLe ? 0 : thue, giamThue: giam, tong: tyLe ? dt - giam : dt + thue,
-    hddt: (h => (h ? tenHd(h) : ''))(hdCua(r)), ttPh: hdCua(r) ? 'Đã phát hành' : 'Chưa phát hành',   // T763, T765
+    hddt: (h => (h ? tenHd(h) : ''))(hdCua(r)), ttPh: hdCua(r) ? 'Đã xuất' : 'Chưa xuất',   // T763, T765, T785
     ngayTao: r.ngayTao ?? r._ngayTao, nguoiTao: r.nguoiTao ?? r._nguoiTao }
 }
 
@@ -269,9 +269,9 @@ export function ChungTuBanHang({ sc, mod }: ScreenProps) {
     const hd = hdCua(dongXem)
     return (
       // phát hành xong vẽ lại form để ô Số hoá đơn, Ký hiệu, Ngày hoá đơn lấy số mới (T763)
+      // Đã xuất: nhãn mã tra cứu ở thanh Thanh toán, số hoá đơn ở cột hoá đơn nên bỏ chip HĐ đầu form (T785)
       <ChungTuForm key={`${loc.key}-${hd?.so ?? ''}`} sc={scHien} mod={mod} cfg={BAN_TAY} row={dongXem} rows={rows} hdDienTu
-        metaThem={hd && <span className="chip ok" title={`Mã cơ quan thuế ${hd.ma}, ngày ${hd.ngay}`}><Icon n="receipt" className="ic sm" />HĐ {tenHd(hd)}</span>}
-        chanThem={!hd && <button type="button" className="xp-btn-outline" onClick={() => setMoHd(true)}><Icon n="receipt" className="ic sm" /><span>Xuất hoá đơn điện tử</span></button>}>
+        chanThem={!hd && <button type="button" className="xp-btn-outline" onClick={() => setMoHd(true)}><Icon n="receipt" className="ic sm" /><span>Phát hành HĐĐT</span></button>}>
         {moHd && <HopXuatHddt s={s} man={`${mod.key}/${sc.slug}`} ds={[dongXem]} onDong={() => setMoHd(false)} toast={toast} />}
       </ChungTuForm>
     )
@@ -350,7 +350,7 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
   const [moHopDongBo, setMoHopDongBo] = useState(false)
   const [chon, setChon] = useState<Set<string>>(new Set())   // chọn nhiều chứng từ để xuất hoá đơn điện tử (T763)
   const [moHd, setMoHd] = useState(false)
-  const [hdMot, setHdMot] = useState<Row | null>(null)   // bấm Phát hành trên một dòng (T765)
+  const [xemHd, setXemHd] = useState<Row | null>(null)   // bấm số hoá đơn ở cột Trạng thái xuất HĐĐT (T785)
   const [trang, setTrang] = useState(1)
   const [coTrang, setCoTrang] = useState(20)
   const kieu = kieuGhiSoDv(s)
@@ -494,12 +494,13 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
     ...(plus ? [{ k: 'nguon', t: 'Nguồn', w: 90, r: (r: Row) => { const [c, t] = NGUON[String(r.nguon)] ?? NGUON.tay; return <span className={`src ${c}`}>{t}</span> } } as Col] : []),
     { k: 'ngayTao', t: 'Ngày tạo', w: 140 }, { k: 'nguoiTao', t: 'Người tạo', w: 130 },   // T132
     { k: 'tong', t: 'Tổng tiền', num: true, w: 120, dinh: 'phai' },   // Tổng tiền là cột cuối (T48), cố định bên phải (T239)
-    // T765: Trạng thái phát hành kèm nút Phát hành từng dòng, cố định bên phải cùng Tổng tiền; chỉ ở tab Bán hàng
-    ...(plus && chipTab === 'tay' ? [{ k: 'ttPh', t: 'Trạng thái phát hành', w: 200, dinh: 'phai', r: (r: Row) => r.nguon === 'FABi' ? null
-      : hdCua(r) ? <span className="ph-tt da">Đã phát hành</span>
-      : <span className="ph-o"><span className="ph-tt">Chưa phát hành</span>
-        <button type="button" className="ph-nut" title="Phát hành hoá đơn điện tử cho chứng từ này"
-          onClick={e => { e.stopPropagation(); setHdMot(r) }}>Phát hành</button></span> } as Col] : []),
+    // T785: Trạng thái xuất HĐĐT cố định bên phải cùng Tổng tiền, chỉ ở tab Bán hàng; Đã xuất kèm số hoá đơn bấm mở xem.
+    // Bỏ nút Phát hành từng dòng: tích chọn dòng rồi bấm Xuất HĐĐT trên thanh công cụ
+    ...(plus && chipTab === 'tay' ? [{ k: 'ttPh', t: 'Trạng thái xuất HĐĐT', w: 190, dinh: 'phai', r: (r: Row) => r.nguon === 'FABi' ? null
+      : hdCua(r) ? <span className="ph-o"><span className="ph-tt da">Đã xuất</span>
+        <button type="button" className="ph-nut code" title={`Xem hoá đơn ${tenHd(hdCua(r)!)}`}
+          onClick={e => { e.stopPropagation(); setXemHd(r) }}>{hdCua(r)!.so}</button></span>
+      : <span className="ph-tt">Chưa xuất</span> } as Col] : []),
   ]
   // Thứ tự, ẩn hiện, độ rộng cột lưu theo màn (T41)
   const cot = useCotDs(path, cols, COT_CO_DINH)
@@ -556,9 +557,16 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
             )}
             <div className="ds-toolbar-phai ds-cong-cu-h2">
               {plus && chipTab === 'tay' && (
-                <button type="button" className="btn sm" title="Phát hành hoá đơn điện tử cho các chứng từ lập tay đã chọn"
-                  onClick={() => { if (!chon.size) toast('Chọn chứng từ bán hàng lập tay cần phát hành hoá đơn điện tử'); else setMoHd(true) }}>
-                  <Icon n="receipt" className="ic sm" />Phát hành HĐĐT{chon.size ? ` (${chon.size})` : ''}
+                <button type="button" className="btn sm" title="Xuất hoá đơn điện tử cho các chứng từ lập tay đã chọn"
+                  onClick={() => {
+                    // T785: chỉ chọn dòng đã xuất thì báo; chọn lẫn thì bỏ qua dòng đã xuất, báo số dòng bỏ qua, mở popup cho phần còn lại
+                    const ds = rows.filter(r => chon.has(String(r.id)))
+                    const da = ds.filter(r => hdCua(r) || r.nguon === 'FABi')
+                    if (!ds.length) toast('Chọn chứng từ bán hàng lập tay cần xuất hoá đơn điện tử')
+                    else if (da.length === ds.length) toast(da.length === 1 ? `Chứng từ ${da[0].so} đã xuất hoá đơn điện tử.` : `${da.length} chứng từ đã chọn đều đã xuất hoá đơn điện tử.`)
+                    else { if (da.length) toast(`Bỏ qua ${da.length} chứng từ đã xuất hoá đơn điện tử`); setMoHd(true) }
+                  }}>
+                  <Icon n="receipt" className="ic sm" />Xuất HĐĐT{chon.size ? ` (${chon.size})` : ''}
                 </button>
               )}
               <NutDongBo ten="máy POS" onDongBo={() => setMoHopDongBo(true)} />
@@ -621,9 +629,9 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
         </section>
 
       </div>
-      {moHd && <HopXuatHddt s={s} man={`${mod.key}/${sc.slug}`} ds={rows.filter(r => chon.has(String(r.id)))} toast={toast}
+      {moHd && <HopXuatHddt s={s} man={`${mod.key}/${sc.slug}`} ds={rows.filter(r => chon.has(String(r.id)))} toast={toast} nhieu
         onDong={() => { setMoHd(false); setChon(new Set()) }} />}
-      {hdMot && <HopXuatHddt s={s} man={`${mod.key}/${sc.slug}`} ds={[hdMot]} toast={toast} onDong={() => setHdMot(null)} />}
+      {xemHd && hdCua(xemHd) && <HopXemHd s={s} r={xemHd} hd={hdCua(xemHd)!} toast={toast} onDong={() => setXemHd(null)} />}
       {moHopDongBo && (
         <HopDongBo
           tieuDe="Đồng bộ dữ liệu bán hàng từ máy POS"

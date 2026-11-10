@@ -11,7 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T785 | Hoá đơn điện tử, chứng từ bán hàng lập tay: công tắc Phát hành HĐĐT thay ô Lập kèm hoá đơn, ô Xuất HĐ cho và ô tích Người mua không lấy hoá đơn, popup thông tin người mua Cá nhân/Công ty, tạm tính tiền hoá đơn ở dải tổng, màn xem đã xuất (không sửa, không xoá); danh sách: cột Trạng thái xuất HĐĐT, xuất nhiều chứng từ, popup Thông tin hoá đơn | dinhlanphuongipacc | Đang làm | Làm sau T784. Sửa `ChungTuBanHang.tsx`, `ChungTuForm.tsx`, `hddt.tsx`, `app.css` |
 | T786 | Menu lớn Hoá đơn điện tử trên Kê khai thuế, 3 tab: Hoá đơn điện tử (lọc như danh sách chứng từ, menu thao tác ⋯ từng dòng, chọn nhiều Gửi CQT, Tải XML, Tải PDF), Điều chỉnh thay thế, Thông báo sai sót; bỏ tab 3.1.5, 3.1.6 ở Bán hàng | dinhlanphuongipacc | Chờ | Làm sau T785. Sửa `registry.ts`, `SidebarFlyout.tsx`, `ban-hang/index.ts`, module mới, `app.css` |
 | T781 | Giảm thuế GTGT xét hiệu lực nghị quyết theo ngày của từng chứng từ, không theo ngày làm việc (`ptGiamHienHanh` dùng `HOM_NAY`) | | Chờ | Thấy lúc soát T780, `giam-thue.ts` |
 | T776 | Màn Tính giá vốn: sang trang 2 thì dòng "Cộng 51 dòng" mất đường kẻ dưới, dưới dòng tổng còn khoảng trống trong bảng, dưới khung bảng còn khoảng trống xám | | Chờ | Trum báo lúc làm T774, ảnh chụp ở trang 2, tháng 10/2026 |
