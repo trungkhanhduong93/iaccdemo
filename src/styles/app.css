@@ -47505,3 +47505,24 @@ textarea.m-tpb-inp { height: auto; padding: 8px 12px; }
 .m-tpb-cot .m-tpb-o { width: 100%; }
 /* Ô chữ (Tên thẻ, Số hiệu) giữ rộng hơn ô số */
 .m-tpb-o:not(.co-dv) { flex: 0 1 62%; width: auto; min-width: 150px; }
+
+/* ── Hoá đơn điện tử ở Cấu hình kế toán: kết nối iPOS Invoice, thông tin mặc định, ký hiệu theo cửa hàng (T784) ── */
+.ch-hd-khoi { margin-top: 16px; }
+.ch-hd-khoi > h4 { margin: 0; font-size: 13px; font-weight: 600; color: var(--ink); }
+.ch-hd-khoi .ch-hd-luoi { margin-top: 10px; }
+.ch-hd-khoi .f label em { color: var(--red); font-style: normal; }
+.ch-hd-luoi.ba { grid-template-columns: 3fr 2fr; }
+.ch-hd-luoi.ba > .f:first-child { grid-column: 1 / -1; }
+.ch-hd-giam { display: flex; align-items: center; gap: 10px; margin-top: 12px; color: var(--body); cursor: pointer; }
+.ch-hd-giam.tat { color: var(--muted); cursor: default; }
+.ch-hd-bang { margin-top: 4px; }
+.ch-hd-dong { display: grid; grid-template-columns: minmax(110px, 1fr) 92px 96px minmax(150px, 1.3fr); gap: 8px; align-items: center; margin-top: 8px; }
+.ch-hd-dong.dau { margin-top: 10px; font-size: 12.5px; color: var(--muted); }
+.ch-hd-dong .inp { width: 100%; min-width: 0; }
+.ch-hd-dong > .dim { color: var(--muted); font-size: 12.5px; }
+.ch-hd-dung { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+@media (max-width: 640px) {
+  .ch-hd-luoi.ba { grid-template-columns: 1fr; }
+  .ch-hd-dong { grid-template-columns: 1fr 70px 90px; }
+  .ch-hd-dong > :last-child { grid-column: 1 / -1; }
+}

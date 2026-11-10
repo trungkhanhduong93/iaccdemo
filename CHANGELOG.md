@@ -2,6 +2,9 @@
 
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
+## 10/11/2026
+- T784: Hệ thống, Cấu hình kế toán, thẻ Hoá đơn điện tử: chỉ kết nối iPOS Invoice, bỏ ô chọn nhà cung cấp. Thêm tên người mua khi khách không lấy hoá đơn (mặc định "Bán cho người tiêu dùng"), mẫu số và ký hiệu chung, công tắc áp dụng giảm thuế GTGT theo nghị quyết đang khai. Bảng cửa hàng chọn mẫu số, ký hiệu riêng; để trống thì theo khai báo chung. Nhận ký hiệu máy tính tiền (chữ M ở vị trí thứ 4). Popup phát hành lấy mẫu số, ký hiệu theo khai báo này.
+
 ## 09/11/2026
 - T783: Hộp chào mừng ở Trang chủ có hai nút "Bắt đầu ngay" và "Xem hướng dẫn", thay cho "Bỏ qua" và "Khám phá ngay". Câu thông báo nêu rõ 3 thông tin sẽ xem: Kết quả kinh doanh, Quỹ tiền, Kê khai thuế. Tiêu đề không còn ngắt dòng giữa "iPOS Accounting".
 - T782: Thẻ chi phí phân bổ dư đầu kỳ: lịch phân bổ bắt đầu từ tháng của Ngày bắt đầu làm việc khai ở Hệ thống, Thông tin đơn vị; số kỳ là số tháng còn phân bổ, mỗi kỳ bằng phần còn lại chia đều. Ngày bắt đầu phân bổ của thẻ dư đầu kỳ chỉ xem, cả web và điện thoại. Form thêm, sửa thẻ trên điện thoại có ô số tiền, ô ngày cùng kiểu phiếu thu chi. Danh sách thẻ trên điện thoại có thêm thẻ dư đầu kỳ Chi phí trả trước để thử.

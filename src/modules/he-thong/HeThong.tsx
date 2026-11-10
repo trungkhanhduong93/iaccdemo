@@ -757,7 +757,8 @@ export function CauHinh({ sc }: ScreenProps) {
           </div>
           <Note kind="gray">Áp dụng cho số hiện trên chứng từ, danh sách, báo cáo và cách gõ số ở mọi ô nhập của đơn vị này.</Note>
         </Card>
-        {coHddt && <Card title="Hoá đơn điện tử"><TheCauHinhHddt s={s} h={hd} dat={setHd} toast={toast} /></Card>}
+        {/* Công tắc giảm thuế trên hoá đơn theo nghị quyết đang bật ở thẻ Giảm thuế GTGT (T784) */}
+        {coHddt && <Card title="Hoá đơn điện tử"><TheCauHinhHddt s={s} h={hd} nq={coGiamVat && gv.bat ? dongGv.nq : null} dat={setHd} toast={toast} /></Card>}
         {coGiamVat && (
           <Card title="Giảm thuế GTGT">
             <div className="ch-gv" data-hd="giamVat">
