@@ -82,8 +82,6 @@ const FLYOUT_CONFIG: Record<string, FlyoutData> = {
         { ten: 'Hoá đơn bán hàng', di: '/app/ban-hang/3-1-2' },
         { ten: 'Bán hàng nội bộ', di: '/app/ban-hang/3-1-3' },
         { ten: 'Hàng bán trả lại', di: '/app/ban-hang/3-1-4' },
-        { ten: 'Xuất hoá đơn điện tử', di: '/app/ban-hang/3-1-5' },
-        { ten: 'Điều chỉnh hoá đơn', di: '/app/ban-hang/3-1-6' },
         { ten: 'Đối soát với POS', di: '/app/ban-hang/3-2-2' },
         { ten: 'Sơ đồ quy trình', di: '/app/ban-hang/quy-trinh' },
       ],
@@ -154,6 +152,24 @@ const FLYOUT_CONFIG: Record<string, FlyoutData> = {
         { ten: 'Danh mục kho hàng', di: '/app/danh-muc/1-8' },
         { ten: 'Hàng hoá, nguyên vật liệu', di: '/app/danh-muc/1-2' },
         { ten: 'Báo cáo kho', di: '/app/kho/bao-cao' },
+      ],
+    },
+  },
+  'hoa-don': {
+    trai: {
+      tieuDe: 'Nghiệp vụ',
+      items: [
+        { ten: 'Hoá đơn điện tử', di: '/app/hoa-don/hddt' },
+        { ten: 'Điều chỉnh, thay thế', di: '/app/hoa-don/dieu-chinh' },
+        { ten: 'Thông báo sai sót', di: '/app/hoa-don/sai-sot' },
+      ],
+    },
+    phai: {
+      tieuDe: 'Tiện ích',
+      items: [
+        { ten: 'Chứng từ bán hàng', di: '/app/ban-hang/3-1-1' },
+        { ten: 'Khai báo hoá đơn điện tử', di: '/app/he-thong/cau-hinh' },
+        { ten: 'Bảng kê hoá đơn bán ra', di: '/app/thue/6-2-2' },
       ],
     },
   },

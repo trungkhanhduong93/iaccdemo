@@ -5,7 +5,7 @@ export const quyTrinh: QuyTrinhDef = {
   ten: 'Nghiệp vụ thuế GTGT',
   buoc: [
     { chinh: { ten: 'Nhận hoá đơn đầu vào', icon: 'mail', di: 'tien-ich/11-4', tone: 'hd' },
-      duoi: [{ ten: 'Xuất hoá đơn điện tử', icon: 'receipt', di: 'ban-hang/3-1-5/moi', tone: 'hd' }] },
+      duoi: [{ ten: 'Xuất hoá đơn điện tử', icon: 'receipt', di: 'hoa-don/hddt', tone: 'hd' }] },
     { chinh: { ten: 'Kê khai thuế mua vào', icon: 'filein', di: 'thue/6-1-1/moi' },
       duoi: [{ ten: 'Kê khai thuế bán ra', icon: 'filein', di: 'thue/6-1-2/moi' }] },
     { chinh: { ten: 'Bảng kê mua vào', icon: 'doc', di: 'thue/6-2-1' },

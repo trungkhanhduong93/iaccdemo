@@ -264,6 +264,20 @@ function ghiHd(man: string, id: string, mau: string, kyHieu: string, ngay: strin
 /** Tiền hoá đơn của chứng từ trong danh sách: tổng trừ thuế là trước thuế */
 const tienCua = (r: Row): TienHd => { const tong = Number(r.tong) || 0, thue = Number(r.thue) || 0; return { truoc: tong - thue, thue, tong } }
 
+/** Hoá đơn có sẵn của chứng từ lập tay mẫu (T786): id chứng từ mẫu và số hoá đơn, để menu Hoá đơn điện tử có dòng xem ngay.
+ *  Cửa hàng thứ hai dùng ký hiệu máy tính tiền như khai báo mẫu ở cauHinhHddt */
+const HD_MAU: Record<string, number> = { 'tay-0': 124, 'tay-1': 52 }
+export function hdMau(r: Row, tien: TienHd, tyLe: boolean): Row {
+  const n = HD_MAU[String(r.id)]
+  if (n === undefined || r._hd) return r
+  const k = khachMacDinh(r), khongLay = khongLayCua(r)
+  const kyHieu = CUA_HANG.findIndex(c => c.ten === r.cn) === 1 ? KY_HIEU_MAC_DINH.slice(0, 3) + 'MAB' : KY_HIEU_MAC_DINH
+  const hd: HdDaXuat = { mau: tyLe ? '2' : '1', kyHieu, so: String(n).padStart(8, '0'), ngay: String(r.ngay).split(' ')[0], ma: maCqt(n), traCuu: maTraCuu(n),
+    nguoiMua: nguoiMuaMotDong(k, khongLay, KHACH_LE_HD), ...tien }
+  return { ...r, _hd: hd, _soHd: hd.so, _kyHieuHd: hd.mau + hd.kyHieu, _ngayHd: hd.ngay, _khachHd: khongLay ? { ...KHACH_TRONG, tenNm: KHACH_LE_HD } : k, _khongLayHd: khongLay,
+    ...(khongLay ? {} : { _mst: k.loai === 'cty' ? k.mst : k.cccd, ...(k.diaChi ? { _diaChi: k.diaChi } : {}) }) }
+}
+
 /** Phát hành hoá đơn cho chứng từ vừa lưu ở form lập tay (T785): Lưu và phát hành */
 export function phatHanhHd(s: Session, man: string, id: string, kyHieu7: string, ngay: string, k: TtKhach, khongLay: boolean, tien: TienHd): HdDaXuat {
   return ghiHd(man, id, kyHieu7[0], kyHieu7.slice(1), ngay, k, khongLay, cauHinhHddt(s).tenKhachLe || KHACH_LE_HD, tien)
@@ -310,7 +324,7 @@ export function FormKhach({ k, dat, daThu, chiXem }: { k: TtKhach; dat: (p: Part
 }
 
 /** Khung popup phát hành: tiêu đề, nút đóng, thân, chân */
-function Vo({ rong, hep, tieuDe = 'Phát hành hoá đơn điện tử', onDong, chan, children }: { rong?: boolean; hep?: boolean; tieuDe?: ReactNode; onDong: () => void; chan?: ReactNode; children: ReactNode }) {
+export function Vo({ rong, hep, tieuDe = 'Phát hành hoá đơn điện tử', onDong, chan, children }: { rong?: boolean; hep?: boolean; tieuDe?: ReactNode; onDong: () => void; chan?: ReactNode; children: ReactNode }) {
   return createPortal(
     <div className="overlay ds-hop-nen" onMouseDown={e => { if (e.target === e.currentTarget) onDong() }}>
       <div className={`ds-hop hddt-hop${rong ? ' rong' : ''}${hep ? ' hep' : ''}`} role="dialog" aria-modal="true" aria-label={typeof tieuDe === 'string' ? tieuDe : 'Hoá đơn điện tử'}>

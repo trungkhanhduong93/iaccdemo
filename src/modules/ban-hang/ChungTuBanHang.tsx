@@ -31,7 +31,7 @@ import { dongTuHang, tinhDong } from './BangHangBan'
 import { HopCotPhieu } from '../../ui/generic/BangSua'
 import { DS_PTTT } from '../danh-muc/data'
 import { cauHinhGiamVat, giamThueHang, giamThueHkd, hangDuocGiam } from './giam-thue'
-import { HopXemHd, HopXuatHddt, hdCua, tenHd } from './hddt'
+import { HopXemHd, HopXuatHddt, hdCua, hdMau, tenHd } from './hddt'
 
 /** Bán hàng ngoài POS: tiệc mang về, khách công ty đặt trước. Lập tay, không qua FABi; là tab Bán hàng 3.1.7 từ gói Plus (T52) */
 export const NGOAI_POS: VoucherCfg = {
@@ -51,7 +51,7 @@ const MAU_TAY: [string, number, string, number, number, string, string, [number,
   ['BH2610-0001', 6, '09:15', 0, 0, 'Bán set quà Trung thu', 'excel', [[3, 12, 0, 0, 0]]],
   ['BH2609-0004', 9, '19:45', 0, 3, 'Đặt bàn sinh nhật, thu phí dịch vụ', 'tay', [[0, 15, 0, 0, 10], [5, 15, 0, 0, 10]]],
 ]
-function mauTay(): Row[] {
+export function mauTay(): Row[] {
   const cuoi = DAILY.reduce((a, x) => (x.date > a ? x.date : a), DAILY[0].date)
   return MAU_TAY.map(([so, lui, gio, cn, kh, dienGiai, nguon, ds], i) => {
     const ngay = new Date(cuoi.getFullYear(), cuoi.getMonth(), cuoi.getDate() - lui)
@@ -62,11 +62,12 @@ function mauTay(): Row[] {
   })
 }
 /** Chứng từ lập tay, nhập Excel đổi sang dòng danh sách: tiền tính lại từ dòng hàng, tên món ở cột Diễn giải */
-function hangTay(r: Row, tyLe: boolean): Row {
+export function hangTay(r: Row, tyLe: boolean): Row {
   const dong = (r._dong as Dong[] | undefined) ?? []
   const dt = dong.reduce((a, d) => a + (d.tien || 0) - (d.giam || 0) - (d.ck || 0) + (d.phiDv || 0), 0)
   const thue = dong.reduce((a, d) => a + (d.thue || 0), 0)
   const giam = tyLe ? giamThueHkd(dt) : 0
+  { const tong = tyLe ? dt - giam : dt + thue, thueHd = tyLe ? 0 : thue; r = hdMau(r, { truoc: tong - thueHd, thue: thueHd, tong }, tyLe) }   // hoá đơn mẫu đã phát hành (T786)
   const ngay = String(r.ngay ?? '')
   return { ...r, ngay: ngay.includes(' ') ? ngay : `${ngay} ${String(r._ngayTao ?? '').split(' ')[1] ?? ''}`.trim(),
     _cnId: CUA_HANG.find(c => c.ten === r.cn)?.id ?? '', kenh: r.kenh ?? '',

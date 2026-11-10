@@ -47567,3 +47567,21 @@ textarea.m-tpb-inp { height: auto; padding: 8px 12px; }
   .hddt-hai > .hddt-o + .hddt-o { border-left: 0; border-top: 1px solid var(--line); }
   .ct-ttc .ct-kl { margin-left: 0; }
 }
+
+/* ── Menu Hoá đơn điện tử: danh sách hoá đơn, điều chỉnh thay thế, thông báo sai sót (T786) ── */
+.mi:disabled { opacity: .45; cursor: not-allowed; }
+.mi:disabled:hover { background: transparent; }
+.hddt-thue { display: inline-block; padding: 1px 8px; border-radius: 10px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+.hddt-thue.tot { background: var(--green-t); color: var(--green); }
+.hddt-thue.cho { background: var(--amber-t); color: var(--amber); }
+.hddt-thue.loi { background: var(--red-t); color: var(--red); }
+.hddt-da-chon { font-size: 13px; color: var(--muted); white-space: nowrap; }
+.hddt-menu { display: inline-flex; }
+.hddt-tab { gap: 10px; }
+.hddt-loc { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); white-space: nowrap; }
+.hddt-loc .ds-o-sel { min-width: 170px; }
+.hddt-bang { overflow-x: auto; }
+.hddt-bang .tbl th { white-space: nowrap; }
+.hddt-bang .tbl thead tr:first-child th[colspan] { text-align: center; }
+.hddt-ghi { display: flex; align-items: flex-start; gap: 6px; margin: 4px 0 0; font-size: 13px; color: var(--muted); }
+.hddt-ghi .ic { flex: none; margin-top: 2px; }

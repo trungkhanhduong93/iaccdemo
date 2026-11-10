@@ -20,7 +20,10 @@ const BAO_CAO_MOI = [baoCaoMoi('3-2-6', 'Bán hàng theo ngày', banHangTheoNgay
   baoCaoMoi('3-2-9', 'Công nợ khách hàng', { cols: colsCongNo('kh'), rows: (t, cn) => rowsCongNo('kh', t, cn) }, ['PL', 'PR'])]
 
 /** Nhãn ngắn trên thanh tab */
-const NGAN: Record<string, string> = { '3.1.1': 'Xuất bán POS', '3.1.7': 'Bán hàng', '3.1.2': 'Hoá đơn bán hàng', '3.1.3': 'Bán nội bộ', '3.1.4': 'Hàng bán trả lại', '3.1.5': 'Hoá đơn điện tử', '3.1.6': 'Điều chỉnh, thay thế' }
+const NGAN: Record<string, string> = { '3.1.1': 'Xuất bán POS', '3.1.7': 'Bán hàng', '3.1.2': 'Hoá đơn bán hàng', '3.1.3': 'Bán nội bộ', '3.1.4': 'Hàng bán trả lại' }
+
+/** Tab Hoá đơn điện tử 3.1.5, Điều chỉnh thay thế 3.1.6 chuyển sang menu Hoá đơn điện tử (QD106, T786) */
+const CHUYEN_DI = ['3.1.5', '3.1.6']
 
 const banHang: ModuleDef = {
   key: 'ban-hang', ten: 'Kế toán bán hàng', ngan: 'Bán hàng', icon: 'cart', mod: 2,
@@ -38,15 +41,11 @@ const banHang: ModuleDef = {
     '3.1.4': { voucher: { prefix: 'TL', doiTuong: 'kh', nhan: 'Khách hàng', them: 'Thêm phiếu trả lại', dong: 'hang', dongPos: true,   // cột như Bán hàng (T758)
       tien: [0, 0], nguon: 'FABi', soTT58: 'Sổ doanh thu bán hàng hoá, dịch vụ',
       dienGiai: ['Khách trả lại món làm sai', 'Huỷ đơn sau khi chốt ca'], noCo: [['5111', '1111', 'Giảm doanh thu hàng bán trả lại'], ['33311', '1111', 'Giảm thuế GTGT đầu ra']] } },
-    '3.1.5': { voucher: { prefix: 'C26T', doiTuong: 'kh', nhan: 'Người mua', them: 'Lập hoá đơn', dong: 'hang', tien: [0, 0], nguon: 'HĐ',
-      dienGiai: ['Hoá đơn tổng hợp khách lẻ ngày', 'Hoá đơn khách công ty lấy hoá đơn', 'Hoá đơn tiệc hội nghị'], noCo: [['131', '5111', 'Doanh thu'], ['131', '33311', 'Thuế GTGT đầu ra']] } },
-    '3.1.6': { voucher: { prefix: 'DCHD', doiTuong: 'kh', nhan: 'Người mua', them: 'Lập hoá đơn điều chỉnh', dong: 'hang', tien: [0, 0], nguon: 'HĐ',
-      dienGiai: ['Điều chỉnh giảm đơn giá', 'Thay thế hoá đơn sai mã số thuế người mua'], noCo: [['5111', '131', 'Điều chỉnh giảm doanh thu'], ['33311', '131', 'Điều chỉnh giảm thuế']] } },
     '3.2.1': { report: { kieu: 'bangke', ...baoCaoBanHang } },
     '3.2.2': { kind: 'custom', comp: DoiSoat },
     '3.2.3': { report: { kieu: 'bangke', theoGtgt: true, ...baoCaoDoanhThu } },
     '3.2.4': { report: { kieu: 'bangke' } },
     '3.2.5': { report: SO_BO_SUNG['3.2.5'] },
-  }, NGAN), ...BAO_CAO_MOI],
+  }, NGAN).filter(sc => !CHUYEN_DI.includes(sc.code ?? '')), ...BAO_CAO_MOI],
 }
 export default banHang
