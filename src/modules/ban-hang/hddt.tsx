@@ -211,6 +211,10 @@ function khachMacDinh(r: Row): TtKhach {
 /** Chứng từ ghi người mua không lấy hoá đơn: lấy theo form, chưa lưu thì khách lẻ là không lấy */
 const khongLayCua = (r: Row) => (r._khongLayHd !== undefined ? Boolean(r._khongLayHd) : laKhachLe(String(r.doiTuong ?? '')))
 
+/** Người mua là người tiêu dùng không lấy hoá đơn: cá nhân, tên đúng tên khai báo (vd "Bán cho người tiêu dùng") */
+const laNguoiTieuDung = (k: TtKhach, tenKl: string) => k.loai === 'cn' && k.tenNm.trim() === tenKl && !k.diaChi && !k.sdt && !k.cccd && !k.hoChieu && !k.email
+/** Người mua điền sẵn ở popup Xuất HĐĐT: không lấy hoá đơn thì Cá nhân, tên người mua theo khai báo */
+const khachPopup = (r: Row, tenKl: string): TtKhach => (khongLayCua(r) ? { ...KHACH_TRONG, tenNm: tenKl } : khachMacDinh(r))
 /** Ô bắt buộc còn trống của người mua, đủ thì null */
 export const thieuKhach = (k: TtKhach): string | null => k.loai === 'cty'
   ? (!k.tenDv.trim() ? 'Thiếu tên đơn vị' : !k.diaChi.trim() ? 'Thiếu địa chỉ' : null)
@@ -324,7 +328,7 @@ export function FormKhach({ k, dat, daThu, chiXem }: { k: TtKhach; dat: (p: Part
 }
 
 /** Khung popup phát hành: tiêu đề, nút đóng, thân, chân */
-export function Vo({ rong, hep, tieuDe = 'Phát hành hoá đơn điện tử', onDong, chan, children }: { rong?: boolean; hep?: boolean; tieuDe?: ReactNode; onDong: () => void; chan?: ReactNode; children: ReactNode }) {
+export function Vo({ rong, hep, tieuDe = 'Xuất hoá đơn điện tử', onDong, chan, children }: { rong?: boolean; hep?: boolean; tieuDe?: ReactNode; onDong: () => void; chan?: ReactNode; children: ReactNode }) {
   return createPortal(
     <div className="overlay ds-hop-nen" onMouseDown={e => { if (e.target === e.currentTarget) onDong() }}>
       <div className={`ds-hop hddt-hop${rong ? ' rong' : ''}${hep ? ' hep' : ''}`} role="dialog" aria-modal="true" aria-label={typeof tieuDe === 'string' ? tieuDe : 'Hoá đơn điện tử'}>
@@ -338,18 +342,36 @@ export function Vo({ rong, hep, tieuDe = 'Phát hành hoá đơn điện tử', 
   )
 }
 
-/** Popup Thông tin xuất hoá đơn mở từ link Sửa, Xem ở ô Xuất HĐ cho của form lập tay (T785); chiXem thì chỉ đọc */
-export function HopNguoiMua({ k0, chiXem, onDong, onDongY }: { k0: TtKhach; chiXem?: boolean; onDong: () => void; onDongY?: (k: TtKhach) => void }) {
+/** Popup Thông tin hoá đơn mở từ link Thay đổi thông tin VAT ở form lập tay (T785): Ngày hoá đơn và Mẫu số - Ký hiệu cùng một dòng,
+ *  dưới là Thông tin khách hàng Cá nhân hoặc Công ty. Người mua không lấy hoá đơn thì điền sẵn Cá nhân, tên theo khai báo */
+export function HopNguoiMua({ h, k0, khongLay, ngay0, kyHieu0, onDong, onDongY }: {
+  h: CauHinhHddt; k0: TtKhach; khongLay: boolean; ngay0: string; kyHieu0: string; onDong: () => void
+  onDongY: (x: { k: TtKhach; khongLay: boolean; ngay: string; kyHieu: string }) => void
+}) {
   useDongEsc(onDong)
-  const [k, setK] = useState(k0)
+  const tenKl = h.tenKhachLe || KHACH_LE_HD
+  const [k, setK] = useState<TtKhach>(() => (khongLay ? { ...KHACH_TRONG, tenNm: tenKl } : k0))
+  const [ngay, setNgay] = useState(ngay0)
+  const [kyHieu, setKyHieu] = useState(kyHieu0)
   const [daThu, setDaThu] = useState(false)
-  const dongY = () => { if (thieuKhach(k)) { setDaThu(true); return } onDongY?.(k); onDong() }
+  const dongY = () => {
+    if (!ngay || !KY_HIEU_DU.test(kyHieu) || thieuKhach(k)) { setDaThu(true); return }
+    onDongY({ k, khongLay: laNguoiTieuDung(k, tenKl), ngay, kyHieu }); onDong()
+  }
   return (
-    <Vo hep tieuDe="Thông tin xuất hoá đơn" onDong={onDong} chan={chiXem ? <button type="button" className="btn" onClick={onDong}>Đóng</button> : <>
+    <Vo hep tieuDe="Thông tin hoá đơn" onDong={onDong} chan={<>
       <button type="button" className="btn" onClick={onDong}>Huỷ</button>
       <button type="button" className="btn pri" onClick={dongY}>Đồng ý</button>
     </>}>
-      <FormKhach k={k} dat={p => setK(x => ({ ...x, ...p }))} daThu={daThu} chiXem={chiXem} />
+      <div className="hddt-bang hddt-hai">
+        <Dong nhan="Ngày hoá đơn" bb loi={daThu && !ngay}>
+          <ONgay value={ngay} onChange={setNgay} placeholder="Chọn ngày hoá đơn" inputClassName="hddt-inp" ariaLabel="Ngày hoá đơn" />
+        </Dong>
+        <Dong nhan="Mẫu số - Ký hiệu" bb loi={daThu && !KY_HIEU_DU.test(kyHieu)}>
+          <OKyHieu h={h} id="vat" value={kyHieu} onChange={setKyHieu} />
+        </Dong>
+      </div>
+      <FormKhach k={k} dat={p => setK(x => ({ ...x, ...p }))} daThu={daThu} />
     </Vo>
   )
 }
@@ -372,6 +394,7 @@ export function HopXemHd({ s, r, hd, onDong, toast }: { s: Session; r: Row; hd: 
       </>}>
       <div className="hddt-xem">
         {dong('Ngày hoá đơn', hd.ngay)}
+        {dong('Hình thức thanh toán', 'TM/CK')}
         {dong('Người mua', nguoiMua)}
         {dong('Tiền trước thuế', money(tien.truoc), 'num')}
         {/* Khấu trừ: thuế suất trên hoá đơn đã là mức giảm, không ghi thêm giảm thuế (QD106) */}
@@ -385,12 +408,13 @@ export function HopXemHd({ s, r, hd, onDong, toast }: { s: Session; r: Row; hd: 
 }
 
 /** Popup phát hành hoá đơn điện tử: từ form một chứng từ thì nhập thông tin khách hàng; từ danh sách thì bảng mỗi chứng từ một dòng (T765, T785) */
-export function HopXuatHddt({ s, man, ds, onDong, toast, nhieu }: { s: Session; man: string; ds: Row[]; onDong: () => void; toast: (m: string) => void; nhieu?: boolean }) {
+export function HopXuatHddt({ s, man, ds, onDong, toast }: { s: Session; man: string; ds: Row[]; onDong: () => void; toast: (m: string) => void }) {
   // Giữ danh sách lúc mở: phát hành xong chứng từ đổi trạng thái nhưng popup vẫn hiện đủ để xem kết quả
   const [goc] = useState(ds)
   const duoc = goc.filter(r => r.nguon !== 'FABi' && !hdCua(r))
   const boQua = goc.length - duoc.length
-  if (duoc.length > 1 || (nhieu && duoc.length)) return <HopHangLoat s={s} man={man} ds={duoc} boQua={boQua} onDong={onDong} />
+  // Một chứng từ (chọn một dòng, link Xuất trên dòng, nút ở form) mở form Xuất HĐĐT; từ hai chứng từ mở bảng xuất nhiều (T785)
+  if (duoc.length > 1) return <HopHangLoat s={s} man={man} ds={duoc} boQua={boQua} onDong={onDong} />
   return <HopMot s={s} man={man} r={duoc[0]} boQua={boQua} onDong={onDong} toast={toast} />
 }
 
@@ -399,21 +423,27 @@ function HopMot({ s, man, r, boQua, onDong, toast }: { s: Session; man: string; 
   const h = cauHinhPhatHanh(s)
   const [ngay, setNgay] = useState(dmy(HOM_NAY))
   const [kyHieu, setKyHieu] = useState(r ? kyHieuCua(h, r) : '')   // gồm mẫu số, vd 1C26TAA; mặc định theo Cấu hình kế toán, sửa tay được
-  const [k, setK] = useState<TtKhach>(() => (r ? khachMacDinh(r) : KHACH_TRONG))
-  const [khongLay, setKhongLay] = useState(() => (r ? khongLayCua(r) : false))
-  const [daThu, setDaThu] = useState(false)   // bấm Phát hành rồi mới tô đỏ ô bắt buộc còn trống
+  const tenKl = h.tenKhachLe || KHACH_LE_HD
+  // Khách không lấy hoá đơn (khách lẻ): điền sẵn Cá nhân, tên người mua theo khai báo, vd "Bán cho người tiêu dùng"; sửa được
+  const [k, setK] = useState<TtKhach>(() => (r ? khachPopup(r, tenKl) : KHACH_TRONG))
+  const [daThu, setDaThu] = useState(false)   // bấm Xuất HĐĐT rồi mới tô đỏ ô bắt buộc còn trống
   const dat = (p: Partial<TtKhach>) => setK(x => ({ ...x, ...p }))
   if (!r) return <Vo onDong={onDong}><Note kind="warn">Các chứng từ đã chọn đều đã có hoá đơn hoặc là hoá đơn FABi xuất tại máy POS.</Note></Vo>
   const kyHieuSai = !KY_HIEU_DU.test(kyHieu)
   const phatHanh = () => {
-    if (!ngay || kyHieuSai || (!khongLay && thieuKhach(k))) { setDaThu(true); toast(kyHieuSai ? 'Ký hiệu hoá đơn gồm 7 ký tự, vd 1C26TAA' : 'Nhập đủ các ô có dấu *'); return }
-    const hd = ghiHd(man, String(r.id), kyHieu[0], kyHieu.slice(1), ngay, k, khongLay, h.tenKhachLe || KHACH_LE_HD, tienCua(r))
-    toast(`Đã phát hành hoá đơn ${tenHd(hd)}${h.guiEmail && !khongLay && k.email ? `, đã gửi ${k.email}` : ''}`)
+    if (!ngay || kyHieuSai || thieuKhach(k)) { setDaThu(true); toast(kyHieuSai ? 'Ký hiệu hoá đơn gồm 7 ký tự, vd 1C26TAA' : 'Nhập đủ các ô có dấu *'); return }
+    const khongLay = laNguoiTieuDung(k, tenKl)
+    const hd = ghiHd(man, String(r.id), kyHieu[0], kyHieu.slice(1), ngay, k, khongLay, tenKl, tienCua(r))
+    toast(`Đã xuất hoá đơn ${tenHd(hd)}${h.guiEmail && !khongLay && k.email ? `, đã gửi ${k.email}` : ''}`)
     onDong()
   }
   return (
-    <Vo onDong={onDong} chan={<button type="button" className="btn pri" onClick={phatHanh}>Phát hành HĐĐT</button>}>
-      <div className="hddt-bang">
+    // Popup Xuất HĐĐT (T785): Ngày hoá đơn và Mẫu số - Ký hiệu cùng một dòng, dưới là Thông tin khách hàng Cá nhân hoặc Công ty
+    <Vo hep tieuDe={<>Xuất hoá đơn điện tử · <span className="code">{r.so}</span></>} onDong={onDong} chan={<>
+      <button type="button" className="btn" onClick={onDong}>Huỷ</button>
+      <button type="button" className="btn pri" onClick={phatHanh}>Xuất HĐĐT</button>
+    </>}>
+      <div className="hddt-bang hddt-hai">
         <Dong nhan="Ngày hoá đơn" bb loi={daThu && !ngay}>
           <ONgay value={ngay} onChange={setNgay} placeholder="Chọn ngày hoá đơn" inputClassName="hddt-inp" ariaLabel="Ngày hoá đơn" />
         </Dong>
@@ -421,9 +451,7 @@ function HopMot({ s, man, r, boQua, onDong, toast }: { s: Session; man: string; 
           <OKyHieu h={h} value={kyHieu} onChange={setKyHieu} />
         </Dong>
       </div>
-      <label className="hddt-kl"><input type="checkbox" checked={khongLay} onChange={e => setKhongLay(e.target.checked)} />Người mua không lấy hoá đơn
-        {khongLay && <span className="dim">, người mua trên hoá đơn là “{h.tenKhachLe}”</span>}</label>
-      {!khongLay && <FormKhach k={k} dat={dat} daThu={daThu} />}
+      <FormKhach k={k} dat={dat} daThu={daThu} />
       <div className="hddt-tong"><span>Tổng tiền thanh toán</span><b>{money(Number(r.tong) || 0)}</b></div>
       {boQua > 0 && <Note kind="gray">Bỏ qua {boQua} chứng từ đã có hoá đơn hoặc là hoá đơn FABi.</Note>}
     </Vo>
@@ -510,14 +538,15 @@ function HopHangLoat({ s, man, ds, boQua, onDong }: { s: Session; man: string; d
     const r = ds.find(x => id(x) === sua.id)!
     const datK = (p: Partial<TtKhach>) => setSua(x => (x ? { ...x, nm: { ...x.nm, k: { ...x.nm.k, ...p } } } : x))
     const luu = () => {
-      if (!sua.ngay || !KY_HIEU_DU.test(sua.kyHieu) || (!sua.nm.khongLay && thieuKhach(sua.nm.k))) { setSua({ ...sua, daThu: true }); return }
-      setNm(x => ({ ...x, [sua.id]: sua.nm }))
+      if (!sua.ngay || !KY_HIEU_DU.test(sua.kyHieu) || thieuKhach(sua.nm.k)) { setSua({ ...sua, daThu: true }); return }
+      const moi: NguoiMuaDong = { k: sua.nm.k, khongLay: laNguoiTieuDung(sua.nm.k, tenKl) }
+      setNm(x => ({ ...x, [sua.id]: moi }))
       datRieng(r, { ngay: sua.ngay, kyHieu: sua.kyHieu })
-      suaPhieu(man, sua.id, { _khachHd: sua.nm.k, _khongLayHd: sua.nm.khongLay })
+      suaPhieu(man, sua.id, { _khachHd: moi.k, _khongLayHd: moi.khongLay })
       setSua(null)
     }
     return (
-      <Vo rong tieuDe={<>Thông tin hoá đơn · <span className="code">{r.so}</span></>} onDong={() => setSua(null)} chan={<>
+      <Vo hep tieuDe={<>Thông tin hoá đơn · <span className="code">{r.so}</span></>} onDong={() => setSua(null)} chan={<>
         <button type="button" className="btn" onClick={() => setSua(null)}>Huỷ</button>
         <button type="button" className="btn pri" onClick={luu}>Đồng ý</button>
       </>}>
@@ -529,10 +558,7 @@ function HopHangLoat({ s, man, ds, boQua, onDong }: { s: Session; man: string; d
             <OKyHieu h={h} id="sua" value={sua.kyHieu} onChange={v => setSua(x => (x ? { ...x, kyHieu: v } : x))} />
           </Dong>
         </div>
-        <label className="hddt-kl"><input type="checkbox" checked={sua.nm.khongLay}
-          onChange={e => setSua(x => (x ? { ...x, nm: { ...x.nm, khongLay: e.target.checked } } : x))} />Người mua không lấy hoá đơn
-          {sua.nm.khongLay && <span className="dim">, người mua trên hoá đơn là “{tenKl}”</span>}</label>
-        {!sua.nm.khongLay && <FormKhach k={sua.nm.k} dat={datK} daThu={sua.daThu} />}
+        <FormKhach k={sua.nm.k} dat={datK} daThu={sua.daThu} />
       </Vo>
     )
   }
@@ -543,20 +569,20 @@ function HopHangLoat({ s, man, ds, boQua, onDong }: { s: Session; man: string; d
     const ok = dsKq.length - loi.length
     const chuaGui = ds.length - dsKq.length
     const chan = buoc === 'xong' && <>
-      {loi.length > 0 && <button type="button" className="btn" onClick={() => gui(loi.map(id))}>Phát hành lại {loi.length} dòng lỗi</button>}
+      {loi.length > 0 && <button type="button" className="btn" onClick={() => gui(loi.map(id))}>Xuất lại {loi.length} dòng lỗi</button>}
       <button type="button" className="btn pri" onClick={onDong}>Đóng</button>
     </>
     return (
       <Vo rong onDong={dong} chan={chan}>
         {buoc === 'dang' ? (
           <div className="ph-tien">
-            <span>Đang phát hành {Math.min(daGui + 1, hang.length)}/{hang.length} hoá đơn qua {NCC_HDDT}</span>
+            <span>Đang xuất {Math.min(daGui + 1, hang.length)}/{hang.length} hoá đơn qua {NCC_HDDT}</span>
             <div className="ph-thanh"><i style={{ width: `${Math.round((daGui / hang.length) * 100)}%` }} /></div>
           </div>
         ) : (
           <Note kind={loi.length ? 'warn' : ''} icon={loi.length ? 'info' : 'check'}>
-            Đã phát hành {ok} hoá đơn{loi.length ? `, ${loi.length} hoá đơn lỗi chưa được cấp số` : ''}
-            {chuaGui ? `. ${chuaGui} chứng từ thiếu thông tin vẫn chưa phát hành` : ''}.
+            Đã xuất {ok} hoá đơn{loi.length ? `, ${loi.length} hoá đơn lỗi chưa được cấp số` : ''}
+            {chuaGui ? `. ${chuaGui} chứng từ thiếu thông tin vẫn chưa xuất` : ''}.
           </Note>
         )}
         <div className="hddt-ds hddt-kq">
@@ -569,7 +595,7 @@ function HopHangLoat({ s, man, ds, boQua, onDong }: { s: Session; man: string; d
               <div key={id(r)} className="hddt-dong">
                 <span className="code">{r.so}</span><span title={tenCty(k)}>{khongLay ? '' : tenCty(k)}</span><span title={ten}>{ten}</span>
                 <span className="num">{money(Number(r.tong) || 0)}</span>
-                {x.hd ? <span className="ph-ok" title={`Mã cơ quan thuế ${x.hd.ma}`}>Đã phát hành {tenHd(x.hd)}</span>
+                {x.hd ? <span className="ph-ok" title={`Mã cơ quan thuế ${x.hd.ma}`}>Đã xuất {tenHd(x.hd)}</span>
                   : <span className="ph-loi" title={x.loi}>{x.loi}</span>}
               </div>
             )
@@ -584,7 +610,7 @@ function HopHangLoat({ s, man, ds, boQua, onDong }: { s: Session; man: string; d
     <Vo rong tieuDe={`Xuất hoá đơn điện tử · ${ds.length} chứng từ`} onDong={onDong} chan={<>
       <button type="button" className="btn" onClick={onDong}>Huỷ</button>
       <button type="button" className="btn pri" disabled={!sanSang.length} onClick={() => gui(sanSang.map(id))}>
-        Phát hành {sanSang.length} hoá đơn
+        Xuất {sanSang.length} hoá đơn
       </button>
     </>}>
       <div className="hddt-bang hddt-hai">
@@ -598,7 +624,7 @@ function HopHangLoat({ s, man, ds, boQua, onDong }: { s: Session; man: string; d
             ds={[{ v: '', t: 'Theo cửa hàng của chứng từ' }, ...dsKyHieu(h).map(x => ({ v: x.v, t: `${x.v} · ${x.t}` }))]} />
         </Dong>
       </div>
-      {thieu > 0 && <Note kind="warn">{thieu} chứng từ thiếu thông tin. Bấm Sửa ở dòng đó để bổ sung, chứng từ thiếu thông tin chưa được phát hành.</Note>}
+      {thieu > 0 && <Note kind="warn">{thieu} chứng từ thiếu thông tin. Bấm Sửa ở dòng đó để bổ sung, chứng từ thiếu thông tin chưa được xuất.</Note>}
       <div className="hddt-ds hddt-lo">
         <div className="hddt-dong hddt-dau">
           <span>Số chứng từ</span><span>Ngày hoá đơn</span><span>Mẫu số · Ký hiệu</span><span>Người mua trên hoá đơn</span>
@@ -614,7 +640,7 @@ function HopHangLoat({ s, man, ds, boQua, onDong }: { s: Session; man: string; d
               <span><OKyHieu h={h} id={id(r)} className="hddt-inp nho code" value={kyCua(r)} onChange={v => datRieng(r, { kyHieu: v })} /></span>
               <span className="hddt-nm">
                 <span className="hddt-nm-tt"><ONguoiMua nm={nm[id(r)]} tenKl={tenKl} /></span>
-                <button type="button" className="ph-nut" onClick={() => setSua({ id: id(r), nm: { ...nm[id(r)], k: { ...nm[id(r)].k } }, ngay: ngayCua(r), kyHieu: kyCua(r), daThu: Boolean(loi) })}>Sửa</button>
+                <button type="button" className="ph-nut" onClick={() => setSua({ id: id(r), nm: { ...nm[id(r)], k: nm[id(r)].khongLay ? { ...KHACH_TRONG, tenNm: tenKl } : { ...nm[id(r)].k } }, ngay: ngayCua(r), kyHieu: kyCua(r), daThu: Boolean(loi) })}>Sửa</button>
               </span>
               <span className="num">{money(t.truoc)}</span><span className="num">{money(t.thue)}</span><span className="num">{money(t.tong)}</span>
             </div>

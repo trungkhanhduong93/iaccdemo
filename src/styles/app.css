@@ -47585,3 +47585,13 @@ textarea.m-tpb-inp { height: auto; padding: 8px 12px; }
 .hddt-bang .tbl thead tr:first-child th[colspan] { text-align: center; }
 .hddt-ghi { display: flex; align-items: flex-start; gap: 6px; margin: 4px 0 0; font-size: 13px; color: var(--muted); }
 .hddt-ghi .ic { flex: none; margin-top: 2px; }
+
+/* ── Popup Xuất HĐĐT một chứng từ, Thông tin hoá đơn: nhãn hẹp để Ngày hoá đơn, Mẫu số - Ký hiệu cùng một dòng (T785) ── */
+.hddt-hop.hep { width: 720px; }
+.hddt-hop.hep .hddt-hai > .hddt-o { grid-template-columns: 140px 1fr; }
+.hddt-hai > .hddt-o > span { white-space: nowrap; }
+
+/* ── Form bán hàng lập tay: ô tích Người mua không lấy hoá đơn, cùng dòng canh phải link Thay đổi thông tin VAT (T785) ── */
+.ct-ttc .ct-kl-dong { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-left: 120px; min-height: 24px; }
+.ct-ttc .ct-kl-dong .ct-kl { margin-left: 0; }
+@media (max-width: 640px) { .ct-ttc .ct-kl-dong { margin-left: 0; } }

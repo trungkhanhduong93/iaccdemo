@@ -272,7 +272,7 @@ export function ChungTuBanHang({ sc, mod }: ScreenProps) {
       // phát hành xong vẽ lại form để ô Số hoá đơn, Ký hiệu, Ngày hoá đơn lấy số mới (T763)
       // Đã xuất: nhãn mã tra cứu ở thanh Thanh toán, số hoá đơn ở cột hoá đơn nên bỏ chip HĐ đầu form (T785)
       <ChungTuForm key={`${loc.key}-${hd?.so ?? ''}`} sc={scHien} mod={mod} cfg={BAN_TAY} row={dongXem} rows={rows} hdDienTu
-        chanThem={!hd && <button type="button" className="xp-btn-outline" onClick={() => setMoHd(true)}><Icon n="receipt" className="ic sm" /><span>Phát hành HĐĐT</span></button>}>
+        chanThem={!hd && <button type="button" className="xp-btn-outline" onClick={() => setMoHd(true)}><Icon n="receipt" className="ic sm" /><span>Xuất HĐĐT</span></button>}>
         {moHd && <HopXuatHddt s={s} man={`${mod.key}/${sc.slug}`} ds={[dongXem]} onDong={() => setMoHd(false)} toast={toast} />}
       </ChungTuForm>
     )
@@ -351,6 +351,7 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
   const [moHopDongBo, setMoHopDongBo] = useState(false)
   const [chon, setChon] = useState<Set<string>>(new Set())   // chọn nhiều chứng từ để xuất hoá đơn điện tử (T763)
   const [moHd, setMoHd] = useState(false)
+  const [xuatMot, setXuatMot] = useState<Row | null>(null)   // bấm Xuất trên dòng chưa xuất (T785)
   const [xemHd, setXemHd] = useState<Row | null>(null)   // bấm số hoá đơn ở cột Trạng thái xuất HĐĐT (T785)
   const [trang, setTrang] = useState(1)
   const [coTrang, setCoTrang] = useState(20)
@@ -501,7 +502,10 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
       : hdCua(r) ? <span className="ph-o"><span className="ph-tt da">Đã xuất</span>
         <button type="button" className="ph-nut code" title={`Xem hoá đơn ${tenHd(hdCua(r)!)}`}
           onClick={e => { e.stopPropagation(); setXemHd(r) }}>{hdCua(r)!.so}</button></span>
-      : <span className="ph-tt">Chưa xuất</span> } as Col] : []),
+      // Chưa xuất: link Xuất ngay trên dòng mở popup Xuất HĐĐT của chứng từ đó (T785)
+      : <span className="ph-o"><span className="ph-tt">Chưa xuất</span>
+        <button type="button" className="ph-nut" title="Xuất hoá đơn điện tử cho chứng từ này"
+          onClick={e => { e.stopPropagation(); setXuatMot(r) }}>Xuất</button></span> } as Col] : []),
   ]
   // Thứ tự, ẩn hiện, độ rộng cột lưu theo màn (T41)
   const cot = useCotDs(path, cols, COT_CO_DINH)
@@ -567,7 +571,7 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
                     else if (da.length === ds.length) toast(da.length === 1 ? `Chứng từ ${da[0].so} đã xuất hoá đơn điện tử.` : `${da.length} chứng từ đã chọn đều đã xuất hoá đơn điện tử.`)
                     else { if (da.length) toast(`Bỏ qua ${da.length} chứng từ đã xuất hoá đơn điện tử`); setMoHd(true) }
                   }}>
-                  <Icon n="receipt" className="ic sm" />Xuất HĐĐT{chon.size ? ` (${chon.size})` : ''}
+                  <Icon n="receipt" className="ic sm" />Xuất HĐĐT
                 </button>
               )}
               <NutDongBo ten="máy POS" onDongBo={() => setMoHopDongBo(true)} />
@@ -630,8 +634,9 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
         </section>
 
       </div>
-      {moHd && <HopXuatHddt s={s} man={`${mod.key}/${sc.slug}`} ds={rows.filter(r => chon.has(String(r.id)))} toast={toast} nhieu
+      {moHd && <HopXuatHddt s={s} man={`${mod.key}/${sc.slug}`} ds={rows.filter(r => chon.has(String(r.id)))} toast={toast}
         onDong={() => { setMoHd(false); setChon(new Set()) }} />}
+      {xuatMot && <HopXuatHddt s={s} man={`${mod.key}/${sc.slug}`} ds={[xuatMot]} toast={toast} onDong={() => setXuatMot(null)} />}
       {xemHd && hdCua(xemHd) && <HopXemHd s={s} r={xemHd} hd={hdCua(xemHd)!} toast={toast} onDong={() => setXemHd(null)} />}
       {moHopDongBo && (
         <HopDongBo

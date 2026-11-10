@@ -14,6 +14,15 @@
 - `src/modules/ban-hang/ChungTuBanHang.tsx`: cột đổi tên Trạng thái xuất HĐĐT (Đã xuất kèm số hoá đơn bấm mở xem, Chưa xuất); bỏ nút Phát hành từng dòng; nút Xuất HĐĐT báo chứng từ đã xuất, chọn lẫn thì bỏ qua và báo số dòng bỏ qua. Bỏ chip HĐ ở đầu form, nút chân form chứng từ chưa xuất đổi tên Phát hành HĐĐT.
 - `src/styles/app.css`: mục cuối file "(T785)".
 
+## Sửa sau góp ý (cùng ngày)
+
+- Đổi chữ "Phát hành" thành "Xuất" trên giao diện T785: công tắc Xuất HĐĐT, nút chân form Xuất HĐĐT, Lưu và xuất HĐĐT, popup xuất nhiều "Xuất N hoá đơn".
+- Popup Xuất HĐĐT một chứng từ (nút ở chân form, link Xuất trên dòng Chưa xuất, chọn một dòng rồi bấm Xuất HĐĐT): Ngày hoá đơn và Mẫu số - Ký hiệu cùng một dòng, dưới là Thông tin khách hàng Cá nhân hoặc Công ty. Bỏ ô tích không lấy hoá đơn trong popup: khách không lấy hoá đơn thì điền sẵn Cá nhân, tên "Bán cho người tiêu dùng". Popup Sửa trong xuất nhiều cùng kiểu.
+- Danh sách: nút Xuất HĐĐT bỏ số đếm; dòng Chưa xuất có link Xuất. Chọn từ hai dòng mới mở bảng xuất nhiều.
+- Form: bỏ ô Xuất HĐ cho; dưới Địa chỉ là ô tích Người mua không lấy hoá đơn, cùng dòng canh phải link Thay đổi thông tin VAT mở popup Thông tin hoá đơn (ngày, mẫu số - ký hiệu, người mua).
+- Form bán hàng lập tay bỏ chữ phím tắt trên nút Lưu, Lưu và thêm, Sửa (phím tắt vẫn dùng được).
+- Popup xem hoá đơn thêm Hình thức thanh toán TM/CK: khi xuất HĐĐT mặc định TM/CK, không theo ô Phương thức của chứng từ.
+
 ## Đã kiểm
 
 - `npm run typecheck`: không lỗi.
