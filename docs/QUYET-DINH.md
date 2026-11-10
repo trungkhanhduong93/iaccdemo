@@ -1173,6 +1173,7 @@ dinhlanphuongipacc chốt trên mẫu https://claude.ai/artifact/C62u8HrNKThN4k2
 - Điều chỉnh: chọn Điều chỉnh giảm hoặc Điều chỉnh tăng, nhập số dương, phần mềm tự đổi dấu. Không có điều chỉnh thông tin. Không sinh huỷ bán. Một hoá đơn gốc điều chỉnh được nhiều lần.
 - Dự thảo sửa, xoá được; đã phát hành thì khoá. Hoá đơn gốc chuyển Bị thay thế, Bị điều chỉnh khi hoá đơn mới phát hành. Ký hiệu chữ T phát hành là gửi CQT cấp mã luôn; chỉ ký hiệu chữ M có bước Gửi CQT và trạng thái Chưa gửi TCTN.
 - Ghi sổ ngay khi lưu, kể cả dự thảo, theo ngày phát sinh. Kê khai thuế đưa về kỳ hoá đơn gốc: kỳ gốc chưa nộp tờ khai thì gạch hoá đơn gốc, đưa hoá đơn mới vào bảng kê kỳ gốc; đã nộp thì gợi ý tờ khai bổ sung 01/KHBS.
+- Tab Chi tiết thống nhất ở mọi loại chứng từ: cùng cột, ô nhập, nút Thêm dòng, Thêm hàng loạt, Xoá hết, cùng dải tổng. Hoá đơn thay thế, điều chỉnh dùng lại bảng chi tiết của chứng từ bán hàng, không làm bảng riêng.
 - Bút toán, tài khoản, tab Hạch toán chỉ hiện ở bản Pro.
 - Danh sách chứng từ bán hàng hiện đủ 4 loại, có cột lọc Loại chứng từ. Danh sách hoá đơn điện tử không hiện huỷ bán.
 - Mẫu số tự lấy theo phương pháp tính thuế khai ở Hệ thống, không cho chọn: khấu trừ là 1, trực tiếp theo % doanh thu là 2.

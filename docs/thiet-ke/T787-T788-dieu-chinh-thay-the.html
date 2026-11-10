@@ -248,6 +248,7 @@ td.am{color:var(--red)}
 .xoa-d:hover{color:var(--red);background:var(--red-t)}
 .nut-dong{display:flex;flex-wrap:wrap;gap:8px;padding:8px 12px;border-top:1px solid var(--line)}
 .nut-dong .xoa-het{color:var(--red)}
+input.o-gia.o-sl{width:60px}
 input.o-gia{width:110px;text-align:right;font:inherit;font-size:12.5px}
 input.o-gia:focus-visible{outline:2px solid var(--orange);outline-offset:1px}
 .them-d{color:var(--blue);font-weight:600;text-decoration:none;font-size:12.5px}
@@ -349,7 +350,7 @@ input.o-gia:focus-visible{outline:2px solid var(--orange);outline-offset:1px}
           <div class="tbl-wrap"><table>
             <thead><tr><th>#</th><th>Mã hàng</th><th>Tên hàng</th><th>ĐVT</th><th class="n">SL</th><th class="n">Đơn giá</th><th class="n">Thành tiền</th><th class="n">% thuế</th><th class="n">Tiền thuế</th><th></th></tr></thead>
             <tbody>
-              <tr><td>1</td><td><span class="cell-inp sel">SET-HN</span></td><td>Set hội nghị 50 khách</td><td>Set</td><td class="n">1</td><td class="n"><span class="cell-inp" style="min-width:100px;justify-content:flex-end">2.500.000</span></td><td class="n">2.500.000</td><td class="n">8%</td><td class="n">200.000</td><td><button class="xoa-d" type="button" aria-label="Xoá dòng">✕</button></td></tr>
+              <tr><td>1</td><td><span class="cell-inp sel">SET-HN</span></td><td>Set hội nghị 50 khách</td><td>Set</td><td class="n"><input class="cell-inp o-gia o-sl" inputmode="numeric" value="1" aria-label="Số lượng"></td><td class="n"><input class="cell-inp o-gia" inputmode="numeric" value="2.500.000" aria-label="Đơn giá"></td><td class="n">2.500.000</td><td class="n">8%</td><td class="n">200.000</td><td><button class="xoa-d" type="button" aria-label="Xoá dòng">✕</button></td></tr>
             </tbody>
           </table></div>
           <div class="nut-dong"><button class="btn" type="button">+ Thêm dòng</button><button class="btn" type="button">+ Thêm hàng loạt</button><button class="btn xoa-het" type="button">🗑 Xoá hết</button></div>
@@ -445,12 +446,17 @@ input.o-gia:focus-visible{outline:2px solid var(--orange);outline-offset:1px}
           <div class="tbl-wrap"><table>
             <thead><tr><th>#</th><th>Mã hàng</th><th>Tên hàng</th><th>ĐVT</th><th class="n">SL</th><th class="n">Đơn giá</th><th class="n">Thành tiền</th><th class="n">% thuế</th><th class="n">Tiền thuế</th><th></th></tr></thead>
             <tbody id="dcBody">
-              <tr><td>1</td><td><span class="cell-inp sel">SET-HN</span></td><td>Set hội nghị 50 khách</td><td>Set</td><td class="n">1</td><td class="n"><input class="cell-inp o-gia" id="dcGia" inputmode="numeric" value="2.700.000" aria-label="Đơn giá điều chỉnh"></td><td class="n" data-v>-2.700.000</td><td class="n">8%</td><td class="n" data-t>-216.000</td><td><button class="xoa-d" type="button" aria-label="Xoá dòng">✕</button></td></tr>
+              <tr><td>1</td><td><span class="cell-inp sel">SET-HN</span></td><td>Set hội nghị 50 khách</td><td>Set</td><td class="n"><input class="cell-inp o-gia o-sl" inputmode="numeric" value="1" aria-label="Số lượng"></td><td class="n"><input class="cell-inp o-gia" id="dcGia" inputmode="numeric" value="2.700.000" aria-label="Đơn giá điều chỉnh"></td><td class="n" data-v>-2.700.000</td><td class="n">8%</td><td class="n" data-t>-216.000</td><td><button class="xoa-d" type="button" aria-label="Xoá dòng">✕</button></td></tr>
             </tbody>
           </table></div>
           <div class="nut-dong"><button class="btn" type="button">+ Thêm dòng</button><button class="btn" type="button">+ Thêm hàng loạt</button><button class="btn xoa-het" type="button">🗑 Xoá hết</button></div>
           <div class="dt2">
             <div class="dt2-hd"><div><small>Tiền trước thuế HĐ</small><b id="dcH">-2.700.000</b></div><div><small>Tiền thuế HĐ</small><b id="dcT">-216.000</b></div><div class="tong-hd"><small>Tổng tiền hoá đơn</small><b id="dcS">-2.916.000</b></div></div>
+            <div><small>Tiền hàng</small><b id="dcH2">-2.700.000</b></div><i>−</i>
+            <div><small>Giảm giá</small><b>0</b></div><i>=</i>
+            <div class="nen"><small>Doanh thu tính thuế</small><b id="dcH3">-2.700.000</b></div><i>+</i>
+            <div><small>Thuế GTGT</small><b id="dcT2">-216.000</b></div><i>=</i>
+            <div class="tong"><small>Tổng thanh toán</small><b id="dcS2">-2.916.000 đ</b></div>
           </div>
         </div>
       </div>
@@ -459,6 +465,7 @@ input.o-gia:focus-visible{outline:2px solid var(--orange);outline-offset:1px}
     <ul class="rule">
       <li>Form <b>giống hệt</b> form hoá đơn thay thế: chép y nguyên chứng từ gốc, kể cả thông tin thuế, sửa được mọi thông tin trừ dòng hoá đơn gốc; lý do điều chỉnh trải hết chiều ngang; chân form có Lưu dự thảo và Lưu và phát hành.</li>
       <li><b>Số 3, loại điều chỉnh</b>: dòng đầu tiên của form, trên dòng hoá đơn gốc. Phần mềm tự đổi dấu: điều chỉnh giảm ghi âm, điều chỉnh tăng ghi dương.</li>
+      <li><b>Tab Chi tiết dùng chung một kiểu</b> với chứng từ bán hàng lập tay và mọi loại chứng từ: cùng cột, cùng ô nhập, cùng nút Thêm dòng, Thêm hàng loạt, Xoá hết, cùng dải tổng (nhóm tiền hoá đơn bên trái, tổng chứng từ bên phải). Chỉ khác số liệu.</li>
       <li><b>Chi tiết</b> mang nguyên dòng hàng của hoá đơn gốc. Người dùng sửa thành phần chênh lệch, nhập số dương. Thêm, bớt hàng y như form bán hàng lập tay: chọn mã hàng ở ô Mã hàng, Thêm dòng, Thêm hàng loạt, ✕ xoá từng dòng, Xoá hết. Thử gõ 200000 vào ô đơn giá rồi đổi loại điều chỉnh.</li>
       <li><span class="pro" style="margin:0 4px 0 0">Pro</span> Bút toán ngày 10/11/2026: Nợ 131 / Có 511 <span style="color:var(--red)">-200.000</span>, Nợ 131 / Có 3331 <span style="color:var(--red)">-16.000</span>. Không sinh huỷ bán.</li>
       <li>Một hoá đơn gốc có thể có nhiều hoá đơn điều chỉnh. Hoá đơn gốc và hoá đơn điều chỉnh tham chiếu lẫn nhau.</li>
@@ -569,6 +576,8 @@ input.o-gia:focus-visible{outline:2px solid var(--orange);outline-offset:1px}
     var row=document.querySelector('#dcBody tr');
     row.querySelector('[data-v]').textContent=fm(h); row.querySelector('[data-t]').textContent=fm(t);
     document.getElementById('dcH').textContent=fm(h); document.getElementById('dcT').textContent=fm(t); document.getElementById('dcS').textContent=fm(h+t);
+    ['dcH2','dcH3'].forEach(function(i){document.getElementById(i).textContent=fm(h);});
+    document.getElementById('dcT2').textContent=fm(t); document.getElementById('dcS2').textContent=fm(h+t)+' đ';
   }
   document.querySelectorAll('input[name="ldc"]').forEach(function(r){r.addEventListener('change',tinh);});
   gia.addEventListener('input',tinh);
