@@ -57,7 +57,7 @@ export function mauTay(): Row[] {
     const ngay = new Date(cuoi.getFullYear(), cuoi.getMonth(), cuoi.getDate() - lui)
     const ch = CUA_HANG[cn % CUA_HANG.length]
     const dong: Dong[] = ds.map(([h, sl, pt, ptCk, ptPhiDv]) => tinhDong(dongTuHang(HANG[h % HANG.length], sl), { pt, ptCk, ptPhiDv }))
-    return { id: `tay-${i}`, so, ngay: `${dmy(ngay)} ${gio}`, cn: ch.ten, doiTuong: KHACH[kh % KHACH.length].ten, dienGiai, nguon, tt: 'ghi', _dong: dong,
+    return { id: `tay-${i}`, so, ngay: `${dmy(ngay)} ${gio}`, cn: ch.ten, doiTuong: KHACH[kh % KHACH.length].ten, dienGiai, nguon, tt: 'ghi', _dong: dong, kenh: ['Tại quán', 'Mang về', 'GrabFood'][i % 3],
       _httt: i % 2 ? 'congno' : 'tienmat', _ngayTao: `${dmy(ngay)} ${gio}`, _nguoiTao: nguon === 'excel' ? 'Nhập từ Excel' : 'Hồ Thị Mai' }
   })
 }
@@ -482,6 +482,7 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
       ),
     },
     // T286: Diễn giải là tên món trong phiếu, diễn giải cũ đổi tên Ghi chú
+    { k: 'doiTuong', t: 'Khách hàng', w: 200 },   // T785
     { k: 'tenHang', t: 'Diễn giải', w: 260, r: r => <span title={String(r._tenHangDu ?? '')}>{r.tenHang}</span> },
     { k: 'dienGiai', t: 'Ghi chú' },
     { k: 'kenh', t: 'Kênh bán', w: 140 },   // T113
@@ -634,7 +635,7 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
         </section>
 
       </div>
-      {moHd && <HopXuatHddt s={s} man={`${mod.key}/${sc.slug}`} ds={rows.filter(r => chon.has(String(r.id)))} toast={toast}
+      {moHd && <HopXuatHddt s={s} man={`${mod.key}/${sc.slug}`} ds={rows.filter(r => chon.has(String(r.id)))} toast={toast} nhieu
         onDong={() => { setMoHd(false); setChon(new Set()) }} />}
       {xuatMot && <HopXuatHddt s={s} man={`${mod.key}/${sc.slug}`} ds={[xuatMot]} toast={toast} onDong={() => setXuatMot(null)} />}
       {xemHd && hdCua(xemHd) && <HopXemHd s={s} r={xemHd} hd={hdCua(xemHd)!} toast={toast} onDong={() => setXemHd(null)} />}

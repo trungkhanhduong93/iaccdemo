@@ -1,6 +1,7 @@
 // Xuất hoá đơn điện tử từ chứng từ bán hàng lập tay gói Plus (T763): thiết lập ở Cấu hình kế toán, popup xem trước rồi phát hành
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
+import { Icon } from '../../ui/Icon'
 import type { Row } from '../types'
 import { gtgtTyLe, type Session } from '../../app/session'
 import { CUA_HANG, HOM_NAY, KHACH, NHAN_VIEN } from '../../data/mock'
@@ -215,6 +216,13 @@ const khongLayCua = (r: Row) => (r._khongLayHd !== undefined ? Boolean(r._khongL
 const laNguoiTieuDung = (k: TtKhach, tenKl: string) => k.loai === 'cn' && k.tenNm.trim() === tenKl && !k.diaChi && !k.sdt && !k.cccd && !k.hoChieu && !k.email
 /** Người mua điền sẵn ở popup Xuất HĐĐT: không lấy hoá đơn thì Cá nhân, tên người mua theo khai báo */
 const khachPopup = (r: Row, tenKl: string): TtKhach => (khongLayCua(r) ? { ...KHACH_TRONG, tenNm: tenKl } : khachMacDinh(r))
+/** Tra cứu mã số thuế (giả lập): khách trong danh mục trả tên, địa chỉ đã có; MST 10 hoặc 13 số khác trả một đơn vị mẫu; sai dạng trả null */
+function traCuuMst(mst: string): { tenDv: string; diaChi: string } | null {
+  const so = mst.replace(/[\s-]/g, '')
+  const kh = KHACH.find(x => x.mst.replace(/\s/g, '') === so)
+  if (kh) return { tenDv: kh.ten, diaChi: NGUOI_MUA[kh.ma]?.[0] ?? '' }
+  return /^\d{10}(\d{3})?$/.test(so) ? { tenDv: `Công ty TNHH Thương mại Dịch vụ ${so.slice(-3)}`, diaChi: `${Number(so.slice(-2)) + 1} Nguyễn Huệ, phường Sài Gòn, TP.HCM` } : null
+}
 /** Ô bắt buộc còn trống của người mua, đủ thì null */
 export const thieuKhach = (k: TtKhach): string | null => k.loai === 'cty'
   ? (!k.tenDv.trim() ? 'Thiếu tên đơn vị' : !k.diaChi.trim() ? 'Thiếu địa chỉ' : null)
@@ -295,6 +303,12 @@ function Dong({ nhan, bb, loi, children }: { nhan: string; bb?: boolean; loi?: b
 /** Chọn Cá nhân, Công ty và các ô thông tin khách hàng trên hoá đơn (QD106).
  *  Cá nhân: tên người mua, địa chỉ, số điện thoại, CCCD, số hộ chiếu, email; Công ty: MST (không bắt buộc), tên đơn vị, địa chỉ, tên người mua hàng, email, mã QHNS */
 export function FormKhach({ k, dat, daThu, chiXem }: { k: TtKhach; dat: (p: Partial<TtKhach>) => void; daThu: boolean; chiXem?: boolean }) {
+  const [traMst, setTraMst] = useState<{ loi: boolean; tb: string } | null>(null)   // kết quả tra cứu MST (T785)
+  const tra = () => {
+    const kq = traCuuMst(k.mst)
+    if (!kq) { setTraMst({ loi: true, tb: k.mst.trim() ? `Không tìm thấy mã số thuế ${k.mst.trim()}` : 'Nhập mã số thuế để tra cứu' }); return }
+    dat(kq); setTraMst(null)   // tra được thì điền luôn, không hiện thông báo
+  }
   const o = (key: keyof TtKhach, nhan: string, goiY: string, bb = false) => (
     <Dong nhan={nhan} bb={bb && !chiXem} loi={!chiXem && daThu && bb && !String(k[key]).trim()}>
       <input className="hddt-inp" value={String(k[key])} placeholder={chiXem ? '' : goiY} aria-label={nhan} readOnly={chiXem}
@@ -305,11 +319,19 @@ export function FormKhach({ k, dat, daThu, chiXem }: { k: TtKhach; dat: (p: Part
     <div className="hddt-kh">
       <b>Thông tin khách hàng</b>
       <label><input type="radio" name="hddt-loai" checked={k.loai === 'cn'} disabled={chiXem} onChange={() => dat({ loai: 'cn' })} />Cá nhân</label>
-      <label><input type="radio" name="hddt-loai" checked={k.loai === 'cty'} disabled={chiXem} onChange={() => dat({ loai: 'cty' })} />Công ty</label>
+      <label><input type="radio" name="hddt-loai" checked={k.loai === 'cty'} disabled={chiXem} onChange={() => dat({ loai: 'cty', ...(k.tenNm === KHACH_LE_HD ? { tenNm: '' } : {}) })} />Công ty</label>
     </div>
     <div className="hddt-bang">
       {k.loai === 'cty' ? <>
-        {o('mst', 'Mã số thuế', 'Nhập mã số thuế')}
+        {/* Kính lúp cuối ô Mã số thuế: tra cứu MST, trả về tên đơn vị, địa chỉ (T785) */}
+        <Dong nhan="Mã số thuế" loi={traMst?.loi}>
+          <span className="hddt-mst">
+            <input className="hddt-inp" value={k.mst} placeholder={chiXem ? '' : 'Nhập mã số thuế'} aria-label="Mã số thuế" readOnly={chiXem}
+              onChange={e => { dat({ mst: e.target.value }); setTraMst(null) }} onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); tra() } }} />
+            {!chiXem && <button type="button" className="icon-btn" title="Tra cứu mã số thuế, lấy tên đơn vị, địa chỉ" aria-label="Tra cứu mã số thuế" onClick={tra}>
+              <Icon n="search" className="ic sm" /></button>}
+          </span>
+        </Dong>
         {o('tenDv', 'Tên đơn vị', 'Nhập tên đơn vị', true)}
         {o('diaChi', 'Địa chỉ', 'Nhập địa chỉ', true)}
         {o('tenNm', 'Tên người mua hàng', 'Nhập tên người mua hàng')}
@@ -324,6 +346,7 @@ export function FormKhach({ k, dat, daThu, chiXem }: { k: TtKhach; dat: (p: Part
         {o('email', 'Email nhận hoá đơn', 'Nhập email')}
       </>}
     </div>
+    {k.loai === 'cty' && traMst && <small className={`hddt-tra${traMst.loi ? ' loi' : ''}`}>{traMst.tb}</small>}
   </>
 }
 
@@ -408,13 +431,14 @@ export function HopXemHd({ s, r, hd, onDong, toast }: { s: Session; r: Row; hd: 
 }
 
 /** Popup phát hành hoá đơn điện tử: từ form một chứng từ thì nhập thông tin khách hàng; từ danh sách thì bảng mỗi chứng từ một dòng (T765, T785) */
-export function HopXuatHddt({ s, man, ds, onDong, toast }: { s: Session; man: string; ds: Row[]; onDong: () => void; toast: (m: string) => void }) {
+export function HopXuatHddt({ s, man, ds, onDong, toast, nhieu }: { s: Session; man: string; ds: Row[]; onDong: () => void; toast: (m: string) => void; nhieu?: boolean }) {
   // Giữ danh sách lúc mở: phát hành xong chứng từ đổi trạng thái nhưng popup vẫn hiện đủ để xem kết quả
   const [goc] = useState(ds)
   const duoc = goc.filter(r => r.nguon !== 'FABi' && !hdCua(r))
   const boQua = goc.length - duoc.length
-  // Một chứng từ (chọn một dòng, link Xuất trên dòng, nút ở form) mở form Xuất HĐĐT; từ hai chứng từ mở bảng xuất nhiều (T785)
-  if (duoc.length > 1) return <HopHangLoat s={s} man={man} ds={duoc} boQua={boQua} onDong={onDong} />
+  // Nút Xuất HĐĐT trên danh sách (nhieu) luôn mở bảng: ngày, mẫu số - ký hiệu, thông tin VAT từng chứng từ; dòng nào bấm Thay đổi mới mở form VAT.
+  // Link Xuất trên một dòng, nút ở chân form mở thẳng form Xuất HĐĐT của chứng từ đó (T785)
+  if (duoc.length > 1 || (nhieu && duoc.length)) return <HopHangLoat s={s} man={man} ds={duoc} boQua={boQua} onDong={onDong} />
   return <HopMot s={s} man={man} r={duoc[0]} boQua={boQua} onDong={onDong} toast={toast} />
 }
 
@@ -478,7 +502,7 @@ interface NguoiMuaDong { k: TtKhach; khongLay: boolean }
 /** Ô người mua trên hoá đơn ở popup xuất nhiều: thông tin nào có thì hiện, không có thì ẩn (T785) */
 function ONguoiMua({ nm, tenKl }: { nm: NguoiMuaDong; tenKl: string }) {
   const { k, khongLay } = nm
-  if (khongLay) return <><b>{tenKl}</b><small>Không lấy hoá đơn</small></>
+  if (khongLay) return <b>{tenKl}</b>
   const dong = k.loai === 'cty'
     ? [k.mst && `MST ${k.mst}`, k.diaChi, k.tenNm && `Người mua: ${k.tenNm}`, k.email]
     : [k.diaChi, k.sdt && `SĐT ${k.sdt}`, k.cccd && `CCCD ${k.cccd}`, k.hoChieu && `Hộ chiếu ${k.hoChieu}`, k.email]
@@ -610,7 +634,7 @@ function HopHangLoat({ s, man, ds, boQua, onDong }: { s: Session; man: string; d
     <Vo rong tieuDe={`Xuất hoá đơn điện tử · ${ds.length} chứng từ`} onDong={onDong} chan={<>
       <button type="button" className="btn" onClick={onDong}>Huỷ</button>
       <button type="button" className="btn pri" disabled={!sanSang.length} onClick={() => gui(sanSang.map(id))}>
-        Xuất {sanSang.length} hoá đơn
+        Xuất hoá đơn
       </button>
     </>}>
       <div className="hddt-bang hddt-hai">
@@ -624,7 +648,7 @@ function HopHangLoat({ s, man, ds, boQua, onDong }: { s: Session; man: string; d
             ds={[{ v: '', t: 'Theo cửa hàng của chứng từ' }, ...dsKyHieu(h).map(x => ({ v: x.v, t: `${x.v} · ${x.t}` }))]} />
         </Dong>
       </div>
-      {thieu > 0 && <Note kind="warn">{thieu} chứng từ thiếu thông tin. Bấm Sửa ở dòng đó để bổ sung, chứng từ thiếu thông tin chưa được xuất.</Note>}
+      {thieu > 0 && <Note kind="warn">{thieu} chứng từ thiếu thông tin. Bấm Thay đổi ở dòng đó để bổ sung, chứng từ thiếu thông tin chưa được xuất.</Note>}
       <div className="hddt-ds hddt-lo">
         <div className="hddt-dong hddt-dau">
           <span>Số chứng từ</span><span>Ngày hoá đơn</span><span>Mẫu số · Ký hiệu</span><span>Người mua trên hoá đơn</span>
@@ -640,7 +664,7 @@ function HopHangLoat({ s, man, ds, boQua, onDong }: { s: Session; man: string; d
               <span><OKyHieu h={h} id={id(r)} className="hddt-inp nho code" value={kyCua(r)} onChange={v => datRieng(r, { kyHieu: v })} /></span>
               <span className="hddt-nm">
                 <span className="hddt-nm-tt"><ONguoiMua nm={nm[id(r)]} tenKl={tenKl} /></span>
-                <button type="button" className="ph-nut" onClick={() => setSua({ id: id(r), nm: { ...nm[id(r)], k: nm[id(r)].khongLay ? { ...KHACH_TRONG, tenNm: tenKl } : { ...nm[id(r)].k } }, ngay: ngayCua(r), kyHieu: kyCua(r), daThu: Boolean(loi) })}>Sửa</button>
+                <button type="button" className="ph-nut" onClick={() => setSua({ id: id(r), nm: { ...nm[id(r)], k: nm[id(r)].khongLay ? { ...KHACH_TRONG, tenNm: tenKl } : { ...nm[id(r)].k } }, ngay: ngayCua(r), kyHieu: kyCua(r), daThu: Boolean(loi) })}>Thay đổi</button>
               </span>
               <span className="num">{money(t.truoc)}</span><span className="num">{money(t.thue)}</span><span className="num">{money(t.tong)}</span>
             </div>
@@ -651,7 +675,7 @@ function HopHangLoat({ s, man, ds, boQua, onDong }: { s: Session; man: string; d
           <span className="num">{money(cong(t => t.truoc))}</span><span className="num">{money(cong(t => t.thue))}</span><span className="num">{money(cong(t => t.tong))}</span>
         </div>
       </div>
-      <Note kind="gray">Mỗi chứng từ một hoá đơn. Bấm Sửa ở dòng nào thì mở Thông tin hoá đơn của chứng từ đó; Đồng ý thì lưu luôn vào chứng từ.
+      <Note kind="gray">Mỗi chứng từ một hoá đơn. Bấm Thay đổi ở dòng nào thì mở Thông tin hoá đơn của chứng từ đó; Đồng ý thì lưu luôn vào chứng từ.
         {boQua > 0 ? ` Bỏ qua ${boQua} chứng từ đã xuất hoá đơn hoặc là hoá đơn FABi.` : ''}</Note>
     </Vo>
   )

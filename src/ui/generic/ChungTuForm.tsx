@@ -43,6 +43,7 @@ import { theMauTheoGoc, theMauTheoSo } from '../../modules/ccdc'
 import { useDongLichSu, nhomTheoNgay, IconLoai } from '../mobile/MLichSu'
 import { lyDoKhongXoaThe } from '../../modules/ccdc/the-phan-bo'
 import { xongViecHuongDan } from '../../modules/home/HuongDan'
+import { KENH_BAN } from '../../modules/bao-cao/tt152'
 import { HopNguoiMua, HopXemHd, OKyHieu, cauHinhHddt, hdCua, khachTheoTen, kyHieuDung, kyHieuTheoCh, laKhachCty, phatHanhHd, thieuKhach, type TtKhach } from '../../modules/ban-hang/hddt'
 
 export interface ChungTuFormProps extends ScreenProps {
@@ -275,6 +276,8 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
   // Mọi phiếu không có ô Diễn giải ở đầu phiếu, Ghi chú chép sang diễn giải (T77, T78). Phiếu có ô lý do: Ghi chú mặc định theo lý do; phiếu khác: mặc định là diễn giải
   const ghiChuGoc = () => row?._ghiChu ? String(row._ghiChu) : traTu ? `Trả lại hàng mua theo ${traTu.so}` : !oLy ? (row?.dienGiai ? String(row.dienGiai) : cfg.dienGiai[0]) : row?._lyDo ? String(row._lyDo) : lyGoc(row?.dienGiai ? String(row.dienGiai) : cfg.dienGiai[0])
   const [ghiChu, setGhiChu] = useState(ghiChuGoc)
+  // Kênh bán của chứng từ bán hàng lập tay (T785), bắt buộc: sau này là điều kiện lên kê khai thuế
+  const [kenh, setKenh] = useState(String(row?.kenh ?? (hdDienTu && moi ? KENH_BAN[0] : '')))
   useEffect(() => { setGhiChu(ghiChuGoc()) }, [loai?.k, row?.id])
   function chonLyDo(v: string) {
     setLyDo(v)
@@ -492,6 +495,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
     if (laTien && canDt && !doiTuong.trim()) { toast(`Chọn đối tượng cho lý do ${lyDo}`); return }
     if (traNoNcc && !traNo.length) { toast('Chọn phiếu mua cần thanh toán ở tab Chi tiết'); return }   // T718
     if (khoGon && !kho) { toast(laNk ? 'Chọn Kho nhập' : 'Chọn Kho xuất'); return }   // T737, T741
+    if (hdDienTu && !kenh) { toast('Chọn Kênh bán'); return }   // T785
     // Phiếu sản xuất (T152): bắt buộc kho, phiếu nhập bắt buộc tham chiếu, phải có dòng
     if (laSx) {
       const thieu = sxNhap && !thamChieuSx.id ? 'Chọn phiếu tham chiếu' : !kho ? `Chọn ${sxNhap ? 'Kho nhập' : 'Kho xuất'}` : !dsDong.length ? 'Phiếu chưa có dòng hàng nào' : ''
@@ -525,7 +529,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
       _nhanKemHd: nhanKemHd, _soHd: soHd, _ngayHd: ngayHd, _kyHieuHd: kyHieuHd, _httt: hinhThucTt, _ctTt: ctTt,
       ...(nhom === 'ban' && hinhThucTt !== 'congno' ? { _pttt: pttt } : {}),
       ...(nhom === 'cq' ? { _tuQuy: tuQuy, _denQuy: denQuy } : {}),   // T779
-      ...(hdDienTu ? { _khachHd: khachHd, _khongLayHd: khongLayHd } : {}),   // người mua trên hoá đơn (T785)
+      ...(hdDienTu ? { _khachHd: khachHd, _khongLayHd: khongLayHd, kenh } : {}),   // người mua trên hoá đơn (T785)
       ...(dsDc ? { _dsDc: dsDc } : {}),
       ...(coCpMua ? { _cpMua: cpCo ? cpMua : 0 } : {}),
       ...(traTu ? { _thamChieu: traTu.so, _thamChieuDi: traTu.di, _traTuMua: traTu.id } : {}),   // T727
@@ -1312,6 +1316,13 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
                 )}
               </div>}
               {muaBan && oNguoi}
+              {hdDienTu && (
+                <div className="f">
+                  <label>Kênh bán <em>*</em></label>
+                  {dangSua ? <Select className="inp" value={kenh} onChange={e => setKenh(e.target.value)} aria-label="Kênh bán" ds={(kenh && !KENH_BAN.includes(kenh) ? [kenh, ...KENH_BAN] : KENH_BAN).map(v => ({ v, t: v }))} />
+                    : <input className="inp" readOnly value={kenh} />}
+                </div>
+              )}
               {!keoGc && oGhiChu}
             </div>
 

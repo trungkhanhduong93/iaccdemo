@@ -23,6 +23,13 @@
 - Form bán hàng lập tay bỏ chữ phím tắt trên nút Lưu, Lưu và thêm, Sửa (phím tắt vẫn dùng được).
 - Popup xem hoá đơn thêm Hình thức thanh toán TM/CK: khi xuất HĐĐT mặc định TM/CK, không theo ô Phương thức của chứng từ.
 
+## Sửa sau góp ý, lượt 2
+
+- Danh sách thêm cột Khách hàng; chứng từ mẫu lập tay có Kênh bán.
+- Form thêm mới có ô Kênh bán (bắt buộc, danh sách `KENH_BAN` ở `bao-cao/tt152.ts`), sau này là điều kiện lên kê khai thuế.
+- Nút Xuất HĐĐT trên danh sách luôn mở bảng xuất nhiều, kể cả chọn một dòng; dòng nào bấm Thay đổi mới mở form thông tin VAT. Link Xuất trên dòng và nút ở chân form mở thẳng form VAT. Nút cuối bảng là "Xuất hoá đơn", bỏ số đếm; bỏ chữ "Không lấy hoá đơn" dưới tên người mua; cột Người mua trên hoá đơn rộng hơn.
+- Form thông tin VAT: kính lúp cuối ô Mã số thuế tra cứu (giả lập `traCuuMst`), điền tên đơn vị, địa chỉ; không tìm thấy thì báo đỏ.
+
 ## Đã kiểm
 
 - `npm run typecheck`: không lỗi.

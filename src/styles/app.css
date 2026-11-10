@@ -47589,9 +47589,20 @@ textarea.m-tpb-inp { height: auto; padding: 8px 12px; }
 /* ── Popup Xuất HĐĐT một chứng từ, Thông tin hoá đơn: nhãn hẹp để Ngày hoá đơn, Mẫu số - Ký hiệu cùng một dòng (T785) ── */
 .hddt-hop.hep { width: 720px; }
 .hddt-hop.hep .hddt-hai > .hddt-o { grid-template-columns: 140px 1fr; }
-.hddt-hai > .hddt-o > span { white-space: nowrap; }
+.hddt-hop.hep .hddt-hai > .hddt-o > span { white-space: nowrap; }
 
 /* ── Form bán hàng lập tay: ô tích Người mua không lấy hoá đơn, cùng dòng canh phải link Thay đổi thông tin VAT (T785) ── */
 .ct-ttc .ct-kl-dong { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-left: 120px; min-height: 24px; }
 .ct-ttc .ct-kl-dong .ct-kl { margin-left: 0; }
 @media (max-width: 640px) { .ct-ttc .ct-kl-dong { margin-left: 0; } }
+
+/* ── Form thông tin VAT: kính lúp cuối ô Mã số thuế tra cứu tên đơn vị, địa chỉ (T785) ── */
+.hddt-mst { display: flex; align-items: center; min-width: 0; }
+.hddt-mst .hddt-inp { flex: 1; min-width: 0; }
+.hddt-mst .icon-btn { width: 32px; height: 32px; margin-right: 4px; color: var(--blue); }
+.hddt-tra { font-size: 12.5px; color: var(--green); margin-top: -6px; }
+.hddt-tra.loi { color: var(--red); }
+
+/* ── Bảng xuất nhiều hoá đơn: cột Người mua trên hoá đơn rộng cho tên công ty, MST, địa chỉ (T785) ── */
+.hddt-hop.rong:has(.hddt-lo) { width: 1200px; }
+.hddt-lo .hddt-dong { grid-template-columns: 110px 130px 100px minmax(380px, 1fr) 105px 95px 110px; min-width: 1080px; }
