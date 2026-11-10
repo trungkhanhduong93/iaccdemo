@@ -246,6 +246,10 @@ td.am{color:var(--red)}
 .lf.lydo{grid-column:1/-1}
 .xoa-d{border:0;background:none;color:var(--faint);cursor:pointer;font-size:12px;padding:2px 6px;border-radius:4px}
 .xoa-d:hover{color:var(--red);background:var(--red-t)}
+.nut-dong{display:flex;flex-wrap:wrap;gap:8px;padding:8px 12px;border-top:1px solid var(--line)}
+.nut-dong .xoa-het{color:var(--red)}
+input.o-gia{width:110px;text-align:right;font:inherit;font-size:12.5px}
+input.o-gia:focus-visible{outline:2px solid var(--orange);outline-offset:1px}
 .them-d{color:var(--blue);font-weight:600;text-decoration:none;font-size:12.5px}
 .pro{display:inline-flex;align-items:center;height:20px;padding:0 8px;border-radius:999px;font-size:11px;font-weight:700;background:var(--tint);color:var(--blue);vertical-align:middle;margin-left:6px}
 </style>
@@ -345,10 +349,10 @@ td.am{color:var(--red)}
           <div class="tbl-wrap"><table>
             <thead><tr><th>#</th><th>Mã hàng</th><th>Tên hàng</th><th>ĐVT</th><th class="n">SL</th><th class="n">Đơn giá</th><th class="n">Thành tiền</th><th class="n">% thuế</th><th class="n">Tiền thuế</th><th></th></tr></thead>
             <tbody>
-              <tr><td>1</td><td>SET-HN</td><td>Set hội nghị 50 khách</td><td>Set</td><td class="n">1</td><td class="n"><span class="cell-inp" style="min-width:100px;justify-content:flex-end">2.500.000</span></td><td class="n">2.500.000</td><td class="n">8%</td><td class="n">200.000</td><td><button class="xoa-d" type="button" aria-label="Xoá dòng">✕</button></td></tr>
-              <tr><td colspan="10"><a href="#d2" class="them-d">+ Thêm dòng</a></td></tr>
+              <tr><td>1</td><td><span class="cell-inp sel">SET-HN</span></td><td>Set hội nghị 50 khách</td><td>Set</td><td class="n">1</td><td class="n"><span class="cell-inp" style="min-width:100px;justify-content:flex-end">2.500.000</span></td><td class="n">2.500.000</td><td class="n">8%</td><td class="n">200.000</td><td><button class="xoa-d" type="button" aria-label="Xoá dòng">✕</button></td></tr>
             </tbody>
           </table></div>
+          <div class="nut-dong"><button class="btn" type="button">+ Thêm dòng</button><button class="btn" type="button">+ Thêm hàng loạt</button><button class="btn xoa-het" type="button">🗑 Xoá hết</button></div>
           <div class="dt2">
             <div class="dt2-hd"><div><small>Tiền trước thuế HĐ</small><b>2.500.000</b></div><div><small>Tiền thuế HĐ</small><b>200.000</b></div><div class="tong-hd"><small>Tổng tiền hoá đơn</small><b>2.700.000</b></div></div>
             <div><small>Tiền hàng</small><b>2.500.000</b></div><i>−</i>
@@ -359,7 +363,7 @@ td.am{color:var(--red)}
           </div>
         </div>
       </div>
-      <div class="modal-f xp-f"><button class="btn" type="button">Huỷ</button><span class="grow"></span><button class="btn" type="button">Lưu dự thảo (Ctrl+S)</button><button class="btn p" type="button">Lưu và phát hành (Ctrl+Shift+S)</button></div>
+      <div class="modal-f xp-f"><button class="btn" type="button">Huỷ</button><span class="grow"></span><button class="btn" type="button">Lưu dự thảo</button><button class="btn p" type="button">Lưu và phát hành</button></div>
     </div>
     <ul class="rule">
       <li><b>Form giống hệt chứng từ bán hàng lập tay</b>: thanh Thanh toán, khối thông tin chung, cột hoá đơn, tab Chi tiết, dải tổng, chân form. Mở ra là đã chép y nguyên chứng từ gốc, kể cả thuế suất, tiền thuế, thông tin xuất hoá đơn.</li>
@@ -418,6 +422,11 @@ td.am{color:var(--red)}
     <div class="screen">
       <div class="scr-cap"><span>Bán hàng › Hoá đơn điều chỉnh (thêm mới) · HDDC2611-0001 · Phố Mây Nha Trang</span><span>giống hệt form hoá đơn thay thế ở trên, chỉ vẽ phần khác</span></div>
       <div class="frm">
+        <div class="fcard frow moi" role="radiogroup" aria-label="Loại điều chỉnh"><span class="tag">3</span>
+          <b class="sm-t">Loại điều chỉnh:</b>
+          <label class="ck"><input type="radio" name="ldc" value="giam" checked> Điều chỉnh giảm</label>
+          <label class="ck"><input type="radio" name="ldc" value="tang"> Điều chỉnh tăng</label>
+        </div>
         <div class="fcard goc-txt">
           <span><b>Điều chỉnh cho hoá đơn</b> mẫu số 1, ký hiệu <span class="code">C26TAA</span>, số <span class="code">00000121</span>, ngày 28/10/2026 · Mã tra cứu <span class="code">PM2Q7Z1TRB</span> · Chứng từ <a href="#d3">BH2610-0003</a></span>
           <a href="#d3">Xem hoá đơn gốc 👁</a>
@@ -427,11 +436,6 @@ td.am{color:var(--red)}
           <label class="ck"><input type="radio" name="tt3" checked> Chưa thanh toán</label>
           <label class="ck"><input type="radio" name="tt3"> Tiền mặt ngay</label>
           <label class="ck"><input type="radio" name="tt3"> Chuyển khoản ngay</label>
-          <span class="grow"></span>
-          <span class="ldc moi" role="radiogroup" aria-label="Loại điều chỉnh" style="padding:2px 6px"><span class="tag">3</span>
-            <label class="ck"><input type="radio" name="ldc" value="giam" checked> Điều chỉnh giảm</label>
-            <label class="ck"><input type="radio" name="ldc" value="tang"> Điều chỉnh tăng</label>
-          </span>
         </div>
         <div class="fcard ttc">
           <div class="lf lydo"><span>Lý do điều chỉnh <em>*</em></span><div class="inp hi">Giảm giá 200.000 cho set hội nghị do phục vụ trễ 30 phút, khách đồng ý theo biên bản ngày 05/11/2026</div></div>
@@ -441,20 +445,21 @@ td.am{color:var(--red)}
           <div class="tbl-wrap"><table>
             <thead><tr><th>#</th><th>Mã hàng</th><th>Tên hàng</th><th>ĐVT</th><th class="n">SL</th><th class="n">Đơn giá</th><th class="n">Thành tiền</th><th class="n">% thuế</th><th class="n">Tiền thuế</th><th></th></tr></thead>
             <tbody id="dcBody">
-              <tr><td>1</td><td>SET-HN</td><td>Set hội nghị 50 khách</td><td>Set</td><td class="n">1</td><td class="n"><span class="cell-inp" style="min-width:100px;justify-content:flex-end">200.000</span></td><td class="n" data-v>-200.000</td><td class="n">8%</td><td class="n" data-t>-16.000</td><td><button class="xoa-d" type="button" aria-label="Xoá dòng">✕</button></td></tr>
-              <tr><td colspan="10"><a href="#d3" class="them-d">+ Thêm dòng</a></td></tr>
+              <tr><td>1</td><td><span class="cell-inp sel">SET-HN</span></td><td>Set hội nghị 50 khách</td><td>Set</td><td class="n">1</td><td class="n"><input class="cell-inp o-gia" id="dcGia" inputmode="numeric" value="2.700.000" aria-label="Đơn giá điều chỉnh"></td><td class="n" data-v>-2.700.000</td><td class="n">8%</td><td class="n" data-t>-216.000</td><td><button class="xoa-d" type="button" aria-label="Xoá dòng">✕</button></td></tr>
             </tbody>
           </table></div>
+          <div class="nut-dong"><button class="btn" type="button">+ Thêm dòng</button><button class="btn" type="button">+ Thêm hàng loạt</button><button class="btn xoa-het" type="button">🗑 Xoá hết</button></div>
           <div class="dt2">
-            <div class="dt2-hd"><div><small>Tiền trước thuế HĐ</small><b id="dcH">-200.000</b></div><div><small>Tiền thuế HĐ</small><b id="dcT">-16.000</b></div><div class="tong-hd"><small>Tổng tiền hoá đơn</small><b id="dcS">-216.000</b></div></div>
+            <div class="dt2-hd"><div><small>Tiền trước thuế HĐ</small><b id="dcH">-2.700.000</b></div><div><small>Tiền thuế HĐ</small><b id="dcT">-216.000</b></div><div class="tong-hd"><small>Tổng tiền hoá đơn</small><b id="dcS">-2.916.000</b></div></div>
           </div>
         </div>
       </div>
-      <div class="modal-f xp-f"><button class="btn" type="button">Huỷ</button><span class="grow"></span><button class="btn" type="button">Lưu dự thảo (Ctrl+S)</button><button class="btn p" type="button">Lưu và phát hành (Ctrl+Shift+S)</button></div>
+      <div class="modal-f xp-f"><button class="btn" type="button">Huỷ</button><span class="grow"></span><button class="btn" type="button">Lưu dự thảo</button><button class="btn p" type="button">Lưu và phát hành</button></div>
     </div>
     <ul class="rule">
       <li>Form <b>giống hệt</b> form hoá đơn thay thế: chép y nguyên chứng từ gốc, kể cả thông tin thuế, sửa được mọi thông tin trừ dòng hoá đơn gốc; lý do điều chỉnh trải hết chiều ngang; chân form có Lưu dự thảo và Lưu và phát hành.</li>
-      <li><b>Số 3, loại điều chỉnh</b> nằm chỗ nhãn “Hoá đơn thay thế” bên form thay thế. Dòng hàng chép y nguyên từ gốc, người dùng sửa thành phần chênh lệch, nhập số dương. Phần mềm tự đổi dấu: điều chỉnh giảm ghi âm, điều chỉnh tăng ghi dương. Bấm thử 2 lựa chọn.</li>
+      <li><b>Số 3, loại điều chỉnh</b>: dòng đầu tiên của form, trên dòng hoá đơn gốc. Phần mềm tự đổi dấu: điều chỉnh giảm ghi âm, điều chỉnh tăng ghi dương.</li>
+      <li><b>Chi tiết</b> mang nguyên dòng hàng của hoá đơn gốc. Người dùng sửa thành phần chênh lệch, nhập số dương. Thêm, bớt hàng y như form bán hàng lập tay: chọn mã hàng ở ô Mã hàng, Thêm dòng, Thêm hàng loạt, ✕ xoá từng dòng, Xoá hết. Thử gõ 200000 vào ô đơn giá rồi đổi loại điều chỉnh.</li>
       <li><span class="pro" style="margin:0 4px 0 0">Pro</span> Bút toán ngày 10/11/2026: Nợ 131 / Có 511 <span style="color:var(--red)">-200.000</span>, Nợ 131 / Có 3331 <span style="color:var(--red)">-16.000</span>. Không sinh huỷ bán.</li>
       <li>Một hoá đơn gốc có thể có nhiều hoá đơn điều chỉnh. Hoá đơn gốc và hoá đơn điều chỉnh tham chiếu lẫn nhau.</li>
       <li>Sửa, xoá: giống hoá đơn thay thế. Còn dự thảo thì sửa, xoá được. Đã phát hành thì khoá.</li>
@@ -557,12 +562,16 @@ td.am{color:var(--red)}
   });});
   // Phần 3: đổi loại điều chỉnh thì đổi dấu
   var fm=function(n){return (n<0?'-':'')+Math.abs(n).toLocaleString('vi-VN');};
-  document.querySelectorAll('input[name="ldc"]').forEach(function(r){r.addEventListener('change',function(){
-    var k=r.value, s=k==='giam'?-1:(k==='tang'?1:0), h=200000*s, t=16000*s;
+  var gia=document.getElementById('dcGia');
+  function tinh(){
+    var k=(document.querySelector('input[name="ldc"]:checked')||{}).value, s=k==='tang'?1:-1;
+    var g=parseInt((gia.value||'').replace(/\D/g,''),10)||0, h=g*s, t=Math.round(g*0.08)*s;
     var row=document.querySelector('#dcBody tr');
     row.querySelector('[data-v]').textContent=fm(h); row.querySelector('[data-t]').textContent=fm(t);
-    row.style.opacity=k==='tt'?'.4':'1';
     document.getElementById('dcH').textContent=fm(h); document.getElementById('dcT').textContent=fm(t); document.getElementById('dcS').textContent=fm(h+t);
-  });});
+  }
+  document.querySelectorAll('input[name="ldc"]').forEach(function(r){r.addEventListener('change',tinh);});
+  gia.addEventListener('input',tinh);
+  gia.addEventListener('blur',function(){var g=parseInt(gia.value.replace(/\D/g,''),10)||0;gia.value=g.toLocaleString('vi-VN');});
 })();
 </script>
