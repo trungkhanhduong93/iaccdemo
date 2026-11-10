@@ -741,10 +741,29 @@ export function CauHinh({ sc }: ScreenProps) {
     set({ kieuSo: { ...s.kieuSo, [s.donVi]: kieu }, ...(coGiamVat ? { giamVat: { ...s.giamVat, [s.donVi]: gvLuu } } : {}),
       ...(coHddt ? { hddt: { ...s.hddt, [s.donVi]: hd } } : {}) }); toast('Đã lưu cấu hình')
   }
+  // Hai cột xếp riêng (T784): cột phải là Hoá đơn điện tử, Giảm thuế GTGT; không có hai thẻ này thì Bộ định khoản, Đánh số chứng từ sang cột phải
+  const phai = coHddt || coGiamVat
+  const cot = { gridTemplateColumns: 'minmax(0, 1fr)' }   // cột con không nở theo bảng rộng bên trong
+  const theDuoi = <>
+    <Card title="Bộ định khoản tự động" act={noco ? <Link className="btn sm ghost" to="/app/danh-muc/1-15">Sửa bộ định khoản</Link> : undefined}>
+      <div data-hd="dinhKhoan">{noco ? <Note icon="book">Thứ tự ưu tiên tài khoản: hàng hoá, rồi nhóm hàng, rồi mặc định của chế độ. Bộ mặc định ngành F&B đã nạp sẵn 7 bút toán.</Note>
+        : <Note kind="gray">Chế độ {cheDoHienTai(s).ngan} không dùng tài khoản Nợ/Có nên không có bộ định khoản.</Note>}</div>
+    </Card>
+    <Card title="Đánh số chứng từ">
+      <div data-hd="danhSo">
+      <Table cols={[{ k: 'loai', t: 'Loại chứng từ' }, { k: 'mau', t: 'Mẫu số', cls: 'code' }, { k: 'vd', t: 'Ví dụ', cls: 'dim' }]} rows={[
+        { loai: 'Phiếu thu', mau: 'PT{YY}{MM}-{0000}', vd: 'PT2610-0001' }, { loai: 'Phiếu chi', mau: 'PC{YY}{MM}-{0000}', vd: 'PC2610-0241' },
+        { loai: 'Xuất bán POS', mau: 'Số hoá đơn FABi', vd: 'YHLTJTAKD76Z' }, { loai: 'Mua hàng', mau: 'MH{YY}{MM}-{0000}', vd: 'MH2610-0118' },
+        // Thẻ chi phí phân bổ: tháng theo ngày ghi tăng; thẻ dư đầu kỳ ghi tăng trước ngày đầu năm (T284)
+        { loai: 'Thẻ chi phí phân bổ', mau: 'TPB{YY}{MM}-{0000}', vd: 'TPB2610-0012' }, { loai: 'Thẻ chi phí phân bổ dư đầu kỳ', mau: 'TPBDK{YY}{MM}-{0000}', vd: 'TPBDK2512-0001' }]} />
+      </div>
+    </Card>
+  </>
   return (
     <div className="page">
       <PageHead crumb={['Hệ thống']} title={sc.ten!}><button className="btn pri" data-hd="luuCh" onClick={luu}>Lưu</button></PageHead>
       <div className="grid g2" style={{ alignItems: 'start' }}>
+        <div className="grid" style={cot}>
         <Card title="Quy định chữ số và dấu phân cách">
           <div className="form-grid ch-so" data-hd="kieuSo">
             <div className="f c2"><label>Tiêu chuẩn định dạng số</label>
@@ -757,8 +776,11 @@ export function CauHinh({ sc }: ScreenProps) {
           </div>
           <Note kind="gray">Áp dụng cho số hiện trên chứng từ, danh sách, báo cáo và cách gõ số ở mọi ô nhập của đơn vị này.</Note>
         </Card>
-        {/* Công tắc giảm thuế trên hoá đơn theo nghị quyết đang bật ở thẻ Giảm thuế GTGT (T784) */}
-        {coHddt && <Card title="Hoá đơn điện tử"><TheCauHinhHddt s={s} h={hd} nq={coGiamVat && gv.bat ? dongGv.nq : null} dat={setHd} toast={toast} /></Card>}
+        {phai && theDuoi}
+        </div>
+        <div className="grid" style={cot}>
+        {!phai && theDuoi}
+        {coHddt && <Card title="Hoá đơn điện tử"><TheCauHinhHddt s={s} h={hd} dat={setHd} toast={toast} /></Card>}
         {coGiamVat && (
           <Card title="Giảm thuế GTGT">
             <div className="ch-gv" data-hd="giamVat">
@@ -782,19 +804,7 @@ export function CauHinh({ sc }: ScreenProps) {
             <Note kind="gray">{gv.bat ? <>Hàng được giảm tích ô <b>Giảm thuế theo quy định</b> ở Danh mục hàng hoá.</> : 'Không giảm thuế GTGT: chứng từ bán hàng không tính tiền giảm thuế.'}</Note>
           </Card>
         )}
-        <Card title="Bộ định khoản tự động" act={noco ? <Link className="btn sm ghost" to="/app/danh-muc/1-15">Sửa bộ định khoản</Link> : undefined}>
-          <div data-hd="dinhKhoan">{noco ? <Note icon="book">Thứ tự ưu tiên tài khoản: hàng hoá, rồi nhóm hàng, rồi mặc định của chế độ. Bộ mặc định ngành F&B đã nạp sẵn 7 bút toán.</Note>
-            : <Note kind="gray">Chế độ {cheDoHienTai(s).ngan} không dùng tài khoản Nợ/Có nên không có bộ định khoản.</Note>}</div>
-        </Card>
-        <Card title="Đánh số chứng từ">
-          <div data-hd="danhSo">
-          <Table cols={[{ k: 'loai', t: 'Loại chứng từ' }, { k: 'mau', t: 'Mẫu số', cls: 'code' }, { k: 'vd', t: 'Ví dụ', cls: 'dim' }]} rows={[
-            { loai: 'Phiếu thu', mau: 'PT{YY}{MM}-{0000}', vd: 'PT2610-0001' }, { loai: 'Phiếu chi', mau: 'PC{YY}{MM}-{0000}', vd: 'PC2610-0241' },
-            { loai: 'Xuất bán POS', mau: 'Số hoá đơn FABi', vd: 'YHLTJTAKD76Z' }, { loai: 'Mua hàng', mau: 'MH{YY}{MM}-{0000}', vd: 'MH2610-0118' },
-            // Thẻ chi phí phân bổ: tháng theo ngày ghi tăng; thẻ dư đầu kỳ ghi tăng trước ngày đầu năm (T284)
-            { loai: 'Thẻ chi phí phân bổ', mau: 'TPB{YY}{MM}-{0000}', vd: 'TPB2610-0012' }, { loai: 'Thẻ chi phí phân bổ dư đầu kỳ', mau: 'TPBDK{YY}{MM}-{0000}', vd: 'TPBDK2512-0001' }]} />
-          </div>
-        </Card>
+        </div>
       </div>
     </div>
   )

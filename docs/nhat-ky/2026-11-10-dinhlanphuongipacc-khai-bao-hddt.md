@@ -13,6 +13,9 @@
 - `src/modules/he-thong/HeThong.tsx`: truyền `nq` là nghị quyết đang bật ở thẻ Giảm thuế GTGT; không có thì công tắc giảm thuế mờ.
 - `src/styles/app.css`: mục mới cuối file, tiêu đề có T784.
 
+- Sửa thêm ngày 11/11/2026 theo góp ý: Cấu hình kế toán xếp 2 cột riêng, cột phải Hoá đơn điện tử rồi Giảm thuế GTGT, cột trái Quy định số, Bộ định khoản, Đánh số chứng từ dồn lên (`HeThong.tsx`).
+- Thẻ Hoá đơn điện tử: bỏ công tắc giảm thuế (theo thẻ Giảm thuế GTGT cùng màn), bỏ ô tích gửi email (mặc định của HĐĐT, `guiEmail` luôn bật), mỗi khối một khung con.
+
 ## Đã kiểm
 
 - `npm run typecheck`: không lỗi.
@@ -24,8 +27,6 @@
 ## Dở dang, việc tiếp theo
 
 - Không. Việc tiếp là T785 (form chứng từ bán hàng lập tay), dùng `KHACH_LE_HD`, `cauHinhHddt(s).tenKhachLe`, `kyHieuXuat` từ `hddt.tsx`.
-- Đơn vị khấu trừ không có thẻ Giảm thuế GTGT nên công tắc giảm thuế trên thẻ Hoá đơn điện tử luôn mờ. Cần dinhlanphuongipacc hoặc Trum chốt: đơn vị khấu trừ có áp dụng giảm thuế NQ 204/2025/QH15 trên hoá đơn không, nếu có thì lấy nghị quyết từ đâu.
-- Cờ `giamThue` mới lưu, chưa nối vào tính tiền hoá đơn (làm cùng T785).
 - `tools/xuat_bao_cao_he_thong.py` vẫn lỗi thiếu module `build_present` trên máy này, chưa làm mới `docs/IACC-Cloud-Chi-Tiet-He-Thong.xlsx`.
 
 ## Bẫy, quyết định mới

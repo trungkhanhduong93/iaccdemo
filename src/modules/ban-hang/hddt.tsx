@@ -31,7 +31,7 @@ export interface CauHinhHddt {
   mau: '1' | '2'                         // mẫu số chung: 1 hoá đơn GTGT, 2 hoá đơn bán hàng
   kyHieu: string                         // ký hiệu chung 6 ký tự, vd C26TAA
   cuaHang: Record<string, KyHieuCh>      // mẫu số, ký hiệu theo cửa hàng
-  guiEmail: boolean
+  guiEmail: boolean                      // luôn gửi hoá đơn qua email cho người mua có email: mặc định của HĐĐT, không có ô tích
 }
 
 /** Ký hiệu chung mặc định: C (có mã của cơ quan thuế) + 2 số cuối năm + T + AA */
@@ -54,7 +54,7 @@ export function cauHinhHddt(s: Session): CauHinhHddt {
   }
   // Bản lưu trước T784 có kyHieu là bảng theo cửa hàng: bỏ, dùng mặc định
   const { kyHieu, ...con } = da
-  return { ...goc, ...con, ...(typeof kyHieu === 'string' ? { kyHieu } : {}), cuaHang: { ...goc.cuaHang, ...con.cuaHang } }
+  return { ...goc, ...con, ...(typeof kyHieu === 'string' ? { kyHieu } : {}), cuaHang: { ...goc.cuaHang, ...con.cuaHang }, guiEmail: true }
 }
 
 /** Ký hiệu 6 ký tự; chữ thứ 4 là loại hoá đơn, M là hoá đơn khởi tạo từ máy tính tiền */
@@ -123,9 +123,7 @@ export function TheCauHinhHddt({ s, h, dat, toast }: { s: Session; h: CauHinhHdd
               <input className="inp code" value={h.kyHieu} maxLength={6} aria-label="Ký hiệu chung" placeholder={KY_HIEU_MAC_DINH}
                 onChange={e => dat({ ...h, kyHieu: e.target.value.toUpperCase().replace(/\s/g, '') })} /></div>
           </div>
-          {/* Giảm thuế trên hoá đơn theo thẻ Giảm thuế GTGT cùng màn, không có công tắc riêng ở đây */}
-          <label className="ch-hd-mail"><input type="checkbox" checked={h.guiEmail} onChange={e => dat({ ...h, guiEmail: e.target.checked })} />
-            Gửi hoá đơn cho người mua qua email sau khi phát hành</label>
+          {/* Giảm thuế trên hoá đơn theo thẻ Giảm thuế GTGT cùng màn; gửi email cho người mua là mặc định của HĐĐT, không có ô tích ở đây */}
         </div>
         <div className="ch-hd-khoi">
           <h4>Mẫu số, ký hiệu theo cửa hàng</h4>

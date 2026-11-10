@@ -2,6 +2,9 @@
 
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
+## 11/11/2026
+- T784: Cấu hình kế toán xếp 2 cột: Hoá đơn điện tử và Giảm thuế GTGT bên phải, Đánh số chứng từ dồn lên bên trái. Thẻ Hoá đơn điện tử chia khung Kết nối, Thông tin mặc định, Mẫu số ký hiệu theo cửa hàng; bỏ công tắc giảm thuế và ô tích gửi email.
+
 ## 10/11/2026
 - T789: Popup Xem hoá đơn (bấm số hoá đơn trên form bán hàng, danh sách, menu Hoá đơn điện tử) gọn lại: Số hoá đơn, Mẫu số - Ký hiệu, Ngày hoá đơn, thông tin VAT trên hoá đơn, Tổng tiền trước thuế, Tiền thuế, Giảm trừ thuế, Tổng tiền hoá đơn. Nút Xem hoá đơn điện tử mở bản hoá đơn nhà cung cấp trả về, có Tải PDF, Tải XML, Chia sẻ PDF, In hoá đơn. Chưa kết nối iPOS Invoice hoặc thông tin hoá đơn chưa khớp thì không xem, không tải được.
 - T785: Danh sách bán hàng thêm cột Khách hàng; form thêm mới có ô Kênh bán bắt buộc. Xuất HĐĐT từ danh sách luôn ra bảng ngày, ký hiệu, người mua từng chứng từ, bấm Thay đổi mới mở form VAT. Form VAT có kính lúp tra mã số thuế lấy tên đơn vị, địa chỉ.
