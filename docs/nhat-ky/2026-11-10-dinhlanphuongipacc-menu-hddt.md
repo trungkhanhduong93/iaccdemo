@@ -12,12 +12,13 @@
 - Dữ liệu tab 1 lấy từ chứng từ bán hàng lập tay đã phát hành (`ban-hang/3-1-1` gói Plus, `ban-hang/3-1-7` gói Pro), không hiện huỷ bán (số bắt đầu HBH). Hai chứng từ mẫu BH2610-0003 (ký hiệu C26TAA), BH2610-0002 (C26MAB, máy tính tiền) có sẵn hoá đơn đã phát hành qua `hdMau` trong `hddt.tsx`, gọi ở `hangTay` (`ChungTuBanHang.tsx`), nên danh sách bán hàng cũng hiện Đã xuất cho 2 chứng từ này.
 - Tab Điều chỉnh thay thế: bảng cặp hoá đơn gốc và hoá đơn mới, dữ liệu mẫu, nút Xem mở popup xem hoá đơn, Gửi CQT chỉ với ký hiệu M chưa gửi. Tab Thông báo sai sót: lọc Trạng thái gửi CQT, chọn dòng, Gửi CQT và Xoá chỉ bật với thông báo lưu nháp.
 - CSS mục "Menu Hoá đơn điện tử (T786)" cuối `src/styles/app.css`.
+- Sửa thêm theo góp ý dinhlanphuongipacc: cả 3 tab gộp Mẫu số và Ký hiệu thành một cột "Mẫu số - Ký hiệu" (vd 1C26TAA) như màn xuất; ký tự đầu là mẫu số, 6 ký tự sau là ký hiệu. Chip trạng thái xếp Tất cả, Đã phát hành, Dự thảo.
 
 ## Đã kiểm
 
 - `npm run typecheck`: không lỗi.
 - `npm run build`: chạy xong, không lỗi.
-- `python tools/kiem_tra.py --nhanh`: "Không có lỗi."
+- `python tools/kiem_tra.py --nhanh`: "Không có lỗi." Lần sửa thêm có một lần báo lỗi tour điện thoại màn Kiểm kê (`dataset` của null), chạy lại thì hết, màn này không liên quan T786.
 - `python tools/kiem_van.py` cho `HoaDonDienTu.tsx`, `hoa-don/index.ts`, `SidebarFlyout.tsx`, nhật ký này: sạch.
 - Chưa mở trình duyệt xem bằng mắt (QD75), chỉ kiểm bằng `kiem_tra.py`.
 

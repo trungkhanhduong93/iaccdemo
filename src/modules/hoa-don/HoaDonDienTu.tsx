@@ -44,7 +44,7 @@ function dongHd(r: Row, man: string): Row | null {
   const mtt = laMayTinhTien(hd.kyHieu)
   const gui = daGui.has(id)
   return {
-    id, loai: 'Hoá đơn gốc', ttHd: 'Đã phát hành', mau: hd.mau, kyHieu: hd.kyHieu, soHd: hd.so, ngay: hd.ngay, so: r.so,
+    id, loai: 'Hoá đơn gốc', ttHd: 'Đã phát hành', mau: hd.mau, kyHieu: hd.kyHieu, mauKh: hd.mau + hd.kyHieu, soHd: hd.so, ngay: hd.ngay, so: r.so,
     tenDv: cty ? k.tenDv : '', mst: cty ? k.mst : '', diaChi: k.diaChi, nguoiMua: k.tenNm || hd.nguoiMua || '', maQhns: cty ? k.maQhns : '',
     ttThue: !mtt ? 'Hợp lệ' : gui ? 'Đã gửi TCTN' : 'Chưa gửi TCTN',
     truoc: hd.truoc ?? 0, thue: hd.thue ?? 0, tong: hd.tong ?? 0, maCqt: mtt && !gui ? '' : hd.ma, traCuu: hd.traCuu ?? '', goc: '',
@@ -72,7 +72,7 @@ function lyDo(v: Viec, r: Row): string | null {
 }
 
 const COT_CO_DINH = new Set(['chk', 'loai', 'action'])
-const COT_CHON = new Set(['loai', 'ttHd', 'mau', 'ttThue'])
+const COT_CHON = new Set(['loai', 'ttHd', 'mauKh', 'ttThue'])
 const COT_SO = new Set(['truoc', 'thue', 'tong'])
 const kieuCot = (k: string): KieuLoc => (k === 'ngay' ? 'ngay' : COT_CHON.has(k) ? 'chon' : COT_SO.has(k) ? 'so' : 'chu')
 const chuCot = (k: string, r: Row) => { const v = r[k]; return typeof v === 'number' ? `${money(v)} ${v}` : String(v ?? '') }
@@ -119,8 +119,8 @@ export function DsHoaDon({ sc, mod }: ScreenProps) {
   const list = chip === 'all' ? truocChip : truocChip.filter(r => r.ttHd === chip)
   const chips: Chip[] = [
     { k: 'all', ten: 'Tất cả', mau: 'var(--blue)', so: truocChip.length },
-    { k: 'Dự thảo', ten: 'Dự thảo', mau: 'var(--orange)', so: truocChip.filter(r => r.ttHd === 'Dự thảo').length },
     { k: 'Đã phát hành', ten: 'Đã phát hành', mau: 'var(--green)', so: truocChip.filter(r => r.ttHd === 'Đã phát hành').length },
+    { k: 'Dự thảo', ten: 'Dự thảo', mau: 'var(--orange)', so: truocChip.filter(r => r.ttHd === 'Dự thảo').length },
   ]
 
   const tenSo = (r: Row) => `số ${r.soHd || '(chưa cấp)'}`
@@ -146,8 +146,8 @@ export function DsHoaDon({ sc, mod }: ScreenProps) {
     cotChon(list, chon, setChon),
     { k: 'loai', t: 'Loại hoá đơn', w: 150, dinh: 'trai' },
     { k: 'ttHd', t: 'Trạng thái HĐĐT', w: 140, r: r => <span className={`ph-tt${r.ttHd === 'Đã phát hành' ? ' da' : ''}`}>{r.ttHd}</span> },
-    { k: 'mau', t: 'Mẫu số', w: 80, c: true },
-    chu('kyHieu', 'Ký hiệu', 100, 'code'),
+    // Mẫu số ghép với ký hiệu như màn xuất (vd 1C26TAA): ký tự đầu là mẫu số, 6 ký tự sau là ký hiệu
+    chu('mauKh', 'Mẫu số - Ký hiệu', 140, 'code'),
     { k: 'soHd', t: 'Số HĐ', w: 110, r: r => r.soHd ? <button type="button" className="ds-link-so" title="Xem hoá đơn" onClick={e => { e.stopPropagation(); setXem(r) }}>{r.soHd}</button> : null },
     { k: 'ngay', t: 'Ngày HĐ', w: 110 },
     { k: 'so', t: 'Số chứng từ', w: 140, r: r => <button type="button" className="ds-link-so" title="Mở chứng từ bán hàng"
@@ -263,7 +263,7 @@ export function DieuChinhThayThe({ sc }: ScreenProps) {
     setXem({ r: { id: c.id, doiTuong: c.nguoiMua }, hd: { mau: h[0], kyHieu: h[1], so: h[2], ngay: h[3], ma: `M26-${(0x3b0000 + ma).toString(16).toUpperCase()}`, nguoiMua: c.nguoiMua, truoc: tong - thue, thue, tong } })
   }
   const oHd = (c: CapHd, h: CapHd['goc'], ma: number) => <>
-    <td className="c">{h[0]}</td><td className="code">{h[1]}</td><td className="code">{h[2]}</td><td>{h[3]}</td><td className="num">{money(h[4])}</td>
+    <td className="code">{h[0]}{h[1]}</td><td className="code">{h[2]}</td><td>{h[3]}</td><td className="num">{money(h[4])}</td>
     <td className="c"><button type="button" className="ds-link-so" onClick={() => moXem(c, h, ma)}>Xem</button></td>
   </>
   return (
@@ -280,9 +280,9 @@ export function DieuChinhThayThe({ sc }: ScreenProps) {
         <div className="hddt-bang">
           <table className="tbl ke-doc mot-dong">
             <thead>
-              <tr><th rowSpan={2}>Loại</th><th colSpan={6}>Hoá đơn bị điều chỉnh, thay thế</th><th colSpan={7}>Hoá đơn điều chỉnh, thay thế</th><th rowSpan={2} className="c">Thao tác</th></tr>
-              <tr>{['Mẫu số', 'Ký hiệu', 'Số HĐ', 'Ngày HĐ', 'Tổng tiền', ''].map((t, i) => <th key={`g${i}`}>{t}</th>)}
-                {['Mẫu số', 'Ký hiệu', 'Số HĐ', 'Ngày HĐ', 'Tổng tiền', 'Trạng thái thuế', ''].map((t, i) => <th key={`m${i}`}>{t}</th>)}</tr>
+              <tr><th rowSpan={2}>Loại</th><th colSpan={5}>Hoá đơn bị điều chỉnh, thay thế</th><th colSpan={6}>Hoá đơn điều chỉnh, thay thế</th><th rowSpan={2} className="c">Thao tác</th></tr>
+              <tr>{['Mẫu số - Ký hiệu', 'Số HĐ', 'Ngày HĐ', 'Tổng tiền', ''].map((t, i) => <th key={`g${i}`}>{t}</th>)}
+                {['Mẫu số - Ký hiệu', 'Số HĐ', 'Ngày HĐ', 'Tổng tiền', 'Trạng thái thuế', ''].map((t, i) => <th key={`m${i}`}>{t}</th>)}</tr>
             </thead>
             <tbody>
               {ds.map((c, i) => {
@@ -292,7 +292,7 @@ export function DieuChinhThayThe({ sc }: ScreenProps) {
                   <tr key={c.id}>
                     <td>{c.loai}</td>
                     {oHd(c, c.goc, i * 2)}
-                    <td className="c">{c.moi[0]}</td><td className="code">{c.moi[1]}</td><td className="code">{c.moi[2]}</td><td>{c.moi[3]}</td><td className="num">{money(c.moi[4])}</td>
+                    <td className="code">{c.moi[0]}{c.moi[1]}</td><td className="code">{c.moi[2]}</td><td>{c.moi[3]}</td><td className="num">{money(c.moi[4])}</td>
                     <td><span className={`hddt-thue ${tt === 'TCTN từ chối' ? 'loi' : 'tot'}`}>{tt}</span></td>
                     <td className="c"><button type="button" className="ds-link-so" onClick={() => moXem(c, c.moi, i * 2 + 1)}>Xem</button></td>
                     <td className="c"><button type="button" className="btn sm" disabled={Boolean(ly)} title={ly ?? undefined}
@@ -317,13 +317,13 @@ export function ThongBaoSaiSot({ sc }: ScreenProps) {
   const [tt, setTt] = useState('')
   const [chon, setChon] = useState<Set<string>>(new Set())
   const ds = dsTbss.filter(x => !tt || x.tt === tt)
-  const rows: Row[] = ds.map(x => ({ ...x }))
+  const rows: Row[] = ds.map(x => ({ ...x, mauKh: x.mau + x.kyHieu }))
   const chonDs = ds.filter(x => chon.has(x.id))
   const nhap = chonDs.length > 0 && chonDs.every(x => x.tt === 'Lưu nháp')
   const lyDoNut = !chonDs.length ? 'Chọn thông báo sai sót' : nhap ? undefined : 'Chỉ dùng với thông báo đang lưu nháp, chưa gửi'
   const cols: Col[] = [
     cotChon(rows, chon, setChon),
-    { k: 'mau', t: 'Mẫu số', w: 80, c: true }, { k: 'kyHieu', t: 'Ký hiệu', w: 100, cls: 'code' }, { k: 'so', t: 'Số HĐ', w: 110, cls: 'code' }, { k: 'ngay', t: 'Ngày HĐ', w: 110 },
+    { k: 'mauKh', t: 'Mẫu số - Ký hiệu', w: 140, cls: 'code' }, { k: 'so', t: 'Số HĐ', w: 110, cls: 'code' }, { k: 'ngay', t: 'Ngày HĐ', w: 110 },
     { k: 'loai', t: 'Loại hoá đơn', w: 170 }, { k: 'noiDung', t: 'Nội dung thông báo sai sót', w: 320 },
     { k: 'tt', t: 'Trạng thái gửi CQT', w: 160, r: r => <span className={`hddt-thue ${r.tt === 'Lưu nháp' ? 'cho' : 'tot'}`}>{r.tt}</span> },
     { k: 'ngayTao', t: 'Ngày tạo', w: 110 },
