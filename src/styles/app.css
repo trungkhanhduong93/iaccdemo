@@ -47507,14 +47507,12 @@ textarea.m-tpb-inp { height: auto; padding: 8px 12px; }
 .m-tpb-o:not(.co-dv) { flex: 0 1 62%; width: auto; min-width: 150px; }
 
 /* ── Hoá đơn điện tử ở Cấu hình kế toán: kết nối iPOS Invoice, thông tin mặc định, ký hiệu theo cửa hàng (T784) ── */
-.ch-hd-khoi { margin-top: 16px; }
+.ch-hd-khoi { margin-top: 14px; padding: 12px 14px 14px; border: 1px solid var(--line); border-radius: 8px; }
 .ch-hd-khoi > h4 { margin: 0; font-size: 13px; font-weight: 600; color: var(--ink); }
 .ch-hd-khoi .ch-hd-luoi { margin-top: 10px; }
 .ch-hd-khoi .f label em { color: var(--red); font-style: normal; }
 .ch-hd-luoi.ba { grid-template-columns: 3fr 2fr; }
 .ch-hd-luoi.ba > .f:first-child { grid-column: 1 / -1; }
-.ch-hd-giam { display: flex; align-items: center; gap: 10px; margin-top: 12px; color: var(--body); cursor: pointer; }
-.ch-hd-giam.tat { color: var(--muted); cursor: default; }
 .ch-hd-bang { margin-top: 4px; }
 .ch-hd-dong { display: grid; grid-template-columns: minmax(110px, 1fr) 92px 96px minmax(150px, 1.3fr); gap: 8px; align-items: center; margin-top: 8px; }
 .ch-hd-dong.dau { margin-top: 10px; font-size: 12.5px; color: var(--muted); }
@@ -47621,12 +47619,9 @@ textarea.m-tpb-inp { height: auto; padding: 8px 12px; }
 .hdx-tom > div + div { border-left: 1px solid var(--line); }
 .hdx-tom > div > span { font-size: 12px; color: var(--muted); }
 .hdx-tom > div > b { font-size: 14.5px; font-weight: 500; color: var(--ink); }
-.hdx-tom .phai { text-align: right; }
-.hdx-ma { display: flex; align-items: center; gap: 2px; min-width: 0; }
-.hdx-ma .code { overflow: hidden; text-overflow: ellipsis; }
-.hdx-ma .icon-btn { width: 26px; height: 26px; flex: none; }
-b.hdx-tong { font-size: 17px; font-weight: 700; color: var(--blue); font-variant-numeric: tabular-nums; }
-.hdx-hai { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.hdx-tom.ba { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.hdx-tom > div > b.hdx-do { color: var(--red); }
+.hdx-tom small { color: var(--muted); font-size: 12px; font-weight: 400; }
 .hdx-the { border: 1px solid var(--line); border-radius: 10px; background: var(--white); min-width: 0; }
 .hdx-the h4 { display: flex; align-items: center; gap: 8px; margin: 0; padding: 9px 14px; border-bottom: 1px solid var(--line-2); font-size: 13.5px; font-weight: 600; color: var(--ink); }
 .hdx-luoi { display: grid; grid-template-columns: 140px minmax(0, 1fr); gap: 8px 10px; padding: 11px 14px; font-size: 13px; }
@@ -47640,15 +47635,11 @@ b.hdx-tong { font-size: 17px; font-weight: 700; color: var(--blue); font-variant
 .hdx-so-tien > div + div { border-left: 1px solid var(--line-2); }
 .hdx-so-tien span { font-size: 12px; color: var(--muted); }
 .hdx-so-tien b { font-size: 14.5px; font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; }
-.hdx-so-tien .tong { background: var(--tint); }
+.hdx-so-tien .tong { background: var(--tint); border-radius: 0 0 10px 0; }
 .hdx-so-tien .tong b { font-size: 17px; font-weight: 700; color: var(--blue); }
-.hdx-chu { display: flex; gap: 6px; flex-wrap: wrap; padding: 9px 14px; border-top: 1px solid var(--line-2); font-size: 13px; background: var(--hdb-chan); border-radius: 0 0 10px 10px; }
-.hdx-chu span { color: var(--muted); }
-.hdx-chu i { color: var(--ink); }
 @media (max-width: 640px) {
-  .hdx-tom, .hdx-hai, .hdx-hai-cot { grid-template-columns: 1fr; }
+  .hdx-tom, .hdx-tom.ba, .hdx-hai-cot, .hdx-so-tien { grid-template-columns: 1fr; }
   .hdx-tom > div + div, .hdx-hai-cot > .hdx-luoi + .hdx-luoi, .hdx-so-tien > div + div { border-left: 0; border-top: 1px solid var(--line-2); }
-  .hdx-tom .phai { text-align: left; }
 }
 
 /* Bản hoá đơn điện tử nhà cung cấp trả về */
