@@ -12,6 +12,8 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
 | T786 | Menu lớn Hoá đơn điện tử trên Kê khai thuế, 3 tab: Hoá đơn điện tử (lọc như danh sách chứng từ, menu thao tác ⋯ từng dòng, chọn nhiều Gửi CQT, Tải XML, Tải PDF), Điều chỉnh thay thế, Thông báo sai sót; bỏ tab 3.1.5, 3.1.6 ở Bán hàng | dinhlanphuongipacc | Chờ | Làm sau T785. Sửa `registry.ts`, `SidebarFlyout.tsx`, `ban-hang/index.ts`, module mới, `app.css` |
+| T787 | Hoá đơn thay thế (HDTT), huỷ bán (HBH), hoá đơn điều chỉnh (HDDC) theo QD107: form chép chứng từ gốc, dự thảo, ghi sổ, tham chiếu, sửa xoá ăn theo; khoá mẫu số theo phương pháp tính thuế | dinhlanphuongipacc | Chờ | Làm sau T786. Thiết kế `docs/thiet-ke/T787-T788-dieu-chinh-thay-the.html`. Sửa `ChungTuForm.tsx`, `ChungTuBanHang.tsx`, `hddt.tsx`, menu Hoá đơn điện tử, `app.css` |
+| T788 | Kê khai hoá đơn thay thế, điều chỉnh về kỳ gốc: kỳ chưa nộp thì gạch hoá đơn gốc trên bảng kê, kỳ đã nộp thì gợi ý tờ khai bổ sung 01/KHBS | dinhlanphuongipacc | Chờ | Làm sau T787. Sửa module Kê khai thuế |
 | T781 | Giảm thuế GTGT xét hiệu lực nghị quyết theo ngày của từng chứng từ, không theo ngày làm việc (`ptGiamHienHanh` dùng `HOM_NAY`) | | Chờ | Thấy lúc soát T780, `giam-thue.ts` |
 | T776 | Màn Tính giá vốn: sang trang 2 thì dòng "Cộng 51 dòng" mất đường kẻ dưới, dưới dòng tổng còn khoảng trống trong bảng, dưới khung bảng còn khoảng trống xám | | Chờ | Trum báo lúc làm T774, ảnh chụp ở trang 2, tháng 10/2026 |
 | T771 | `tools/kiem_tra.py` ca đăng nhập đợt 8 (hàm `kiem_tra_dang_nhap_dot_8`) báo "Nghiệp vụ: không tìm thấy phân hệ Thu chi" ở màn 390px | | Chờ | Thấy lúc làm T769, bản trước T769 cũng báo. Ca này không nằm trong `--nhanh` |
