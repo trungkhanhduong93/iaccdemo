@@ -124,11 +124,12 @@ export function TheCauHinhHddt({ s, h, nq, dat, toast }: { s: Session; h: CauHin
               <input className="inp code" value={h.kyHieu} maxLength={6} aria-label="Ký hiệu chung" placeholder={KY_HIEU_MAC_DINH}
                 onChange={e => dat({ ...h, kyHieu: e.target.value.toUpperCase().replace(/\s/g, '') })} /></div>
           </div>
-          <label className={`ch-hd-giam${nq ? '' : ' tat'}`}>
+          {/* Chỉ đơn vị tính GTGT theo % doanh thu mới có công tắc giảm thuế; khấu trừ ghi thẳng thuế suất đã giảm (vd 8%) trên dòng hàng nên không cần (QD106) */}
+          {gtgtTyLe(s) && <label className={`ch-hd-giam${nq ? '' : ' tat'}`}>
             <input type="checkbox" className="bat-tat" checked={Boolean(nq) && h.giamThue} disabled={!nq} onChange={e => dat({ ...h, giamThue: e.target.checked })} />
             {nq ? `Áp dụng giảm thuế GTGT trên hoá đơn theo Nghị quyết ${nq} (khai ở thẻ Giảm thuế GTGT)`
               : 'Áp dụng giảm thuế GTGT trên hoá đơn: chưa có nghị quyết đang bật ở thẻ Giảm thuế GTGT'}
-          </label>
+          </label>}
         </div>
         <div className="ch-hd-khoi">
           <h4>Mẫu số, ký hiệu theo cửa hàng</h4>
@@ -359,7 +360,8 @@ export function HopXemHd({ s, r, hd, onDong, toast }: { s: Session; r: Row; hd: 
         {dong('Ngày hoá đơn', hd.ngay)}
         {dong('Người mua', nguoiMua)}
         {dong('Tiền trước thuế', money(tien.truoc), 'num')}
-        {!mau2 && dong('Thuế suất', `${ts}%${h.giamThue && ts === 8 ? ' (giảm 2% theo NQ 204/2025/QH15)' : ''}`)}
+        {/* Khấu trừ: thuế suất trên hoá đơn đã là mức giảm, không ghi thêm giảm thuế (QD106) */}
+        {!mau2 && dong('Thuế suất', `${ts}%`)}
         {dong(mau2 ? 'Giảm trừ thuế' : 'Tiền thuế', money(tien.thue), 'num')}
         {dong('Tổng tiền thanh toán', money(tien.tong), 'num lon')}
         {dong('Mã tra cứu · Mã CQT', <span className="code">{hd.traCuu ?? '—'} · {hd.ma}</span>)}

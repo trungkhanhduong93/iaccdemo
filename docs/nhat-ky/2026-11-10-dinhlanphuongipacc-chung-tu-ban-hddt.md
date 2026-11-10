@@ -25,7 +25,7 @@
 ## Dở dang, việc tiếp theo
 
 - Không. Việc tiếp là T786 (menu Hoá đơn điện tử 3 tab).
-- Cờ `giamThue` ở thẻ Hoá đơn điện tử chỉ dùng để ghi chữ "giảm 2% theo NQ 204/2025/QH15" ở popup xem hoá đơn khi thuế suất 8%; chưa tính lại tiền hoá đơn theo nghị quyết. Đơn vị khấu trừ có áp dụng giảm thuế trên hoá đơn không vẫn chờ chốt (xem nhật ký T784).
+- Đã chốt (dinhlanphuongipacc): đơn vị khấu trừ ghi thẳng thuế suất đã giảm, không áp dụng giảm thuế. Thẻ Hoá đơn điện tử chỉ hiện công tắc giảm thuế với đơn vị tính GTGT theo % doanh thu; popup xem hoá đơn bỏ chữ "giảm 2% theo NQ". Ghi vào QD106.
 - Chứng từ phát hành chỉ giữ trong phiên (dữ liệu giả), tải lại trang là mất như mọi chứng từ mới.
 - `tools/xuat_bao_cao_he_thong.py` chưa chạy được trên máy này (thiếu module `build_present`, như nhật ký T784).
 
