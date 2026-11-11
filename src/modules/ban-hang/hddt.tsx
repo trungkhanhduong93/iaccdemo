@@ -191,11 +191,14 @@ export const thayTheNhap = (man: string, r: Row) => dsHdMoiCon(man, r).find(c =>
 /** Lý do không lập được hoá đơn thay thế, điều chỉnh cho chứng từ, lập được thì null */
 export function lyDoKhongLap(man: string, r: Row, loai: 'tt' | 'dc'): string | null {
   if (!hdCua(r)) return 'Chỉ lập với hoá đơn đã phát hành'
-  // Điều chỉnh chỉ cho hoá đơn gốc (kể cả đã bị điều chỉnh); thay thế cho hoá đơn gốc hoặc hoá đơn thay thế (dinhlanphuongipacc 11/11/2026)
+  // Điều chỉnh chỉ cho hoá đơn gốc (kể cả đã bị điều chỉnh); thay thế cho hoá đơn gốc chưa bị điều chỉnh hoặc hoá đơn thay thế (dinhlanphuongipacc 11/11/2026)
   const l = loaiCtCua(r)
+  if (loai === 'dc' && l === 'HDTHAYTHE') return 'Hoá đơn thay thế không được điều chỉnh'
   if (loai === 'dc' && l !== 'XBAN') return 'Chỉ điều chỉnh hoá đơn gốc'
   if (loai === 'tt' && l !== 'XBAN' && l !== 'HDTHAYTHE') return 'Chỉ thay thế hoá đơn gốc hoặc hoá đơn thay thế'
-  if (ttHdGoc(man, r) === 'Bị thay thế') return 'Hoá đơn đã bị thay thế, chỉ xem'
+  const tt = ttHdGoc(man, r)
+  if (tt === 'Bị thay thế') return 'Hoá đơn đã bị thay thế, chỉ xem'
+  if (loai === 'tt' && tt === 'Bị điều chỉnh') return 'Hoá đơn đã bị điều chỉnh, không được thay thế'
   const nhap = loai === 'tt' ? thayTheNhap(man, r) : undefined
   return nhap ? `Đang có hoá đơn thay thế dự thảo ${nhap.so}` : null
 }
