@@ -37,7 +37,7 @@ export function OSoGo({ val, onChange, hien, thapPhan = true, className = 'inp s
     const el = o.current, k = troSau.current
     if (!el || k === null || !focus) return
     let i = 0, dem = 0
-    while (i < str.length && dem < k) { if (/\d/.test(str[i]) || str[i] === dauThap()) dem++; i++ }
+    while (i < str.length && dem < k) { if (/\d/.test(str[i]) || str[i] === dauThap() || str[i] === '-') dem++; i++ }
     el.setSelectionRange(i, i)
     troSau.current = null
   }, [str, focus])
@@ -48,8 +48,9 @@ export function OSoGo({ val, onChange, hien, thapPhan = true, className = 'inp s
       onChange={e => {
         const t = e.target.value, c = e.target.selectionStart ?? t.length
         if (max !== undefined && docSoVN(goSoVN(t, thapPhan)) > max) return
-        troSau.current = t.slice(0, c).split('').filter(x => /\d/.test(x) || x === dauThap()).length
-        const tru = am && t.trimStart().startsWith('-')
+        // Ô cho số âm (T787): có dấu trừ ở bất kỳ đâu là số âm, dấu trừ luôn đưa lên đầu; con trỏ tính cả dấu trừ để gõ tiếp đứng sau nó
+        const tru = am && t.includes('-')
+        troSau.current = t.slice(0, c).split('').filter(x => /\d/.test(x) || x === dauThap()).length + (tru && t.slice(0, c).includes('-') ? 1 : 0)
         const moi = (tru ? '-' : '') + goSoVN(t, thapPhan)
         setStr(moi)
         onChange?.(docSoVN(moi))
