@@ -37,12 +37,14 @@ export function tinhDong(d: Dong, sua: Partial<Dong> = {}): Dong {
 }
 
 /** Hoá đơn điều chỉnh (T787): mỗi dòng theo đúng chiều tăng (dau 1) hoặc giảm (dau -1). Người dùng gõ số dương hoặc âm ở
- *  số lượng, đơn giá, ô tiền đều được; dòng nào thành tiền sai chiều thì đổi dấu đơn giá, ô tiền gõ thẳng sai chiều thì đổi dấu ô đó */
-export function theoChieu(ds: Dong[], dau: 1 | -1): Dong[] {
+ *  số lượng, đơn giá, ô tiền đều được. Dòng nào thành tiền sai chiều: vừa gõ đơn giá thì đổi dấu số lượng, còn lại đổi dấu đơn giá,
+ *  để dấu trừ chỉ nằm ở một trong hai ô (số lượng âm thì đơn giá dương và ngược lại). Ô tiền gõ thẳng sai chiều thì đổi dấu ô đó */
+export function theoChieu(ds: Dong[], dau: 1 | -1, cu: Dong[] = []): Dong[] {
   const sai = (v?: number) => (v || 0) * dau < 0
-  return ds.map(d0 => {
+  return ds.map((d0, i) => {
     let d = d0
-    if (sai(d.tien)) d = tinhDong(d, { gia: -(d.gia || 0) })
+    const goGia = cu[i] !== undefined && cu[i].gia !== d0.gia && cu[i].sl === d0.sl
+    if (sai(d.tien)) d = goGia ? tinhDong(d, { sl: -(d.sl || 0) }) : tinhDong(d, { gia: -(d.gia || 0) })
     for (const k of ['giam', 'ck', 'phiDv'] as const) if (sai(d[k])) d = tinhDong(d, { [k]: -(d[k] || 0) })
     return sai(d.phiVc) ? { ...d, phiVc: -(d.phiVc || 0) } : d
   })

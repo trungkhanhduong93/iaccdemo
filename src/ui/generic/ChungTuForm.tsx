@@ -362,7 +362,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
   useEffect(() => { setThangLl(dsThangLl[0]) }, [dsThangLl])
 
   // Hoá đơn điều chỉnh (T787): người dùng nhập số dương, phần mềm tự đổi dấu theo loại điều chỉnh
-  const doiDong = (ds: Dong[]) => setDsDong(loaiCt === 'HDDIEUCHINH' ? theoChieu(ds, dauDc) : ds)   // gõ âm hay dương ở số lượng, đơn giá, ô tiền đều được, dòng tự theo chiều tăng, giảm
+  const doiDong = (ds: Dong[]) => setDsDong(loaiCt === 'HDDIEUCHINH' ? theoChieu(ds, dauDc, dsDong) : ds)   // gõ âm hay dương ở số lượng, đơn giá, ô tiền đều được, dòng tự theo chiều tăng, giảm
   // Tính tổng
   const tongTien =dsDong.reduce((a, d) => a + (d.tien || 0), 0)
   // Dòng kiểu Xuất bán POS (T753): giảm giá gộp vào phần trừ cùng chiết khấu, phí dịch vụ cộng vào doanh thu
