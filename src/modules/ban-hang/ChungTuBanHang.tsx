@@ -13,7 +13,8 @@ import { Card, Note, PageHead } from '../../ui/Page'
 import { FormToanMan, useDong } from '../../ui/FormToanMan'
 import { BaoCaoDoRongCtx, St, Table, useDoRongCot } from '../../ui/Table'
 import { dmy, fold, money, moneyD, rng } from '../../ui/format'
-import { Select } from '../../ui/Dropdown'
+import { ChonHaiCot, type MucHaiCot } from '../../ui/ChonHaiCot'
+import { OChonMot } from '../../ui/OChonMot'
 import { PhanTrang } from '../../ui/PhanTrang'
 import { useDaXoa } from '../../ui/generic/daXoa'
 import { ChonKhoangNgay, docNgay, thangMacDinh, trongKhoang, type KhoangNgay } from '../../ui/ChonNgay'
@@ -375,8 +376,11 @@ const COT_CO_DINH = new Set(['chk', 'stt', 'ngay', 'so'])
 const COT_CHON = new Set(['cn', 'nguon', 'kenh', 'tenLoaiCt', 'ttPh'])
 
 /** Giá trị các ô lọc ngoài và trong Bộ lọc nâng cao. Chuỗi rỗng là tất cả */
-interface GtLoc { thoiGian: KhoangNgay; tim: string; cn: string; nguon: string; kh: string; kenh: string; pttt: string; hang: string; tonKho: string }
-const locMacDinh = (): GtLoc => ({ thoiGian: thangMacDinh(), tim: '', cn: '', nguon: '', kh: '', kenh: '', pttt: '', hang: '', tonKho: '' })
+/** Ô chọn nhiều kiểu hộp tích như Mua hàng, mảng rỗng là tất cả (T801) */
+interface GtLoc { thoiGian: KhoangNgay; tim: string; cn: string[]; nguon: string[]; loaiCt: string[]; kh: string; kenh: string[]; pttt: string[]; hang: string[]; tonKho: string[] }
+/** Lựa chọn ô lọc Loại chứng từ (T801) */
+const LOAI_CT_LOC: MucHaiCot[] = [{ v: 'POS', t: 'Xuất bán POS' }, { v: 'XBAN', t: 'Xuất bán' }, { v: 'HDDIEUCHINH', t: 'Hoá đơn điều chỉnh' }, { v: 'HDTHAYTHE', t: 'Hoá đơn thay thế' }, { v: 'HUYBAN', t: 'Huỷ bán hàng' }]
+const locMacDinh = (): GtLoc => ({ thoiGian: thangMacDinh(), tim: '', cn: [], nguon: [], loaiCt: [], kh: '', kenh: [], pttt: [], hang: [], tonKho: [] })
 /** Món của chứng từ để lọc theo hàng hoá, theo dõi tồn kho; nhớ lại để không tính lại mỗi lần lọc */
 const MON_CUA = new WeakMap<object, { ma: string; ten: string; tonKho: boolean }[]>()
 function monCua(x: NgayPOS) {
@@ -483,11 +487,9 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
 
   // Ô lọc: giá trị nháp, bấm Lọc mới áp dụng (T41)
   const apLoc = () => { loc0.loc(); setTrang(1) }
-  const chonO = (k: 'cn' | 'nguon' | 'kh' | 'kenh' | 'pttt' | 'hang' | 'tonKho', ten: string, ds: [string, string][]) => (
-    <Select className="ds-o-sel" value={nhap[k]} aria-label={ten} onChange={e => dat(k, e.target.value)}>
-      <option value="">Tất cả</option>
-      {ds.map(([v, t]) => <option key={v} value={v}>{t}</option>)}
-    </Select>
+  // Ô chọn nhiều có hộp tích, ô Khách hàng gõ tìm, như bộ lọc Mua hàng (T801)
+  const chonO = (k: 'cn' | 'nguon' | 'loaiCt' | 'kenh' | 'pttt' | 'hang' | 'tonKho', ten: string, ds: MucHaiCot[]) => (
+    <ChonHaiCot chip ds={ds} value={nhap[k]} onChange={v => dat(k, v)} nhan={ten} goiY={`Chọn ${ten.toLowerCase()}`} btnClass="ds-o-sel" />
   )
   const oLoc: OLocDef[] = [
     { k: 'thoiGian', ten: 'Thời gian', o: <ChonKhoangNgay value={nhap.thoiGian} onChange={k => dat('thoiGian', k)} /> },
@@ -495,31 +497,35 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
       k: 'tim', ten: 'Tìm kiếm', coGiaTri: Boolean(nhap.tim.trim()), o: <input className="ds-o-inp" value={nhap.tim} placeholder="Số, diễn giải" title="Tìm theo số chứng từ, diễn giải" aria-label="Tìm kiếm"
         onChange={e => dat('tim', e.target.value)} onKeyDown={e => { if (e.key === 'Enter') apLoc() }} />,
     },
-    ...(cnChon ? [] : [{ k: 'cn', ten: 'Cửa hàng', coGiaTri: Boolean(nhap.cn), o: chonO('cn', 'Cửa hàng', CUA_HANG.map(c => [c.id, c.ten])) }]),
-    ...(plus ? [{ k: 'nguon', ten: 'Nguồn', coGiaTri: Boolean(nhap.nguon), o: chonO('nguon', 'Nguồn', [['FABi', 'FABi'], ['tay', 'Thủ công'], ['excel', 'Excel']]) }] : []),
+    ...(cnChon ? [] : [{ k: 'cn', ten: 'Cửa hàng', coGiaTri: nhap.cn.length > 0, o: chonO('cn', 'Cửa hàng', CUA_HANG.map(c => ({ v: c.id, t: c.ten }))) }]),
+    ...(plus ? [{ k: 'nguon', ten: 'Nguồn', coGiaTri: nhap.nguon.length > 0, o: chonO('nguon', 'Nguồn', [{ v: 'FABi', t: 'FABi' }, { v: 'tay', t: 'Thủ công' }, { v: 'excel', t: 'Excel' }]) }] : []),
+    // Loại chứng từ: Xuất bán POS là chứng từ FABi, còn lại theo loại chứng từ lập tay (T801)
+    ...(plus ? [{ k: 'loaiCt', ten: 'Loại chứng từ', coGiaTri: nhap.loaiCt.length > 0, o: chonO('loaiCt', 'Loại chứng từ', LOAI_CT_LOC) }] : []),
     // Khách hàng, kênh bán, phương thức thanh toán; lựa chọn lấy từ chính các chứng từ (T116)
-    { k: 'kh', ten: 'Khách hàng', coGiaTri: Boolean(nhap.kh), o: chonO('kh', 'Khách hàng', [...new Set(rows.map(r => String(r.doiTuong ?? '')).filter(Boolean))].map(v => [v, v])) },
-    { k: 'kenh', ten: 'Kênh bán', coGiaTri: Boolean(nhap.kenh), o: chonO('kenh', 'Kênh bán', [...new Set(rows.map(r => String(r.kenh ?? '')).filter(Boolean))].map(v => [v, v])) },
+    { k: 'kh', ten: 'Khách hàng', coGiaTri: Boolean(nhap.kh), o: <OChonMot ds={[...new Set(rows.map(r => String(r.doiTuong ?? '')).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'vi')).map(v => ({ v, t: v }))}
+      value={nhap.kh} onChange={v => dat('kh', v)} nhan="Khách hàng" goiY="Chọn khách hàng" /> },
+    { k: 'kenh', ten: 'Kênh bán', coGiaTri: nhap.kenh.length > 0, o: chonO('kenh', 'Kênh bán', [...new Set(rows.map(r => String(r.kenh ?? '')).filter(Boolean))].map(v => ({ v }))) },
     // Lọc theo phương thức thanh toán: mỗi chứng từ là một hoá đơn FABi (T116, T247)
-    { k: 'pttt', ten: 'Phương thức thanh toán', coGiaTri: Boolean(nhap.pttt), o: chonO('pttt', 'Phương thức thanh toán', PTTT.map(([, t]) => [t, t])) },
+    { k: 'pttt', ten: 'Phương thức thanh toán', coGiaTri: nhap.pttt.length > 0, o: chonO('pttt', 'Phương thức thanh toán', PTTT.map(([, t]) => ({ v: t }))) },
     // Hàng hoá có trong chứng từ; Theo dõi tồn kho: chứng từ có món theo dõi hoặc có món không theo dõi tồn kho (T118)
-    { k: 'hang', ten: 'Hàng hoá', coGiaTri: Boolean(nhap.hang), o: chonO('hang', 'Hàng hoá', HANG.map(h => [h.ma, `${h.ma} - ${h.ten}`])) },
-    { k: 'tonKho', ten: 'Theo dõi tồn kho', coGiaTri: Boolean(nhap.tonKho), o: chonO('tonKho', 'Theo dõi tồn kho', [['co', 'Có theo dõi tồn kho'], ['khong', 'Không theo dõi tồn kho']]) },
+    { k: 'hang', ten: 'Hàng hoá', coGiaTri: nhap.hang.length > 0, o: chonO('hang', 'Hàng hoá', HANG.map(h => ({ v: h.ma, t: h.ten, ma: h.ma }))) },
+    { k: 'tonKho', ten: 'Theo dõi tồn kho', coGiaTri: nhap.tonKho.length > 0, o: chonO('tonKho', 'Theo dõi tồn kho', [{ v: 'co', t: 'Có theo dõi tồn kho' }, { v: 'khong', t: 'Không theo dõi tồn kho' }]) },
   ]
-  const [cauHinhLoc, datCauHinhLoc] = useCauHinhLoc(path, oLoc.map(o => o.k), ['thoiGian', 'tim', 'cn'])
+  const [cauHinhLoc, datCauHinhLoc] = useCauHinhLoc(path, oLoc.map(o => o.k), ['thoiGian', 'tim', 'cn', 'loaiCt'])
 
   // Lọc theo các ô đã áp dụng, cửa hàng trên thanh trên, hàng lọc từng cột; chip trạng thái lọc sau cùng để đếm số trên chip
   const truocTT = rows.filter(r => {
     const d = r.x?.date instanceof Date ? r.x.date : docNgay(String(r.ngay).split(' ')[0])   // chứng từ lập tay ghi cả giờ (T753)
     if (!trongKhoang(d, ap.thoiGian)) return false
     if (cnChon && cnCua(r) !== cnChon.id) return false
-    if (ap.cn && cnCua(r) !== ap.cn) return false
-    if (ap.nguon && r.nguon !== ap.nguon) return false
+    if (ap.cn.length && !ap.cn.includes(cnCua(r))) return false
+    if (ap.nguon.length && !ap.nguon.includes(String(r.nguon ?? 'tay'))) return false
+    if (ap.loaiCt.length && !ap.loaiCt.includes(r.nguon === 'FABi' ? 'POS' : loaiCtCua(r))) return false
     if (ap.kh && r.doiTuong !== ap.kh) return false
-    if (ap.kenh && r.kenh !== ap.kenh) return false
-    if (ap.hang && !monR(r).some(m => m.ma === ap.hang)) return false
-    if (ap.tonKho && !monR(r).some(m => m.tonKho === (ap.tonKho === 'co'))) return false
-    if (ap.pttt && !ptttR(r).includes(ap.pttt)) return false
+    if (ap.kenh.length && !ap.kenh.includes(String(r.kenh ?? ''))) return false
+    if (ap.hang.length && !monR(r).some(m => ap.hang.includes(m.ma))) return false
+    if (ap.tonKho.length && !monR(r).some(m => ap.tonKho.includes(m.tonKho ? 'co' : 'khong'))) return false
+    if (ap.pttt.length && !ptttR(r).some(p => ap.pttt.includes(p))) return false
     if (ap.tim.trim() && !fold(`${r.so} ${r.dienGiai} ${r._tenHangDu}`).includes(fold(ap.tim.trim()))) return false
     for (const [k, g] of Object.entries(locCot)) {
       if (dangLoc(g) && !khopLoc(kieuCot(k), g, chuCot(k, r), typeof r[k] === 'number' ? r[k] : undefined, k === 'ngay' ? d : undefined)) return false

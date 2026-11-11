@@ -868,7 +868,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
       <input className="inp" readOnly={!suaTtc} value={nguoiGiao} onChange={e => setNguoiGiao(e.target.value)} />
     </div>
   )
-  const oGhiChu = hienDau('ghiChu') && !laHdMoi && (   // hoá đơn thay thế, điều chỉnh ẩn Ghi chú (T787)
+  const oGhiChu = hienDau('ghiChu') && !laHdMoi && loaiCt !== 'HUYBAN' && (   // hoá đơn thay thế, điều chỉnh (T787), huỷ bán (T801) ẩn Ghi chú
     <div className="f" style={keoGc ? { gridColumn: '1 / 3' } : undefined}>
       <label>Ghi chú</label>
       <input className="inp" readOnly={!suaTtc} value={ghiChu} placeholder={suaTtc ? 'Ghi chú thêm cho phiếu' : ''}
@@ -1286,6 +1286,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
             style={{
               gridTemplateColumns: gonDau ? 'minmax(0, 1fr) 300px' : coHdDau ? 'minmax(0, 1.4fr) minmax(0, 1.2fr) 280px 300px' : 'minmax(0, 1.4fr) minmax(0, 1.2fr) 300px',   // cột ngày, số phiếu 300px vì nhãn nằm bên trái ô (T335); cột hoá đơn 280px cho ô Ngày hoá đơn đủ năm (T464)
               gap: 16,
+              rowGap: laHdMoi ? 6 : 16,   // hàng Lý do, Email cách đều các ô phía trên (T801)
               alignItems: 'start',
             }}
           >
@@ -1512,7 +1513,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
               </div>
             )}
             {laHdMoi && (
-              <div className="f" style={{ gridColumn: '3 / 5' }}>
+              <div className="f" style={{ gridColumn: '3 / 5', paddingLeft: coHdDau ? 8 : 0 }}>   {/* thẳng cột hoá đơn ct-hd-dau lùi 8px (T801) */}
                 <label>Email</label>
                 <input className="inp" type="email" value={khongLayHd ? '' : khachHd.email} readOnly={Boolean(hdDaXuat) || !dangSua || khongLayHd} aria-label="Email nhận hoá đơn"
                   placeholder={khongLayHd ? 'Không lấy hoá đơn' : 'Email nhận hoá đơn'} onChange={e => setKhachHd(k => ({ ...k, email: e.target.value.trim() }))} />

@@ -2,6 +2,9 @@
 
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
+## 12/11/2026
+- T801: Gói Plus, danh sách Bán hàng: bộ lọc giống Mua hàng, các ô Cửa hàng, Nguồn, Kênh bán, Phương thức thanh toán, Hàng hoá, Theo dõi tồn kho tích chọn được nhiều; ô Khách hàng gõ để tìm. Thêm ô Loại chứng từ: Xuất bán POS, Xuất bán, Hoá đơn điều chỉnh, Hoá đơn thay thế, Huỷ bán hàng. Form hoá đơn thay thế, điều chỉnh: hàng Lý do, Email cách đều các ô trên, ô Email thẳng cột Số hoá đơn. Chứng từ Huỷ bán bỏ ô Ghi chú.
+
 ## 11/11/2026
 - T800: Menu Hoá đơn (nay tên Hoá đơn điện tử, icon tờ hoá đơn), tab Hoá đơn điện tử: Bộ lọc nâng cao thêm Mã tra cứu, Số hoá đơn, Tên khách, Mã số thuế (gõ gần đúng), Mẫu số - Ký hiệu, Trạng thái hoá đơn, Trạng thái thuế, Loại hoá đơn (tích chọn nhiều, gõ để tìm). Menu ⋯ Gửi email mở popup điền email: điền sẵn email trên hoá đơn hoặc đã gửi lần trước, bấm mũi tên thấy email đã dùng (trên hoá đơn, đã gửi lần trước, hoá đơn khác của cùng khách), sửa sang email khác được, email sai dạng không gửi được. Popup Chia sẻ hoá đơn rộng, cao hơn, hết phải cuộn. Bỏ nút Tải lại. Tab Thông báo sai sót: tích chọn thông báo mới hiện nút Gửi CQT, Gửi email, Xoá; không chọn thì danh sách lên sát thanh lọc. Cột Xem TBSS có tiêu đề Thao tác. Popup Xem TBSS của thông báo chưa gửi có nút Gửi CQT.
 - T799: Menu Hoá đơn điện tử có thêm hoá đơn máy tính tiền mẫu (ký hiệu C26MAB) thay thế, điều chỉnh, cả đã phát hành chưa gửi CQT và dự thảo, để thử Gửi CQT, Phát hành và Gửi CQT. Tab Hoá đơn điện tử: bấm số 00000000 của hoá đơn dự thảo xem được mẫu hoá đơn.
