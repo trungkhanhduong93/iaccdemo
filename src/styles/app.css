@@ -47763,4 +47763,34 @@ textarea.m-tpb-inp { height: auto; padding: 8px 12px; }
 .hddt-tbss .hddt-o > span { align-items: flex-start; padding-top: 11px; }
 .hddt-gt { display: flex; align-items: center; padding: 0 12px; min-height: 40px; font-size: 13.5px; font-weight: 500; color: var(--ink); }
 .hddt-tbss textarea.hddt-inp { min-height: 88px; }
-@media (max-width: 640px) { .hddt-tbss .hddt-o { grid-template-columns: 1fr; } .hddt-tbss .hddt-o > span { padding: 8px 12px; } }
+@media (max-width: 640px) { .hddt-tbss .hddt-o { grid-template-columns: 1fr; } .hddt-tbss .hddt-o > span { padding: 8px 12px; } }/* Mẫu 04/SS-HĐĐT trong popup Xem TBSS, dấu trạng thái duyệt của CQT (T796) */
+.hddt-tbss input.hddt-inp { min-height: 40px; }
+.tbss-giay { display: flex; flex-direction: column; gap: 10px; }
+.tbss-mau { text-align: right; font-size: 11.5px; font-style: italic; color: var(--giay-phu); }
+.tbss-qh { display: flex; flex-direction: column; align-items: center; line-height: 1.5; }
+.tbss-qh b { font-size: 13px; }
+.tbss-qh span { color: var(--giay-phu); letter-spacing: 1px; }
+.tbss-tieu { margin: 4px 0 0; text-align: center; font-size: 15px; font-weight: 700; }
+.tbss-kg { text-align: center; }
+.tbss-nnt { width: 60%; }
+.tbss-ngay { margin-top: 10px; text-align: right; font-style: italic; padding-right: 60px; }
+.tbss-dan { margin: 0; font-weight: 600; }
+.tbss-bang-o { position: relative; }
+.tbss-bang-o .hdx-bh { table-layout: fixed; }
+.tbss-bang-o .hdx-bh td { vertical-align: middle; }
+.tbss-ma { word-break: break-all; font-size: 11px; }
+.tbss-dau { position: absolute; left: 46%; top: 100%; margin-top: 14px; white-space: nowrap; transform: rotate(-8deg); padding: 4px 14px; border: 2.5px solid currentColor; border-radius: 6px; font-weight: 700; font-size: 15px; letter-spacing: 1px; opacity: .8; pointer-events: none; background: rgba(255, 255, 255, .6); }
+.tbss-dau.nhap { color: var(--giay-xam); }
+.tbss-dau.loi { color: var(--red); }
+.tbss-dau.nhan { color: var(--green); }
+.tbss-ghi { margin-top: 52px; max-width: 70%; font-size: 11.5px; color: var(--giay-phu); line-height: 1.6; }
+.tbss-ky { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 14px; text-align: center; }
+.tbss-ky > div { display: flex; flex-direction: column; align-items: center; }
+.tbss-ky i { color: var(--giay-phu); font-size: 11.5px; }
+.tbss-chua-ky { margin-top: 10px; padding: 8px 12px; border: 1px dashed var(--giay-mo); border-radius: 6px; color: var(--giay-phu); font-size: 11.5px; }
+.tbss-loi { margin: 0; color: var(--red); font-size: 12.5px; }.tbss-nen { flex: none; }
+/* Khổ ngang A4: popup rộng hơn, in ra trang ngang */
+.hddt-hop.hdx-xem-ban.tbss-hop { width: 1220px; }
+.hdx-giay.tbss-giay { width: 1123px; padding: 28px 36px; page: tbss-ngang; }
+@page tbss-ngang { size: A4 landscape; margin: 10mm; }
+@media print { body.in-hdx .hdx-giay.tbss-giay { width: auto; padding: 0; } }
