@@ -1,0 +1,35 @@
+# Hoá đơn thay thế, huỷ bán, hoá đơn điều chỉnh (T787)
+
+- Ngày: 11/11/2026
+- Người: dinhlanphuongipacc, agent: Claude Code
+- Trạng thái cuối phiên: Xong
+
+## Đã làm
+
+- `src/modules/ban-hang/hddt.tsx`: thêm loại chứng từ `LoaiCt` (XBAN, HDTHAYTHE, HUYBAN, HDDIEUCHINH), tiền tố số HDTT, HBH, HDDC; hàm `mauTuGoc` chép chứng từ gốc sang form, `huyBanTu` sinh huỷ bán ghi âm, `dauDong` đổi dấu dòng hàng, `ttHdGoc` (Bị thay thế, Bị điều chỉnh), `thayTheNhap`, `lyDoKhongLap`, `phatHanhNhap`, `xoaCtHd`, `soCtMoi`.
+- `hddt.tsx`, thẻ khai báo HĐĐT: bỏ ô chọn mẫu số. Mẫu số chỉ đọc, lấy theo `mauSoHd` (khấu trừ 1, % doanh thu 2). Bảng theo cửa hàng chỉ còn chọn ký hiệu. `cauHinhHddt` luôn trả mẫu số theo phương pháp tính thuế.
+- `src/ui/generic/ChungTuForm.tsx`: thêm prop `lapHd`. Các ô đầu phiếu đọc từ `r0 = row ?? lapHd`. Thêm dòng hoá đơn gốc trên cùng, kèm link xem. Hoá đơn điều chỉnh có thêm lựa chọn Điều chỉnh giảm, Điều chỉnh tăng. Thêm ô lý do bắt buộc trải ngang, chân form Lưu dự thảo, Lưu và phát hành. Mở lại dự thảo có nút Phát hành. Huỷ bán khoá sửa xoá, chân form ghi "Sửa hoặc xoá ở hoá đơn thay thế". Tham chiếu 3 chiều. Xoá thay thế thì xoá luôn huỷ bán. Sửa ngày thay thế thì huỷ bán đổi ngày theo.
+- `src/modules/ban-hang/ChungTuBanHang.tsx`: đường dẫn `moi?lap=tt|dc&goc=<id>` mở form lập. Danh sách thêm cột Loại chứng từ (lọc ở hàng lọc cột), cột Tham chiếu. Trạng thái xuất HĐĐT có thêm Dự thảo, Không xuất HĐ. Hoá đơn gốc có chip Bị thay thế, Bị điều chỉnh, hoặc nhắc đang có thay thế dự thảo. Xuất HĐĐT hàng loạt bỏ qua 3 loại mới.
+- `src/modules/hoa-don/HoaDonDienTu.tsx`: menu ⋯ Thay thế, Điều chỉnh mở form thật; Phát hành, Xoá dùng được với dự thảo. Danh sách hiện dự thảo, cột Hoá đơn gốc, trạng thái Bị thay thế, Bị điều chỉnh, không hiện huỷ bán. Tab Điều chỉnh thay thế hiện cặp lập thật trước dữ liệu mẫu, bấm số chứng từ mở được cả hai.
+- `src/styles/app.css`: mục cuối file `(T787)`.
+
+## Đã kiểm
+
+- `npm run typecheck`: không lỗi. `npm run build`: chạy xong, không lỗi.
+- `python tools/kiem_tra.py --nhanh`: "Không có lỗi."
+- `python tools/kiem_van.py` 4 file code: 0 ĐỎ.
+- Bấm thử trên trình duyệt, gói Plus: lập thay thế BH2610-0003, Lưu dự thảo sinh HDTT2610-0001 và HBH2610-0001 ghi âm, tham chiếu 3 chiều. Phát hành từ menu ⋯ thì hoá đơn gốc chuyển Bị thay thế. Form điều chỉnh đổi giảm, tăng thì dòng hàng đổi dấu.
+- Chưa bấm thử: xoá thay thế dự thảo, sửa ngày thay thế, nút Phát hành ở chân form.
+- `tools/xuat_bao_cao_he_thong.py` vẫn lỗi thiếu module `build_present` trên máy này, chưa làm mới `docs/IACC-Cloud-Chi-Tiet-He-Thong.xlsx`.
+
+## Dở dang, việc tiếp theo
+
+- Không. Việc tiếp là T788: kê khai thay thế, điều chỉnh về kỳ gốc.
+- Ghi chú cho T788: hoá đơn mới giữ hoá đơn gốc ở `_hdGoc`, tiền hoá đơn ở `_tienHd`, loại ở `_loaiCt`, chiều điều chỉnh ở `_dcLoai`. Huỷ bán có `_loaiCt: 'HUYBAN'`, không lên bảng kê.
+- Hoá đơn gốc trả tiền mặt ngay: hoá đơn thay thế chép luôn hình thức thanh toán nên sinh thêm phiếu thu như bán hàng thường. Huỷ bán không sinh phiếu chi. Cần Trum hoặc dinhlanphuongipacc chốt có giữ cách này không.
+- Chỉ màn Bán hàng gói Plus (`ban-hang/3-1-1`) lập được. Gói Pro 3.1.7 chưa có HĐĐT, menu ⋯ ghi rõ lý do.
+- Lập, phát hành chỉ giữ trong phiên, tải lại trang là mất (bản mẫu chưa có backend).
+
+## Bẫy, quyết định mới
+
+- Không. Làm theo QD107.

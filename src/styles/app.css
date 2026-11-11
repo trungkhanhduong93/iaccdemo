@@ -47689,3 +47689,16 @@ textarea.m-tpb-inp { height: auto; padding: 8px 12px; }
   body.in-hdx .hdx-nen-giay { padding: 0; }
   body.in-hdx .hdx-giay { box-shadow: none; }
 }
+
+/* ── Hoá đơn thay thế, huỷ bán, hoá đơn điều chỉnh: dòng hoá đơn gốc, loại điều chỉnh, ô lý do (T787) ── */
+.ct-hd-goc { display: flex; flex-direction: column; gap: 6px; padding: 8px 16px; font-size: 13px; }
+.ct-hd-goc-loai { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
+.ct-hd-goc-loai label { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
+.ct-hd-goc-dong { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; color: var(--body); }
+.ct-hd-goc-dong > span { flex: 1; min-width: 0; line-height: 1.5; }
+.ct-hd-goc-dong b { color: var(--ink); }
+.ct-hd-goc-dong .ph-nut { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
+.ct-ttc .ct-ly-do-hd { margin-top: 8px; }
+.ct-ttc .ct-ly-do-hd.loi .inp { border-color: var(--red); }
+.hddt-cap-nut { white-space: nowrap; }
+.hddt-cap-nut .ds-link-so + .ds-link-so { margin-left: 8px; }

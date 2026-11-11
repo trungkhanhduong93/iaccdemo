@@ -1,5 +1,5 @@
 // Menu Hoá đơn điện tử (QD106, T786): danh sách hoá đơn đã lập từ chứng từ bán hàng, cặp hoá đơn điều chỉnh thay thế, thông báo sai sót.
-// Hoá đơn lấy từ chứng từ bán hàng lập tay đã phát hành (T785). Dự thảo, điều chỉnh, thay thế sinh ra ở T787
+// Hoá đơn lấy từ chứng từ bán hàng lập tay đã phát hành (T785), hoá đơn thay thế, điều chỉnh kể cả dự thảo (T787)
 import { useState, useSyncExternalStore } from 'react'
 import { useNavigate } from 'react-router-dom'
 import type { Col, Row, ScreenProps } from '../types'
@@ -16,7 +16,10 @@ import { dangLoc, dsGiaTri, khopLoc, type GiaTriLoc, type KieuLoc } from '../../
 import { BoLoc, ChipTrangThai, NutTuyChinhCot, cotChon, useCauHinhLoc, useCotDs, useDongEsc, useLocNhap, type Chip, type OLocDef } from '../../ui/LocNangCao'
 import { apKhoPhieu, useBanPhieu } from '../../ui/generic/daXoa'
 import { hangTay, mauTay } from '../ban-hang/ChungTuBanHang'
-import { HopXemHd, KHACH_TRONG, Vo, hdCua, laMayTinhTien, type HdDaXuat, type TtKhach } from '../ban-hang/hddt'
+import {
+  HopXemHd, KHACH_TRONG, TEN_LOAI_CT, Vo, hdCua, hdGocCua, laHdMoiCua, laMayTinhTien, loaiCtCua, lyDoKhongLap, phatHanhNhap, thayTheNhap, ttHdGoc, xoaCtHd,
+  type HdDaXuat, type TtKhach,
+} from '../ban-hang/hddt'
 
 /** Màn chứng từ bán hàng lập tay: gói Plus ở tab Bán hàng của Xuất bán POS, gói Pro ở 3.1.7 */
 const MAN_PL = 'ban-hang/3-1-1', MAN_PR = 'ban-hang/3-1-7'
@@ -37,18 +40,29 @@ const homNay = () => dmy(HOM_NAY)
 /** Một dòng danh sách hoá đơn từ chứng từ đã phát hành */
 function dongHd(r: Row, man: string): Row | null {
   const hd = hdCua(r)
-  if (!hd || String(r.so).startsWith('HBH')) return null   // huỷ bán không xuất hoá đơn (QD107)
+  const loaiCt = loaiCtCua(r)
+  const nhap = !hd && laHdMoiCua(r)   // hoá đơn thay thế, điều chỉnh còn dự thảo (T787)
+  if ((!hd && !nhap) || loaiCt === 'HUYBAN') return null   // huỷ bán không xuất hoá đơn (QD107)
   const k: TtKhach = { ...KHACH_TRONG, ...(r._khachHd as Partial<TtKhach> | undefined) }
   const cty = k.loai === 'cty'
   const id = `${man}|${r.id}`
-  const mtt = laMayTinhTien(hd.kyHieu)
+  const mauKh = hd ? hd.mau + hd.kyHieu : String(r._kyHieuHd ?? '')
+  const mtt = laMayTinhTien(mauKh)
   const gui = daGui.has(id)
+  const tien = hd ?? (r._tienHd as Partial<HdDaXuat> | undefined) ?? {}
+  const goc = hdGocCua(r)
+  const ttGoc = man === MAN_PL ? ttHdGoc(man, r) : null
   return {
-    id, loai: 'Hoá đơn gốc', ttHd: 'Đã phát hành', mau: hd.mau, kyHieu: hd.kyHieu, mauKh: hd.mau + hd.kyHieu, soHd: hd.so, ngay: hd.ngay, so: r.so,
-    tenDv: cty ? k.tenDv : '', mst: cty ? k.mst : '', diaChi: k.diaChi, nguoiMua: k.tenNm || hd.nguoiMua || '', maQhns: cty ? k.maQhns : '',
-    ttThue: !mtt ? 'Hợp lệ' : gui ? 'Đã gửi TCTN' : 'Chưa gửi TCTN',
-    truoc: hd.truoc ?? 0, thue: hd.thue ?? 0, tong: hd.tong ?? 0, maCqt: mtt && !gui ? '' : hd.ma, traCuu: hd.traCuu ?? '', goc: '',
+    id, loai: loaiCt === 'XBAN' ? 'Hoá đơn gốc' : TEN_LOAI_CT[loaiCt], ttHd: nhap ? 'Dự thảo' : ttGoc ?? 'Đã phát hành',
+    mau: mauKh[0] ?? '', kyHieu: mauKh.slice(1), mauKh, soHd: hd?.so ?? '', ngay: hd?.ngay ?? String(r._ngayHd ?? ''), so: r.so,
+    tenDv: cty ? k.tenDv : '', mst: cty ? k.mst : '', diaChi: k.diaChi, nguoiMua: k.tenNm || hd?.nguoiMua || '', maQhns: cty ? k.maQhns : '',
+    ttThue: nhap ? '' : !mtt ? 'Hợp lệ' : gui ? 'Đã gửi TCTN' : 'Chưa gửi TCTN',
+    truoc: tien.truoc ?? 0, thue: tien.thue ?? 0, tong: tien.tong ?? 0, maCqt: !hd || (mtt && !gui) ? '' : hd.ma, traCuu: hd?.traCuu ?? '',
+    goc: goc ? `${goc.hd.mau}${goc.hd.kyHieu} số ${goc.hd.so}` : '',
     _r: r, _man: man, _hd: hd,
+    // Lý do không lập được thay thế, điều chỉnh: hoá đơn đã bị thay thế, đang có thay thế dự thảo (T787)
+    _lyTt: man === MAN_PL ? lyDoKhongLap(man, r, 'tt') : 'Chỉ lập ở chứng từ bán hàng gói Plus', _lyDc: man === MAN_PL ? lyDoKhongLap(man, r, 'dc') : 'Chỉ lập ở chứng từ bán hàng gói Plus',
+    _nhapTt: !nhap && man === MAN_PL ? thayTheNhap(man, r)?.so ?? '' : '',
   }
 }
 
@@ -62,7 +76,9 @@ function lyDo(v: Viec, r: Row): string | null {
   const nhap = r.ttHd === 'Dự thảo'
   switch (v) {
     case 'ph': case 'xoa': return nhap ? null : 'Chỉ dùng với hoá đơn dự thảo'
-    case 'dc': case 'tt': case 'tbss': return !nhap && r.ttThue === 'Hợp lệ' ? null : 'Chỉ dùng với hoá đơn đã phát hành, trạng thái thuế Hợp lệ'
+    case 'dc': case 'tt': case 'tbss':
+      if (nhap || r.ttThue !== 'Hợp lệ') return 'Chỉ dùng với hoá đơn đã phát hành, trạng thái thuế Hợp lệ'
+      return v === 'tt' ? (r._lyTt as string | null) : v === 'dc' ? (r._lyDc as string | null) : r.ttHd === 'Bị thay thế' ? 'Hoá đơn đã bị thay thế, chỉ xem' : null
     case 'gui':
       if (!laMayTinhTien(String(r.kyHieu))) return 'Chỉ hoá đơn máy tính tiền (ký hiệu có chữ M ở vị trí thứ 4) mới gửi CQT'
       if (nhap) return 'Phát hành hoá đơn trước khi gửi CQT'
@@ -116,16 +132,22 @@ export function DsHoaDon({ sc, mod }: ScreenProps) {
     }
     return true
   })
-  const list = chip === 'all' ? truocChip : truocChip.filter(r => r.ttHd === chip)
+  // Bị thay thế, Bị điều chỉnh vẫn là hoá đơn đã phát hành (T787)
+  const theoChip = (r: Row, k: string) => (k === 'Dự thảo' ? r.ttHd === 'Dự thảo' : r.ttHd !== 'Dự thảo')
+  const list = chip === 'all' ? truocChip : truocChip.filter(r => theoChip(r, chip))
   const chips: Chip[] = [
     { k: 'all', ten: 'Tất cả', mau: 'var(--blue)', so: truocChip.length },
-    { k: 'Đã phát hành', ten: 'Đã phát hành', mau: 'var(--green)', so: truocChip.filter(r => r.ttHd === 'Đã phát hành').length },
+    { k: 'Đã phát hành', ten: 'Đã phát hành', mau: 'var(--green)', so: truocChip.filter(r => theoChip(r, 'Đã phát hành')).length },
     { k: 'Dự thảo', ten: 'Dự thảo', mau: 'var(--orange)', so: truocChip.filter(r => r.ttHd === 'Dự thảo').length },
   ]
 
   const tenSo = (r: Row) => `số ${r.soHd || '(chưa cấp)'}`
   const lam = (v: Viec, r: Row) => {
-    if (v === 'dc' || v === 'tt') { toast(`Lập hoá đơn ${v === 'dc' ? 'điều chỉnh' : 'thay thế'} làm ở T787`); return }
+    // Thay thế, điều chỉnh: mở form chép sẵn chứng từ gốc ở màn xuất bán (T787)
+    if (v === 'dc' || v === 'tt') { nav(`/app/${MAN_PL}/moi?lap=${v}&goc=${encodeURIComponent(String((r._r as Row).id))}`); return }
+    // Phát hành, xoá hoá đơn thay thế, điều chỉnh dự thảo; xoá thay thế thì xoá luôn huỷ bán (T787)
+    if (v === 'ph') { const hd = phatHanhNhap(s, String(r._man), r._r as Row); toast(`Đã phát hành hoá đơn ${hd.mau}${hd.kyHieu} số ${hd.so}`); return }
+    if (v === 'xoa') { xoaCtHd(String(r._man), r._r as Row, s.ten); toast(`Đã xoá ${String(r.loai).toLowerCase()} dự thảo ${r.so}`); return }
     if (v === 'tbss') { setTbss(r); return }
     if (v === 'gui') { daGui.add(String(r.id)); bao(); toast(`Đã gửi hoá đơn ${tenSo(r)} lên cơ quan thuế`); return }
     const BAO: Record<string, string> = { ph: 'Đã phát hành hoá đơn', xml: 'Đã tải XML hoá đơn', pdf: 'Đã tải PDF hoá đơn', mail: 'Đã gửi email hoá đơn cho người mua,', share: 'Đã chép đường dẫn PDF hoá đơn', xoa: 'Đã xoá hoá đơn dự thảo' }
@@ -145,7 +167,8 @@ export function DsHoaDon({ sc, mod }: ScreenProps) {
   const cols: Col[] = [
     cotChon(list, chon, setChon),
     { k: 'loai', t: 'Loại hoá đơn', w: 150, dinh: 'trai' },
-    { k: 'ttHd', t: 'Trạng thái HĐĐT', w: 140, r: r => <span className={`ph-tt${r.ttHd === 'Đã phát hành' ? ' da' : ''}`}>{r.ttHd}</span> },
+    { k: 'ttHd', t: 'Trạng thái HĐĐT', w: 140, r: r => <span className={`ph-tt${r.ttHd === 'Đã phát hành' ? ' da' : ''}`}
+      title={r._nhapTt ? `Đang có hoá đơn thay thế dự thảo ${r._nhapTt}` : undefined}>{r.ttHd}{r._nhapTt ? ', có thay thế dự thảo' : ''}</span> },
     // Mẫu số ghép với ký hiệu như màn xuất (vd 1C26TAA): ký tự đầu là mẫu số, 6 ký tự sau là ký hiệu
     chu('mauKh', 'Mẫu số - Ký hiệu', 140, 'code'),
     { k: 'soHd', t: 'Số HĐ', w: 110, r: r => r.soHd ? <button type="button" className="ds-link-so" title="Xem hoá đơn" onClick={e => { e.stopPropagation(); setXem(r) }}>{r.soHd}</button> : null },
@@ -204,7 +227,7 @@ export function DsHoaDon({ sc, mod }: ScreenProps) {
             <Table cols={cot.colsHien} rows={list} motDong keDoc doRong={cot.doRong}
               loc={{ gt: locCot, dat: (k, g) => setLocCot(x => ({ ...x, [k]: g })), bo: new Set(['chk', 'action']), kieu: c => kieuCot(c.k),
                 layLuaChon: k => dsGiaTri(rows, r => chuCot(k, r)) }}
-              onDbl={r => setXem(r)}
+              onDbl={r => (r._hd ? setXem(r) : nav(`/app/${r._man}/${(r._r as Row).id}`))}   // dự thảo chưa có hoá đơn: mở chứng từ (T787)
               sum={{ loai: `Cộng ${list.length} hoá đơn`, truoc: tong('truoc'), thue: tong('thue'), tong: tong('tong') }} />
           ) : (
             <div className="empty" style={{ margin: 'auto' }}>
@@ -243,8 +266,28 @@ function HopTbss({ r, onDong, onLuu }: { r: Row; onDong: () => void; onLuu: (noi
   )
 }
 
-// ── Tab Điều chỉnh thay thế: mỗi dòng một cặp hoá đơn gốc và hoá đơn mới (dữ liệu mẫu, lập thật ở T787) ──
-interface CapHd { id: string; loai: 'Điều chỉnh' | 'Thay thế'; goc: [string, string, string, string, number]; moi: [string, string, string, string, number]; tt: string; nguoiMua: string }
+// ── Tab Điều chỉnh thay thế: mỗi dòng một cặp hoá đơn gốc và hoá đơn mới: cặp lập thật (T787) rồi dữ liệu mẫu ──
+/** Cặp hoá đơn; cặp lập thật (T787) có thêm chứng từ gốc, chứng từ mới để mở */
+interface CapHd {
+  id: string; loai: 'Điều chỉnh' | 'Thay thế'; goc: [string, string, string, string, number]; moi: [string, string, string, string, number]; tt: string; nguoiMua: string
+  ctGoc?: [string, string]; ctMoi?: [string, string]; rGoc?: Row; rMoi?: Row
+}
+/** Cặp hoá đơn từ hoá đơn thay thế, điều chỉnh đã lập ở màn xuất bán (T787) */
+function capThat(tyLe: boolean): CapHd[] {
+  const ds = apKhoPhieu(MAN_PL, mauTay()).map(r => hangTay(r, tyLe))
+  return ds.filter(r => laHdMoiCua(r) && hdGocCua(r)).map(r => {
+    const g = hdGocCua(r)!, hd = hdCua(r), rGoc = ds.find(x => String(x.id) === g.id)
+    const mauKh = hd ? hd.mau + hd.kyHieu : String(r._kyHieuHd ?? '')
+    const id = `${MAN_PL}|${r.id}`
+    return {
+      id, loai: loaiCtCua(r) === 'HDTHAYTHE' ? 'Thay thế' : 'Điều chỉnh', nguoiMua: String(r.doiTuong ?? ''),
+      goc: [g.hd.mau, g.hd.kyHieu, g.hd.so, g.hd.ngay, g.hd.tong ?? Number(rGoc?.tong) ?? 0],
+      moi: [mauKh[0] ?? '', mauKh.slice(1), hd?.so ?? '', hd?.ngay ?? String(r._ngayHd ?? ''), Number(r.tong) || 0],
+      tt: !hd ? 'Dự thảo' : !laMayTinhTien(mauKh) ? 'Hợp lệ' : daGui.has(id) ? 'Đã gửi TCTN' : 'Chưa gửi TCTN',
+      ctGoc: [g.id, g.so], ctMoi: [String(r.id), String(r.so)], rGoc, rMoi: r,
+    }
+  })
+}
 const CAP_MAU: CapHd[] = [
   { id: 'c1', loai: 'Điều chỉnh', goc: ['1', 'C26TAA', '00000121', '28/09/2026', 2_916_000], moi: ['1', 'C26TAA', '00000129', '03/10/2026', -216_000], tt: 'Hợp lệ', nguoiMua: 'Công ty CP Du lịch Biển Xanh' },
   { id: 'c2', loai: 'Thay thế', goc: ['1', 'C26MAC', '00000038', '30/09/2026', 972_000], moi: ['1', 'C26MAC', '00000044', '04/10/2026', 972_000], tt: 'TCTN từ chối', nguoiMua: 'Văn phòng đại diện Hạ Long Tech' },
@@ -253,18 +296,31 @@ const guiCap = new Set<string>()
 
 export function DieuChinhThayThe({ sc }: ScreenProps) {
   const { s, toast } = useSession()
-  useKho()
+  const nav = useNavigate()
+  useKho(); useBanPhieu()
   const [loai, setLoai] = useState('')
   const [xem, setXem] = useState<{ r: Row; hd: HdDaXuat } | null>(null)
-  const ds = CAP_MAU.filter(c => !loai || c.loai === loai)
-  const ttCua = (c: CapHd) => (guiCap.has(c.id) ? 'Đã gửi TCTN' : c.tt)
-  const moXem = (c: CapHd, h: CapHd['goc'], ma: number) => {
+  const ds = [...capThat(gtgtTyLe(s)), ...CAP_MAU].filter(c => !loai || c.loai === loai)
+  const ttCua = (c: CapHd) => (guiCap.has(c.id) || daGui.has(c.id) ? 'Đã gửi TCTN' : c.tt)
+  const moXem = (c: CapHd, h: CapHd['goc'], ma: number, moi: boolean) => {
+    const hdThat = c.rMoi && (moi ? hdCua(c.rMoi) : hdGocCua(c.rMoi)?.hd)
+    if (hdThat) { setXem({ r: (moi ? c.rMoi : c.rGoc) ?? c.rMoi!, hd: hdThat }); return }
     const tong = h[4], thue = Math.round(tong / 13.5)
     setXem({ r: { id: c.id, doiTuong: c.nguoiMua }, hd: { mau: h[0], kyHieu: h[1], so: h[2], ngay: h[3], ma: `M26-${(0x3b0000 + ma).toString(16).toUpperCase()}`, nguoiMua: c.nguoiMua, truoc: tong - thue, thue, tong } })
   }
+  // Cặp lập thật: bấm số chứng từ mở chứng từ gốc, chứng từ mới; hoá đơn dự thảo chưa có số thì không xem hoá đơn (T787)
+  const oXem = (c: CapHd, moi: boolean, ma: number) => {
+    const h = moi ? c.moi : c.goc, ct = moi ? c.ctMoi : c.ctGoc
+    return (
+      <td className="c hddt-cap-nut">
+        {h[2] && <button type="button" className="ds-link-so" onClick={() => moXem(c, h, ma, moi)}>Xem</button>}
+        {ct && <button type="button" className="ds-link-so" title="Mở chứng từ" onClick={() => nav(`/app/${MAN_PL}/${ct[0]}`)}>{ct[1]}</button>}
+      </td>
+    )
+  }
   const oHd = (c: CapHd, h: CapHd['goc'], ma: number) => <>
     <td className="code">{h[0]}{h[1]}</td><td className="code">{h[2]}</td><td>{h[3]}</td><td className="num">{money(h[4])}</td>
-    <td className="c"><button type="button" className="ds-link-so" onClick={() => moXem(c, h, ma)}>Xem</button></td>
+    {oXem(c, false, ma)}
   </>
   return (
     <div className="page page-voucher">
@@ -287,14 +343,14 @@ export function DieuChinhThayThe({ sc }: ScreenProps) {
             <tbody>
               {ds.map((c, i) => {
                 const tt = ttCua(c)
-                const ly = !laMayTinhTien(c.moi[1]) ? 'Chỉ hoá đơn máy tính tiền (ký hiệu có chữ M ở vị trí thứ 4) mới gửi CQT' : tt === 'Đã gửi TCTN' ? 'Hoá đơn đã gửi CQT' : null
+                const ly = tt === 'Dự thảo' ? 'Phát hành hoá đơn trước khi gửi CQT' : !laMayTinhTien(c.moi[1]) ? 'Chỉ hoá đơn máy tính tiền (ký hiệu có chữ M ở vị trí thứ 4) mới gửi CQT' : tt === 'Đã gửi TCTN' ? 'Hoá đơn đã gửi CQT' : null
                 return (
                   <tr key={c.id}>
                     <td>{c.loai}</td>
                     {oHd(c, c.goc, i * 2)}
                     <td className="code">{c.moi[0]}{c.moi[1]}</td><td className="code">{c.moi[2]}</td><td>{c.moi[3]}</td><td className="num">{money(c.moi[4])}</td>
-                    <td><span className={`hddt-thue ${tt === 'TCTN từ chối' ? 'loi' : 'tot'}`}>{tt}</span></td>
-                    <td className="c"><button type="button" className="ds-link-so" onClick={() => moXem(c, c.moi, i * 2 + 1)}>Xem</button></td>
+                    <td><span className={`hddt-thue ${tt === 'TCTN từ chối' ? 'loi' : tt === 'Dự thảo' || tt === 'Chưa gửi TCTN' ? 'cho' : 'tot'}`}>{tt}</span></td>
+                    {oXem(c, true, i * 2 + 1)}
                     <td className="c"><button type="button" className="btn sm" disabled={Boolean(ly)} title={ly ?? undefined}
                       onClick={() => { guiCap.add(c.id); bao(); toast(`Đã gửi hoá đơn số ${c.moi[2]} lên cơ quan thuế`) }}>Gửi CQT</button></td>
                   </tr>

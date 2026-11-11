@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 11/11/2026
+- T787: Menu Hoá đơn điện tử, menu ⋯ của hoá đơn đã phát hành có Thay thế, Điều chỉnh: mở form như chứng từ bán hàng, chép sẵn chứng từ gốc, dòng hoá đơn gốc trên cùng kèm link xem, ô lý do bắt buộc, chân form Lưu dự thảo, Lưu và phát hành. Lưu hoá đơn thay thế sinh kèm Huỷ bán ghi âm; ba chứng từ tham chiếu lẫn nhau. Hoá đơn điều chỉnh chọn Điều chỉnh giảm, tăng, nhập số dương, phần mềm tự đổi dấu. Dự thảo phát hành, xoá được ở menu ⋯; hoá đơn gốc chuyển Bị thay thế, Bị điều chỉnh. Danh sách bán hàng thêm cột Loại chứng từ, Tham chiếu. Thẻ Hoá đơn điện tử ở Cấu hình kế toán bỏ chọn mẫu số, tự theo phương pháp tính thuế.
 - T784: Cấu hình kế toán xếp 2 cột: Hoá đơn điện tử và Giảm thuế GTGT bên phải, Đánh số chứng từ dồn lên bên trái. Thẻ Hoá đơn điện tử chia khung Kết nối, Thông tin mặc định, Mẫu số ký hiệu theo cửa hàng; bỏ công tắc giảm thuế và ô tích gửi email.
 
 ## 10/11/2026

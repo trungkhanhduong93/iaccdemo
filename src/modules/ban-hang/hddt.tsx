@@ -10,7 +10,7 @@ import { Note } from '../../ui/Page'
 import { dmy, docSoTien, money } from '../../ui/format'
 import { useDongEsc } from '../../ui/LocNangCao'
 import { ONgay } from '../../ui/ChonNgay'
-import { suaPhieu } from '../../ui/generic/daXoa'
+import { apKhoPhieu, laDaXoa, suaPhieu, xoaPhieu } from '../../ui/generic/daXoa'
 import { ttNghiepVu, type Dong } from '../../ui/generic/gen'
 
 /** Nhà cung cấp hoá đơn điện tử: chỉ kết nối iPOS Invoice (QD106), có thêm nhà cung cấp thì thêm lại ô chọn */
@@ -54,7 +54,9 @@ export function cauHinhHddt(s: Session): CauHinhHddt {
   }
   // Bản lưu trước T784 có kyHieu là bảng theo cửa hàng: bỏ, dùng mặc định
   const { kyHieu, ...con } = da
-  return { ...goc, ...con, ...(typeof kyHieu === 'string' ? { kyHieu } : {}), cuaHang: { ...goc.cuaHang, ...con.cuaHang }, guiEmail: true }
+  // Mẫu số luôn theo phương pháp tính thuế, kể cả bản lưu trước T787 đã chọn mẫu số khác (QD107)
+  const cuaHang = Object.fromEntries(Object.entries({ ...goc.cuaHang, ...con.cuaHang }).map(([id, ch]): [string, KyHieuCh] => [id, { ...ch, mau: '' }]))
+  return { ...goc, ...con, ...(typeof kyHieu === 'string' ? { kyHieu } : {}), mau, cuaHang, guiEmail: true }
 }
 
 /** Ký hiệu 6 ký tự; chữ thứ 4 là loại hoá đơn, M là hoá đơn khởi tạo từ máy tính tiền */
@@ -89,8 +91,7 @@ export function TheCauHinhHddt({ s, h, dat, toast }: { s: Session; h: CauHinhHdd
     if (!h.tk.trim() || !h.mk) { toast('Nhập tài khoản, mật khẩu trước khi kiểm tra kết nối'); return }
     dat({ ...h, daKetNoi: true }); toast(`Kết nối ${NCC_HDDT} thành công`)
   }
-  const goiY = mauSoHd(s)
-  const dsMau = (['1', '2'] as const).map(v => ({ v, t: `${v} · ${TEN_MAU[v]}${v === goiY ? ' (gợi ý)' : ''}` }))
+  const mau = mauSoHd(s)   // mẫu số theo phương pháp tính thuế, không cho chọn (QD107, T787)
   const chung = h.mau + h.kyHieu
   const datCh = (id: string, p: Partial<KyHieuCh>) => dat({ ...h, cuaHang: { ...h.cuaHang, [id]: { ...(h.cuaHang[id] ?? { mau: '', kyHieu: '' }), ...p } } })
   return (
@@ -117,8 +118,8 @@ export function TheCauHinhHddt({ s, h, dat, toast }: { s: Session; h: CauHinhHdd
             <div className="f"><label>Tên người mua khi khách không lấy hoá đơn</label>
               <input className="inp" value={h.tenKhachLe} aria-label="Tên người mua khi khách không lấy hoá đơn" placeholder={KHACH_LE_HD}
                 onChange={e => dat({ ...h, tenKhachLe: e.target.value })} /></div>
-            <div className="f"><label>Mẫu số chung</label>
-              <Select className="inp" value={h.mau} aria-label="Mẫu số chung" onChange={e => dat({ ...h, mau: e.target.value as '1' | '2' })} ds={dsMau} /></div>
+            <div className="f"><label>Mẫu số</label>
+              <input className="inp" readOnly value={`${mau} · ${TEN_MAU[mau]}`} aria-label="Mẫu số" title="Theo phương pháp tính thuế khai ở Hệ thống: khấu trừ là 1, trực tiếp theo % doanh thu là 2" /></div>
             <div className="f"><label>Ký hiệu chung</label>
               <input className="inp code" value={h.kyHieu} maxLength={6} aria-label="Ký hiệu chung" placeholder={KY_HIEU_MAC_DINH}
                 onChange={e => dat({ ...h, kyHieu: e.target.value.toUpperCase().replace(/\s/g, '') })} /></div>
@@ -131,13 +132,12 @@ export function TheCauHinhHddt({ s, h, dat, toast }: { s: Session; h: CauHinhHdd
             <div className="ch-hd-dong dau"><span>Cửa hàng</span><span>Mẫu số</span><span>Ký hiệu</span><span>Đang dùng khi xuất</span></div>
             {CUA_HANG.map(c => {
               const ch = h.cuaHang[c.id] ?? { mau: '', kyHieu: '' }
-              const trong = !ch.mau && !ch.kyHieu.trim()
+              const trong = !ch.kyHieu.trim()
               const dung = kyHieuXuat(h, c.id)
               return (
                 <div key={c.id} className="ch-hd-dong">
                   <span>{c.ten}</span>
-                  <Select className="inp" value={ch.mau} aria-label={`Mẫu số ${c.ten}`} onChange={e => datCh(c.id, { mau: e.target.value as KyHieuCh['mau'] })}
-                    ds={[{ v: '', t: 'Trống' }, { v: '1', t: '1' }, { v: '2', t: '2' }]} />
+                  <span>{mau}</span>
                   <input className="inp code" value={ch.kyHieu} maxLength={6} placeholder="Trống" aria-label={`Ký hiệu hoá đơn ${c.ten}`}
                     onChange={e => datCh(c.id, { kyHieu: e.target.value.toUpperCase().replace(/\s/g, '') })} />
                   {trong
@@ -150,7 +150,7 @@ export function TheCauHinhHddt({ s, h, dat, toast }: { s: Session; h: CauHinhHdd
         </div>
       </>}
       <Note kind="gray">{h.bat
-        ? <>Ký hiệu lấy theo thông báo phát hành trên phần mềm hoá đơn điện tử. Đây chỉ là mặc định: khi phát hành vẫn sửa được mẫu số, ký hiệu. Ký hiệu có chữ M ở vị trí thứ 4 (vd C26MAB) là hoá đơn khởi tạo từ máy tính tiền.</>
+        ? <>Ký hiệu lấy theo thông báo phát hành trên phần mềm hoá đơn điện tử. Mẫu số theo phương pháp tính thuế: khấu trừ là 1, trực tiếp theo % doanh thu là 2. Ký hiệu chỉ là mặc định, khi phát hành vẫn sửa được. Ký hiệu có chữ M ở vị trí thứ 4 (vd C26MAB) là hoá đơn khởi tạo từ máy tính tiền.</>
         : 'Chưa bật: chứng từ bán hàng không xuất được hoá đơn điện tử từ phần mềm kế toán.'}</Note>
     </div>
   )
@@ -164,6 +164,73 @@ export interface HdDaXuat {
 }
 export const hdCua = (r: Row) => r._hd as HdDaXuat | undefined
 export const tenHd = (h: HdDaXuat) => `${h.mau}${h.kyHieu} số ${h.so}`
+
+// ── Hoá đơn thay thế, huỷ bán, hoá đơn điều chỉnh ở màn xuất bán (QD107, T787) ──
+export type LoaiCt = 'XBAN' | 'HDTHAYTHE' | 'HUYBAN' | 'HDDIEUCHINH'
+export const TEN_LOAI_CT: Record<LoaiCt, string> = { XBAN: 'Bán hàng', HDTHAYTHE: 'Hoá đơn thay thế', HUYBAN: 'Huỷ bán', HDDIEUCHINH: 'Hoá đơn điều chỉnh' }
+export const TIEN_TO_CT: Record<LoaiCt, string> = { XBAN: 'BH', HDTHAYTHE: 'HDTT', HUYBAN: 'HBH', HDDIEUCHINH: 'HDDC' }
+export const loaiCtCua = (r?: Row): LoaiCt => (r?._loaiCt as LoaiCt | undefined) ?? 'XBAN'
+/** Hoá đơn thay thế, điều chỉnh: lưu là dự thảo, phát hành sau */
+export const laHdMoiCua = (r?: Row) => ['HDTHAYTHE', 'HDDIEUCHINH'].includes(loaiCtCua(r))
+/** Chứng từ liên quan: id, số, loại */
+export interface CtLq { id: string; so: string; loai: LoaiCt }
+/** Hoá đơn gốc lưu kèm hoá đơn thay thế, điều chỉnh, huỷ bán: chứng từ gốc và đủ thông tin hoá đơn */
+export interface HdGoc { id: string; so: string; hd: HdDaXuat }
+export const hdGocCua = (r?: Row) => r?._hdGoc as HdGoc | undefined
+/** Hoá đơn thay thế, điều chỉnh, huỷ bán lập từ chứng từ này, còn chưa xoá */
+export const dsHdMoiCon = (man: string, r?: Row) => ((r?._dsHdMoi as CtLq[] | undefined) ?? []).filter(c => !laDaXoa(man, c.id))
+/** Chứng từ mới lập trong phiên (hoá đơn thay thế, điều chỉnh luôn là chứng từ mới) */
+const ctMoi = (man: string, id: string) => apKhoPhieu(man, []).find(x => String(x.id) === id)
+/** Hoá đơn gốc bị thay thế, điều chỉnh khi hoá đơn mới đã phát hành */
+export function ttHdGoc(man: string, r: Row): 'Bị thay thế' | 'Bị điều chỉnh' | null {
+  const da = dsHdMoiCon(man, r).map(c => ctMoi(man, c.id)).filter((x): x is Row => Boolean(x && hdCua(x)))
+  return da.some(x => loaiCtCua(x) === 'HDTHAYTHE') ? 'Bị thay thế' : da.some(x => loaiCtCua(x) === 'HDDIEUCHINH') ? 'Bị điều chỉnh' : null
+}
+/** Hoá đơn thay thế còn dự thảo của hoá đơn gốc */
+export const thayTheNhap = (man: string, r: Row) => dsHdMoiCon(man, r).find(c => c.loai === 'HDTHAYTHE' && !hdCua(ctMoi(man, c.id) ?? {}))
+/** Lý do không lập được hoá đơn thay thế, điều chỉnh cho chứng từ, lập được thì null */
+export function lyDoKhongLap(man: string, r: Row, loai: 'tt' | 'dc'): string | null {
+  if (!hdCua(r)) return 'Chỉ lập với hoá đơn đã phát hành'
+  if (ttHdGoc(man, r) === 'Bị thay thế') return 'Hoá đơn đã bị thay thế, chỉ xem'
+  const nhap = loai === 'tt' ? thayTheNhap(man, r) : undefined
+  return nhap ? `Đang có hoá đơn thay thế dự thảo ${nhap.so}` : null
+}
+/** Số chứng từ kế tiếp theo tiền tố và tháng hiện tại, vd HDTT2610-0001 */
+export function soCtMoi(rows: Row[], tienTo: string) {
+  const dau = `${tienTo}${String(HOM_NAY.getFullYear()).slice(2)}${String(HOM_NAY.getMonth() + 1).padStart(2, '0')}-`
+  const max = rows.reduce((a, r) => (String(r.so).startsWith(dau) ? Math.max(a, Number(String(r.so).slice(dau.length)) || 0) : a), 0)
+  return `${dau}${String(max + 1).padStart(4, '0')}`
+}
+/** Đổi dấu tiền trên dòng hàng: huỷ bán, điều chỉnh giảm ghi âm; người dùng nhập số dương, phần mềm tự đổi dấu */
+const TIEN_DONG = ['gia', 'tien', 'thanh', 'giam', 'ck', 'phiDv', 'phiVc', 'thue', 'dtTruocThue', 'giamThue']
+export const dauDong = (ds: Dong[], dau: 1 | -1): Dong[] => ds.map(d => {
+  const x: Record<string, unknown> = { ...d }
+  for (const k of TIEN_DONG) { const v = x[k]; if (typeof v === 'number' && v && Math.sign(v) !== dau) x[k] = -v }
+  return x as unknown as Dong
+})
+/** Bỏ các trường riêng của chứng từ gốc khi chép sang chứng từ mới */
+function chepGoc(goc: Row): Row {
+  const bo = ['id', 'so', '_hd', '_soHd', '_dsHdMoi', '_ctTt', '_dsTt', '_dsTra', '_huyBan', '_hdTt', '_hdGoc', '_loaiCt', '_lyDoHd', '_dcLoai', '_tienHd',
+    '_ngayTao', '_nguoiTao', 'ngayTao', 'nguoiTao', 'hddt', 'ttPh', 'tenLoaiCt', 'thamChieu', 'stt']
+  return Object.fromEntries(Object.entries(goc).filter(([k]) => !bo.includes(k))) as Row
+}
+/** Mẫu điền sẵn form hoá đơn thay thế, điều chỉnh: chép y nguyên chứng từ gốc kể cả thuế; ngày chứng từ, ngày hoá đơn là hôm nay */
+export function mauTuGoc(goc: Row, loai: 'HDTHAYTHE' | 'HDDIEUCHINH'): Row {
+  const hd = hdCua(goc)!
+  return { ...chepGoc(goc), ngay: dmy(HOM_NAY), _loaiCt: loai, _hdGoc: { id: String(goc.id), so: String(goc.so), hd }, _ngayHd: dmy(HOM_NAY), _kyHieuHd: hd.mau + hd.kyHieu }
+}
+/** Huỷ bán sinh kèm hoá đơn thay thế: y hệt chứng từ gốc, ghi âm, ngày theo hoá đơn thay thế */
+export function huyBanTu(goc: Row, id: string, so: string, ngay: string, hdGoc: HdGoc, hdTt: CtLq): Row {
+  const am = (k: string) => -(Number(goc[k]) || 0)
+  return { ...chepGoc(goc), id, so, ngay, thang: Number(ngay.split('/')[1]) || 10, nguon: 'tay', tt: 'ghi', _loaiCt: 'HUYBAN', _hdGoc: hdGoc, _hdTt: hdTt,
+    _dong: dauDong((goc._dong as Dong[] | undefined) ?? [], -1), tien: am('tien'), thue: am('thue'), tong: am('tong'),
+    dienGiai: `Do thay thế hoá đơn ${hdGoc.hd.so}`, _ghiChu: `Do thay thế hoá đơn ${hdGoc.hd.so}` }
+}
+/** Xoá hoá đơn thay thế, điều chỉnh dự thảo: thay thế thì xoá luôn huỷ bán; chứng từ gốc tự trở lại bình thường */
+export function xoaCtHd(man: string, r: Row, ai: string) {
+  const hb = r._huyBan as CtLq | undefined
+  xoaPhieu(man, [{ id: String(r.id), so: String(r.so) }, ...(hb ? [{ id: hb.id, so: hb.so }] : [])], ai)
+}
 
 /** Địa chỉ, email nhận hoá đơn của khách công ty (dữ liệu giả); khách lẻ để trống */
 const NGUOI_MUA: Record<string, [string, string]> = {
@@ -284,6 +351,11 @@ export function hdMau(r: Row, tien: TienHd, tyLe: boolean): Row {
 /** Phát hành hoá đơn cho chứng từ vừa lưu ở form lập tay (T785): Lưu và phát hành */
 export function phatHanhHd(s: Session, man: string, id: string, kyHieu7: string, ngay: string, k: TtKhach, khongLay: boolean, tien: TienHd): HdDaXuat {
   return ghiHd(man, id, kyHieu7[0], kyHieu7.slice(1), ngay, k, khongLay, cauHinhHddt(s).tenKhachLe || KHACH_LE_HD, tien)
+}
+/** Phát hành hoá đơn thay thế, điều chỉnh đang dự thảo theo thông tin đã lưu (menu ⋯ ở danh sách hoá đơn điện tử, T787) */
+export function phatHanhNhap(s: Session, man: string, r: Row): HdDaXuat {
+  const k: TtKhach = { ...KHACH_TRONG, ...(r._khachHd as Partial<TtKhach> | undefined) }
+  return phatHanhHd(s, man, String(r.id), String(r._kyHieuHd ?? ''), String(r._ngayHd ?? ''), k, Boolean(r._khongLayHd), (r._tienHd as TienHd | undefined) ?? tienCua(r))
 }
 
 /** Một dòng nhãn bên trái, ô nhập bên phải như bảng */
@@ -613,7 +685,7 @@ export function HopXemHd({ s, r, hd, onDong, toast }: { s: Session; r: Row; hd: 
 export function HopXuatHddt({ s, man, ds, onDong, toast, nhieu }: { s: Session; man: string; ds: Row[]; onDong: () => void; toast: (m: string) => void; nhieu?: boolean }) {
   // Giữ danh sách lúc mở: phát hành xong chứng từ đổi trạng thái nhưng popup vẫn hiện đủ để xem kết quả
   const [goc] = useState(ds)
-  const duoc = goc.filter(r => r.nguon !== 'FABi' && !hdCua(r))
+  const duoc = goc.filter(r => r.nguon !== 'FABi' && !hdCua(r) && loaiCtCua(r) === 'XBAN')   // hoá đơn thay thế, điều chỉnh phát hành ở form; huỷ bán không xuất (T787)
   const boQua = goc.length - duoc.length
   // Nút Xuất HĐĐT trên danh sách (nhieu) luôn mở bảng: ngày, mẫu số - ký hiệu, thông tin VAT từng chứng từ; dòng nào bấm Thay đổi mới mở form VAT.
   // Link Xuất trên một dòng, nút ở chân form mở thẳng form Xuất HĐĐT của chứng từ đó (T785)

@@ -1,6 +1,6 @@
 // Chứng từ bán hàng: mỗi cửa hàng một chứng từ mỗi ngày, gom từ đơn POS trên FABi. Số khớp KQKD, Tổng quan.
 import { useEffect, useMemo, useState } from 'react'
-import { Navigate, useLocation, useNavigate, useParams } from 'react-router-dom'
+import { Navigate, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import type { Col, Row, ScreenProps, VoucherCfg } from '../types'
 import { duongDan, tenMan } from '../../app/registry'
 import { cuaHangHienTai, gtgtTyLe, useSession } from '../../app/session'
@@ -31,7 +31,9 @@ import { dongTuHang, tinhDong } from './BangHangBan'
 import { HopCotPhieu } from '../../ui/generic/BangSua'
 import { DS_PTTT } from '../danh-muc/data'
 import { cauHinhGiamVat, giamThueHang, giamThueHkd, hangDuocGiam } from './giam-thue'
-import { HopXemHd, HopXuatHddt, hdCua, hdMau, tenHd } from './hddt'
+import {
+  HopXemHd, HopXuatHddt, TEN_LOAI_CT, dsHdMoiCon, hdCua, hdGocCua, hdMau, laHdMoiCua, loaiCtCua, mauTuGoc, tenHd, thayTheNhap, ttHdGoc, type CtLq,
+} from './hddt'
 
 /** Bán hàng ngoài POS: tiệc mang về, khách công ty đặt trước. Lập tay, không qua FABi; là tab Bán hàng 3.1.7 từ gói Plus (T52) */
 export const NGOAI_POS: VoucherCfg = {
@@ -43,6 +45,8 @@ export const NGOAI_POS: VoucherCfg = {
  *  dòng hàng như Xuất bán POS. Chứng từ FABi giữ như gói Standard: chỉ xem */
 export const BAN_TAY: VoucherCfg = { ...NGOAI_POS, them: 'Thêm chứng từ bán hàng', dongPos: true, dienGiai: ['Bán tiệc cho khách công ty', 'Bán set quà Trung thu', 'Bán suất ăn hội nghị'] }
 const laPlus = (goi: string) => goi === 'PL'
+/** Màn chứng từ bán hàng lập tay gói Plus: nơi lưu hoá đơn thay thế, huỷ bán, hoá đơn điều chỉnh (T787) */
+export const MAN_BAN = 'ban-hang/3-1-1'
 /** Chứng từ mẫu lập tay, nhập từ Excel: số, số ngày lùi so với ngày cuối dữ liệu, giờ, cửa hàng thứ mấy, khách, diễn giải, nguồn,
  *  dòng hàng [hàng thứ mấy, số lượng, % giảm giá, % CK, % phí dịch vụ] */
 const MAU_TAY: [string, number, string, number, number, string, string, [number, number, number, number, number][]][] = [
@@ -73,7 +77,11 @@ export function hangTay(r: Row, tyLe: boolean): Row {
     _cnId: CUA_HANG.find(c => c.ten === r.cn)?.id ?? '', kenh: r.kenh ?? '',
     tenHang: tomTatTenHang(dong.map(d => d.ten)), _tenHangDu: [...new Set(dong.map(d => d.ten))].join(', '),
     tien: dt, thue: tyLe ? 0 : thue, giamThue: giam, tong: tyLe ? dt - giam : dt + thue,
-    hddt: (h => (h ? tenHd(h) : ''))(hdCua(r)), ttPh: hdCua(r) ? 'Đã xuất' : 'Chưa xuất',   // T763, T765, T785
+    hddt: (h => (h ? tenHd(h) : ''))(hdCua(r)),   // T763, T765, T785
+    // Loại chứng từ, trạng thái xuất HĐĐT, tham chiếu của hoá đơn thay thế, huỷ bán, hoá đơn điều chỉnh (T787)
+    ttPh: loaiCtCua(r) === 'HUYBAN' ? 'Không xuất HĐ' : hdCua(r) ? 'Đã xuất' : laHdMoiCua(r) ? 'Dự thảo' : 'Chưa xuất',
+    tenLoaiCt: TEN_LOAI_CT[loaiCtCua(r)],
+    thamChieu: [hdGocCua(r)?.so, (r._huyBan as CtLq | undefined)?.so, (r._hdTt as CtLq | undefined)?.so, ...dsHdMoiCon(MAN_BAN, r).map(c => c.so)].filter(Boolean).join(', '),
     ngayTao: r.ngayTao ?? r._ngayTao, nguoiTao: r.nguoiTao ?? r._nguoiTao }
 }
 
@@ -239,6 +247,7 @@ export function ChungTuBanHang({ sc, mod }: ScreenProps) {
   const { id } = useParams()
   const { s, toast } = useSession()
   const loc = useLocation()
+  const [sp] = useSearchParams()
   const { ban, laDaXoa, phieuMoi, apSua } = useDaXoa(`${mod.key}/${sc.slug}`)
   const [moHd, setMoHd] = useState(false)   // popup xuất hoá đơn điện tử ở chi tiết chứng từ lập tay (T763)
   const tyLe = gtgtTyLe(s)
@@ -264,15 +273,24 @@ export function ChungTuBanHang({ sc, mod }: ScreenProps) {
     return ds.map((r, i) => ({ r, i, t: t(r) })).sort((a, b) => b.t - a.t || a.i - b.i).map(x => x.r)
   }, [tatCa, ban, plus, tyLe])   // eslint-disable-line react-hooks/exhaustive-deps
   const dongXem = id && id !== 'moi' ? rows.find(r => r.id === id) : undefined
+  // Lập hoá đơn thay thế, điều chỉnh từ menu Hoá đơn điện tử (T787): ?lap=tt|dc&goc=id chứng từ gốc đã phát hành hoá đơn
+  const lap = sp.get('lap'), gocLap = rows.find(r => String(r.id) === sp.get('goc'))
+  if (id === 'moi' && plus && (lap === 'tt' || lap === 'dc')) {
+    if (!gocLap || !hdCua(gocLap)) return <Navigate to={duongDan(mod, sc)} replace />
+    return <ChungTuForm key={loc.key} sc={scHien} mod={mod} cfg={BAN_TAY} rows={rows} hdDienTu lapHd={mauTuGoc(gocLap, lap === 'tt' ? 'HDTHAYTHE' : 'HDDIEUCHINH')} />
+  }
   if (id === 'moi') return plus ? <ChungTuForm key={loc.key} sc={scHien} mod={mod} cfg={BAN_TAY} rows={rows} hdDienTu />
     : <Navigate to={duongDan(mod, sc)} replace />   // gói Standard không lập tay Xuất bán POS (T52)
   if (dongXem && dongXem.nguon !== 'FABi') {
     const hd = hdCua(dongXem)
+    // Hoá đơn gốc: Bị thay thế, Bị điều chỉnh khi hoá đơn mới đã phát hành; còn dự thảo thì nhắc (T787)
+    const ttGoc = ttHdGoc(MAN_BAN, dongXem), nhapTt = thayTheNhap(MAN_BAN, dongXem)
     return (
       // phát hành xong vẽ lại form để ô Số hoá đơn, Ký hiệu, Ngày hoá đơn lấy số mới (T763)
       // Đã xuất: nhãn mã tra cứu ở thanh Thanh toán, số hoá đơn ở cột hoá đơn nên bỏ chip HĐ đầu form (T785)
       <ChungTuForm key={`${loc.key}-${hd?.so ?? ''}`} sc={scHien} mod={mod} cfg={BAN_TAY} row={dongXem} rows={rows} hdDienTu
-        chanThem={!hd && <button type="button" className="xp-btn-outline" onClick={() => setMoHd(true)}><Icon n="receipt" className="ic sm" /><span>Xuất HĐĐT</span></button>}>
+        metaThem={ttGoc ? <span className="chip warn">{ttGoc}</span> : nhapTt ? <span className="chip">Đang có hoá đơn thay thế dự thảo {nhapTt.so}</span> : undefined}
+        chanThem={!hd && loaiCtCua(dongXem) === 'XBAN' && <button type="button" className="xp-btn-outline" onClick={() => setMoHd(true)}><Icon n="receipt" className="ic sm" /><span>Xuất HĐĐT</span></button>}>
         {moHd && <HopXuatHddt s={s} man={`${mod.key}/${sc.slug}`} ds={[dongXem]} onDong={() => setMoHd(false)} toast={toast} />}
       </ChungTuForm>
     )
@@ -284,7 +302,7 @@ export function ChungTuBanHang({ sc, mod }: ScreenProps) {
 /** Cột cố định hai đầu, không ẩn, không kéo đổi thứ tự */
 const COT_CO_DINH = new Set(['chk', 'stt', 'ngay', 'so'])
 /** Cột lọc bằng cách chọn trong danh sách giá trị */
-const COT_CHON = new Set(['cn', 'nguon', 'kenh'])
+const COT_CHON = new Set(['cn', 'nguon', 'kenh', 'tenLoaiCt', 'ttPh'])
 
 /** Giá trị các ô lọc ngoài và trong Bộ lọc nâng cao. Chuỗi rỗng là tất cả */
 interface GtLoc { thoiGian: KhoangNgay; tim: string; cn: string; nguon: string; kh: string; kenh: string; pttt: string; hang: string; tonKho: string }
@@ -481,6 +499,8 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
         </button>
       ),
     },
+    // Loại chứng từ: Bán hàng, Hoá đơn thay thế, Huỷ bán, Hoá đơn điều chỉnh, lọc ở hàng lọc của cột (T787)
+    ...(plus ? [{ k: 'tenLoaiCt', t: 'Loại chứng từ', w: 150 } as Col] : []),
     // T286: Diễn giải là tên món trong phiếu, diễn giải cũ đổi tên Ghi chú
     { k: 'doiTuong', t: 'Khách hàng', w: 200 },   // T785
     { k: 'tenHang', t: 'Diễn giải', w: 260, r: r => <span title={String(r._tenHangDu ?? '')}>{r.tenHang}</span> },
@@ -495,6 +515,8 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
     ...(plus ? [{ k: 'hddt', t: 'Số hoá đơn', w: 170, r: (r: Row) => hdCua(r)
       ? <span className="code" title={`Mã cơ quan thuế ${hdCua(r)!.ma}`}>{r.hddt}</span> : null } as Col] : []),
     ...(plus ? [{ k: 'nguon', t: 'Nguồn', w: 90, r: (r: Row) => { const [c, t] = NGUON[String(r.nguon)] ?? NGUON.tay; return <span className={`src ${c}`}>{t}</span> } } as Col] : []),
+    // Chứng từ gốc, hoá đơn thay thế, huỷ bán, hoá đơn điều chỉnh tham chiếu lẫn nhau (T787)
+    ...(plus ? [{ k: 'thamChieu', t: 'Tham chiếu', w: 220, r: (r: Row) => <span title={String(r.thamChieu ?? '')}>{r.thamChieu}</span> } as Col] : []),
     { k: 'ngayTao', t: 'Ngày tạo', w: 140 }, { k: 'nguoiTao', t: 'Người tạo', w: 130 },   // T132
     { k: 'tong', t: 'Tổng tiền', num: true, w: 120, dinh: 'phai' },   // Tổng tiền là cột cuối (T48), cố định bên phải (T239)
     // T785: Trạng thái xuất HĐĐT cố định bên phải cùng Tổng tiền, chỉ ở tab Bán hàng; Đã xuất kèm số hoá đơn bấm mở xem.
@@ -503,6 +525,8 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
       : hdCua(r) ? <span className="ph-o"><span className="ph-tt da">Đã xuất</span>
         <button type="button" className="ph-nut code" title={`Xem hoá đơn ${tenHd(hdCua(r)!)}`}
           onClick={e => { e.stopPropagation(); setXemHd(r) }}>{hdCua(r)!.so}</button></span>
+      // Huỷ bán không xuất hoá đơn; hoá đơn thay thế, điều chỉnh dự thảo phát hành ở form hoặc menu Hoá đơn điện tử (T787)
+      : loaiCtCua(r) !== 'XBAN' ? <span className="ph-o"><span className="ph-tt">{r.ttPh}</span></span>
       // Chưa xuất: link Xuất ngay trên dòng mở popup Xuất HĐĐT của chứng từ đó (T785)
       : <span className="ph-o"><span className="ph-tt">Chưa xuất</span>
         <button type="button" className="ph-nut" title="Xuất hoá đơn điện tử cho chứng từ này"
@@ -567,7 +591,7 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
                   onClick={() => {
                     // T785: chỉ chọn dòng đã xuất thì báo; chọn lẫn thì bỏ qua dòng đã xuất, báo số dòng bỏ qua, mở popup cho phần còn lại
                     const ds = rows.filter(r => chon.has(String(r.id)))
-                    const da = ds.filter(r => hdCua(r) || r.nguon === 'FABi')
+                    const da = ds.filter(r => hdCua(r) || r.nguon === 'FABi' || loaiCtCua(r) !== 'XBAN')   // hoá đơn thay thế, điều chỉnh, huỷ bán không xuất ở đây (T787)
                     if (!ds.length) toast('Chọn chứng từ bán hàng lập tay cần xuất hoá đơn điện tử')
                     else if (da.length === ds.length) toast(da.length === 1 ? `Chứng từ ${da[0].so} đã xuất hoá đơn điện tử.` : `${da.length} chứng từ đã chọn đều đã xuất hoá đơn điện tử.`)
                     else { if (da.length) toast(`Bỏ qua ${da.length} chứng từ đã xuất hoá đơn điện tử`); setMoHd(true) }
