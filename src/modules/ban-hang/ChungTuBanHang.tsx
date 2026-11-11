@@ -86,7 +86,7 @@ export function hangTay(r: Row, tyLe: boolean): Row {
     _cnId: CUA_HANG.find(c => c.ten === r.cn)?.id ?? '', kenh: r.kenh ?? '',
     tenHang: tomTatTenHang(dong.map(d => d.ten)), _tenHangDu: [...new Set(dong.map(d => d.ten))].join(', '),
     tien: dt, thue: tyLe ? 0 : thue, giamThue: giam, tong: tyLe ? dt - giam : dt + thue,
-    hddt: (h => (h ? tenHd(h) : ''))(hdCua(r)),   // T763, T765, T785
+    mauKhHd: (h => (h ? h.mau + h.kyHieu : ''))(hdCua(r)), hddt: hdCua(r)?.so ?? '',   // T763, T765, T785; tách Mẫu số - Ký hiệu, Số hoá đơn (T791)
     // Loại chứng từ, trạng thái xuất HĐĐT, tham chiếu của hoá đơn thay thế, huỷ bán, hoá đơn điều chỉnh (T787)
     ttPh: loaiCtCua(r) === 'HUYBAN' ? 'Không xuất HĐ' : hdCua(r) ? 'Đã xuất' : laHdMoiCua(r) ? 'Dự thảo' : 'Chưa xuất',
     tenLoaiCt: TEN_LOAI_CT[loaiCtCua(r)],
@@ -271,6 +271,7 @@ export function ChungTuBanHang({ sc, mod }: ScreenProps) {
       tenHang: tomTatTenHang(monCua(x).map(m => m.ten)), _tenHangDu: [...new Set(monCua(x).map(m => m.ten))].join(', '),   // cột Diễn giải là tên món trong phiếu (T286)
       // GTGT theo % doanh thu: không tiền thuế, tổng tiền = doanh thu − giảm thuế GTGT (T163, T780)
       tien: x.dt, thue: tyLe ? 0 : x.vat, giamThue: tyLe ? giamThuePhieu(x) : 0, tong: tyLe ? x.dt - giamThuePhieu(x) : x.dt + x.vat, nguon: 'FABi', tt: i < 3 ? 'nhap' : 'ghi',
+      tenLoaiCt: 'Xuất bán POS',   // chứng từ FABi đồng bộ về, cột Loại chứng từ (T791)
       ngayTao: `${dmy(x.date)} 23:30`, nguoiTao: 'Hệ thống',   // tạo khi đồng bộ FABi cuối ngày (T132)
     })), [tyLe])
   // Gói Plus: thêm chứng từ lập tay, nhập Excel; xếp chung với chứng từ FABi theo ngày mới nhất trước (T753)
@@ -366,6 +367,9 @@ export const POS_LOI_MAU: [string, string, string, string, number, string, 'hang
   ['FBB7M3W1ZQ9C', '30/09/2026 22:48', 'Phố Mây Lê Lợi', 'CF-SD', 3, 'Thẻ', 'khoa', 'Tháng 09/2026 của Lê Lợi đã khoá sổ'],
 ]
 
+/** Tab đang đứng của từng danh sách, giữ khi mở phiếu rồi quay lại (T791) */
+const TAB_NHO = new Map<string, 'all' | 'pos' | 'tay'>()
+
 function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
   const { s, toast } = useSession()
   const tyLe = gtgtTyLe(s)
@@ -374,7 +378,8 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
   const loc0 = useLocNhap(locMacDinh)
   const { nhap, dat, ap } = loc0
   const [locCot, setLocCot] = useState<Record<string, GiaTriLoc>>({})
-  const [chipTab, setChipTab] = useState<'all' | 'pos' | 'tay'>('all')
+  const [chipTab, setChipTab] = useState<'all' | 'pos' | 'tay'>(() => TAB_NHO.get(path) ?? 'all')
+  useEffect(() => { TAB_NHO.set(path, chipTab) }, [path, chipTab])   // mở phiếu rồi đóng thì về đúng tab đang đứng (T791)
   const [moHopDongBo, setMoHopDongBo] = useState(false)
   const [chon, setChon] = useState<Set<string>>(new Set())   // chọn nhiều chứng từ để xuất hoá đơn điện tử (T763)
   const [moHd, setMoHd] = useState(false)
@@ -521,8 +526,9 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
     // bỏ cột Nguồn: Xuất bán POS chỉ có nguồn FABi (T115); gói Plus có thêm chứng từ lập tay, nhập Excel nên hiện lại (T753)
     // Hoá đơn điện tử của chứng từ lập tay (T763); hoá đơn FABi xuất tại máy POS nên để trống
     // T765: Số hoá đơn tách cột riêng; Trạng thái phát hành ở cuối, sau Tổng tiền
-    ...(plus ? [{ k: 'hddt', t: 'Số hoá đơn', w: 170, r: (r: Row) => hdCua(r)
-      ? <span className="code" title={`Mã cơ quan thuế ${hdCua(r)!.ma}`}>{r.hddt}</span> : null } as Col] : []),
+    // T791: Mẫu số - Ký hiệu và Số hoá đơn tách 2 cột
+    ...(plus ? [{ k: 'mauKhHd', t: 'Mẫu số - Ký hiệu', w: 140 } as Col,
+      { k: 'hddt', t: 'Số hoá đơn', w: 110, r: (r: Row) => hdCua(r) ? <span title={`Mã cơ quan thuế ${hdCua(r)!.ma}`}>{r.hddt}</span> : null } as Col] : []),
     ...(plus ? [{ k: 'nguon', t: 'Nguồn', w: 90, r: (r: Row) => { const [c, t] = NGUON[String(r.nguon)] ?? NGUON.tay; return <span className={`src ${c}`}>{t}</span> } } as Col] : []),
     // Chứng từ gốc, hoá đơn thay thế, huỷ bán, hoá đơn điều chỉnh tham chiếu lẫn nhau (T787)
     ...(plus ? [{ k: 'thamChieu', t: 'Tham chiếu', w: 220, r: (r: Row) => <span title={String(r.thamChieu ?? '')}>{r.thamChieu}</span> } as Col] : []),
