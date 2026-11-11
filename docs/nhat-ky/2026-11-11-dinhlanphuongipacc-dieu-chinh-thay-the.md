@@ -12,6 +12,7 @@
 - `src/modules/ban-hang/ChungTuBanHang.tsx`: đường dẫn `moi?lap=tt|dc&goc=<id>` mở form lập. Danh sách thêm cột Loại chứng từ (lọc ở hàng lọc cột), cột Tham chiếu. Trạng thái xuất HĐĐT có thêm Dự thảo, Không xuất HĐ. Hoá đơn gốc có chip Bị thay thế, Bị điều chỉnh, hoặc nhắc đang có thay thế dự thảo. Xuất HĐĐT hàng loạt bỏ qua 3 loại mới.
 - `src/modules/hoa-don/HoaDonDienTu.tsx`: menu ⋯ Thay thế, Điều chỉnh mở form thật; Phát hành, Xoá dùng được với dự thảo. Danh sách hiện dự thảo, cột Hoá đơn gốc, trạng thái Bị thay thế, Bị điều chỉnh, không hiện huỷ bán. Tab Điều chỉnh thay thế hiện cặp lập thật trước dữ liệu mẫu, bấm số chứng từ mở được cả hai.
 - `src/styles/app.css`: mục cuối file `(T787)`.
+- Góp ý của dinhlanphuongipacc sau lần push đầu, chỉ ở form Hoá đơn điều chỉnh: lựa chọn loại điều chỉnh lên cùng dòng hoá đơn gốc, Điều chỉnh tăng đứng trước. Khoá khối thông tin chung (kho, khách hàng, địa chỉ, MST, người giao dịch, kênh bán, ghi chú, người mua) bằng biến `suaTtc`. Ngày hoá đơn, ký hiệu, ngày chứng từ, lý do vẫn sửa được. Form Hoá đơn thay thế giữ nguyên.
 
 ## Đã kiểm
 

@@ -47692,7 +47692,7 @@ textarea.m-tpb-inp { height: auto; padding: 8px 12px; }
 
 /* ── Hoá đơn thay thế, huỷ bán, hoá đơn điều chỉnh: dòng hoá đơn gốc, loại điều chỉnh, ô lý do (T787) ── */
 .ct-hd-goc { display: flex; flex-direction: column; gap: 6px; padding: 8px 16px; font-size: 13px; }
-.ct-hd-goc-loai { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
+.ct-hd-goc-loai { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-right: 16px; }
 .ct-hd-goc-loai label { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
 .ct-hd-goc-dong { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; color: var(--body); }
 .ct-hd-goc-dong > span { flex: 1; min-width: 0; line-height: 1.5; }
