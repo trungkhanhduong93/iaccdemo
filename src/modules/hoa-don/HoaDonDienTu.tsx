@@ -339,7 +339,9 @@ function HopTbss({ r, onDong, onLuu }: { r: Row; onDong: () => void; onLuu: (x: 
 // ── Tab Điều chỉnh thay thế: mỗi dòng một cặp hoá đơn gốc và hoá đơn mới: cặp lập thật (T787) rồi dữ liệu mẫu ──
 /** Cặp hoá đơn; cặp lập thật (T787) có thêm chứng từ gốc, chứng từ mới để mở */
 interface CapHd {
-  id: string; loai: 'Điều chỉnh' | 'Thay thế'; goc: [string, string, string, string, number]; moi: [string, string, string, string, number]; tt: string; nguoiMua: string
+  id: string; loai: 'Điều chỉnh' | 'Thay thế'; goc: [string, string, string, string, number]; moi: [string, string, string, string, number]; nguoiMua: string
+  /** Trạng thái HĐĐT, trạng thái thuế của hoá đơn mới như tab Hoá đơn điện tử; dự thảo chưa có trạng thái thuế (T798) */
+  ttHd: 'Dự thảo' | 'Đã phát hành'; tt: string
   ctGoc?: [string, string]; ctMoi?: [string, string]; rGoc?: Row; rMoi?: Row
 }
 /** Cặp hoá đơn từ hoá đơn thay thế, điều chỉnh đã lập ở màn xuất bán (T787) */
@@ -353,11 +355,19 @@ function capThat(tyLe: boolean): CapHd[] {
       id, loai: loaiCtCua(r) === 'HDTHAYTHE' ? 'Thay thế' : 'Điều chỉnh', nguoiMua: String(r.doiTuong ?? ''),
       goc: [g.hd.mau, g.hd.kyHieu, g.hd.so, g.hd.ngay, g.hd.tong ?? Number(rGoc?.tong) ?? 0],
       moi: [mauKh[0] ?? '', mauKh.slice(1), hd?.so ?? '', hd?.ngay ?? String(r._ngayHd ?? ''), Number(r.tong) || 0],
-      tt: !hd ? 'Dự thảo' : !laMayTinhTien(mauKh) ? 'Hợp lệ' : daGui.has(id) ? 'Đã gửi TCTN' : 'Chưa gửi TCTN',
+      ttHd: hd ? 'Đã phát hành' : 'Dự thảo', tt: !hd ? '' : !laMayTinhTien(mauKh) ? 'Hợp lệ' : daGui.has(id) ? 'Đã gửi TCTN' : 'Chưa gửi TCTN',
       ctGoc: [g.id, g.so], ctMoi: [String(r.id), String(r.so)], rGoc, rMoi: r,
     }
   })
 }
+/** Hoá đơn dự thảo để xem mẫu: ký hiệu, ngày, tiền đã lưu trên chứng từ, số 00000000 (T798) */
+function hdNhap(r: Row): HdDaXuat {
+  const kh = String(r._kyHieuHd ?? ''), tien = (r._tienHd as Partial<HdDaXuat> | undefined) ?? {}
+  return { mau: kh[0] ?? '', kyHieu: kh.slice(1), so: SO_NHAP, ngay: String(r._ngayHd ?? ''), ma: '', truoc: tien.truoc, thue: tien.thue, tong: tien.tong }
+}
+/** Thao tác ở tab Điều chỉnh thay thế: dự thảo có Phát hành, Gửi CQT, Phát hành và Gửi CQT; đã phát hành chỉ Gửi CQT (T798) */
+type ViecCap = 'ph' | 'gui' | 'phGui'
+const VIEC_CAP: [ViecCap, string, string][] = [['ph', 'Phát hành', 'receipt'], ['gui', 'Gửi CQT', 'upload'], ['phGui', 'Phát hành và Gửi CQT', 'upload']]
 // Bỏ 2 cặp mẫu không có chứng từ thật: mọi dòng đều có số chứng từ, bấm mở được (dinhlanphuongipacc 11/11/2026, T787)
 const guiCap = new Set<string>()
 
@@ -388,23 +398,39 @@ export function DieuChinhThayThe({ sc, mod }: ScreenProps) {
   const { s, toast } = useSession()
   const nav = useNavigate()
   useKho(); useBanPhieu()
-  const [xem, setXem] = useState<{ r: Row; hd: HdDaXuat } | null>(null)
+  const [xem, setXem] = useState<{ r: Row; hd: HdDaXuat; nhap?: boolean } | null>(null)
   // Lọc theo ngày hoá đơn điều chỉnh, thay thế (dự thảo lấy ngày dự kiến); tìm số hoá đơn, số chứng từ, người mua (T797)
   const loc = useLocTab(duongDan(mod, sc), { ten: 'Loại', ds: ['Điều chỉnh', 'Thay thế'] }, 'Số HĐ, số chứng từ, người mua')
   const ds = capThat(gtgtTyLe(s)).filter(c => loc.khop(c.moi[3], `${c.goc[2]} ${c.moi[2]} ${c.ctGoc?.[1] ?? ''} ${c.ctMoi?.[1] ?? ''} ${c.nguoiMua}`, c.loai))
-  const ttCua = (c: CapHd) => (guiCap.has(c.id) || daGui.has(c.id) ? 'Đã gửi TCTN' : c.tt)
+  const ttCua = (c: CapHd) => (c.ttHd === 'Dự thảo' ? '' : guiCap.has(c.id) || daGui.has(c.id) ? 'Đã gửi TCTN' : c.tt)
   const moXem = (c: CapHd, h: CapHd['goc'], ma: number, moi: boolean) => {
+    // Dự thảo: xem mẫu hoá đơn dựng từ chứng từ, số 00000000 (T798)
+    if (moi && c.ttHd === 'Dự thảo' && c.rMoi) { setXem({ r: c.rMoi, hd: hdNhap(c.rMoi), nhap: true }); return }
     const hdThat = c.rMoi && (moi ? hdCua(c.rMoi) : hdGocCua(c.rMoi)?.hd)
     if (hdThat) { setXem({ r: (moi ? c.rMoi : c.rGoc) ?? c.rMoi!, hd: hdThat }); return }
     const tong = h[4], thue = Math.round(tong / 13.5)
     setXem({ r: { id: c.id, doiTuong: c.nguoiMua }, hd: { mau: h[0], kyHieu: h[1], so: h[2], ngay: h[3], ma: `M26-${(0x3b0000 + ma).toString(16).toUpperCase()}`, nguoiMua: c.nguoiMua, truoc: tong - thue, thue, tong } })
   }
-  // Số HĐ là link xem hoá đơn như tab Hoá đơn điện tử; dự thảo chưa có số ghi 00000000; số chứng từ cột riêng mở chứng từ (T787, T796)
+  // Số HĐ là link xem hoá đơn như tab Hoá đơn điện tử; dự thảo ghi 00000000, vẫn mở xem mẫu (T796, T798); số chứng từ cột riêng mở chứng từ (T787)
   const oSo = (c: CapHd, moi: boolean, ma: number) => {
     const h = moi ? c.moi : c.goc
-    return <td className="code">{h[2]
-      ? <button type="button" className="ds-link-so" title="Xem hoá đơn" onClick={() => moXem(c, h, ma, moi)}>{h[2]}</button>
+    const nhap = moi && c.ttHd === 'Dự thảo'
+    return <td className="code">{h[2] || nhap
+      ? <button type="button" className="ds-link-so" title={nhap ? 'Xem mẫu hoá đơn dự thảo' : 'Xem hoá đơn'} onClick={() => moXem(c, h, ma, moi)}>{h[2] || SO_NHAP}</button>
       : <span className="dim">{SO_NHAP}</span>}</td>
+  }
+  /** Lý do thao tác không dùng được, theo luật tab Hoá đơn điện tử (hàm lyDo) */
+  const lyViec = (v: ViecCap, c: CapHd): string | null => {
+    const dong: Row = { id: c.id, ttHd: c.ttHd, kyHieu: c.moi[1], ttThue: ttCua(c) }
+    if (v !== 'phGui') return lyDo(v, dong)
+    return lyDo('ph', dong) ?? (laMayTinhTien(c.moi[1]) ? null : 'Chỉ hoá đơn máy tính tiền (ký hiệu có chữ M ở vị trí thứ 4) mới gửi CQT')
+  }
+  const lam = (v: ViecCap, c: CapHd) => {
+    if (v === 'gui') { guiCap.add(c.id); bao(); toast(`Đã gửi hoá đơn số ${c.moi[2]} lên cơ quan thuế`); return }
+    // Phát hành dự thảo như menu ⋯ tab Hoá đơn điện tử; Phát hành và Gửi CQT gửi luôn sau khi cấp số
+    const hd = phatHanhNhap(s, MAN_PL, c.rMoi!)
+    if (v === 'phGui') daGui.add(c.id)
+    bao(); toast(`Đã phát hành hoá đơn ${hd.mau}${hd.kyHieu} số ${hd.so}${v === 'phGui' ? ', đã gửi lên cơ quan thuế' : ''}`)
   }
   const oCt = (c: CapHd, moi: boolean) => {
     const ct = moi ? c.ctMoi : c.ctGoc
@@ -419,27 +445,37 @@ export function DieuChinhThayThe({ sc, mod }: ScreenProps) {
       <h1 className="sr-only">{tenMan(sc)}</h1>
       <section className="card voucher-top hddt-tab">
         {loc.thanh}
-        <div className="hddt-bang">
+        <div className="hddt-bang hddt-dctt">
           <table className="tbl ke-doc mot-dong">
             <thead>
-              <tr><th rowSpan={2}>Loại</th><th colSpan={5}>Hoá đơn bị điều chỉnh, thay thế</th><th colSpan={6}>Hoá đơn điều chỉnh, thay thế</th><th rowSpan={2} className="c">Thao tác</th></tr>
+              <tr><th rowSpan={2}>Loại</th><th colSpan={5}>Hoá đơn bị điều chỉnh, thay thế</th><th colSpan={7}>Hoá đơn điều chỉnh, thay thế</th><th rowSpan={2} className="c">Thao tác</th></tr>
               <tr>{['Mẫu số - Ký hiệu', 'Số HĐ', 'Ngày HĐ', 'Tổng tiền', 'Số chứng từ'].map((t, i) => <th key={`g${i}`}>{t}</th>)}
-                {['Mẫu số - Ký hiệu', 'Số HĐ', 'Ngày HĐ', 'Tổng tiền', 'Trạng thái thuế', 'Số chứng từ'].map((t, i) => <th key={`m${i}`}>{t}</th>)}</tr>
+                {['Mẫu số - Ký hiệu', 'Số HĐ', 'Ngày HĐ', 'Tổng tiền', 'Trạng thái HĐĐT', 'Trạng thái thuế', 'Số chứng từ'].map((t, i) => <th key={`m${i}`}>{t}</th>)}</tr>
             </thead>
             <tbody>
-              {!ds.length && <tr><td colSpan={13} className="c dim">Chưa có hoá đơn điều chỉnh, thay thế trong thời gian này. Lập ở tab Hoá đơn điện tử, menu ⋯ của hoá đơn đã phát hành.</td></tr>}
+              {!ds.length && <tr><td colSpan={14} className="c dim">Chưa có hoá đơn điều chỉnh, thay thế trong thời gian này. Lập ở tab Hoá đơn điện tử, menu ⋯ của hoá đơn đã phát hành.</td></tr>}
               {ds.map((c, i) => {
                 const tt = ttCua(c)
-                const ly = tt === 'Dự thảo' ? 'Phát hành hoá đơn trước khi gửi CQT' : !laMayTinhTien(c.moi[1]) ? 'Chỉ hoá đơn máy tính tiền (ký hiệu có chữ M ở vị trí thứ 4) mới gửi CQT' : tt === 'Đã gửi TCTN' ? 'Hoá đơn đã gửi CQT' : null
                 return (
                   <tr key={c.id}>
                     <td>{c.loai}</td>
                     {oHd(c, c.goc, i * 2)}
                     <td className="code">{c.moi[0]}{c.moi[1]}</td>{oSo(c, true, i * 2 + 1)}<td>{c.moi[3]}</td><td className="num">{money(c.moi[4])}</td>
-                    <td><span className={`hddt-thue ${tt === 'TCTN từ chối' ? 'loi' : tt === 'Dự thảo' || tt === 'Chưa gửi TCTN' ? 'cho' : 'tot'}`}>{tt}</span></td>
+                    <td><span className={`ph-tt${c.ttHd === 'Đã phát hành' ? ' da' : ''}`}>{c.ttHd}</span></td>
+                    <td>{tt && <span className={`hddt-thue ${tt === 'Hợp lệ' || tt === 'Đã gửi TCTN' ? 'tot' : tt === 'TCTN từ chối' ? 'loi' : 'cho'}`}>{tt}</span>}</td>
                     {oCt(c, true)}
-                    <td className="c"><button type="button" className="btn sm" disabled={Boolean(ly)} title={ly ?? undefined}
-                      onClick={() => { guiCap.add(c.id); bao(); toast(`Đã gửi hoá đơn số ${c.moi[2]} lên cơ quan thuế`) }}>Gửi CQT</button></td>
+                    <td className="c"><span className="hddt-menu">
+                      <Dropdown btnClass="icon-btn sm" align="end" width={240} title={`Thao tác với hoá đơn số ${c.moi[2] || SO_NHAP}`} label={<Icon n="more" className="ic sm" />}>
+                        {dong => VIEC_CAP.filter(([v]) => c.ttHd === 'Dự thảo' || v === 'gui').map(([v, ten, ic]) => {
+                          const ly = lyViec(v, c)
+                          return (
+                            <button key={v} type="button" data-mi className="mi" disabled={Boolean(ly)} title={ly ?? undefined} onClick={() => { dong(); lam(v, c) }}>
+                              <span className="mi-ic"><Icon n={ic} kieu="net" className="ic sm" /></span><span className="mi-t"><b>{ten}</b></span>
+                            </button>
+                          )
+                        })}
+                      </Dropdown>
+                    </span></td>
                   </tr>
                 )
               })}
@@ -448,7 +484,7 @@ export function DieuChinhThayThe({ sc, mod }: ScreenProps) {
         </div>
         <p className="hddt-ghi"><Icon n="info" className="ic sm" />Lập điều chỉnh, thay thế từ tab Hoá đơn điện tử (chọn hoá đơn hợp lệ, bấm Điều chỉnh hoặc Thay thế). Tab này để theo dõi cặp hoá đơn gốc và hoá đơn mới.</p>
       </section>
-      {xem && <HopXemHd s={s} r={xem.r} hd={xem.hd} toast={toast} onDong={() => setXem(null)} />}
+      {xem && <HopXemHd s={s} r={xem.r} hd={xem.hd} nhap={xem.nhap} toast={toast} onDong={() => setXem(null)} />}
     </div>
   )
 }

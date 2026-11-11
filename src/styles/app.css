@@ -47588,18 +47588,18 @@ textarea.m-tpb-inp { height: auto; padding: 8px 12px; }
   font-size: 13px; font-weight: 700; text-align: left; vertical-align: middle;
   border-bottom: 1px solid var(--luoi-vien); border-right: 1px solid var(--line-2);
 }
-/* Ranh giới nhóm cột cấp 1: kẻ đậm từ tiêu đề xuống thân bảng. Cột: 1 Loại, 2-6 hoá đơn gốc, 7-12 hoá đơn mới, 13 Thao tác;
-   dòng tiêu đề 2 chỉ có 11 ô của 2 nhóm. Ô nhóm ở dòng 1 có gạch dưới đậm để thấy nhóm phủ những cột nào */
+/* Ranh giới nhóm cột cấp 1: kẻ đậm từ tiêu đề xuống thân bảng. Cột: 1 Loại, 2-6 hoá đơn gốc, 7-13 hoá đơn mới, 14 Thao tác (T798);
+   dòng tiêu đề 2 chỉ có 12 ô của 2 nhóm. Ô nhóm ở dòng 1 có gạch dưới đậm để thấy nhóm phủ những cột nào */
 .hddt-bang .tbl td.code { font-weight: 400; color: inherit; }   /* Mẫu số - Ký hiệu, Số HĐ chữ thường như ô khác */
 .hddt-bang .tbl { --hddt-nhom: rgb(196, 205, 219); }   /* cùng tông xám với đường lưới --luoi-dong, đậm hơn */
 .hddt-bang .tbl thead tr:first-child th[colspan] { border-bottom: 2px solid var(--hddt-nhom); }
 .hddt-bang .tbl thead tr:first-child th[colspan],
 .hddt-bang .tbl thead tr + tr th:nth-child(5),
-.hddt-bang .tbl thead tr + tr th:nth-child(11),
+.hddt-bang .tbl thead tr + tr th:nth-child(12),
 .hddt-bang .tbl thead tr:first-child th:first-child,
 .hddt-bang .tbl tbody td:nth-child(1),
 .hddt-bang .tbl tbody td:nth-child(6),
-.hddt-bang .tbl tbody td:nth-child(12) { border-right: 2px solid var(--hddt-nhom); }
+.hddt-bang .tbl tbody td:nth-child(13) { border-right: 2px solid var(--hddt-nhom); }
 .hddt-ghi { display: flex; align-items: flex-start; gap: 6px; margin: 4px 0 0; font-size: 13px; color: var(--muted); }
 .hddt-ghi .ic { flex: none; margin-top: 2px; }
 
@@ -47794,3 +47794,11 @@ textarea.m-tpb-inp { height: auto; padding: 8px 12px; }
 .hdx-giay.tbss-giay { width: 1123px; padding: 28px 36px; page: tbss-ngang; }
 @page tbss-ngang { size: A4 landscape; margin: 10mm; }
 @media print { body.in-hdx .hdx-giay.tbss-giay { width: auto; padding: 0; } }
+/* ── Tab Điều chỉnh thay thế: cột Thao tác cố định bên phải khi cuộn ngang, như tab Hoá đơn điện tử (T798) ── */
+.hddt-dctt .tbl thead tr:first-child th:last-child,
+.hddt-dctt .tbl tbody td:last-child:not([colspan]) {
+  position: sticky; right: 0; z-index: 2; background: #fff;
+  border-left: 1px solid var(--luoi-vien) !important; box-shadow: -4px 0 6px -4px rgba(14, 26, 43, .12);
+}
+.hddt-dctt .tbl thead tr:first-child th:last-child { z-index: 4; background: var(--th); }   /* trên ô tiêu đề dòng 2 (z-index 3) cuộn qua */
+.hddt-dctt .tbl tbody tr:hover td:last-child:not([colspan]) { background: #f2f7fb; }

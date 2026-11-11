@@ -625,14 +625,16 @@ function BanHd({ hd, t }: { hd: HdDaXuat; t: TtXem }) {
 
 /** Popup xem hoá đơn đã xuất (T785, T789): mở từ ô Số hoá đơn trên form, cột Trạng thái xuất HĐĐT ở danh sách, menu Hoá đơn điện tử.
  *  Mở thẳng bản hoá đơn nhà cung cấp trả về; nút quay lại sang Thông tin hoá đơn điện tử (số, ký hiệu, ngày, thông tin VAT, tiền) */
-export function HopXemHd({ s, r, hd, onDong, toast }: { s: Session; r: Row; hd: HdDaXuat; onDong: () => void; toast: (m: string) => void }) {
+export function HopXemHd({ s, r, hd, onDong, toast, nhap }: { s: Session; r: Row; hd: HdDaXuat; onDong: () => void; toast: (m: string) => void
+  /** Hoá đơn dự thảo: xem mẫu dựng từ chứng từ, không lấy từ nhà cung cấp, số 00000000 (T798) */
+  nhap?: boolean }) {
   // Bấm số hoá đơn, mắt xem: mở thẳng bản hoá đơn điện tử; lấy không được từ nhà cung cấp thì mở thông tin hoá đơn (T789)
-  const [xemBan, setXemBan] = useState(() => !loiLayHd(s, hd))
+  const [xemBan, setXemBan] = useState(() => nhap || !loiLayHd(s, hd))
   const [dangIn, setDangIn] = useState(false)
   useDongEsc(onDong)
   const t = ttXemHd(s, r, hd)
   const { k, tien, mau2 } = t
-  const loi = loiLayHd(s, hd)
+  const loi = nhap ? null : loiLayHd(s, hd)
   /** Thao tác cần bản hoá đơn từ nhà cung cấp: lấy không được thì báo lý do */
   const layNcc = (lam: () => void) => () => (loi ? toast(loi) : lam())
   // In: chỉ in vùng hoá đơn, xong thì bỏ lớp in khỏi body
@@ -647,7 +649,7 @@ export function HopXemHd({ s, r, hd, onDong, toast }: { s: Session; r: Row; hd: 
   const daGuiMail = t.h.guiEmail && !t.khongLay && Boolean(k.email)
   // Popup thông tin: tiêu đề chung, số hoá đơn nằm ở dải dưới; bản hoá đơn: ghi ký hiệu, số
   const tieuDe = (ban: boolean) => <>{ban ? <>Hoá đơn điện tử <span className="code">{hd.mau}{hd.kyHieu}</span> số <span className="code hdx-do">{hd.so}</span></> : 'Thông tin hoá đơn điện tử'}
-    <span className="ph-tt da">Hợp lệ</span>{!ban && daGuiMail && <span className="ph-tt hdx-mail">Đã gửi email</span>}</>
+    {nhap ? <span className="ph-tt">Dự thảo</span> : <span className="ph-tt da">Hợp lệ</span>}{!ban && daGuiMail && <span className="ph-tt hdx-mail">Đã gửi email</span>}</>
   // Tải: mở hộp Lưu của máy để chọn thư mục; Chia sẻ: mở bảng chia sẻ của máy chọn Zalo, Telegram... (T793)
   const taiFile = (duoi: 'pdf' | 'xml') => layNcc(() => {
     void luuFile(duoi === 'pdf' ? pdfHd(hd, t) : xmlHd(hd, t), tenFileHd(hd, duoi)).then(m => m && toast(m))
