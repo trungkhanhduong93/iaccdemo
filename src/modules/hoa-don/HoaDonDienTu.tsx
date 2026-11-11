@@ -288,10 +288,7 @@ function capThat(tyLe: boolean): CapHd[] {
     }
   })
 }
-const CAP_MAU: CapHd[] = [
-  { id: 'c1', loai: 'Điều chỉnh', goc: ['1', 'C26TAA', '00000121', '28/09/2026', 2_916_000], moi: ['1', 'C26TAA', '00000129', '03/10/2026', -216_000], tt: 'Hợp lệ', nguoiMua: 'Công ty CP Du lịch Biển Xanh' },
-  { id: 'c2', loai: 'Thay thế', goc: ['1', 'C26MAC', '00000038', '30/09/2026', 972_000], moi: ['1', 'C26MAC', '00000044', '04/10/2026', 972_000], tt: 'TCTN từ chối', nguoiMua: 'Văn phòng đại diện Hạ Long Tech' },
-]
+// Bỏ 2 cặp mẫu không có chứng từ thật: mọi dòng đều có số chứng từ, bấm mở được (dinhlanphuongipacc 11/11/2026, T787)
 const guiCap = new Set<string>()
 
 export function DieuChinhThayThe({ sc }: ScreenProps) {
@@ -300,7 +297,7 @@ export function DieuChinhThayThe({ sc }: ScreenProps) {
   useKho(); useBanPhieu()
   const [loai, setLoai] = useState('')
   const [xem, setXem] = useState<{ r: Row; hd: HdDaXuat } | null>(null)
-  const ds = [...capThat(gtgtTyLe(s)), ...CAP_MAU].filter(c => !loai || c.loai === loai)
+  const ds = capThat(gtgtTyLe(s)).filter(c => !loai || c.loai === loai)
   const ttCua = (c: CapHd) => (guiCap.has(c.id) || daGui.has(c.id) ? 'Đã gửi TCTN' : c.tt)
   const moXem = (c: CapHd, h: CapHd['goc'], ma: number, moi: boolean) => {
     const hdThat = c.rMoi && (moi ? hdCua(c.rMoi) : hdGocCua(c.rMoi)?.hd)
@@ -341,6 +338,7 @@ export function DieuChinhThayThe({ sc }: ScreenProps) {
                 {['Mẫu số - Ký hiệu', 'Số HĐ', 'Ngày HĐ', 'Tổng tiền', 'Trạng thái thuế', ''].map((t, i) => <th key={`m${i}`}>{t}</th>)}</tr>
             </thead>
             <tbody>
+              {!ds.length && <tr><td colSpan={13} className="c dim">Chưa có hoá đơn điều chỉnh, thay thế. Lập ở tab Hoá đơn điện tử, menu ⋯ của hoá đơn đã phát hành.</td></tr>}
               {ds.map((c, i) => {
                 const tt = ttCua(c)
                 const ly = tt === 'Dự thảo' ? 'Phát hành hoá đơn trước khi gửi CQT' : !laMayTinhTien(c.moi[1]) ? 'Chỉ hoá đơn máy tính tiền (ký hiệu có chữ M ở vị trí thứ 4) mới gửi CQT' : tt === 'Đã gửi TCTN' ? 'Hoá đơn đã gửi CQT' : null
