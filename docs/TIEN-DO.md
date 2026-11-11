@@ -11,6 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T797 | Menu Hoá đơn điện tử: thông báo sai sót mẫu trỏ đúng hoá đơn có trong tab Hoá đơn điện tử (bỏ hoá đơn tháng 9 không có); tab Điều chỉnh thay thế, Thông báo sai sót thêm thanh lọc thời gian, tìm kiếm như tab Hoá đơn điện tử | dinhlanphuongipacc | Đang làm | `HoaDonDienTu.tsx` (DieuChinhThayThe, ThongBaoSaiSot, dsTbss) |
 | T788 | Kê khai hoá đơn thay thế, điều chỉnh về kỳ gốc: kỳ chưa nộp thì gạch hoá đơn gốc trên bảng kê, kỳ đã nộp thì gợi ý tờ khai bổ sung 01/KHBS | dinhlanphuongipacc | Chờ | Làm sau T787. Sửa module Kê khai thuế |
 | T781 | Giảm thuế GTGT xét hiệu lực nghị quyết theo ngày của từng chứng từ, không theo ngày làm việc (`ptGiamHienHanh` dùng `HOM_NAY`) | | Chờ | Thấy lúc soát T780, `giam-thue.ts` |
 | T776 | Màn Tính giá vốn: sang trang 2 thì dòng "Cộng 51 dòng" mất đường kẻ dưới, dưới dòng tổng còn khoảng trống trong bảng, dưới khung bảng còn khoảng trống xám | | Chờ | Trum báo lúc làm T774, ảnh chụp ở trang 2, tháng 10/2026 |
