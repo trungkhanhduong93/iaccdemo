@@ -35,14 +35,31 @@ type TtTbss = 'Chưa gửi' | 'CQT chấp nhận' | 'CQT từ chối'
 interface Tbss {
   id: string; mau: string; kyHieu: string; so: string; ngay: string; loai: string; noiDung: string; tt: TtTbss; ngayTao: string
   maCqt: string; nguoiMua: string; diaChi: string; email: string
+  /** TBSS mẫu: id chứng từ bán hàng mẫu có hoá đơn sai sót; mẫu số, ký hiệu, số, người mua lấy theo hoá đơn đó (T797) */
+  ctMau?: string
 }
 const daGui = new Set<string>()
+// TBSS mẫu trỏ hoá đơn có trong tab Hoá đơn điện tử: tay-9 số 121 (hoá đơn gốc), tay-10 số 119 (bị thay thế bởi HDTT2610-0001) (T797)
+const TB_TRONG = { mau: '', kyHieu: '', so: '', ngay: '', loai: '', maCqt: '', nguoiMua: '', diaChi: '', email: '' }
 let dsTbss: Tbss[] = [
-  { id: 'tb-1', mau: '1', kyHieu: 'C26TAA', so: '00000118', ngay: '25/09/2026', loai: 'Hoá đơn gốc', noiDung: 'Sai địa chỉ người mua', tt: 'Chưa gửi', ngayTao: '06/10/2026',
-    maCqt: '', nguoiMua: 'Công ty TNHH Thương mại Minh Phát', diaChi: '25 Nguyễn Trãi, Thanh Xuân, Hà Nội', email: 'ketoan@minhphat.vn' },
-  { id: 'tb-2', mau: '1', kyHieu: 'C26MAC', so: '00000038', ngay: '30/09/2026', loai: 'Hoá đơn bị thay thế', noiDung: 'Sai mã số thuế người mua, đã lập hoá đơn thay thế', tt: 'CQT chấp nhận', ngayTao: '04/10/2026',
-    maCqt: '00A1B9D3E9468482C86A2A6C49865FC1D', nguoiMua: 'Công ty CP Du lịch Biển Xanh', diaChi: '88 Trần Phú, Nha Trang, Khánh Hoà', email: 'hoadon@bienxanh.vn' },
+  { ...TB_TRONG, id: 'tb-1', ctMau: 'tay-9', noiDung: 'Sai địa chỉ người mua', tt: 'Chưa gửi', ngayTao: '03/10/2026' },
+  { ...TB_TRONG, id: 'tb-2', ctMau: 'tay-10', noiDung: 'Sai tên đơn vị người mua, đã lập hoá đơn thay thế', tt: 'CQT chấp nhận', ngayTao: '07/10/2026' },
 ]
+/** TBSS mẫu lấy thông tin hoá đơn theo dòng tab Hoá đơn điện tử; TBSS lập trong phiên giữ nguyên */
+function tbssDu(tb: Tbss, dsHd: Row[]): Tbss {
+  const r = tb.ctMau ? dsHd.find(x => x.id === `${MAN_PL}|${tb.ctMau}`) : undefined
+  if (!r) return tb
+  return { ...tb, mau: String(r.mau), kyHieu: String(r.kyHieu), so: String(r.soHd), ngay: String(r.ngay), loai: String(r.loai), maCqt: String(r.maCqt ?? ''),
+    nguoiMua: String(r.tenDv || r.nguoiMua || ''), diaChi: tb.diaChi || String(r.diaChi ?? ''), email: tb.email || String(r.email ?? '') }   // email sửa ở popup xem TBSS giữ lại
+}
+/** Dòng tab Hoá đơn điện tử: hoá đơn từ chứng từ bán hàng lập tay gói Plus, Pro, mới nhất trên đầu */
+function dsDongHd(tyLe: boolean): Row[] {
+  return [
+    ...apKhoPhieu(MAN_PL, mauTay()).map(r => hangTay(r, tyLe)).map(r => dongHd(r, MAN_PL)),
+    ...apKhoPhieu(MAN_PR, []).map(r => dongHd(r, MAN_PR)),
+  ].filter((r): r is Row => r !== null)
+    .sort((a, b) => docNgay(String(b.ngay)).getTime() - docNgay(String(a.ngay)).getTime() || String(b.soHd).localeCompare(String(a.soHd)))
+}
 let ban = 0
 const nghe = new Set<() => void>()
 const bao = () => { ban++; nghe.forEach(f => f()) }
@@ -119,11 +136,7 @@ export function DsHoaDon({ sc, mod }: ScreenProps) {
   const path = duongDan(mod, sc)
   useBanPhieu(); useKho()
   const tyLe = gtgtTyLe(s)
-  const rows = [
-    ...apKhoPhieu(MAN_PL, mauTay()).map(r => hangTay(r, tyLe)).map(r => dongHd(r, MAN_PL)),
-    ...apKhoPhieu(MAN_PR, []).map(r => dongHd(r, MAN_PR)),
-  ].filter((r): r is Row => r !== null)
-    .sort((a, b) => docNgay(String(b.ngay)).getTime() - docNgay(String(a.ngay)).getTime() || String(b.soHd).localeCompare(String(a.soHd)))
+  const rows = dsDongHd(tyLe)
 
   const loc0 = useLocNhap(locMacDinh)
   const { nhap, dat, ap } = loc0
@@ -199,7 +212,8 @@ export function DsHoaDon({ sc, mod }: ScreenProps) {
     cotChon(list, chon, setChon),
     { k: 'loai', t: 'Loại hoá đơn', w: 170, dinh: 'trai', r: r => { const c = r._nhapMoi as CtLq | null
       // TBSS lưu nháp chưa gửi CQT: cảnh báo cùng kiểu tại hoá đơn có sai sót (T796)
-      const tbNhap = dsTbss.some(x => x.tt === 'Chưa gửi' && x.mau === String(r.mau) && x.kyHieu === String(r.kyHieu) && x.so === String(r.soHd))
+      const tbNhap = dsTbss.some(x => x.tt === 'Chưa gửi' && (x.ctMau ? r.id === `${MAN_PL}|${x.ctMau}`
+        : x.mau === String(r.mau) && x.kyHieu === String(r.kyHieu) && x.so === String(r.soHd)))
       const bao = [c && `Có hoá đơn dự thảo ${c.loai === 'HDTHAYTHE' ? 'thay thế' : 'điều chỉnh'} ${c.so} chờ phát hành`,
         tbNhap && 'Có thông báo sai sót lưu nháp, chưa gửi CQT'].filter(Boolean).join('. ')
       return <>{r.loai}{bao && <span className="hd-canh-bao" title={bao} aria-label={bao}><Icon n="alert" className="ic sm" /></span>}</> } },
@@ -347,13 +361,37 @@ function capThat(tyLe: boolean): CapHd[] {
 // Bỏ 2 cặp mẫu không có chứng từ thật: mọi dòng đều có số chứng từ, bấm mở được (dinhlanphuongipacc 11/11/2026, T787)
 const guiCap = new Set<string>()
 
-export function DieuChinhThayThe({ sc }: ScreenProps) {
+/** Thanh lọc tab Điều chỉnh thay thế, Thông báo sai sót: thời gian, tìm kiếm như tab Hoá đơn điện tử, thêm ô chọn riêng của tab (T797) */
+interface GtLocTab { thoiGian: KhoangNgay; tim: string; chon: string }
+const locTabMacDinh = (): GtLocTab => ({ thoiGian: thangMacDinh(), tim: '', chon: '' })
+function useLocTab(path: string, chon: { ten: string; ds: string[] }, goiY: string) {
+  const loc0 = useLocNhap(locTabMacDinh)
+  const { nhap, dat } = loc0
+  const oLoc: OLocDef[] = [
+    { k: 'thoiGian', ten: 'Thời gian', o: <ChonKhoangNgay value={nhap.thoiGian} onChange={k => dat('thoiGian', k)} /> },
+    { k: 'tim', ten: 'Tìm kiếm', coGiaTri: Boolean(nhap.tim.trim()), o: <input className="ds-o-inp" value={nhap.tim} placeholder={goiY} aria-label="Tìm kiếm"
+      onChange={e => dat('tim', e.target.value)} onKeyDown={e => { if (e.key === 'Enter') loc0.loc() }} /> },
+    { k: 'chon', ten: chon.ten, coGiaTri: Boolean(nhap.chon), o: <Select className="ds-o-sel" value={nhap.chon} aria-label={chon.ten} onChange={e => dat('chon', e.target.value)}>
+      <option value="">Tất cả</option>{chon.ds.map(v => <option key={v} value={v}>{v}</option>)}</Select> },
+  ]
+  const [cauHinh, datCauHinh] = useCauHinhLoc(path, oLoc.map(o => o.k), ['thoiGian', 'tim', 'chon'])
+  const thanh = <div className="ds-toolbar-figma">
+    <BoLoc ds={oLoc} cauHinh={cauHinh} datCauHinh={datCauHinh} dangLoc={loc0.dangLoc} khacNhap={loc0.khacNhap} onLoc={loc0.loc} onXoaHet={loc0.xoaNhap} chiNutPheu />
+  </div>
+  /** Dòng khớp lọc: ngày theo thời gian, chữ tìm trong các trường, giá trị ô chọn */
+  const khop = (ngay: string, chu: string, gt: string) => trongKhoang(docNgay(ngay), loc0.ap.thoiGian)
+    && (!loc0.ap.tim.trim() || fold(chu).includes(fold(loc0.ap.tim.trim()))) && (!loc0.ap.chon || gt === loc0.ap.chon)
+  return { thanh, khop, xoaHet: loc0.xoaHet }
+}
+
+export function DieuChinhThayThe({ sc, mod }: ScreenProps) {
   const { s, toast } = useSession()
   const nav = useNavigate()
   useKho(); useBanPhieu()
-  const [loai, setLoai] = useState('')
   const [xem, setXem] = useState<{ r: Row; hd: HdDaXuat } | null>(null)
-  const ds = capThat(gtgtTyLe(s)).filter(c => !loai || c.loai === loai)
+  // Lọc theo ngày hoá đơn điều chỉnh, thay thế (dự thảo lấy ngày dự kiến); tìm số hoá đơn, số chứng từ, người mua (T797)
+  const loc = useLocTab(duongDan(mod, sc), { ten: 'Loại', ds: ['Điều chỉnh', 'Thay thế'] }, 'Số HĐ, số chứng từ, người mua')
+  const ds = capThat(gtgtTyLe(s)).filter(c => loc.khop(c.moi[3], `${c.goc[2]} ${c.moi[2]} ${c.ctGoc?.[1] ?? ''} ${c.ctMoi?.[1] ?? ''} ${c.nguoiMua}`, c.loai))
   const ttCua = (c: CapHd) => (guiCap.has(c.id) || daGui.has(c.id) ? 'Đã gửi TCTN' : c.tt)
   const moXem = (c: CapHd, h: CapHd['goc'], ma: number, moi: boolean) => {
     const hdThat = c.rMoi && (moi ? hdCua(c.rMoi) : hdGocCua(c.rMoi)?.hd)
@@ -380,13 +418,7 @@ export function DieuChinhThayThe({ sc }: ScreenProps) {
     <div className="page page-voucher">
       <h1 className="sr-only">{tenMan(sc)}</h1>
       <section className="card voucher-top hddt-tab">
-        <div className="ds-hang-trang-thai">
-          <label className="hddt-loc">Loại
-            <Select className="ds-o-sel" value={loai} aria-label="Loại" onChange={e => setLoai(e.target.value)}>
-              <option value="">Tất cả</option><option value="Điều chỉnh">Điều chỉnh</option><option value="Thay thế">Thay thế</option>
-            </Select>
-          </label>
-        </div>
+        {loc.thanh}
         <div className="hddt-bang">
           <table className="tbl ke-doc mot-dong">
             <thead>
@@ -395,7 +427,7 @@ export function DieuChinhThayThe({ sc }: ScreenProps) {
                 {['Mẫu số - Ký hiệu', 'Số HĐ', 'Ngày HĐ', 'Tổng tiền', 'Trạng thái thuế', 'Số chứng từ'].map((t, i) => <th key={`m${i}`}>{t}</th>)}</tr>
             </thead>
             <tbody>
-              {!ds.length && <tr><td colSpan={13} className="c dim">Chưa có hoá đơn điều chỉnh, thay thế. Lập ở tab Hoá đơn điện tử, menu ⋯ của hoá đơn đã phát hành.</td></tr>}
+              {!ds.length && <tr><td colSpan={13} className="c dim">Chưa có hoá đơn điều chỉnh, thay thế trong thời gian này. Lập ở tab Hoá đơn điện tử, menu ⋯ của hoá đơn đã phát hành.</td></tr>}
               {ds.map((c, i) => {
                 const tt = ttCua(c)
                 const ly = tt === 'Dự thảo' ? 'Phát hành hoá đơn trước khi gửi CQT' : !laMayTinhTien(c.moi[1]) ? 'Chỉ hoá đơn máy tính tiền (ký hiệu có chữ M ở vị trí thứ 4) mới gửi CQT' : tt === 'Đã gửi TCTN' ? 'Hoá đơn đã gửi CQT' : null
@@ -422,13 +454,15 @@ export function DieuChinhThayThe({ sc }: ScreenProps) {
 }
 
 // ── Tab Thông báo sai sót ──
-export function ThongBaoSaiSot({ sc }: ScreenProps) {
+export function ThongBaoSaiSot({ sc, mod }: ScreenProps) {
   const { s, toast } = useSession()
-  useKho()
+  useKho(); useBanPhieu()
   const [xem, setXem] = useState<Tbss | null>(null)
-  const [tt, setTt] = useState('')
   const [chon, setChon] = useState<Set<string>>(new Set())
-  const ds = dsTbss.filter(x => !tt || x.tt === tt)
+  // Lọc theo ngày lập thông báo; tìm số hoá đơn, người mua, nội dung sai sót (T797). TBSS mẫu lấy thông tin theo hoá đơn ở tab Hoá đơn điện tử
+  const loc = useLocTab(duongDan(mod, sc), { ten: 'Trạng thái thuế', ds: ['Chưa gửi', 'CQT chấp nhận', 'CQT từ chối'] }, 'Số HĐ, người mua, nội dung')
+  const dsHd = dsDongHd(gtgtTyLe(s))
+  const ds = dsTbss.map(x => tbssDu(x, dsHd)).filter(x => loc.khop(x.ngayTao, `${x.so} ${x.nguoiMua} ${x.noiDung}`, x.tt))
   const rows: Row[] = ds.map(x => ({ ...x, mauKh: x.mau + x.kyHieu }))
   const chonDs = ds.filter(x => chon.has(x.id))
   const nhap = chonDs.length > 0 && chonDs.every(x => x.tt === 'Chưa gửi')
@@ -439,18 +473,15 @@ export function ThongBaoSaiSot({ sc }: ScreenProps) {
     { k: 'loai', t: 'Loại hoá đơn', w: 170 }, { k: 'noiDung', t: 'Nội dung thông báo sai sót', w: 320 },
     { k: 'tt', t: 'Trạng thái thuế', w: 160, r: r => <span className={`hddt-thue ${r.tt === 'Chưa gửi' ? 'cho' : r.tt === 'CQT từ chối' ? 'loi' : 'tot'}`}>{r.tt}</span> },
     { k: 'ngayTao', t: 'Ngày tạo', w: 110 },
-    { k: 'xem', t: '', w: 90, c: true, dinh: 'phai', r: r => <button type="button" className="ds-link-so" onClick={e => { e.stopPropagation(); setXem(dsTbss.find(x => x.id === r.id) ?? null) }}>Xem TBSS</button> },
+    { k: 'xem', t: '', w: 90, c: true, dinh: 'phai', r: r => <button type="button" className="ds-link-so" onClick={e => { e.stopPropagation(); setXem(ds.find(x => x.id === r.id) ?? null) }}>Xem TBSS</button> },
   ]
   return (
     <div className="page page-voucher">
       <h1 className="sr-only">{tenMan(sc)}</h1>
       <section className="card voucher-top hddt-tab">
+        {loc.thanh}
         <div className="ds-hang-trang-thai">
-          <label className="hddt-loc">Trạng thái thuế
-            <Select className="ds-o-sel" value={tt} aria-label="Trạng thái thuế" onChange={e => { setTt(e.target.value); setChon(new Set()) }}>
-              <option value="">Tất cả</option><option value="Chưa gửi">Chưa gửi</option><option value="CQT chấp nhận">CQT chấp nhận</option><option value="CQT từ chối">CQT từ chối</option>
-            </Select>
-          </label>
+          <span className="grow" />
           <div className="ds-toolbar-phai ds-cong-cu-h2">
             <button type="button" className="btn sm" disabled={!nhap} title={lyDoNut}
               onClick={() => { dsTbss = dsTbss.map(x => (chon.has(x.id) ? { ...x, tt: 'CQT chấp nhận' as TtTbss } : x)); bao(); toast(`Đã gửi ${chon.size} thông báo sai sót lên cơ quan thuế`); setChon(new Set()) }}>
