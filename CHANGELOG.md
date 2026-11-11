@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 12/11/2026
+- T802: Gói Plus, danh sách Bán hàng: bỏ cột Trạng thái xuất HĐĐT. Chứng từ đã có hoá đơn điện tử có nhãn VAT nhỏ cạnh số chứng từ; bấm số ở cột Số hoá đơn để xem hoá đơn. Tab Tất cả, Xuất bán POS cũng vậy, chứng từ POS lấy hoá đơn FABi đã xuất tại máy POS. Số chứng từ Xuất bán POS chỉ hiện 5 ký tự cuối, rê chuột xem đủ. Tab Bán hàng có thêm cột Thao tác: Xuất HĐĐT cho chứng từ chưa xuất, Xem hoá đơn.
 - T801: Gói Plus, danh sách Bán hàng: bộ lọc giống Mua hàng, các ô Cửa hàng, Nguồn, Kênh bán, Phương thức thanh toán, Hàng hoá, Theo dõi tồn kho tích chọn được nhiều; ô Khách hàng gõ để tìm. Thêm ô Loại chứng từ: Xuất bán POS, Xuất bán, Hoá đơn điều chỉnh, Hoá đơn thay thế, Huỷ bán hàng. Form hoá đơn thay thế, điều chỉnh: hàng Lý do, Email cách đều các ô trên, ô Email thẳng cột Số hoá đơn. Chứng từ Huỷ bán bỏ ô Ghi chú.
 
 ## 11/11/2026

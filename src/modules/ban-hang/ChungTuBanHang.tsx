@@ -15,6 +15,7 @@ import { BaoCaoDoRongCtx, St, Table, useDoRongCot } from '../../ui/Table'
 import { dmy, fold, money, moneyD, rng } from '../../ui/format'
 import { ChonHaiCot, type MucHaiCot } from '../../ui/ChonHaiCot'
 import { OChonMot } from '../../ui/OChonMot'
+import { Dropdown } from '../../ui/Dropdown'
 import { PhanTrang } from '../../ui/PhanTrang'
 import { useDaXoa } from '../../ui/generic/daXoa'
 import { ChonKhoangNgay, docNgay, thangMacDinh, trongKhoang, type KhoangNgay } from '../../ui/ChonNgay'
@@ -34,7 +35,7 @@ import { DS_PTTT } from '../danh-muc/data'
 import { cauHinhGiamVat, giamThueHang, giamThueHkd, hangDuocGiam } from './giam-thue'
 import {
   HopXemHd, HopXuatHddt, TEN_LOAI_CT, dauDong, dkCtMau, dsHdMoiCon, hdCua, hdGocCua, hdMau, laHdMoiCua, loaiCtCua, mauTuGoc, soHdMau, tenHd, thayTheNhap, ttHdGoc,
-  type CtLq, type HdGoc,
+  KHACH_TRONG, type CtLq, type HdDaXuat, type HdGoc,
 } from './hddt'
 
 /** Bán hàng ngoài POS: tiệc mang về, khách công ty đặt trước. Lập tay, không qua FABi; là tab Bán hàng 3.1.7 từ gói Plus (T52) */
@@ -280,6 +281,19 @@ export function donPosCua(x: XPos) {
   const maTraCuu = `MANAGER_${1000000 + Math.floor(r() * 9000000)}${Array.from({ length: 10 }, () => KT_FABI[Math.floor(r() * KT_FABI.length)]).join('')}`
   return { soDon, khach, hoaDon: { so: String(1 + Math.floor(r() * 9999)).padStart(8, '0'), kyHieu: `1C${nam}TPM`, ngay: dmy(x.date), maTraCuu } }
 }
+/** Hoá đơn FABi đã xuất tại máy POS (T802): nhãn VAT, cột Số hoá đơn bấm xem như chứng từ lập tay.
+ *  Giữ ở _hdPos, không phải _hd, để menu Hoá đơn điện tử, tờ khai không đếm hoá đơn FABi */
+function hdFabi(x: XPos, tyLe: boolean): Row {
+  const { khach, hoaDon } = donPosCua(x)
+  if (!hoaDon) return {}
+  const giam = tyLe ? giamThuePhieu(x) : 0
+  const hd: HdDaXuat = { mau: hoaDon.kyHieu[0], kyHieu: hoaDon.kyHieu.slice(1), so: hoaDon.so, ngay: hoaDon.ngay, ma: `M${hoaDon.kyHieu.slice(2, 4)}-${(0x2b1c07 + Number(hoaDon.so) * 7919).toString(16).toUpperCase()}`, traCuu: hoaDon.maTraCuu,
+    nguoiMua: khach?.nguoiMua, truoc: x.dt, thue: tyLe ? giam : x.vat, tong: tyLe ? x.dt - giam : x.dt + x.vat }
+  return { _hdPos: hd, mauKhHd: hoaDon.kyHieu, hddt: hoaDon.so, _dong: dongCuaPhieu(x), _khongLayHd: !khach,
+    ...(khach ? { _khachHd: { ...KHACH_TRONG, loai: 'cty', tenDv: khach.ten, mst: khach.mst, diaChi: khach.diaChi, tenNm: khach.nguoiMua } } : {}) }
+}
+/** Hoá đơn của dòng danh sách: hoá đơn phát hành ở phần mềm, hoặc hoá đơn FABi xuất tại máy POS (T802) */
+const hdDong = (r: Row) => hdCua(r) ?? (r._hdPos as HdDaXuat | undefined)
 /** Tổng hợp theo kênh: tại quán, mang về chia phần thu tại quầy 70/30; app giao đồ ăn theo tiền app */
 export function theoKenh(x: NgayPOS): XPos[] {
   const tt = x.tm + x.ck + x.the + x.app || 1
@@ -334,6 +348,7 @@ export function ChungTuBanHang({ sc, mod }: ScreenProps) {
       tien: x.dt, thue: tyLe ? 0 : x.vat, giamThue: tyLe ? giamThuePhieu(x) : 0, tong: tyLe ? x.dt - giamThuePhieu(x) : x.dt + x.vat, nguon: 'FABi', tt: i < 3 ? 'nhap' : 'ghi',
       tenLoaiCt: 'Xuất bán POS',   // chứng từ FABi đồng bộ về, cột Loại chứng từ (T791)
       ngayTao: `${dmy(x.date)} 23:30`, nguoiTao: 'Hệ thống',   // tạo khi đồng bộ FABi cuối ngày (T132)
+      ...hdFabi(x, tyLe),
     })), [tyLe])
   // Gói Plus: thêm chứng từ lập tay, nhập Excel; xếp chung với chứng từ FABi theo ngày mới nhất trước (T753)
   const rows = useMemo(() => {
@@ -575,7 +590,10 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
             nav(`${path}/${r.id}`)
           }}
         >
-          {r.so}
+          {/* Chứng từ Xuất bán POS: số FABi 12 ký tự chỉ hiện 5 ký tự cuối, rê chuột xem đủ (T802) */}
+          {r.nguon === 'FABi' ? `...${String(r.so).slice(-5)}` : r.so}
+          {/* Đã xuất hoá đơn điện tử: nhãn VAT trên số chứng từ, thay cột Trạng thái xuất HĐĐT (T802) */}
+          {hdDong(r) && <span className="ds-so-vat" title={`Đã xuất hoá đơn ${tenHd(hdDong(r)!)}`}>VAT</span>}
         </button>
       ),
     },
@@ -590,28 +608,38 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
     { k: 'tien', t: 'Doanh thu tính thuế', num: true, w: 160 },
     tyLe ? { k: 'giamThue', t: 'Giảm thuế GTGT', num: true, w: 130 } : { k: 'thue', t: 'Tiền thuế', num: true, w: 120 },   // T163
     // bỏ cột Nguồn: Xuất bán POS chỉ có nguồn FABi (T115); gói Plus có thêm chứng từ lập tay, nhập Excel nên hiện lại (T753)
-    // Hoá đơn điện tử của chứng từ lập tay (T763); hoá đơn FABi xuất tại máy POS nên để trống
+    // Hoá đơn điện tử của chứng từ lập tay (T763); hoá đơn FABi xuất tại máy POS lấy theo đơn POS (T802)
     // T765: Số hoá đơn tách cột riêng; Trạng thái phát hành ở cuối, sau Tổng tiền
     // T791: Mẫu số - Ký hiệu và Số hoá đơn tách 2 cột
     ...(plus ? [{ k: 'mauKhHd', t: 'Mẫu số - Ký hiệu', w: 140 } as Col,
-      { k: 'hddt', t: 'Số hoá đơn', w: 110, r: (r: Row) => hdCua(r) ? <span title={`Mã cơ quan thuế ${hdCua(r)!.ma}`}>{r.hddt}</span> : null } as Col] : []),
+      // Số hoá đơn bấm mở xem hoá đơn điện tử (T802)
+      { k: 'hddt', t: 'Số hoá đơn', w: 110, r: (r: Row) => hdDong(r) ? <button type="button" className="ds-link-so" title={`Xem hoá đơn ${tenHd(hdDong(r)!)}`}
+        onClick={e => { e.stopPropagation(); setXemHd(r) }}>{r.hddt}</button> : null } as Col] : []),
     ...(plus ? [{ k: 'nguon', t: 'Nguồn', w: 90, r: (r: Row) => { const [c, t] = NGUON[String(r.nguon)] ?? NGUON.tay; return <span className={`src ${c}`}>{t}</span> } } as Col] : []),
     // Chứng từ gốc, hoá đơn thay thế, huỷ bán, hoá đơn điều chỉnh tham chiếu lẫn nhau (T787)
     ...(plus ? [{ k: 'thamChieu', t: 'Tham chiếu', w: 220, r: (r: Row) => <span title={String(r.thamChieu ?? '')}>{r.thamChieu}</span> } as Col] : []),
     { k: 'ngayTao', t: 'Ngày tạo', w: 140 }, { k: 'nguoiTao', t: 'Người tạo', w: 130 },   // T132
     { k: 'tong', t: 'Tổng tiền', num: true, w: 120, dinh: 'phai' },   // Tổng tiền là cột cuối (T48), cố định bên phải (T239)
-    // T785: Trạng thái xuất HĐĐT cố định bên phải cùng Tổng tiền, chỉ ở tab Bán hàng; Đã xuất kèm số hoá đơn bấm mở xem.
-    // Bỏ nút Phát hành từng dòng: tích chọn dòng rồi bấm Xuất HĐĐT trên thanh công cụ
-    ...(plus && chipTab === 'tay' ? [{ k: 'ttPh', t: 'Trạng thái xuất HĐĐT', w: 190, dinh: 'phai', r: (r: Row) => r.nguon === 'FABi' ? null
-      : hdCua(r) ? <span className="ph-o"><span className="ph-tt da">Đã xuất</span>
-        <button type="button" className="ph-nut code" title={`Xem hoá đơn ${tenHd(hdCua(r)!)}`}
-          onClick={e => { e.stopPropagation(); setXemHd(r) }}>{hdCua(r)!.so}</button></span>
-      // Huỷ bán không xuất hoá đơn; hoá đơn thay thế, điều chỉnh dự thảo phát hành ở form hoặc menu Hoá đơn điện tử (T787)
-      : loaiCtCua(r) !== 'XBAN' ? <span className="ph-o"><span className="ph-tt">{r.ttPh}</span></span>
-      // Chưa xuất: link Xuất ngay trên dòng mở popup Xuất HĐĐT của chứng từ đó (T785)
-      : <span className="ph-o"><span className="ph-tt">Chưa xuất</span>
-        <button type="button" className="ph-nut" title="Xuất hoá đơn điện tử cho chứng từ này"
-          onClick={e => { e.stopPropagation(); setXuatMot(r) }}>Xuất</button></span> } as Col] : []),
+    // T802: bỏ cột Trạng thái xuất HĐĐT (đã xuất thấy qua nhãn VAT, cột Số hoá đơn). Tab Bán hàng có cột Thao tác như màn Hoá đơn điện tử:
+    // Xuất HĐĐT cho chứng từ bán hàng chưa xuất, Xem hoá đơn khi đã xuất; huỷ bán, hoá đơn thay thế, điều chỉnh không xuất ở đây (T787)
+    ...(plus && chipTab === 'tay' ? [{ k: 'thaoTac', t: 'Thao tác', w: 76, c: true, dinh: 'phai', r: (r: Row) => {
+      const hd = hdCua(r)
+      const lyXuat = hd ? 'Chứng từ đã xuất hoá đơn điện tử' : loaiCtCua(r) !== 'XBAN' ? `${TEN_LOAI_CT[loaiCtCua(r)]} không xuất hoá đơn ở danh sách này` : null
+      const viec: [string, string, string, string | null, () => void][] = [
+        ['xuat', 'Xuất HĐĐT', 'receipt', lyXuat, () => setXuatMot(r)],
+        ['xem', 'Xem hoá đơn', 'eye', hd ? null : 'Chứng từ chưa có hoá đơn điện tử', () => setXemHd(r)],
+      ]
+      return (
+        <span className="hddt-menu" onClick={e => e.stopPropagation()}>
+          <Dropdown btnClass="icon-btn sm" align="end" width={200} title={`Thao tác với chứng từ ${r.so}`} label={<Icon n="more" className="ic sm" />}>
+            {dong => viec.map(([v, ten, ic, ly, lam]) => (
+              <button key={v} type="button" data-mi className="mi" disabled={Boolean(ly)} title={ly ?? undefined} onClick={() => { dong(); lam() }}>
+                <span className="mi-ic"><Icon n={ic} kieu="net" className="ic sm" /></span><span className="mi-t"><b>{ten}</b></span>
+              </button>
+            ))}
+          </Dropdown>
+        </span>
+      ) } } as Col] : []),
   ]
   // Thứ tự, ẩn hiện, độ rộng cột lưu theo màn (T41)
   const cot = useCotDs(path, cols, COT_CO_DINH)
@@ -743,7 +771,7 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
       {moHd && <HopXuatHddt s={s} man={`${mod.key}/${sc.slug}`} ds={rows.filter(r => chon.has(String(r.id)))} toast={toast} nhieu
         onDong={() => { setMoHd(false); setChon(new Set()) }} />}
       {xuatMot && <HopXuatHddt s={s} man={`${mod.key}/${sc.slug}`} ds={[xuatMot]} toast={toast} onDong={() => setXuatMot(null)} />}
-      {xemHd && hdCua(xemHd) && <HopXemHd s={s} r={xemHd} hd={hdCua(xemHd)!} toast={toast} onDong={() => setXemHd(null)} />}
+      {xemHd && hdDong(xemHd) && <HopXemHd s={s} r={xemHd} hd={hdDong(xemHd)!} toast={toast} onDong={() => setXemHd(null)} />}
       {moHopDongBo && (
         <HopDongBo
           tieuDe="Đồng bộ dữ liệu bán hàng từ máy POS"

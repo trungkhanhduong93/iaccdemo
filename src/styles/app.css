@@ -47829,3 +47829,6 @@ textarea.m-tpb-inp { height: auto; padding: 8px 12px; }
 .mail-hd-mui:hover { background: var(--fr-t); color: var(--ink); }
 .mail-hd-pop .mi-t { display: flex; flex-direction: column; gap: 1px; }
 .mail-hd-pop .mi-t small { color: var(--muted); font-size: 11.5px; font-weight: 400; }
+
+/* ── Danh sách bán hàng: nhãn VAT trên số chứng từ đã xuất HĐĐT (T802) ── */
+.ds-link-so .ds-so-vat { display: inline-block; vertical-align: super; margin-left: 3px; padding: 0 4px; border-radius: 4px; background: var(--green-t); color: var(--green); font-size: 9.5px; font-weight: 700; line-height: 14px; letter-spacing: .3px; text-decoration: none; }
