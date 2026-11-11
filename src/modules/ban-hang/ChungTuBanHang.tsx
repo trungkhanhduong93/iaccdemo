@@ -32,7 +32,8 @@ import { HopCotPhieu } from '../../ui/generic/BangSua'
 import { DS_PTTT } from '../danh-muc/data'
 import { cauHinhGiamVat, giamThueHang, giamThueHkd, hangDuocGiam } from './giam-thue'
 import {
-  HopXemHd, HopXuatHddt, TEN_LOAI_CT, dsHdMoiCon, hdCua, hdGocCua, hdMau, laHdMoiCua, loaiCtCua, mauTuGoc, tenHd, thayTheNhap, ttHdGoc, type CtLq,
+  HopXemHd, HopXuatHddt, TEN_LOAI_CT, dauDong, dkCtMau, dsHdMoiCon, hdCua, hdGocCua, hdMau, laHdMoiCua, loaiCtCua, mauTuGoc, soHdMau, tenHd, thayTheNhap, ttHdGoc,
+  type CtLq, type HdGoc,
 } from './hddt'
 
 /** Bán hàng ngoài POS: tiệc mang về, khách công ty đặt trước. Lập tay, không qua FABi; là tab Bán hàng 3.1.7 từ gói Plus (T52) */
@@ -61,17 +62,60 @@ const MAU_TAY: [string, number, string, number, number, string, string, [number,
   ['BH2610-0005', 3, '15:30', 0, 4, 'Bán bánh trung thu cho đối tác', 'tay', [[3, 50, 10, 0, 0]]],
   ['BH2610-0003', 4, '19:00', 0, 1, 'Bán tiệc khai trương chi nhánh', 'tay', [[0, 40, 0, 5, 0], [2, 40, 0, 5, 0], [6, 40, 0, 5, 0]]],
   ['BH2610-0002', 5, '11:30', 0, 5, 'Bán suất ăn hội thảo', 'tay', [[2, 60, 0, 0, 0], [8, 60, 0, 0, 0]]],
+  // Chứng từ gốc có hoá đơn thay thế, điều chỉnh mẫu (T795): tay-10 bị thay thế, tay-11 bị điều chỉnh, tay-12 có thay thế dự thảo, tay-13 có điều chỉnh dự thảo
+  ['BH2610-0010', 6, '10:20', 0, 1, 'Bán tiệc hội nghị khách hàng', 'tay', [[0, 25, 0, 0, 0], [2, 25, 0, 0, 0]]],
+  ['BH2610-0011', 6, '16:45', 0, 2, 'Bán suất ăn đào tạo nhân viên', 'tay', [[1, 30, 0, 0, 0], [6, 30, 0, 0, 0]]],
+  ['BH2610-0012', 1, '12:30', 0, 4, 'Bán set quà tặng đối tác', 'tay', [[3, 20, 0, 0, 0]]],
+  ['BH2610-0013', 1, '19:10', 0, 1, 'Bán tiệc mừng thọ', 'tay', [[0, 12, 0, 0, 5], [5, 12, 0, 0, 5]]],
 ]
+/** Hoá đơn thay thế, điều chỉnh mẫu (T795): id, số chứng từ, loại, chứng từ gốc, lý do; điều chỉnh giảm kèm dòng giảm [hàng thứ mấy, số lượng].
+ *  Có số hoá đơn ở HD_MAU (hddt.tsx) là đã phát hành, không có là dự thảo. Thay thế sinh kèm huỷ bán như khi lập trên form */
+const MAU_HD_MOI: [string, string, 'HDTHAYTHE' | 'HDDIEUCHINH', string, string, [number, number][]][] = [
+  ['tay-tt1', 'HDTT2610-0001', 'HDTHAYTHE', 'tay-10', 'Sai tên đơn vị người mua', []],
+  ['tay-dc1', 'HDDC2610-0001', 'HDDIEUCHINH', 'tay-11', 'Giảm số lượng suất ăn khách trả lại', [[1, 5]]],
+  ['tay-tt2', 'HDTT2610-0002', 'HDTHAYTHE', 'tay-12', 'Sai mã số thuế người mua', []],
+  ['tay-dc2', 'HDDC2610-0002', 'HDDIEUCHINH', 'tay-13', 'Giảm giá theo thoả thuận sau bán', [[0, 2]]],
+]
+let mauTayDa: Row[] | null = null
 export function mauTay(): Row[] {
+  if (mauTayDa) return mauTayDa
   const cuoi = DAILY.reduce((a, x) => (x.date > a ? x.date : a), DAILY[0].date)
-  return MAU_TAY.map(([so, lui, gio, cn, kh, dienGiai, nguon, ds], i) => {
+  const ds0: Row[] = MAU_TAY.map(([so, lui, gio, cn, kh, dienGiai, nguon, ds], i) => {
     const ngay = new Date(cuoi.getFullYear(), cuoi.getMonth(), cuoi.getDate() - lui)
     const ch = CUA_HANG[cn % CUA_HANG.length]
     const dong: Dong[] = ds.map(([h, sl, pt, ptCk, ptPhiDv]) => tinhDong(dongTuHang(HANG[h % HANG.length], sl), { pt, ptCk, ptPhiDv }))
     return { id: `tay-${i}`, so, ngay: `${dmy(ngay)} ${gio}`, cn: ch.ten, doiTuong: KHACH[kh % KHACH.length].ten, dienGiai, nguon, tt: 'ghi', _dong: dong, kenh: ['Tại quán', 'Mang về', 'GrabFood'][i % 3],
       _httt: i % 2 ? 'congno' : 'tienmat', _kho: ch.kho?.[0] ?? '', _ngayTao: `${dmy(ngay)} ${gio}`, _nguoiTao: nguon === 'excel' ? 'Nhập từ Excel' : 'Hồ Thị Mai' }
   })
+  // Hoá đơn mới lập ngày cuối dữ liệu; hoá đơn gốc ghi mẫu số trống để hdMau điền theo gói (mẫu 1 hoặc 2), ký hiệu theo cửa hàng
+  const ngayMoi = dmy(cuoi), them: Row[] = []
+  MAU_HD_MOI.forEach(([id, so, loai, idGoc, lyDo, giam], i) => {
+    const goc = ds0.find(r => r.id === idGoc)!
+    const hdGoc: HdGoc = { id: idGoc, so: String(goc.so), hd: { mau: '', kyHieu: '', so: String(soHdMau(idGoc)).padStart(8, '0'), ngay: String(goc.ngay).split(' ')[0], ma: '' } }
+    const dongGoc = goc._dong as Dong[]
+    const dong = loai === 'HDTHAYTHE' ? dongGoc
+      : dauDong(giam.map(([h, sl]) => tinhDong(dongTuHang(HANG[h % HANG.length], sl), {})), -1)
+    const chung = { cn: goc.cn, doiTuong: goc.doiTuong, kenh: goc.kenh, _httt: goc._httt, _kho: goc._kho, nguon: 'tay', tt: 'ghi',
+      ngay: `${ngayMoi} ${['09:30', '10:15', '14:00', '15:20'][i]}`, _ngayTao: `${ngayMoi} ${['09:30', '10:15', '14:00', '15:20'][i]}`, _nguoiTao: 'Hồ Thị Mai' }
+    const moi: Row = { ...chung, id, so, dienGiai: lyDo, _dong: dong, _loaiCt: loai, _hdGoc: hdGoc, _lyDoHd: lyDo, _ngayHd: ngayMoi,
+      ...(loai === 'HDDIEUCHINH' ? { _dcLoai: 'giam' } : {}) }
+    const ct: CtLq[] = [{ id, so, loai }]
+    if (loai === 'HDTHAYTHE') {
+      const idHb = `${id}-hb`, soHb = `HBH2610-000${them.filter(r => loaiCtCua(r) === 'HUYBAN').length + 1}`
+      moi._huyBan = { id: idHb, so: soHb, loai: 'HUYBAN' }
+      them.push({ ...chung, id: idHb, so: soHb, _loaiCt: 'HUYBAN', _hdGoc: hdGoc, _hdTt: ct[0], _dong: dauDong(dongGoc, -1),
+        dienGiai: `Do thay thế hoá đơn ${hdGoc.hd.so}`, _ghiChu: `Do thay thế hoá đơn ${hdGoc.hd.so}` })
+      ct.push(moi._huyBan as CtLq)
+    }
+    goc._dsHdMoi = ct
+    them.push(moi)
+  })
+  mauTayDa = [...them, ...ds0]
+  return mauTayDa
 }
+// Hoá đơn gốc mẫu xét Bị thay thế, Bị điều chỉnh theo hoá đơn mới mẫu đã phát hành (T795); hangTay gắn hoá đơn có sẵn
+let mauTayHd: Row[] | null = null
+dkCtMau(MAN_BAN, () => (mauTayHd ??= mauTay().map(r => hangTay(r, false))))
 /** Chứng từ lập tay, nhập Excel đổi sang dòng danh sách: tiền tính lại từ dòng hàng, tên món ở cột Diễn giải */
 export function hangTay(r: Row, tyLe: boolean): Row {
   const dong = (r._dong as Dong[] | undefined) ?? []

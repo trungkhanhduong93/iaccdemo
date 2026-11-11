@@ -3,6 +3,8 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 11/11/2026
+- T795: Menu Hoá đơn điện tử có sẵn hoá đơn mẫu thay thế, bị thay thế, điều chỉnh, bị điều chỉnh, cả đã phát hành và dự thảo. Cột Loại hoá đơn ghi "Hoá đơn bị thay thế", "Hoá đơn bị điều chỉnh"; cột Trạng thái HĐĐT chỉ còn Dự thảo hoặc Đã phát hành. Hoá đơn gốc đang có hoá đơn thay thế, điều chỉnh dự thảo hiện dấu cảnh báo ở cột Loại hoá đơn, rê chuột thấy số hoá đơn dự thảo chờ phát hành.
+- T794: Hoá đơn đã bị điều chỉnh không lập thay thế được, hoá đơn thay thế không điều chỉnh được: mục Thay thế, Điều chỉnh ở menu ⋯ mờ đi, rê chuột thấy lý do.
 - T792: Popup Xuất hoá đơn điện tử nhiều chứng từ: nhãn "Ngày hoá đơn", "Ký hiệu" có dòng phụ "Áp dụng cho tất cả" bên dưới, màn thấp không còn bị che. Ô ngày hoá đơn từng dòng cao bằng ô ký hiệu, hết vênh. Dòng Cộng luôn nằm ở đáy danh sách khi cuộn.
 - T791: Danh sách Bán hàng gói Plus: cột Loại chứng từ ghi "Xuất bán POS" cho chứng từ đồng bộ từ FABi (trước để trống). Mở chứng từ rồi đóng thì quay về đúng tab đang đứng (Tất cả, Xuất bán POS, Bán hàng), không nhảy về Tất cả. Cột Số hoá đơn tách thành hai cột Mẫu số - Ký hiệu và Số hoá đơn.
 - T787: Mọi form chứng từ gọn hơn: khoảng cách giữa các khối và lề trên dưới hẹp lại, bảng chi tiết rộng thêm. Form hoá đơn thay thế, điều chỉnh ẩn ô Ghi chú; ô Lý do thu lại, Email nhận hoá đơn nằm cùng hàng bên phải, sửa được.

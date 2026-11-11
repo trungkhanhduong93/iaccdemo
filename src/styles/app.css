@@ -47733,3 +47733,6 @@ textarea.m-tpb-inp { height: auto; padding: 8px 12px; }
 .hddt-than > .hddt-bang { flex-shrink: 0; }   /* màn thấp không ép khung áp dụng cho tất cả, khỏi che tiêu đề phụ */
 .hddt-ds .hddt-dong.hddt-dau { z-index: 2; }
 .hddt-ds .hddt-dong.hddt-cong { position: sticky; bottom: 0; z-index: 2; background: var(--white); box-shadow: 0 -1px 0 var(--line); }
+
+/* ── Dấu cảnh báo có hoá đơn thay thế, điều chỉnh dự thảo ở cột Loại hoá đơn (T795) ── */
+.hd-canh-bao { display: inline-flex; vertical-align: -2px; margin-left: 6px; color: var(--orange); cursor: help; }

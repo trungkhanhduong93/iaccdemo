@@ -179,8 +179,11 @@ export interface HdGoc { id: string; so: string; hd: HdDaXuat }
 export const hdGocCua = (r?: Row) => r?._hdGoc as HdGoc | undefined
 /** Hoá đơn thay thế, điều chỉnh, huỷ bán lập từ chứng từ này, còn chưa xoá */
 export const dsHdMoiCon = (man: string, r?: Row) => ((r?._dsHdMoi as CtLq[] | undefined) ?? []).filter(c => !laDaXoa(man, c.id))
-/** Chứng từ mới lập trong phiên (hoá đơn thay thế, điều chỉnh luôn là chứng từ mới) */
-const ctMoi = (man: string, id: string) => apKhoPhieu(man, []).find(x => String(x.id) === id)
+/** Chứng từ mẫu có sẵn của màn (hoá đơn thay thế, điều chỉnh mẫu, T795): màn chứng từ bán hàng đăng ký, tránh nạp vòng giữa hai file */
+const ctMau = new Map<string, () => Row[]>()
+export const dkCtMau = (man: string, f: () => Row[]) => { ctMau.set(man, f) }
+/** Chứng từ hoá đơn thay thế, điều chỉnh: lập trong phiên hoặc có sẵn trong dữ liệu mẫu */
+const ctMoi = (man: string, id: string) => apKhoPhieu(man, ctMau.get(man)?.() ?? []).find(x => String(x.id) === id)
 /** Hoá đơn gốc bị thay thế, điều chỉnh khi hoá đơn mới đã phát hành */
 export function ttHdGoc(man: string, r: Row): 'Bị thay thế' | 'Bị điều chỉnh' | null {
   const da = dsHdMoiCon(man, r).map(c => ctMoi(man, c.id)).filter((x): x is Row => Boolean(x && hdCua(x)))
@@ -188,6 +191,8 @@ export function ttHdGoc(man: string, r: Row): 'Bị thay thế' | 'Bị điều 
 }
 /** Hoá đơn thay thế còn dự thảo của hoá đơn gốc */
 export const thayTheNhap = (man: string, r: Row) => dsHdMoiCon(man, r).find(c => c.loai === 'HDTHAYTHE' && !hdCua(ctMoi(man, c.id) ?? {}))
+/** Hoá đơn thay thế hoặc điều chỉnh còn dự thảo của hoá đơn gốc (T795) */
+export const hdMoiNhap = (man: string, r: Row) => dsHdMoiCon(man, r).find(c => (c.loai === 'HDTHAYTHE' || c.loai === 'HDDIEUCHINH') && !hdCua(ctMoi(man, c.id) ?? {}))
 /** Lý do không lập được hoá đơn thay thế, điều chỉnh cho chứng từ, lập được thì null */
 export function lyDoKhongLap(man: string, r: Row, loai: 'tt' | 'dc'): string | null {
   if (!hdCua(r)) return 'Chỉ lập với hoá đơn đã phát hành'
@@ -343,13 +348,23 @@ const tienCua = (r: Row): TienHd => { const tong = Number(r.tong) || 0, thue = N
 
 /** Hoá đơn có sẵn của chứng từ lập tay mẫu (T786): id chứng từ mẫu và số hoá đơn, để menu Hoá đơn điện tử có dòng xem ngay.
  *  Cửa hàng thứ hai dùng ký hiệu máy tính tiền như khai báo mẫu ở cauHinhHddt */
-const HD_MAU: Record<string, number> = { 'tay-0': 124, 'tay-1': 52, 'tay-6': 123, 'tay-8': 122, 'tay-9': 121 }   // tay-6, 8, 9 thêm ở T790, số theo thứ tự ngày
+const HD_MAU: Record<string, number> = { 'tay-0': 124, 'tay-1': 52, 'tay-6': 123, 'tay-8': 122, 'tay-9': 121,   // tay-6, 8, 9 thêm ở T790, số theo thứ tự ngày
+  'tay-10': 119, 'tay-11': 120, 'tay-12': 125, 'tay-13': 126, 'tay-tt1': 127, 'tay-dc1': 128 }   // gốc, hoá đơn thay thế, điều chỉnh mẫu (T795)
+/** Số hoá đơn có sẵn của chứng từ mẫu, chưa có thì undefined */
+export const soHdMau = (id: string): number | undefined => HD_MAU[id]
+/** Ký hiệu hoá đơn mẫu theo cửa hàng: cửa hàng thứ hai dùng ký hiệu máy tính tiền */
+const kyHieuMau = (r: Row) => (CUA_HANG.findIndex(c => c.ten === r.cn) === 1 ? KY_HIEU_MAC_DINH.slice(0, 3) + 'MAB' : KY_HIEU_MAC_DINH)
 export function hdMau(r: Row, tien: TienHd, tyLe: boolean): Row {
+  const mau = tyLe ? '2' : '1'
+  // Hoá đơn thay thế, điều chỉnh mẫu (T795): mẫu số, ký hiệu hoá đơn gốc theo gói; dự thảo lấy tiền, ký hiệu như form lập
+  const g = hdGocCua(r)
+  if (g && !g.hd.mau) r = { ...r, _hdGoc: { ...g, hd: { ...g.hd, mau, kyHieu: kyHieuMau(r), ma: maCqt(Number(g.hd.so)), traCuu: maTraCuu(Number(g.hd.so)) } } }
+  if (laHdMoiCua(r) && !r._hd) r = { ...r, _kyHieuHd: r._kyHieuHd ?? mau + kyHieuMau(r), _tienHd: r._tienHd ?? tien, _khachHd: r._khachHd ?? khachMacDinh(r) }
   const n = HD_MAU[String(r.id)]
   if (n === undefined || r._hd) return r
   const k = khachMacDinh(r), khongLay = khongLayCua(r)
-  const kyHieu = CUA_HANG.findIndex(c => c.ten === r.cn) === 1 ? KY_HIEU_MAC_DINH.slice(0, 3) + 'MAB' : KY_HIEU_MAC_DINH
-  const hd: HdDaXuat = { mau: tyLe ? '2' : '1', kyHieu, so: String(n).padStart(8, '0'), ngay: String(r.ngay).split(' ')[0], ma: maCqt(n), traCuu: maTraCuu(n),
+  const kyHieu = kyHieuMau(r)
+  const hd: HdDaXuat = { mau, kyHieu, so: String(n).padStart(8, '0'), ngay: String(r.ngay).split(' ')[0], ma: maCqt(n), traCuu: maTraCuu(n),
     nguoiMua: nguoiMuaMotDong(k, khongLay, KHACH_LE_HD), ...tien }
   return { ...r, _hd: hd, _soHd: hd.so, _kyHieuHd: hd.mau + hd.kyHieu, _ngayHd: hd.ngay, _khachHd: khongLay ? { ...KHACH_TRONG, tenNm: KHACH_LE_HD } : k, _khongLayHd: khongLay,
     ...(khongLay ? {} : { _mst: k.loai === 'cty' ? k.mst : k.cccd, ...(k.diaChi ? { _diaChi: k.diaChi } : {}) }) }

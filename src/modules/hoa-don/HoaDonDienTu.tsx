@@ -17,8 +17,8 @@ import { BoLoc, ChipTrangThai, NutTuyChinhCot, cotChon, useCauHinhLoc, useCotDs,
 import { apKhoPhieu, useBanPhieu } from '../../ui/generic/daXoa'
 import { hangTay, mauTay } from '../ban-hang/ChungTuBanHang'
 import {
-  HopXemHd, KHACH_TRONG, TEN_LOAI_CT, Vo, hdCua, hdGocCua, laHdMoiCua, laMayTinhTien, loaiCtCua, lyDoKhongLap, phatHanhNhap, thayTheNhap, ttHdGoc, xoaCtHd,
-  type HdDaXuat, type TtKhach,
+  HopXemHd, KHACH_TRONG, TEN_LOAI_CT, Vo, hdCua, hdGocCua, laHdMoiCua, laMayTinhTien, loaiCtCua, lyDoKhongLap, hdMoiNhap, phatHanhNhap, ttHdGoc, xoaCtHd,
+  type CtLq, type HdDaXuat, type TtKhach,
 } from '../ban-hang/hddt'
 
 /** Màn chứng từ bán hàng lập tay: gói Plus ở tab Bán hàng của Xuất bán POS, gói Pro ở 3.1.7 */
@@ -53,7 +53,8 @@ function dongHd(r: Row, man: string): Row | null {
   const goc = hdGocCua(r)
   const ttGoc = man === MAN_PL ? ttHdGoc(man, r) : null
   return {
-    id, loai: loaiCt === 'XBAN' ? 'Hoá đơn gốc' : TEN_LOAI_CT[loaiCt], ttHd: nhap ? 'Dự thảo' : ttGoc ?? 'Đã phát hành',
+    // Bị thay thế, bị điều chỉnh là loại hoá đơn; trạng thái HĐĐT chỉ Dự thảo hoặc Đã phát hành (T795)
+    id, loai: ttGoc ? `Hoá đơn ${ttGoc.toLowerCase()}` : loaiCt === 'XBAN' ? 'Hoá đơn gốc' : TEN_LOAI_CT[loaiCt], ttHd: nhap ? 'Dự thảo' : 'Đã phát hành',
     mau: mauKh[0] ?? '', kyHieu: mauKh.slice(1), mauKh, soHd: hd?.so ?? '', ngay: hd?.ngay ?? String(r._ngayHd ?? ''), so: r.so,
     tenDv: cty ? k.tenDv : '', mst: cty ? k.mst : '', diaChi: k.diaChi, nguoiMua: k.tenNm || hd?.nguoiMua || '', maQhns: cty ? k.maQhns : '',
     ttThue: nhap ? '' : !mtt ? 'Hợp lệ' : gui ? 'Đã gửi TCTN' : 'Chưa gửi TCTN',
@@ -62,7 +63,8 @@ function dongHd(r: Row, man: string): Row | null {
     _r: r, _man: man, _hd: hd,
     // Lý do không lập được thay thế, điều chỉnh: hoá đơn đã bị thay thế, đang có thay thế dự thảo (T787)
     _lyTt: man === MAN_PL ? lyDoKhongLap(man, r, 'tt') : 'Chỉ lập ở chứng từ bán hàng gói Plus', _lyDc: man === MAN_PL ? lyDoKhongLap(man, r, 'dc') : 'Chỉ lập ở chứng từ bán hàng gói Plus',
-    _nhapTt: !nhap && man === MAN_PL ? thayTheNhap(man, r)?.so ?? '' : '',
+    // Có thay thế, điều chỉnh dự thảo: dấu cảnh báo ở cột Loại hoá đơn (T795)
+    _nhapMoi: !nhap && man === MAN_PL ? hdMoiNhap(man, r) ?? null : null,
   }
 }
 
@@ -78,7 +80,7 @@ function lyDo(v: Viec, r: Row): string | null {
     case 'ph': case 'xoa': return nhap ? null : 'Chỉ dùng với hoá đơn dự thảo'
     case 'dc': case 'tt': case 'tbss':
       if (nhap || r.ttThue !== 'Hợp lệ') return 'Chỉ dùng với hoá đơn đã phát hành, trạng thái thuế Hợp lệ'
-      return v === 'tt' ? (r._lyTt as string | null) : v === 'dc' ? (r._lyDc as string | null) : r.ttHd === 'Bị thay thế' ? 'Hoá đơn đã bị thay thế, chỉ xem' : null
+      return v === 'tt' ? (r._lyTt as string | null) : v === 'dc' ? (r._lyDc as string | null) : r.loai === 'Hoá đơn bị thay thế' ? 'Hoá đơn đã bị thay thế, chỉ xem' : null
     case 'gui':
       if (!laMayTinhTien(String(r.kyHieu))) return 'Chỉ hoá đơn máy tính tiền (ký hiệu có chữ M ở vị trí thứ 4) mới gửi CQT'
       if (nhap) return 'Phát hành hoá đơn trước khi gửi CQT'
@@ -132,7 +134,6 @@ export function DsHoaDon({ sc, mod }: ScreenProps) {
     }
     return true
   })
-  // Bị thay thế, Bị điều chỉnh vẫn là hoá đơn đã phát hành (T787)
   const theoChip = (r: Row, k: string) => (k === 'Dự thảo' ? r.ttHd === 'Dự thảo' : r.ttHd !== 'Dự thảo')
   const list = chip === 'all' ? truocChip : truocChip.filter(r => theoChip(r, chip))
   const chips: Chip[] = [
@@ -166,9 +167,10 @@ export function DsHoaDon({ sc, mod }: ScreenProps) {
   const chu = (k: string, t: string, w: number, cls?: string): Col => ({ k, t, w, ...(cls ? { cls } : {}) })
   const cols: Col[] = [
     cotChon(list, chon, setChon),
-    { k: 'loai', t: 'Loại hoá đơn', w: 150, dinh: 'trai' },
-    { k: 'ttHd', t: 'Trạng thái HĐĐT', w: 140, r: r => <span className={`ph-tt${r.ttHd === 'Đã phát hành' ? ' da' : ''}`}
-      title={r._nhapTt ? `Đang có hoá đơn thay thế dự thảo ${r._nhapTt}` : undefined}>{r.ttHd}{r._nhapTt ? ', có thay thế dự thảo' : ''}</span> },
+    { k: 'loai', t: 'Loại hoá đơn', w: 170, dinh: 'trai', r: r => { const c = r._nhapMoi as CtLq | null
+      const bao = c && `Có hoá đơn dự thảo ${c.loai === 'HDTHAYTHE' ? 'thay thế' : 'điều chỉnh'} ${c.so} chờ phát hành`
+      return <>{r.loai}{bao && <span className="hd-canh-bao" title={bao} aria-label={bao}><Icon n="alert" className="ic sm" /></span>}</> } },
+    { k: 'ttHd', t: 'Trạng thái HĐĐT', w: 140, r: r => <span className={`ph-tt${r.ttHd === 'Đã phát hành' ? ' da' : ''}`}>{r.ttHd}</span> },
     // Mẫu số ghép với ký hiệu như màn xuất (vd 1C26TAA): ký tự đầu là mẫu số, 6 ký tự sau là ký hiệu
     chu('mauKh', 'Mẫu số - Ký hiệu', 140, 'code'),
     { k: 'soHd', t: 'Số HĐ', w: 110, r: r => r.soHd ? <button type="button" className="ds-link-so" title="Xem hoá đơn" onClick={e => { e.stopPropagation(); setXem(r) }}>{r.soHd}</button> : null },
