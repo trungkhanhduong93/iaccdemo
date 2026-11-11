@@ -36,6 +36,18 @@ export function tinhDong(d: Dong, sua: Partial<Dong> = {}): Dong {
   return { ...kq, thue: tron(dtDong(kq) * (x.ts || 0) / 100) }
 }
 
+/** Hoá đơn điều chỉnh (T787): mỗi dòng theo đúng chiều tăng (dau 1) hoặc giảm (dau -1). Người dùng gõ số dương hoặc âm ở
+ *  số lượng, đơn giá, ô tiền đều được; dòng nào thành tiền sai chiều thì đổi dấu đơn giá, ô tiền gõ thẳng sai chiều thì đổi dấu ô đó */
+export function theoChieu(ds: Dong[], dau: 1 | -1): Dong[] {
+  const sai = (v?: number) => (v || 0) * dau < 0
+  return ds.map(d0 => {
+    let d = d0
+    if (sai(d.tien)) d = tinhDong(d, { gia: -(d.gia || 0) })
+    for (const k of ['giam', 'ck', 'phiDv'] as const) if (sai(d[k])) d = tinhDong(d, { [k]: -(d[k] || 0) })
+    return sai(d.phiVc) ? { ...d, phiVc: -(d.phiVc || 0) } : d
+  })
+}
+
 /** Dòng mới từ một mặt hàng trong danh mục */
 export function dongTuHang(h: (typeof HANG)[number], sl = 1): Dong {
   return tinhDong({ ma: h.ma, ten: h.ten, dvt: h.dvt, sl, gia: h.gia, tien: 0, ts: h.ts, thue: 0, pt: 0, giam: 0, ptCk: 0, ck: 0, ptPhiDv: 0, phiDv: 0 })
@@ -135,8 +147,9 @@ export const COT_BHB: [string, string][] = [
   ['dtTruocThue', 'Doanh thu tính thuế'], ['ts', 'Thuế suất'], ['thue', 'Tiền thuế'], ['tonKho', 'Theo dõi tồn kho'],
 ]
 
-export function BangHangBan({ dong, onChange, cheDo, tyLe, giamThue, an = [] }: {
+export function BangHangBan({ dong, onChange, cheDo, tyLe, giamThue, an = [], choAm }: {
   dong: Dong[]
+  choAm?: boolean                        // hoá đơn điều chỉnh (T787): gõ được số âm ở số lượng, đơn giá, các ô tiền
   onChange?: (d: Dong[]) => void
   cheDo: 'sua' | 'xem'
   tyLe: boolean                          // GTGT theo % doanh thu: bỏ Thuế suất, Tiền thuế; hiện Giảm thuế GTGT
@@ -159,7 +172,7 @@ export function BangHangBan({ dong, onChange, cheDo, tyLe, giamThue, an = [] }: 
   const gt = (d: Dong) => (tyLe && giamThue ? giamThue(dtDong(d), d.ma) : 0)
 
   const o = (v: number, f: (x: number) => void, laPt = false) => sua
-    ? <OSoGo val={v} onChange={f} hien={laPt ? String : money} max={laPt ? 100 : undefined} />
+    ? <OSoGo val={v} onChange={f} hien={laPt ? String : money} max={laPt ? 100 : undefined} am={choAm && !laPt} />
     : <span className="num">{laPt ? phanTram(v) : money(v)}</span>
   const tong = (f: (d: Dong) => number) => dong.reduce((a, d) => a + f(d), 0)
   const hien = (k: string) => !an.includes(k)

@@ -5,7 +5,7 @@ import type { Row, ScreenProps, VoucherCfg } from '../../modules/types'
 import { duongDan, moDuoc, tenMan, timMan } from '../../app/registry'
 import { cuaHangHienTai, useSession, cheDoHienTai, ngayDauNam, truocDauNam, donViHienTai, loaiHinhDv, gtgtTyLe } from '../../app/session'
 import { giamThueHang } from '../../modules/ban-hang/giam-thue'
-import { ApDauBangBan, BangHangBan, COT_BHB, dongTuHang, dtDong } from '../../modules/ban-hang/BangHangBan'
+import { ApDauBangBan, BangHangBan, COT_BHB, dongTuHang, dtDong, theoChieu } from '../../modules/ban-hang/BangHangBan'
 import { kieuGhiSo, type Goi, kieuGhiSoDv, tcNhuStandard } from '../../app/plan'
 import { CHE_DO, type CheDo } from '../../app/che-do'
 import { tkTheoCheDo } from '../../modules/tong-hop/so-cai'
@@ -362,7 +362,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
   useEffect(() => { setThangLl(dsThangLl[0]) }, [dsThangLl])
 
   // Hoá đơn điều chỉnh (T787): người dùng nhập số dương, phần mềm tự đổi dấu theo loại điều chỉnh
-  const doiDong = (ds: Dong[]) => setDsDong(loaiCt === 'HDDIEUCHINH' ? dauDong(ds, dauDc) : ds)
+  const doiDong = (ds: Dong[]) => setDsDong(loaiCt === 'HDDIEUCHINH' ? theoChieu(ds, dauDc) : ds)   // gõ âm hay dương ở số lượng, đơn giá, ô tiền đều được, dòng tự theo chiều tăng, giảm
   // Tính tổng
   const tongTien =dsDong.reduce((a, d) => a + (d.tien || 0), 0)
   // Dòng kiểu Xuất bán POS (T753): giảm giá gộp vào phần trừ cùng chiết khấu, phí dịch vụ cộng vào doanh thu
@@ -1152,7 +1152,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
                   <b>Loại điều chỉnh:</b>
                   {([['tang', 'Điều chỉnh tăng'], ['giam', 'Điều chỉnh giảm']] as const).map(([v, t]) => (
                     <label key={v}><input type="radio" name="dcLoai" disabled={!dangSua} checked={dcLoai === v}
-                      onChange={() => { setDcLoai(v); setDsDong(ds => dauDong(ds, v === 'giam' ? -1 : 1)) }} />{t}</label>
+                      onChange={() => { setDcLoai(v); setDsDong(ds => theoChieu(ds, v === 'giam' ? -1 : 1)) }} />{t}</label>
                   ))}
                 </div>
               )}
@@ -1568,7 +1568,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
             <BangTraNoNcc ncc={doiTuong} ds={dsTraNo} chon={traNo} onChange={setTraNo} cheDo={dangSua ? 'sua' : 'xem'} />
           )}
           {tab === 'ct' && cfg.dongPos && (
-            <BangHangBan dong={dsDong} onChange={doiDong} cheDo={dangSua ? 'sua' : 'xem'} tyLe={Boolean(giamGtgt)} giamThue={giamThueHang} an={[...anCot, ...boCotBan]} />
+            <BangHangBan dong={dsDong} onChange={doiDong} cheDo={dangSua ? 'sua' : 'xem'} tyLe={Boolean(giamGtgt)} giamThue={giamThueHang} an={[...anCot, ...boCotBan]} choAm={loaiCt === 'HDDIEUCHINH'} />
           )}
           {tab === 'ct' && !cfg.dongPos && !laKk && !laSx && !laDcn && !hienTraNo && (
             <BangSua

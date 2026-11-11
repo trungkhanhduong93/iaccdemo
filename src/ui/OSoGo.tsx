@@ -15,9 +15,9 @@ export function goSoVN(s: string, thapPhan = true): string {
 /** Đọc chuỗi đang gõ ra số: bỏ dấu ngăn nghìn, dấu thập phân thành chấm */
 export const docSoVN = (s: string) => Number(s.split(dauNgan()).join('').replace(dauThap(), '.')) || 0
 /** Số -> chuỗi để bắt đầu gõ (không làm tròn, giữ phần thập phân) */
-const raChuoi = (v: number) => v ? goSoVN(String(v).replace('.', dauThap())) : ''
+const raChuoi = (v: number, am = false) => v ? (am && v < 0 ? '-' : '') + goSoVN(String(Math.abs(v)).replace('.', dauThap())) : ''
 
-export function OSoGo({ val, onChange, hien, thapPhan = true, className = 'inp sm num', placeholder = '0', disabled, max }: {
+export function OSoGo({ val, onChange, hien, thapPhan = true, className = 'inp sm num', placeholder = '0', disabled, max, am = false }: {
   val: number
   onChange?: (v: number) => void
   hien: (v: number) => string          // cách hiện khi không gõ
@@ -26,12 +26,13 @@ export function OSoGo({ val, onChange, hien, thapPhan = true, className = 'inp s
   placeholder?: string
   disabled?: boolean
   max?: number                          // gõ quá số này thì bỏ phím vừa gõ, vd % chiết khấu tối đa 100 (T492)
+  am?: boolean                          // cho gõ dấu trừ đứng đầu, vd hoá đơn điều chỉnh giảm (T787)
 }) {
   const [focus, setFocus] = useState(false)
-  const [str, setStr] = useState(raChuoi(val))
+  const [str, setStr] = useState(raChuoi(val, am))
   const o = useRef<HTMLInputElement>(null)
   const troSau = useRef<number | null>(null)   // số chữ số, dấu thập phân đứng trước con trỏ, để đặt lại con trỏ sau khi chèn dấu ngăn nghìn
-  useEffect(() => { if (!focus) setStr(raChuoi(val)) }, [val, focus])
+  useEffect(() => { if (!focus) setStr(raChuoi(val, am)) }, [val, focus, am])
   useEffect(() => {
     const el = o.current, k = troSau.current
     if (!el || k === null || !focus) return
@@ -43,12 +44,13 @@ export function OSoGo({ val, onChange, hien, thapPhan = true, className = 'inp s
   return (
     <input ref={o} type="text" className={className} inputMode="decimal" placeholder={placeholder} disabled={disabled}
       value={focus ? str : hien(val)}
-      onFocus={() => { setFocus(true); setStr(raChuoi(val)) }}
+      onFocus={() => { setFocus(true); setStr(raChuoi(val, am)) }}
       onChange={e => {
         const t = e.target.value, c = e.target.selectionStart ?? t.length
         if (max !== undefined && docSoVN(goSoVN(t, thapPhan)) > max) return
         troSau.current = t.slice(0, c).split('').filter(x => /\d/.test(x) || x === dauThap()).length
-        const moi = goSoVN(t, thapPhan)
+        const tru = am && t.trimStart().startsWith('-')
+        const moi = (tru ? '-' : '') + goSoVN(t, thapPhan)
         setStr(moi)
         onChange?.(docSoVN(moi))
       }}
