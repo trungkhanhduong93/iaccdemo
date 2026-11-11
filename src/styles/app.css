@@ -47802,3 +47802,21 @@ textarea.m-tpb-inp { height: auto; padding: 8px 12px; }
 }
 .hddt-dctt .tbl thead tr:first-child th:last-child { z-index: 4; background: var(--th); }   /* trên ô tiêu đề dòng 2 (z-index 3) cuộn qua */
 .hddt-dctt .tbl tbody tr:hover td:last-child:not([colspan]) { background: #f2f7fb; }
+
+/* ── Kê khai hoá đơn thay thế, điều chỉnh về kỳ gốc (T788) ── */
+.voucher-top > .note { margin: 0 0 10px; }
+.tk-bs-nut { border: 0; background: none; padding: 0; color: var(--blue); font: inherit; font-weight: 600; cursor: pointer; text-decoration: underline; }
+.tk-bs-nut:hover { color: var(--blue-d); }
+.tk-noi-dung > .note { margin-top: 12px; }
+.tk-bk { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 10px; }
+.tk-bk-dau { display: flex; flex-direction: column; gap: 2px; }
+.tk-bk-dau span { color: var(--muted); font-size: 13px; }
+.tk-bk-cuon { overflow-x: auto; }
+.tk-bk-bang { width: 100%; border-collapse: collapse; font-size: 13px; }
+.tk-bk-bang th, .tk-bk-bang td { padding: 7px 10px; border-bottom: 1px solid var(--line); text-align: left; white-space: nowrap; }
+.tk-bk-bang th { color: var(--muted); font-weight: 600; background: var(--th); }
+.tk-bk-bang .n { text-align: right; font-variant-numeric: tabular-nums; }
+.tk-bk-bang tr.gach td { color: var(--muted); text-decoration: line-through; }
+.tk-bk-bang tr.gach td:last-child { text-decoration: none; }
+.tk-bk-bang tfoot td { font-weight: 600; border-bottom: 0; }
+.tk-bk-bang td:nth-child(4) { white-space: normal; min-width: 220px; }

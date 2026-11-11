@@ -67,14 +67,18 @@ const MAU_TAY: [string, number, string, number, number, string, string, [number,
   ['BH2610-0011', 6, '16:45', 0, 2, 'Bán suất ăn đào tạo nhân viên', 'tay', [[1, 30, 0, 0, 0], [6, 30, 0, 0, 0]]],
   ['BH2610-0012', 1, '12:30', 0, 4, 'Bán set quà tặng đối tác', 'tay', [[3, 20, 0, 0, 0]]],
   ['BH2610-0013', 1, '19:10', 0, 1, 'Bán tiệc mừng thọ', 'tay', [[0, 12, 0, 0, 5], [5, 12, 0, 0, 5]]],
+  // Hoá đơn gốc kỳ 6 tháng đầu năm 2026 đã nộp tờ khai, có điều chỉnh phát hành tháng 8 (T788): tay-14, ngày 26/06/2026
+  ['BH2606-0003', 103, '11:20', 0, 2, 'Bán suất ăn hội nghị khách hàng', 'tay', [[2, 30, 0, 0, 0], [6, 30, 0, 0, 0]]],
 ]
-/** Hoá đơn thay thế, điều chỉnh mẫu (T795): id, số chứng từ, loại, chứng từ gốc, lý do; điều chỉnh giảm kèm dòng giảm [hàng thứ mấy, số lượng].
- *  Có số hoá đơn ở HD_MAU (hddt.tsx) là đã phát hành, không có là dự thảo. Thay thế sinh kèm huỷ bán như khi lập trên form */
-const MAU_HD_MOI: [string, string, 'HDTHAYTHE' | 'HDDIEUCHINH', string, string, [number, number][]][] = [
+/** Hoá đơn thay thế, điều chỉnh mẫu (T795): id, số chứng từ, loại, chứng từ gốc, lý do; điều chỉnh giảm kèm dòng giảm [hàng thứ mấy, số lượng];
+ *  ngày lập, bỏ trống là ngày cuối dữ liệu. Có số hoá đơn ở HD_MAU (hddt.tsx) là đã phát hành, không có là dự thảo. Thay thế sinh kèm huỷ bán như khi lập trên form */
+const MAU_HD_MOI: [string, string, 'HDTHAYTHE' | 'HDDIEUCHINH', string, string, [number, number][], string?][] = [
   ['tay-tt1', 'HDTT2610-0001', 'HDTHAYTHE', 'tay-10', 'Sai tên đơn vị người mua', []],
   ['tay-dc1', 'HDDC2610-0001', 'HDDIEUCHINH', 'tay-11', 'Giảm số lượng suất ăn khách trả lại', [[1, 5]]],
   ['tay-tt2', 'HDTT2610-0002', 'HDTHAYTHE', 'tay-12', 'Sai mã số thuế người mua', []],
   ['tay-dc2', 'HDDC2610-0002', 'HDDIEUCHINH', 'tay-13', 'Giảm giá theo thoả thuận sau bán', [[0, 2]]],
+  // Điều chỉnh hoá đơn kỳ đã nộp tờ khai: màn Kê khai thuế nhắc lập tờ khai bổ sung (T788)
+  ['tay-dc3', 'HDDC2608-0001', 'HDDIEUCHINH', 'tay-14', 'Giảm số suất ăn hội nghị không phục vụ', [[2, 5]], '14/08/2026'],
 ]
 let mauTayDa: Row[] | null = null
 export function mauTay(): Row[] {
@@ -89,15 +93,15 @@ export function mauTay(): Row[] {
   })
   // Hoá đơn mới lập ngày cuối dữ liệu; hoá đơn gốc ghi mẫu số trống để hdMau điền theo gói (mẫu 1 hoặc 2), ký hiệu theo cửa hàng
   const ngayMoi = dmy(cuoi), them: Row[] = []
-  MAU_HD_MOI.forEach(([id, so, loai, idGoc, lyDo, giam], i) => {
+  MAU_HD_MOI.forEach(([id, so, loai, idGoc, lyDo, giam, ngayLap = ngayMoi], i) => {
     const goc = ds0.find(r => r.id === idGoc)!
     const hdGoc: HdGoc = { id: idGoc, so: String(goc.so), hd: { mau: '', kyHieu: '', so: String(soHdMau(idGoc)).padStart(8, '0'), ngay: String(goc.ngay).split(' ')[0], ma: '' } }
     const dongGoc = goc._dong as Dong[]
     const dong = loai === 'HDTHAYTHE' ? dongGoc
       : dauDong(giam.map(([h, sl]) => tinhDong(dongTuHang(HANG[h % HANG.length], sl), {})), -1)
     const chung = { cn: goc.cn, doiTuong: goc.doiTuong, kenh: goc.kenh, _httt: goc._httt, _kho: goc._kho, nguon: 'tay', tt: 'ghi',
-      ngay: `${ngayMoi} ${['09:30', '10:15', '14:00', '15:20'][i]}`, _ngayTao: `${ngayMoi} ${['09:30', '10:15', '14:00', '15:20'][i]}`, _nguoiTao: 'Hồ Thị Mai' }
-    const moi: Row = { ...chung, id, so, dienGiai: lyDo, _dong: dong, _loaiCt: loai, _hdGoc: hdGoc, _lyDoHd: lyDo, _ngayHd: ngayMoi,
+      ngay: `${ngayLap} ${['09:30', '10:15', '14:00', '15:20', '08:45'][i]}`, _ngayTao: `${ngayLap} ${['09:30', '10:15', '14:00', '15:20', '08:45'][i]}`, _nguoiTao: 'Hồ Thị Mai' }
+    const moi: Row = { ...chung, id, so, dienGiai: lyDo, _dong: dong, _loaiCt: loai, _hdGoc: hdGoc, _lyDoHd: lyDo, _ngayHd: ngayLap,
       ...(loai === 'HDDIEUCHINH' ? { _dcLoai: 'giam' } : {}) }
     const ct: CtLq[] = [{ id, so, loai }]
     if (loai === 'HDTHAYTHE') {

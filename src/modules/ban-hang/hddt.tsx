@@ -352,7 +352,8 @@ const tienCua = (r: Row): TienHd => { const tong = Number(r.tong) || 0, thue = N
 /** Hoá đơn có sẵn của chứng từ lập tay mẫu (T786): id chứng từ mẫu và số hoá đơn, để menu Hoá đơn điện tử có dòng xem ngay.
  *  Cửa hàng thứ hai dùng ký hiệu máy tính tiền như khai báo mẫu ở cauHinhHddt */
 const HD_MAU: Record<string, number> = { 'tay-0': 124, 'tay-1': 52, 'tay-6': 123, 'tay-8': 122, 'tay-9': 121,   // tay-6, 8, 9 thêm ở T790, số theo thứ tự ngày
-  'tay-10': 119, 'tay-11': 120, 'tay-12': 125, 'tay-13': 126, 'tay-tt1': 127, 'tay-dc1': 128 }   // gốc, hoá đơn thay thế, điều chỉnh mẫu (T795)
+  'tay-10': 119, 'tay-11': 120, 'tay-12': 125, 'tay-13': 126, 'tay-tt1': 127, 'tay-dc1': 128,   // gốc, hoá đơn thay thế, điều chỉnh mẫu (T795)
+  'tay-14': 41, 'tay-dc3': 63 }   // hoá đơn gốc kỳ đã nộp tờ khai và điều chỉnh tháng 8 (T788)
 /** Số hoá đơn có sẵn của chứng từ mẫu, chưa có thì undefined */
 export const soHdMau = (id: string): number | undefined => HD_MAU[id]
 /** Ký hiệu hoá đơn mẫu theo cửa hàng: cửa hàng thứ hai dùng ký hiệu máy tính tiền */

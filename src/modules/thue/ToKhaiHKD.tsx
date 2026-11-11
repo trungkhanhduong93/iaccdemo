@@ -16,9 +16,12 @@ import { Table } from '../../ui/Table'
 import { Select } from '../../ui/Dropdown'
 import { BoLoc, useCauHinhLoc, useDongEsc, useLocNhap, type OLocDef } from '../../ui/LocNangCao'
 import { fold, money, dauThap } from '../../ui/format'
+import { Note } from '../../ui/Page'
+import { demHd, dongBangKe, hdChoBoSung, hdCuaToKhai, laToKhaiNopCuoi } from './hdKyGoc'
 
 export type TrangThai = 'Chưa nộp' | 'Đã nộp' | 'Bị từ chối' | 'Đã huỷ'
-export interface ToKhai { id: string; ma: string; nam: number; dau: boolean; lan: number; tt: TrangThai }   // dau: 6 tháng đầu năm; lan: 0 lần đầu, n bổ sung lần n
+// dau: 6 tháng đầu năm; lan: 0 lần đầu, n bổ sung lần n; hd: hoá đơn thay thế, điều chỉnh của kỳ đã lấy số lúc nộp (gói Plus, T788)
+export interface ToKhai { id: string; ma: string; nam: number; dau: boolean; lan: number; tt: TrangThai; hd?: string[] }
 
 export const TEN_TO_KHAI = 'Tờ khai thuế đối với hộ kinh doanh, cá nhân kinh doanh doanh thu dưới 1 tỷ (TT89/2026)'
 export const NHOM_DT = 'Nhóm 1 (Dưới 1 tỷ đồng/năm)'
@@ -61,14 +64,37 @@ function doanhThuThang(t: number, nam: number) {
 }
 const thangKy = (dau: boolean) => (dau ? [1, 2, 3, 4, 5, 6] : [7, 8, 9, 10, 11, 12])
 
-/** Số liệu Bước 2: doanh thu kỳ, mức giảm trừ trước khi tính TNCN, thuế GTGT, TNCN */
-export function soLieu(tk: Pick<ToKhai, 'dau' | 'nam'>) {
-  const dt = thangKy(tk.dau).reduce((a, t) => a + doanhThuThang(t, tk.nam), 0)
+/** Số liệu Bước 2: doanh thu kỳ, mức giảm trừ trước khi tính TNCN, thuế GTGT, TNCN.
+ *  coHd (gói Plus, T788): cộng chênh lệch doanh thu của hoá đơn thay thế, điều chỉnh có hoá đơn gốc trong kỳ (QD107) */
+export function soLieu(tk: Pick<ToKhai, 'dau' | 'nam'> & Partial<Pick<ToKhai, 'tt' | 'lan' | 'hd'>>, coHd = false) {
+  const chenh = coHd && tk.tt ? hdCuaToKhai({ ...tk, tt: tk.tt, lan: tk.lan ?? 0 }).reduce((a, x) => a + x.chenh, 0) : 0
+  const dt = thangKy(tk.dau).reduce((a, t) => a + doanhThuThang(t, tk.nam), 0) + chenh
   const luyKe = tk.dau ? 0 : thangKy(true).reduce((a, t) => a + doanhThuThang(t, tk.nam), 0)
   const giam = Math.min(dt, Math.max(0, GIAM_TRU_NAM - luyKe))
   const gtgt = Math.round(dt * NGANH.gtgt / 100)
   const tncn = Math.round((dt - giam) * NGANH.tncn / 100)
-  return { dt, giam, gtgt, tncn, tong: gtgt + tncn }
+  return { dt, giam, gtgt, tncn, tong: gtgt + tncn, chenh }
+}
+
+/** Ghi nhận tờ khai đã nộp: giữ hoá đơn thay thế, điều chỉnh đã lấy số, hoá đơn phát hành sau đó cần tờ khai bổ sung (T788). Web và điện thoại dùng chung */
+export function nopToKhai(tk: ToKhai) {
+  tk.hd = hdCuaToKhai(tk).map(x => x.id)
+  tk.tt = 'Đã nộp'
+}
+
+/** Nhắc lập tờ khai bổ sung ở tờ khai đã nộp mới nhất của kỳ có hoá đơn thay thế, điều chỉnh phát hành sau khi nộp (gói Plus, QD107, T788) */
+function NhacBoSung({ tk, onLap }: { tk: ToKhai; onLap: () => void }) {
+  if (!laToKhaiNopCuoi(tk, DS)) return null
+  const ds = hdChoBoSung(tk, DS)
+  if (!ds.length) return null
+  const moi = soLieu({ ...tk, tt: 'Chưa nộp' }, true), cu = soLieu(tk, true)
+  const doi = (v: number) => (v < 0 ? `giảm ${money(-v)}` : `tăng ${money(v)}`)
+  return (
+    <Note kind="warn" icon="alert">
+      Kỳ {tenKy(tk)} có {demHd(ds)} phát hành sau khi nộp tờ khai {tk.ma}: doanh thu {doi(moi.dt - cu.dt)}, thuế phải nộp {doi(moi.tong - cu.tong)}.
+      Tờ khai đã nộp không sửa được. <button type="button" className="tk-bs-nut" onClick={onLap}>Lập tờ khai bổ sung</button>
+    </Note>
+  )
 }
 
 // Bộ lọc như danh sách chứng từ các phân hệ (T389): Năm, Tìm kiếm, Loại tờ khai, Trạng thái; bấm Lọc mới áp dụng
@@ -78,6 +104,7 @@ export const DS_TT: TrangThai[] = ['Chưa nộp', 'Đã nộp', 'Bị từ chố
 
 export function ToKhaiHKD({ sc, mod }: ScreenProps) {
   const { s, toast } = useSession()
+  const coHd = s.goi === 'PL'   // hoá đơn điện tử, thay thế, điều chỉnh chỉ có ở gói Plus (T788)
   const nav = useNavigate()
   const [, setLan] = useState(0)   // vẽ lại sau khi đổi danh sách
   const loc0 = useLocNhap(locMacDinh)
@@ -106,7 +133,7 @@ export function ToKhaiHKD({ sc, mod }: ScreenProps) {
   const [cauHinhLoc, datCauHinhLoc] = useCauHinhLoc(`/app/${mod.key}/${sc.slug}`, oLoc.map(o => o.k), ['nam', 'tim', 'loai', 'tt'])
   const rows = DS.filter(x => (ap.nam === 'tat-ca' || String(x.nam) === ap.nam) && (!ap.tim.trim() || fold(`${x.ma} ${tenKy(x)} ${TEN_TO_KHAI}`).includes(fold(ap.tim.trim())))
     && (!ap.loai || tenLoai(x.lan) === ap.loai) && (!ap.tt || x.tt === ap.tt))
-    .map((x, i) => { const so = soLieu(x); return { ...x, stt: i + 1, ky: tenKy(x), loai: tenLoai(x.lan), dt: so.dt, giam: so.giam, gtgt: so.gtgt, tncn: so.tncn } as Row })
+    .map((x, i) => { const so = soLieu(x, coHd); return { ...x, stt: i + 1, ky: tenKy(x), loai: tenLoai(x.lan), dt: so.dt, giam: so.giam, gtgt: so.gtgt, tncn: so.tncn } as Row })
   const cols: Col[] = [
     { k: 'stt', t: '#', c: true, w: 50 },
     { k: 'ma', t: 'Mã tờ khai', cls: 'code', w: 170 },
@@ -169,6 +196,7 @@ export function ToKhaiHKD({ sc, mod }: ScreenProps) {
             </button>
           </div>
         </div>
+        {coHd && DS.map(x => <NhacBoSung key={x.id} tk={x} onLap={() => lapMoi(x.dau, x.nam)} />)}
         <Table cols={cols} rows={rows} onRow={r => { setBuocDau(0); setMo(DS.find(x => x.id === r.id) ?? null) }} sum={{ stt: '', ma: `Tổng: ${rows.length}` }} />
       </section>
       {/* hướng dẫn Trang chủ (T138): khai xong thông tin kinh doanh thì khoanh cột doanh thu, tiền thuế; Lập tờ khai mở hộp chọn kỳ như nút Thêm mới,
@@ -177,7 +205,8 @@ export function ToKhaiHKD({ sc, mod }: ScreenProps) {
       {/* đang theo hướng dẫn Trang chủ mà đóng hộp chưa nộp: hướng dẫn chỉ vào nút Xem lại (boViecHuongDan) */}
       {ttMo && <HopThongTin onDong={() => setTtMo(false)} />}
       {lap && <HopLapToKhai onDong={() => { setLap(false); boViecHuongDan('thue', s.donVi, nav) }} onLap={lapMoi} />}
-      {mo && <HopToKhai tk={mo} buocDau={buocDau} onDong={() => { setMo(null); boViecHuongDan('thue', s.donVi, nav) }} onDoi={() => setLan(x => x + 1)} />}
+      {mo && <HopToKhai tk={mo} buocDau={buocDau} coHd={coHd} onDong={() => { setMo(null); boViecHuongDan('thue', s.donVi, nav) }} onDoi={() => setLan(x => x + 1)}
+        onBoSung={() => lapMoi(mo.dau, mo.nam)} />}
     </div>
   )
 }
@@ -276,14 +305,16 @@ function HopThongTin({ onDong }: { onDong: () => void }) {
 }
 
 /** Hộp tờ khai 4 bước như iFaster: cột bước bên trái, nội dung bước bên phải, Huỷ, Quay lại, Tiếp tục ở chân */
-function HopToKhai({ tk, buocDau = 0, onDong, onDoi }: { tk: ToKhai; buocDau?: number; onDong: () => void; onDoi: () => void }) {
+function HopToKhai({ tk, buocDau = 0, coHd = false, onDong, onDoi, onBoSung }: { tk: ToKhai; buocDau?: number; coHd?: boolean; onDong: () => void; onDoi: () => void; onBoSung?: () => void }) {
   const { s, toast } = useSession()
   const nav = useNavigate()
   useDongEsc(onDong)
   const [buoc, setBuoc] = useState(buocDau)
   const [xong, setXong] = useState(tk.tt === 'Chưa nộp' ? buocDau + 1 : 4)
   const dv = donViHienTai(s)
-  const so = useMemo(() => soLieu(tk), [tk])
+  const so = useMemo(() => soLieu(tk, coHd), [tk, coHd])
+  // hoá đơn thay thế, điều chỉnh đưa về kỳ này (T788): hoá đơn gốc bị thay thế gạch đi, hoá đơn mới số âm hoặc dương
+  const bk = useMemo(() => (coHd ? dongBangKe(hdCuaToKhai(tk)) : []), [tk, coHd])
   const sua = tk.tt === 'Chưa nộp'
   const den = (b: number) => { setBuoc(b); setXong(x => Math.max(x, b + 1)) }
   const truong = (nhan: string, v: string) => <label className="tk-truong"><span>{nhan} <i>*</i></span><input className="inp" value={v} readOnly /></label>
@@ -319,6 +350,22 @@ function HopToKhai({ tk, buocDau = 0, onDong, onDoi }: { tk: ToKhai; buocDau?: n
         <div className="tk-dong"><span>Thuế TNCN ({String(NGANH.tncn).replace('.', dauThap())}%)</span><b>{money(so.tncn)}</b></div>
         {so.giam > 0 && <div className="tk-giam"><Icon n="info" className="ic sm" />Bạn được giảm {money(so.giam)} trước khi tính thuế TNCN (doanh thu cả năm đến 1 tỷ đồng không tính thuế TNCN)</div>}
       </div>
+      {bk.length > 0 && <div className="tk-bk">
+        <div className="tk-bk-dau"><b>Hoá đơn thay thế, điều chỉnh đưa về kỳ này</b>
+          <span>Hoá đơn mới kê khai vào kỳ của hoá đơn gốc. Hoá đơn bị thay thế gạch đi, không tính doanh thu.</span></div>
+        <div className="tk-bk-cuon">
+          <table className="tk-bk-bang">
+            <thead><tr><th>Ký hiệu</th><th>Số HĐ</th><th>Ngày HĐ</th><th>Người mua</th><th className="n">Doanh thu</th><th>Ghi chú</th></tr></thead>
+            <tbody>{bk.map(d => (
+              <tr key={d.id} className={d.gach ? 'gach' : d.moi ? 'moi' : ''}>
+                <td>{d.kyHieu}</td><td>{d.so}</td><td>{d.ngay}</td><td>{d.mua}</td><td className="n">{money(d.dt)}</td><td>{d.ghiChu}</td>
+              </tr>
+            ))}</tbody>
+            <tfoot><tr><td colSpan={4}>Chênh lệch doanh thu đã tính vào doanh thu kỳ</td><td className="n">{money(so.chenh)}</td><td /></tr></tfoot>
+          </table>
+        </div>
+      </div>}
+      {coHd && onBoSung && <NhacBoSung tk={tk} onLap={onBoSung} />}
     </>,
     <>
       <h3>Khai phụ lục</h3>
@@ -380,7 +427,7 @@ function HopToKhai({ tk, buocDau = 0, onDong, onDoi }: { tk: ToKhai; buocDau?: n
           {buoc === BUOC.length - 1 && <>
             <button type="button" className="btn" onClick={() => toast(`Đã tải xuống tờ khai ${tk.ma} dạng XML`)}><Icon n="download" className="ic sm" />Tải xuống XML</button>
             {/* nộp xong từ hướng dẫn Trang chủ (T138): về Trang chủ, hướng dẫn khen */}
-            {sua && <button type="button" className="btn pri" onClick={() => { tk.tt = 'Đã nộp'; onDoi(); toast(`Đã ghi nhận ${tk.ma} đã nộp cơ quan thuế`); onDong(); xongViecHuongDan('thue', tenKy(tk), s.donVi, nav) }}>Đã nộp CQT</button>}
+            {sua && <button type="button" className="btn pri" onClick={() => { nopToKhai(tk); onDoi(); toast(`Đã ghi nhận ${tk.ma} đã nộp cơ quan thuế`); onDong(); xongViecHuongDan('thue', tenKy(tk), s.donVi, nav) }}>Đã nộp CQT</button>}
           </>}
         </div>
       </div>

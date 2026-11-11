@@ -11,7 +11,7 @@ import { CUA_HANG, DON_VI } from '../../data/mock'
 import { DS_QUY_TIEN_112 } from '../../modules/danh-muc/data'
 import { NHOM_NGANH_NGHE } from '../../modules/danh-muc/nganh-nghe'
 import {
-  BUOC, DIA_BAN, DS, DS_TT, NGANH, NHOM_DT, TEN_TO_KHAI, lapToKhai, soLieu, tenKy, tenLoai,
+  BUOC, DIA_BAN, DS, DS_TT, NGANH, NHOM_DT, TEN_TO_KHAI, lapToKhai, nopToKhai, soLieu, tenKy, tenLoai,
   type ToKhai, type TrangThai,
 } from '../../modules/thue/ToKhaiHKD'
 import { boViecHuongDan, GoiYKeKhai, KhenToKhai, xongViecHuongDan } from '../../modules/home/HuongDan'
@@ -387,7 +387,7 @@ function ManKeKhai({ tk, buocDau, onDong, onDoi }: { tk: ToKhai; buocDau: number
         {buoc < BUOC.length - 1 && <button type="button" className="btn pri" onClick={() => den(buoc + 1)}>Tiếp tục</button>}
         {buoc === BUOC.length - 1 && <>
           <button type="button" className="btn" onClick={() => toast(`Đã tải xuống tờ khai ${tk.ma} dạng XML`)}><Icon n="download" className="ic sm" />XML</button>
-          {sua && <button type="button" className="btn pri" onClick={() => { tk.tt = 'Đã nộp'; onDoi(); toast(`Đã ghi nhận ${tk.ma} đã nộp cơ quan thuế`); onDong(); xongViecHuongDan('thue', tenKy(tk), s.donVi, nav) }}>Đã nộp CQT</button>}
+          {sua && <button type="button" className="btn pri" onClick={() => { nopToKhai(tk); onDoi(); toast(`Đã ghi nhận ${tk.ma} đã nộp cơ quan thuế`); onDong(); xongViecHuongDan('thue', tenKy(tk), s.donVi, nav) }}>Đã nộp CQT</button>}
         </>}
       </div>
     </div>
