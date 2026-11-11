@@ -523,12 +523,12 @@ function BanHd({ hd, t }: { hd: HdDaXuat; t: TtXem }) {
 }
 
 /** Popup xem hoá đơn đã xuất (T785, T789): mở từ ô Số hoá đơn trên form, cột Trạng thái xuất HĐĐT ở danh sách, menu Hoá đơn điện tử.
- *  Dải tóm tắt, thẻ Hoá đơn, Người bán, Người mua, bảng hàng hoá và tiền. Nút Xem hoá đơn điện tử mở bản hoá đơn nhà cung cấp trả về */
+ *  Mở thẳng bản hoá đơn nhà cung cấp trả về; nút quay lại sang Thông tin hoá đơn điện tử (số, ký hiệu, ngày, thông tin VAT, tiền) */
 export function HopXemHd({ s, r, hd, onDong, toast }: { s: Session; r: Row; hd: HdDaXuat; onDong: () => void; toast: (m: string) => void }) {
-  const [xemBan, setXemBan] = useState(false)
+  // Bấm số hoá đơn, mắt xem: mở thẳng bản hoá đơn điện tử; lấy không được từ nhà cung cấp thì mở thông tin hoá đơn (T789)
+  const [xemBan, setXemBan] = useState(() => !loiLayHd(s, hd))
   const [dangIn, setDangIn] = useState(false)
-  const dongEsc = useCallback(() => (xemBan ? setXemBan(false) : onDong()), [xemBan, onDong])
-  useDongEsc(dongEsc)
+  useDongEsc(onDong)
   const t = ttXemHd(s, r, hd)
   const { k, tien, mau2 } = t
   const loi = loiLayHd(s, hd)
