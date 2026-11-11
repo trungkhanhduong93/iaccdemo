@@ -333,7 +333,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
   const dsKhoCn = CUA_HANG.find(c => c.ten === cuaHang)?.kho ?? KHO
   const khoMotCn = dsKhoCn.length === 1 ? dsKhoCn[0] : ''
   const khoDau = bo.kho === 'dong' && (nhom === 'mua' || nhom === 'ban') && s.goi !== 'PR'
-  const [kho, setKho] = useState(() => luuCu('kho') ?? (moi ? traTu?.kho || khoMotCn : dongGoc.find(d => d.kho)?.kho ?? dsKhoCn[0] ?? ''))
+  const [kho, setKho] = useState(() => luuCu('kho') || (moi ? traTu?.kho || khoMotCn : dongGoc.find(d => d.kho)?.kho ?? dsKhoCn[0] ?? ''))
   useEffect(() => {
     if (khoDau || khoGon) setDsDong(ds => ds.map(d => ({ ...d, kho })))
   }, [dongGoc, kho, khoDau, khoGon])
@@ -520,6 +520,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
     if (laTien && canDt && !doiTuong.trim()) { toast(`Chọn đối tượng cho lý do ${lyDo}`); return }
     if (traNoNcc && !traNo.length) { toast('Chọn phiếu mua cần thanh toán ở tab Chi tiết'); return }   // T718
     if (khoGon && !kho) { toast(laNk ? 'Chọn Kho nhập' : 'Chọn Kho xuất'); return }   // T737, T741
+    if (khoDau && !kho) { toast((nhom === 'ban') !== (cfg.prefix === 'TLN' || cfg.prefix === 'TL') ? 'Chọn Kho xuất' : 'Chọn Kho nhập'); return }   // kho đầu phiếu mua, bán có dấu * (T790)
     if (hdDienTu && !kenh) { toast('Chọn Kênh bán'); return }   // T785
     // Phiếu sản xuất (T152): bắt buộc kho, phiếu nhập bắt buộc tham chiếu, phải có dòng
     if (laSx) {
@@ -1446,6 +1447,11 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
                     : cauHd && <OKyHieu h={cauHd} id="form" className="inp code" value={kyHieuHd} onChange={setKyHieuHd} />}</div>
                   <div className="f"><label>Số hoá đơn</label><input className="inp" readOnly value="" placeholder={laHdMoi ? 'Cấp khi phát hành' : 'Cấp khi xuất'} /></div>
                 </>}
+                {/* Email nhận hoá đơn dưới ô hoá đơn, chung trường với popup Thay đổi thông tin VAT; người mua không lấy hoá đơn thì để trống, khoá (T790) */}
+                <div className="f"><label>Email</label>
+                  <input className="inp" type="email" value={khongLayHd ? '' : khachHd.email} readOnly={Boolean(hdDaXuat) || !suaTtc || khongLayHd}
+                    placeholder={khongLayHd ? 'Không lấy hoá đơn' : 'Email nhận hoá đơn'} onChange={e => setKhachHd(k => ({ ...k, email: e.target.value.trim() }))} />
+                </div>
               </div>
             )}
             {coHdDau && !hdDienTu && (

@@ -11,7 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T790 | Chứng từ bán hàng: nút Thêm hàng loạt dưới bảng hàng như phiếu mua hàng | dinhlanphuongipacc | Đang làm | Sửa `ban-hang/BangHangBan.tsx` |
 | T788 | Kê khai hoá đơn thay thế, điều chỉnh về kỳ gốc: kỳ chưa nộp thì gạch hoá đơn gốc trên bảng kê, kỳ đã nộp thì gợi ý tờ khai bổ sung 01/KHBS | dinhlanphuongipacc | Chờ | Làm sau T787. Sửa module Kê khai thuế |
 | T781 | Giảm thuế GTGT xét hiệu lực nghị quyết theo ngày của từng chứng từ, không theo ngày làm việc (`ptGiamHienHanh` dùng `HOM_NAY`) | | Chờ | Thấy lúc soát T780, `giam-thue.ts` |
 | T776 | Màn Tính giá vốn: sang trang 2 thì dòng "Cộng 51 dòng" mất đường kẻ dưới, dưới dòng tổng còn khoảng trống trong bảng, dưới khung bảng còn khoảng trống xám | | Chờ | Trum báo lúc làm T774, ảnh chụp ở trang 2, tháng 10/2026 |

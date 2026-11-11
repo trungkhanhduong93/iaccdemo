@@ -336,7 +336,7 @@ const tienCua = (r: Row): TienHd => { const tong = Number(r.tong) || 0, thue = N
 
 /** Hoá đơn có sẵn của chứng từ lập tay mẫu (T786): id chứng từ mẫu và số hoá đơn, để menu Hoá đơn điện tử có dòng xem ngay.
  *  Cửa hàng thứ hai dùng ký hiệu máy tính tiền như khai báo mẫu ở cauHinhHddt */
-const HD_MAU: Record<string, number> = { 'tay-0': 124, 'tay-1': 52 }
+const HD_MAU: Record<string, number> = { 'tay-0': 124, 'tay-1': 52, 'tay-6': 123, 'tay-8': 122, 'tay-9': 121 }   // tay-6, 8, 9 thêm ở T790, số theo thứ tự ngày
 export function hdMau(r: Row, tien: TienHd, tyLe: boolean): Row {
   const n = HD_MAU[String(r.id)]
   if (n === undefined || r._hd) return r

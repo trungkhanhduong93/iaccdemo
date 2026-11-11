@@ -27,7 +27,7 @@ import {
 import { HopInChungTu, type PhieuIn } from '../../ui/bao-cao/InChungTu'
 import { NGUON, TT_CT, tomTatTenHang, type Dong } from '../../ui/generic/gen'
 import { ChungTuForm } from '../../ui/generic/ChungTuForm'
-import { dongTuHang, tinhDong } from './BangHangBan'
+import { dongTuHang, dtDong, tinhDong } from './BangHangBan'
 import { HopCotPhieu } from '../../ui/generic/BangSua'
 import { DS_PTTT } from '../danh-muc/data'
 import { cauHinhGiamVat, giamThueHang, giamThueHkd, hangDuocGiam } from './giam-thue'
@@ -50,10 +50,17 @@ export const MAN_BAN = 'ban-hang/3-1-1'
 /** Chứng từ mẫu lập tay, nhập từ Excel: số, số ngày lùi so với ngày cuối dữ liệu, giờ, cửa hàng thứ mấy, khách, diễn giải, nguồn,
  *  dòng hàng [hàng thứ mấy, số lượng, % giảm giá, % CK, % phí dịch vụ] */
 const MAU_TAY: [string, number, string, number, number, string, string, [number, number, number, number, number][]][] = [
-  ['BH2610-0003', 1, '18:30', 0, 1, 'Bán tiệc cuối năm cho khách công ty', 'tay', [[1, 30, 0, 5, 5], [8, 30, 0, 5, 5]]],
-  ['BH2610-0002', 3, '11:00', 1, 2, 'Bán suất ăn hội nghị', 'excel', [[2, 40, 10, 0, 0], [6, 40, 0, 0, 0]]],
+  ['BH2610-0008', 1, '18:30', 0, 1, 'Bán tiệc cuối năm cho khách công ty', 'tay', [[1, 30, 0, 5, 5], [8, 30, 0, 5, 5]]],
+  ['BH2610-0004', 3, '11:00', 1, 2, 'Bán suất ăn hội nghị', 'excel', [[2, 40, 10, 0, 0], [6, 40, 0, 0, 0]]],
   ['BH2610-0001', 6, '09:15', 0, 0, 'Bán set quà Trung thu', 'excel', [[3, 12, 0, 0, 0]]],
   ['BH2609-0004', 9, '19:45', 0, 3, 'Đặt bàn sinh nhật, thu phí dịch vụ', 'tay', [[0, 15, 0, 0, 10], [5, 15, 0, 0, 10]]],
+  // Thêm 6 chứng từ lập tay tháng 10 (T790): tay-6, tay-8, tay-9 đã xuất HĐĐT (HD_MAU ở hddt.tsx), tay-4, tay-5, tay-7 chưa xuất
+  ['BH2610-0009', 0, '20:15', 0, 3, 'Bán suất ăn tối cho văn phòng', 'tay', [[0, 20, 0, 0, 0], [4, 20, 0, 0, 0]]],
+  ['BH2610-0007', 1, '17:40', 1, 1, 'Bán set quà tặng khách hàng', 'tay', [[3, 25, 5, 0, 0]]],
+  ['BH2610-0006', 2, '12:10', 0, 2, 'Bán tiệc tất niên phòng kinh doanh', 'tay', [[1, 18, 0, 0, 5], [5, 18, 0, 0, 5], [7, 36, 0, 0, 5]]],
+  ['BH2610-0005', 3, '15:30', 0, 4, 'Bán bánh trung thu cho đối tác', 'tay', [[3, 50, 10, 0, 0]]],
+  ['BH2610-0003', 4, '19:00', 0, 1, 'Bán tiệc khai trương chi nhánh', 'tay', [[0, 40, 0, 5, 0], [2, 40, 0, 5, 0], [6, 40, 0, 5, 0]]],
+  ['BH2610-0002', 5, '11:30', 0, 5, 'Bán suất ăn hội thảo', 'tay', [[2, 60, 0, 0, 0], [8, 60, 0, 0, 0]]],
 ]
 export function mauTay(): Row[] {
   const cuoi = DAILY.reduce((a, x) => (x.date > a ? x.date : a), DAILY[0].date)
@@ -62,16 +69,18 @@ export function mauTay(): Row[] {
     const ch = CUA_HANG[cn % CUA_HANG.length]
     const dong: Dong[] = ds.map(([h, sl, pt, ptCk, ptPhiDv]) => tinhDong(dongTuHang(HANG[h % HANG.length], sl), { pt, ptCk, ptPhiDv }))
     return { id: `tay-${i}`, so, ngay: `${dmy(ngay)} ${gio}`, cn: ch.ten, doiTuong: KHACH[kh % KHACH.length].ten, dienGiai, nguon, tt: 'ghi', _dong: dong, kenh: ['Tại quán', 'Mang về', 'GrabFood'][i % 3],
-      _httt: i % 2 ? 'congno' : 'tienmat', _ngayTao: `${dmy(ngay)} ${gio}`, _nguoiTao: nguon === 'excel' ? 'Nhập từ Excel' : 'Hồ Thị Mai' }
+      _httt: i % 2 ? 'congno' : 'tienmat', _kho: ch.kho?.[0] ?? '', _ngayTao: `${dmy(ngay)} ${gio}`, _nguoiTao: nguon === 'excel' ? 'Nhập từ Excel' : 'Hồ Thị Mai' }
   })
 }
 /** Chứng từ lập tay, nhập Excel đổi sang dòng danh sách: tiền tính lại từ dòng hàng, tên món ở cột Diễn giải */
 export function hangTay(r: Row, tyLe: boolean): Row {
   const dong = (r._dong as Dong[] | undefined) ?? []
-  const dt = dong.reduce((a, d) => a + (d.tien || 0) - (d.giam || 0) - (d.ck || 0) + (d.phiDv || 0), 0)
+  const dt = dong.reduce((a, d) => a + dtDong(d), 0)
   const thue = dong.reduce((a, d) => a + (d.thue || 0), 0)
-  const giam = tyLe ? giamThueHkd(dt) : 0
-  { const tong = tyLe ? dt - giam : dt + thue, thueHd = tyLe ? 0 : thue; r = hdMau(r, { truoc: tong - thueHd, thue: thueHd, tong }, tyLe) }   // hoá đơn mẫu đã phát hành (T786)
+  // Giảm thuế GTGT tính từng dòng theo tỷ lệ % GTGT của hàng như form, không lấy chung một tỷ lệ cho cả phiếu (T790)
+  const giam = tyLe ? dong.reduce((a, d) => a + giamThueHang(dtDong(d), d.ma), 0) : 0
+  // Hoá đơn mẫu đã phát hành (T786): tiền trước thuế là doanh thu tính thuế; mẫu 2 ô giữa là giảm trừ thuế, mẫu 1 là tiền thuế (T790)
+  r = hdMau(r, { truoc: dt, thue: tyLe ? giam : thue, tong: tyLe ? dt - giam : dt + thue }, tyLe)
   const ngay = String(r.ngay ?? '')
   return { ...r, ngay: ngay.includes(' ') ? ngay : `${ngay} ${String(r._ngayTao ?? '').split(' ')[1] ?? ''}`.trim(),
     _cnId: CUA_HANG.find(c => c.ten === r.cn)?.id ?? '', kenh: r.kenh ?? '',

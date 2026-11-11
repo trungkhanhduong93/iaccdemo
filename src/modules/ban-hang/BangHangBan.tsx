@@ -7,6 +7,7 @@ import { ChonDanhMuc } from '../../ui/ChonDanhMuc'
 import { OSoGo } from '../../ui/OSoGo'
 import { Icon } from '../../ui/Icon'
 import { dauThap, money } from '../../ui/format'
+import { ThemHangLoat } from '../../ui/generic/ThemHangLoat'
 
 const tron = (v: number) => Math.round(v)
 const phanTram = (v: number) => (v ? `${v}%` : '0%')
@@ -150,6 +151,9 @@ export function BangHangBan({ dong, onChange, cheDo, tyLe, giamThue, an = [] }: 
     dat(i, { ma: h.ma, ten: h.ten, dvt: h.dvt, gia: h.gia, ts: h.ts })
   }
   const them = () => onChange?.([...dong, dongTuHang(HANG[0])])
+  // Thêm hàng loạt như phiếu mua hàng (T790): tích nhiều hàng, mỗi hàng một dòng số lượng 1, giá bán theo danh mục
+  const [moHangLoat, setMoHangLoat] = useState(false)
+  const themHangLoat = (ma: string[]) => onChange?.([...dong, ...ma.flatMap(m => { const h = HANG.find(x => x.ma === m); return h ? [dongTuHang(h)] : [] })])
   const xoa = (i: number) => onChange?.(dong.filter((_, j) => j !== i))
   const tonKho = (ma: string) => Boolean(HANG.find(h => h.ma === ma)?.tonKho)
   const gt = (d: Dong) => (tyLe && giamThue ? giamThue(dtDong(d), d.ma) : 0)
@@ -224,6 +228,11 @@ export function BangHangBan({ dong, onChange, cheDo, tyLe, giamThue, an = [] }: 
       {sua && (
         <div className="row" style={{ padding: '8px 12px', gap: 10 }}>
           <button type="button" className="btn sm ghost" onClick={them}><Icon n="plus" className="ic sm" />Thêm dòng</button>
+          <button type="button" className="btn sm ghost" onClick={() => setMoHangLoat(true)}><Icon n="plus" className="ic sm" />Thêm hàng loạt</button>
+          {moHangLoat && (
+            <ThemHangLoat ds={HANG.map(h => ({ ma: h.ma, ten: h.ten, dvt: h.dvt, nhom: h.nhom, loai: 'Hàng hoá' }))} daCo={dong.map(d => d.ma ?? '')}
+              onDong={() => setMoHangLoat(false)} onXacNhan={ds => themHangLoat(ds.map(h => h.ma))} />
+          )}
           {dong.length > 0 && (
             <button type="button" className="btn sm ghost" onClick={() => onChange?.([])} style={{ color: 'var(--red)' }}>
               <Icon n="trash" className="ic sm" />Xoá hết
