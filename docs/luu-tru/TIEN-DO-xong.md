@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T793 | Hoá đơn điện tử: Tải PDF, Tải XML mở hộp Lưu của máy để chọn nơi lưu; chọn nhiều hoá đơn rồi Tải XML, Tải PDF ra một file zip, mỗi hoá đơn một file; Chia sẻ PDF mở popup chọn Zalo, Messenger, Telegram, Gmail, máy hỗ trợ thì mở bảng chia sẻ của máy kèm sẵn file PDF và nội dung | dinhlanphuongipacc | 11/11/2026 | [nhật ký](../nhat-ky/2026-11-11-dinhlanphuongipacc-chia-se-tai-file-hddt.md) |
 | T795 | Menu Hoá đơn điện tử: thêm dữ liệu mẫu hoá đơn thay thế, bị thay thế, điều chỉnh, bị điều chỉnh, đã phát hành và dự thảo; Bị thay thế, Bị điều chỉnh chuyển sang cột Loại hoá đơn, Trạng thái HĐĐT chỉ Dự thảo hoặc Đã phát hành; hoá đơn gốc có thay thế, điều chỉnh dự thảo hiện dấu cảnh báo ở cột Loại hoá đơn | dinhlanphuongipacc | 11/11/2026 | [nhật ký](../nhat-ky/2026-11-11-dinhlanphuongipacc-thay-the-dieu-chinh-mau.md) |
 | T794 | Hoá đơn gốc đã bị điều chỉnh không cho lập thay thế, hoá đơn thay thế không cho điều chỉnh (menu ⋯ Hoá đơn điện tử, hàm `lyDoKhongLap`) | dinhlanphuongipacc | 11/11/2026 | [nhật ký](../nhat-ky/2026-11-11-dinhlanphuongipacc-thay-the-dieu-chinh-mau.md) |
 | T792 | Popup Xuất hoá đơn điện tử nhiều chứng từ: nhãn Ngày hoá đơn, Ký hiệu kèm tiêu đề phụ "Áp dụng cho tất cả" (màn thấp không bị che), ô ngày từng dòng cùng cỡ ô ký hiệu, dòng Cộng cố định ở đáy danh sách (`hddt.tsx`, `app.css`) | dinhlanphuongipacc | 11/11/2026 | [nhật ký](../nhat-ky/2026-11-11-dinhlanphuongipacc-popup-xuat-hddt.md) |

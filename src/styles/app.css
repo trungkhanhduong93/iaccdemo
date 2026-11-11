@@ -47734,5 +47734,26 @@ textarea.m-tpb-inp { height: auto; padding: 8px 12px; }
 .hddt-ds .hddt-dong.hddt-dau { z-index: 2; }
 .hddt-ds .hddt-dong.hddt-cong { position: sticky; bottom: 0; z-index: 2; background: var(--white); box-shadow: 0 -1px 0 var(--line); }
 
+/* ── Tải PDF, XML hoá đơn chọn nơi lưu; popup Chia sẻ hoá đơn qua Zalo, Messenger, Telegram, Gmail (T793) ── */
+.hddt-hop.cs-hd { width: 520px; }
+.cs-hd .hddt-than { padding-top: 4px; }
+.cs-hd .hddt-chan { justify-content: flex-end; gap: 8px; border-top: 1px solid var(--line); padding-top: 12px; }
+.cs-hd-than { display: flex; flex-direction: column; gap: 14px; font-size: 13.5px; color: var(--body); }
+.cs-hd-buoc { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; line-height: 1.5; }
+.cs-hd-buoc b { color: var(--ink); }
+.cs-hd-ud { display: flex; flex-wrap: wrap; gap: 8px; }
+.cs-hd-nut { display: flex; flex-direction: column; align-items: center; gap: 6px; width: 88px; padding: 10px 4px 8px; border: 1px solid var(--line); border-radius: 10px; background: var(--white); color: var(--ink); font-size: 12.5px; cursor: pointer; transition: border-color .15s, background .15s; }
+.cs-hd-nut:hover { border-color: var(--blue); background: var(--fr-t); }
+.cs-hd-nut:focus-visible { outline: 2px solid var(--blue); outline-offset: 1px; }
+.cs-hd-logo { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; }
+.cs-hd-logo svg { width: 40px; height: 40px; }
+.cs-hd-logo.khac { border-radius: 10px; background: var(--fr-t); color: var(--blue); }
+.cs-hd-logo.khac .ic { width: 20px; height: 20px; }
+.cs-hd-nd { display: flex; flex-direction: column; gap: 6px; }
+.cs-hd-nd > span { font-weight: 600; color: var(--ink); }
+.cs-hd-nd textarea.inp { height: auto; padding: 8px 10px; line-height: 1.5; resize: vertical; font: inherit; }
+.cs-hd-file { display: flex; align-items: center; gap: 6px; color: var(--muted); font-size: 12.5px; }
+.cs-hd-file b { color: var(--ink); font-weight: 600; }
+
 /* ── Dấu cảnh báo có hoá đơn thay thế, điều chỉnh dự thảo ở cột Loại hoá đơn (T795) ── */
 .hd-canh-bao { display: inline-flex; vertical-align: -2px; margin-left: 6px; color: var(--orange); cursor: help; }

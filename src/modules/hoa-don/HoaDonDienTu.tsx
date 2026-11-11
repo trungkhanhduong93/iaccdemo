@@ -18,8 +18,12 @@ import { apKhoPhieu, useBanPhieu } from '../../ui/generic/daXoa'
 import { hangTay, mauTay } from '../ban-hang/ChungTuBanHang'
 import {
   HopXemHd, KHACH_TRONG, TEN_LOAI_CT, Vo, hdCua, hdGocCua, laHdMoiCua, laMayTinhTien, loaiCtCua, lyDoKhongLap, hdMoiNhap, phatHanhNhap, ttHdGoc, xoaCtHd,
-  type CtLq, type HdDaXuat, type TtKhach,
+  ttXemHd, type CtLq, type HdDaXuat, type TtKhach,
 } from '../ban-hang/hddt'
+import { HopChiaSeHd } from '../ban-hang/HopChiaSeHd'
+import { pdfHd, tenFileHd, xmlHd } from '../ban-hang/hddtFile'
+import { luuFile } from '../../ui/luuFile'
+import { taoZip } from '../../ui/zip'
 
 /** Màn chứng từ bán hàng lập tay: gói Plus ở tab Bán hàng của Xuất bán POS, gói Pro ở 3.1.7 */
 const MAN_PL = 'ban-hang/3-1-1', MAN_PR = 'ban-hang/3-1-7'
@@ -118,6 +122,7 @@ export function DsHoaDon({ sc, mod }: ScreenProps) {
   const [chon, setChon] = useState<Set<string>>(new Set())
   const [xem, setXem] = useState<Row | null>(null)
   const [tbss, setTbss] = useState<Row | null>(null)
+  const [chiaSe, setChiaSe] = useState<Row | null>(null)
 
   const oLoc: OLocDef[] = [
     { k: 'thoiGian', ten: 'Thời gian', o: <ChonKhoangNgay value={nhap.thoiGian} onChange={k => dat('thoiGian', k)} /> },
@@ -151,17 +156,32 @@ export function DsHoaDon({ sc, mod }: ScreenProps) {
     if (v === 'xoa') { xoaCtHd(String(r._man), r._r as Row, s.ten); toast(`Đã xoá ${String(r.loai).toLowerCase()} dự thảo ${r.so}`); return }
     if (v === 'tbss') { setTbss(r); return }
     if (v === 'gui') { daGui.add(String(r.id)); bao(); toast(`Đã gửi hoá đơn ${tenSo(r)} lên cơ quan thuế`); return }
-    const BAO: Record<string, string> = { ph: 'Đã phát hành hoá đơn', xml: 'Đã tải XML hoá đơn', pdf: 'Đã tải PDF hoá đơn', mail: 'Đã gửi email hoá đơn cho người mua,', share: 'Đã chép đường dẫn PDF hoá đơn', xoa: 'Đã xoá hoá đơn dự thảo' }
+    // Tải XML, PDF: chọn nơi lưu như ở popup xem hoá đơn; Chia sẻ: mở popup chọn ứng dụng (T793)
+    if (v === 'xml' || v === 'pdf') { const f = fileHd(r, v); void luuFile(f.blob, f.ten).then(m => m && toast(m)); return }
+    if (v === 'share') { setChiaSe(r); return }
+    const BAO: Record<string, string> = { ph: 'Đã phát hành hoá đơn', mail: 'Đã gửi email hoá đơn cho người mua,', xoa: 'Đã xoá hoá đơn dự thảo' }
     toast(`${BAO[v]} ${tenSo(r)}`)
   }
+  /** File XML, PDF của một hoá đơn đã phát hành */
+  const fileHd = (r: Row, duoi: 'xml' | 'pdf') => {
+    const hd = r._hd as HdDaXuat
+    const t = ttXemHd(s, r._r as Row, hd)
+    return { ten: tenFileHd(hd, duoi), blob: duoi === 'pdf' ? pdfHd(hd, t) : xmlHd(hd, t) }
+  }
   const chonDs = list.filter(r => chon.has(String(r.id)))
-  const lamNhieu = (v: 'gui' | 'xml' | 'pdf') => {
+  const lamNhieu = async (v: 'gui' | 'xml' | 'pdf') => {
     const duoc = chonDs.filter(r => !lyDo(v, r))
     const bo = chonDs.length - duoc.length
-    if (v === 'gui') { duoc.forEach(r => daGui.add(String(r.id))); bao() }
-    const ten = { gui: 'Đã gửi CQT', xml: 'Đã tải XML', pdf: 'Đã tải PDF' }[v]
-    toast(duoc.length ? `${ten} ${duoc.length} hoá đơn${bo ? `, bỏ qua ${bo} hoá đơn không đủ điều kiện` : ''}` : 'Không hoá đơn nào đã chọn đủ điều kiện')
-    if (v === 'gui') setChon(new Set())
+    if (!duoc.length) { toast('Không hoá đơn nào đã chọn đủ điều kiện'); return }
+    const boQua = bo ? `, bỏ qua ${bo} hoá đơn không đủ điều kiện` : ''
+    if (v === 'gui') {
+      duoc.forEach(r => daGui.add(String(r.id))); bao()
+      toast(`Đã gửi CQT ${duoc.length} hoá đơn${boQua}`); setChon(new Set()); return
+    }
+    // Tải nhiều: gói mỗi hoá đơn một file XML hoặc PDF vào một file zip, chọn nơi lưu (T793)
+    const zip = await taoZip(duoc.map(r => fileHd(r, v)))
+    const m = await luuFile(zip, `HoaDon_${v.toUpperCase()}_${duoc.length}hd_${dmy(HOM_NAY).replace(/\//g, '')}.zip`)
+    if (m) toast(`${m} (${duoc.length} hoá đơn${boQua})`)
   }
 
   const chu = (k: string, t: string, w: number, cls?: string): Col => ({ k, t, w, ...(cls ? { cls } : {}) })
@@ -240,6 +260,7 @@ export function DsHoaDon({ sc, mod }: ScreenProps) {
         </section>
       </div>
       {xem && <HopXemHd s={s} r={xem._r as Row} hd={xem._hd as HdDaXuat} toast={toast} onDong={() => setXem(null)} />}
+      {chiaSe && <HopChiaSeHd hd={chiaSe._hd as HdDaXuat} t={ttXemHd(s, chiaSe._r as Row, chiaSe._hd as HdDaXuat)} toast={toast} onDong={() => setChiaSe(null)} />}
       {tbss && <HopTbss r={tbss} onDong={() => setTbss(null)} onLuu={noiDung => {
         dsTbss = [{ id: `tb-${Date.now()}`, mau: String(tbss.mau), kyHieu: String(tbss.kyHieu), so: String(tbss.soHd), ngay: String(tbss.ngay), loai: String(tbss.loai), noiDung, tt: 'Lưu nháp', ngayTao: homNay() }, ...dsTbss]
         bao(); setTbss(null); toast('Đã lưu nháp thông báo sai sót, xem ở tab Thông báo sai sót')

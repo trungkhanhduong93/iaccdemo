@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 11/11/2026
+- T793: Hoá đơn điện tử: nút Tải PDF, Tải XML (popup xem hoá đơn, menu ⋯) mở hộp Lưu của máy để chọn thư mục, trình duyệt không hỗ trợ thì tải về thư mục Tải xuống. Chọn nhiều hoá đơn rồi bấm Tải XML, Tải PDF: nhận một file zip, mỗi hoá đơn một file. Chia sẻ PDF mở popup chọn Zalo, Messenger, Telegram, Gmail, nội dung tin nhắn soạn sẵn sửa được; Chrome, Edge, điện thoại mở bảng chia sẻ của máy với file PDF và nội dung kèm sẵn, máy khác tải PDF, chép nội dung rồi mở ứng dụng.
 - T795: Menu Hoá đơn điện tử có sẵn hoá đơn mẫu thay thế, bị thay thế, điều chỉnh, bị điều chỉnh, cả đã phát hành và dự thảo. Cột Loại hoá đơn ghi "Hoá đơn bị thay thế", "Hoá đơn bị điều chỉnh"; cột Trạng thái HĐĐT chỉ còn Dự thảo hoặc Đã phát hành. Hoá đơn gốc đang có hoá đơn thay thế, điều chỉnh dự thảo hiện dấu cảnh báo ở cột Loại hoá đơn, rê chuột thấy số hoá đơn dự thảo chờ phát hành.
 - T794: Hoá đơn đã bị điều chỉnh không lập thay thế được, hoá đơn thay thế không điều chỉnh được: mục Thay thế, Điều chỉnh ở menu ⋯ mờ đi, rê chuột thấy lý do.
 - T792: Popup Xuất hoá đơn điện tử nhiều chứng từ: nhãn "Ngày hoá đơn", "Ký hiệu" có dòng phụ "Áp dụng cho tất cả" bên dưới, màn thấp không còn bị che. Ô ngày hoá đơn từng dòng cao bằng ô ký hiệu, hết vênh. Dòng Cộng luôn nằm ở đáy danh sách khi cuộn.

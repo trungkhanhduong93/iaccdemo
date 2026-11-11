@@ -12,6 +12,9 @@ import { useDongEsc } from '../../ui/LocNangCao'
 import { ONgay } from '../../ui/ChonNgay'
 import { apKhoPhieu, laDaXoa, suaPhieu, xoaPhieu } from '../../ui/generic/daXoa'
 import { ttNghiepVu, type Dong } from '../../ui/generic/gen'
+import { luuFile } from '../../ui/luuFile'
+import { HopChiaSeHd } from './HopChiaSeHd'
+import { pdfHd, tenFileHd, xmlHd } from './hddtFile'
 
 /** Nhà cung cấp hoá đơn điện tử: chỉ kết nối iPOS Invoice (QD106), có thêm nhà cung cấp thì thêm lại ô chọn */
 export const NCC_HDDT = 'iPOS Invoice'
@@ -499,7 +502,7 @@ function loiLayHd(s: Session, hd: HdDaXuat): string | null {
 }
 
 /** Thông tin đủ của hoá đơn đã xuất để xem (T789): tiền, người mua, người bán, dòng hàng của chứng từ */
-function ttXemHd(s: Session, r: Row, hd: HdDaXuat) {
+export function ttXemHd(s: Session, r: Row, hd: HdDaXuat) {
   const h = cauHinhHddt(s)
   const tien = { ...tienCua(r), ...(hd.truoc !== undefined ? { truoc: hd.truoc, thue: hd.thue ?? 0, tong: hd.tong ?? 0 } : {}) }
   const mau2 = hd.mau === '2'
@@ -518,7 +521,7 @@ function ttXemHd(s: Session, r: Row, hd: HdDaXuat) {
     tenMau: TEN_MAU[mau2 ? 2 : 1],
   }
 }
-type TtXem = ReturnType<typeof ttXemHd>
+export type TtXem = ReturnType<typeof ttXemHd>
 const boCach = (v: string) => v.replace(/\s/g, '')
 const ngayChu = (d: string) => { const [n, t, y] = d.split('/'); return `Ngày ${n} tháng ${t} năm ${y}` }
 
@@ -645,21 +648,28 @@ export function HopXemHd({ s, r, hd, onDong, toast }: { s: Session; r: Row; hd: 
   // Popup thông tin: tiêu đề chung, số hoá đơn nằm ở dải dưới; bản hoá đơn: ghi ký hiệu, số
   const tieuDe = (ban: boolean) => <>{ban ? <>Hoá đơn điện tử <span className="code">{hd.mau}{hd.kyHieu}</span> số <span className="code hdx-do">{hd.so}</span></> : 'Thông tin hoá đơn điện tử'}
     <span className="ph-tt da">Hợp lệ</span>{!ban && daGuiMail && <span className="ph-tt hdx-mail">Đã gửi email</span>}</>
+  // Tải: mở hộp Lưu của máy để chọn thư mục; Chia sẻ: mở bảng chia sẻ của máy chọn Zalo, Telegram... (T793)
+  const taiFile = (duoi: 'pdf' | 'xml') => layNcc(() => {
+    void luuFile(duoi === 'pdf' ? pdfHd(hd, t) : xmlHd(hd, t), tenFileHd(hd, duoi)).then(m => m && toast(m))
+  })
+  const [moChiaSe, setMoChiaSe] = useState(false)
+  const chiaSe = layNcc(() => setMoChiaSe(true))
   const nutTai = <>
-    <button type="button" className="xp-btn-outline" onClick={layNcc(() => toast(`Đã tải PDF hoá đơn số ${hd.so}`))}><Icon n="download" className="ic sm" />Tải PDF</button>
-    <button type="button" className="xp-btn-outline" onClick={layNcc(() => toast(`Đã tải XML hoá đơn số ${hd.so}`))}><Icon n="download" className="ic sm" />Tải XML</button>
+    <button type="button" className="xp-btn-outline" onClick={taiFile('pdf')}><Icon n="download" className="ic sm" />Tải PDF</button>
+    <button type="button" className="xp-btn-outline" onClick={taiFile('xml')}><Icon n="download" className="ic sm" />Tải XML</button>
   </>
 
   if (xemBan) return (
     <Vo lop="hdx hdx-xem-ban" tieuDe={<><button type="button" className="xp-btn-outline xp-btn-ic" title="Quay lại thông tin hoá đơn" aria-label="Quay lại thông tin hoá đơn"
       onClick={() => setXemBan(false)}><Icon n="chevl" className="ic sm" /></button>{tieuDe(true)}</>} onDong={onDong} chan={<>
       {nutTai}
-      <button type="button" className="xp-btn-outline" onClick={() => toast(`Đã tạo link chia sẻ PDF hoá đơn số ${hd.so}`)}><Icon n="link" className="ic sm" />Chia sẻ PDF</button>
+      <button type="button" className="xp-btn-outline" onClick={chiaSe}><Icon n="link" className="ic sm" />Chia sẻ PDF</button>
       <span className="grow" />
       <button type="button" className="xp-btn-outline" onClick={onDong}>Đóng</button>
       <button type="button" className="xp-btn-sua" onClick={() => setDangIn(true)}><Icon n="printer" className="ic sm" />In hoá đơn</button>
     </>}>
       <div className="hdx-nen-giay"><BanHd hd={hd} t={t} /></div>
+      {moChiaSe && <HopChiaSeHd hd={hd} t={t} toast={toast} onDong={() => setMoChiaSe(false)} />}
     </Vo>
   )
 
