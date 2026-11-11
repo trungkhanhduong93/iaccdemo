@@ -11,6 +11,8 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T802 | Danh sách Bán hàng gói Plus: bỏ cột Trạng thái xuất HĐĐT; dòng đã xuất HĐĐT có nhãn VAT trên số chứng từ, cột Số hoá đơn bấm xem hoá đơn (cả tab Tất cả, Xuất bán POS); tab Bán hàng thêm cột Thao tác Xuất HĐĐT dòng chưa xuất | dinhlanphuongipacc | Đang làm | Sửa `ChungTuBanHang.tsx`, `app.css` (mục cuối T802) |
+| T801 | Bán hàng gói Plus: bộ lọc nâng cao ô chọn nhiều có hộp tích như Mua hàng, thêm ô Loại chứng từ; huỷ bán ẩn Ghi chú; form hoá đơn thay thế, điều chỉnh căn hàng Lý do, Email | dinhlanphuongipacc | Đang làm | Sửa `ChungTuBanHang.tsx`, `ChungTuForm.tsx`. Ghi bảng sau khi đã sửa trên máy |
 | T781 | Giảm thuế GTGT xét hiệu lực nghị quyết theo ngày của từng chứng từ, không theo ngày làm việc (`ptGiamHienHanh` dùng `HOM_NAY`) | | Chờ | Thấy lúc soát T780, `giam-thue.ts` |
 | T776 | Màn Tính giá vốn: sang trang 2 thì dòng "Cộng 51 dòng" mất đường kẻ dưới, dưới dòng tổng còn khoảng trống trong bảng, dưới khung bảng còn khoảng trống xám | | Chờ | Trum báo lúc làm T774, ảnh chụp ở trang 2, tháng 10/2026 |
 | T771 | `tools/kiem_tra.py` ca đăng nhập đợt 8 (hàm `kiem_tra_dang_nhap_dot_8`) báo "Nghiệp vụ: không tìm thấy phân hệ Thu chi" ở màn 390px | | Chờ | Thấy lúc làm T769, bản trước T769 cũng báo. Ca này không nằm trong `--nhanh` |
