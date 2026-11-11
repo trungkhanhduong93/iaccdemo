@@ -47580,7 +47580,14 @@ textarea.m-tpb-inp { height: auto; padding: 8px 12px; }
 .hddt-loc .ds-o-sel { min-width: 170px; }
 .hddt-bang { overflow-x: auto; }
 .hddt-bang .tbl th { white-space: nowrap; }
+/* Tiêu đề 2 cấp: cả 2 dòng cùng nền, mỗi dòng cao 32px, ô gộp 2 dòng canh giữa theo chiều dọc */
+.hddt-bang .tbl thead tr:first-child th { height: 32px; vertical-align: middle; }
 .hddt-bang .tbl thead tr:first-child th[colspan] { text-align: center; }
+.hddt-bang .tbl thead tr + tr th {
+  height: 32px; box-sizing: border-box; padding: 0 12px; background: var(--th); color: rgb(54, 54, 54);
+  font-size: 13px; font-weight: 700; text-align: left; vertical-align: middle;
+  border-bottom: 1px solid var(--luoi-vien); border-right: 1px solid var(--line-2);
+}
 .hddt-ghi { display: flex; align-items: flex-start; gap: 6px; margin: 4px 0 0; font-size: 13px; color: var(--muted); }
 .hddt-ghi .ic { flex: none; margin-top: 2px; }
 
