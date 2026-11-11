@@ -11,6 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T803 | Thanh trên web: chuông mở khung thông báo (3 tab, lọc chưa đọc, đọc hết), hộp Cài đặt thông báo, tải ứng dụng bằng mã QR, đổi ngôn ngữ, menu Hỗ trợ (tài liệu, góp ý, lấy mã hỗ trợ, phím tắt); trang Xem tất cả thông báo; điện thoại: màn Thông báo, Cài đặt thông báo, mục Hỗ trợ và nút đổi ngôn ngữ ở màn Khác | Trum | Đang làm | Theo bản thiết kế "Thông báo IACC Cloud" của Trum. Sửa `Topbar.tsx`, `App.tsx`, `MKhac.tsx`, `MTrangChu.tsx`, `MTrangChuStandard.tsx`, cuối `app.css` (mục T803). Tạo `src/app/thong-bao/`, `MThongBao.tsx` |
 | T802 | Danh sách Bán hàng gói Plus: bỏ cột Trạng thái xuất HĐĐT; dòng đã xuất HĐĐT có nhãn VAT trên số chứng từ, cột Số hoá đơn bấm xem hoá đơn (cả tab Tất cả, Xuất bán POS); tab Bán hàng thêm cột Thao tác Xuất HĐĐT dòng chưa xuất | dinhlanphuongipacc | Đang làm | Sửa `ChungTuBanHang.tsx`, `app.css` (mục cuối T802) |
 | T801 | Bán hàng gói Plus: bộ lọc nâng cao ô chọn nhiều có hộp tích như Mua hàng, thêm ô Loại chứng từ; huỷ bán ẩn Ghi chú; form hoá đơn thay thế, điều chỉnh căn hàng Lý do, Email | dinhlanphuongipacc | Đang làm | Sửa `ChungTuBanHang.tsx`, `ChungTuForm.tsx`. Ghi bảng sau khi đã sửa trên máy |
 | T781 | Giảm thuế GTGT xét hiệu lực nghị quyết theo ngày của từng chứng từ, không theo ngày làm việc (`ptGiamHienHanh` dùng `HOM_NAY`) | | Chờ | Thấy lúc soát T780, `giam-thue.ts` |

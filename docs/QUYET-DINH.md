@@ -1177,3 +1177,5 @@ dinhlanphuongipacc chốt trên mẫu https://claude.ai/artifact/C62u8HrNKThN4k2
 - Bút toán, tài khoản, tab Hạch toán chỉ hiện ở bản Pro.
 - Danh sách chứng từ bán hàng hiện đủ 4 loại, có cột lọc Loại chứng từ. Danh sách hoá đơn điện tử không hiện huỷ bán.
 - Mẫu số tự lấy theo phương pháp tính thuế khai ở Hệ thống, không cho chọn: khấu trừ là 1, trực tiếp theo % doanh thu là 2.
+
+## QD108. Thông báo, hỗ trợ, ngôn ngữ ở thanh trên (đang soạn)
