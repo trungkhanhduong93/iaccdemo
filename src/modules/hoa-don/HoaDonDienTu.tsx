@@ -261,30 +261,33 @@ export function DsHoaDon({ sc, mod }: ScreenProps) {
       </div>
       {xem && <HopXemHd s={s} r={xem._r as Row} hd={xem._hd as HdDaXuat} toast={toast} onDong={() => setXem(null)} />}
       {chiaSe && <HopChiaSeHd hd={chiaSe._hd as HdDaXuat} t={ttXemHd(s, chiaSe._r as Row, chiaSe._hd as HdDaXuat)} toast={toast} onDong={() => setChiaSe(null)} />}
-      {tbss && <HopTbss r={tbss} onDong={() => setTbss(null)} onLuu={noiDung => {
-        dsTbss = [{ id: `tb-${Date.now()}`, mau: String(tbss.mau), kyHieu: String(tbss.kyHieu), so: String(tbss.soHd), ngay: String(tbss.ngay), loai: String(tbss.loai), noiDung, tt: 'Lưu nháp', ngayTao: homNay() }, ...dsTbss]
-        bao(); setTbss(null); toast('Đã lưu nháp thông báo sai sót, xem ở tab Thông báo sai sót')
+      {tbss && <HopTbss r={tbss} onDong={() => setTbss(null)} onLuu={(noiDung, gui) => {
+        dsTbss = [{ id: `tb-${Date.now()}`, mau: String(tbss.mau), kyHieu: String(tbss.kyHieu), so: String(tbss.soHd), ngay: String(tbss.ngay), loai: String(tbss.loai), noiDung, tt: gui ? 'Đã gửi CQT' : 'Lưu nháp', ngayTao: homNay() }, ...dsTbss]
+        bao(); setTbss(null); toast(gui ? 'Đã gửi thông báo sai sót lên cơ quan thuế, xem ở tab Thông báo sai sót' : 'Đã lưu nháp thông báo sai sót, xem ở tab Thông báo sai sót')
       }} />}
     </div>
   )
 }
 
 /** Popup lập thông báo sai sót (mẫu 04/SS-HĐĐT) cho một hoá đơn */
-function HopTbss({ r, onDong, onLuu }: { r: Row; onDong: () => void; onLuu: (noiDung: string) => void }) {
+function HopTbss({ r, onDong, onLuu }: { r: Row; onDong: () => void; onLuu: (noiDung: string, gui: boolean) => void }) {
   useDongEsc(onDong)
   const [nd, setNd] = useState('')
   const [thu, setThu] = useState(false)
+  const luu = (gui: boolean) => { if (!nd.trim()) { setThu(true); return } onLuu(nd.trim(), gui) }
   return (
     <Vo hep tieuDe="Thông báo hoá đơn có sai sót" onDong={onDong} chan={<>
       <button type="button" className="btn" onClick={onDong}>Huỷ</button>
-      <button type="button" className="btn pri" onClick={() => { if (!nd.trim()) { setThu(true); return } onLuu(nd.trim()) }}>Lưu nháp</button>
+      <button type="button" className="btn" onClick={() => luu(false)}>Lưu nháp</button>
+      <button type="button" className="btn pri" onClick={() => luu(true)}>Lưu và gửi CQT</button>
     </>}>
-      <div className="hddt-xem">
-        <span>Hoá đơn</span><b className="code">{String(r.mau)}{String(r.kyHieu)} · {String(r.soHd)} · {String(r.ngay)}</b>
-        <span>Người mua</span><b>{String(r.tenDv || r.nguoiMua)}</b>
+      {/* Mọi thông tin chung một khung, nhãn một cột (T796) */}
+      <div className="hddt-bang hddt-tbss">
+        <div className="hddt-o"><span>Hoá đơn</span><div><b className="hddt-gt code">{String(r.mau)}{String(r.kyHieu)} · {String(r.soHd)} · {String(r.ngay)}</b></div></div>
+        <div className="hddt-o"><span>Người mua</span><div><b className="hddt-gt">{String(r.tenDv || r.nguoiMua)}</b></div></div>
+        <label className={`hddt-o${thu && !nd.trim() ? ' loi' : ''}`}><span>Nội dung sai sót<em>*</em></span>
+          <div><textarea className="hddt-inp" rows={4} value={nd} onChange={e => setNd(e.target.value)} placeholder="Vd: sai địa chỉ người mua" /></div></label>
       </div>
-      <label className={`hddt-o${thu && !nd.trim() ? ' loi' : ''}`}><span>Nội dung sai sót<em>*</em></span>
-        <div><textarea className="inp" rows={3} value={nd} onChange={e => setNd(e.target.value)} placeholder="Vd: sai địa chỉ người mua" /></div></label>
     </Vo>
   )
 }

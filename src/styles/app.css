@@ -47757,3 +47757,10 @@ textarea.m-tpb-inp { height: auto; padding: 8px 12px; }
 
 /* ── Dấu cảnh báo có hoá đơn thay thế, điều chỉnh dự thảo ở cột Loại hoá đơn (T795) ── */
 .hd-canh-bao { display: inline-flex; vertical-align: -2px; margin-left: 6px; color: var(--orange); cursor: help; }
+
+/* ── Popup Thông báo hoá đơn có sai sót: chung một khung, nhãn thẳng hàng (T796) ── */
+.hddt-tbss .hddt-o { grid-template-columns: 160px 1fr; }
+.hddt-tbss .hddt-o > span { align-items: flex-start; padding-top: 11px; }
+.hddt-gt { display: flex; align-items: center; padding: 0 12px; min-height: 40px; font-size: 13.5px; font-weight: 500; color: var(--ink); }
+.hddt-tbss textarea.hddt-inp { min-height: 88px; }
+@media (max-width: 640px) { .hddt-tbss .hddt-o { grid-template-columns: 1fr; } .hddt-tbss .hddt-o > span { padding: 8px 12px; } }
