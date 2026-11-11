@@ -68,6 +68,10 @@ const homNay = () => dmy(HOM_NAY)
 /** Số hoá đơn dự thảo chưa phát hành (T796) */
 const SO_NHAP = '00000000'
 
+/** Loại HĐĐT theo ký hiệu: chữ C có mã CQT, K không mã, M ở vị trí thứ 4 của ký hiệu là máy tính tiền (T800) */
+const LOAI_HDDT = ['Có mã của CQT', 'Không có mã của CQT', 'Có mã khởi tạo từ máy tính tiền']
+const loaiHddtCua = (mauKh: string) => (laMayTinhTien(mauKh) ? LOAI_HDDT[2] : mauKh[1] === 'K' ? LOAI_HDDT[1] : LOAI_HDDT[0])
+
 /** Một dòng danh sách hoá đơn từ chứng từ đã phát hành */
 function dongHd(r: Row, man: string): Row | null {
   const hd = hdCua(r)
@@ -86,7 +90,7 @@ function dongHd(r: Row, man: string): Row | null {
   return {
     // Bị thay thế, bị điều chỉnh là loại hoá đơn; trạng thái HĐĐT chỉ Dự thảo hoặc Đã phát hành (T795)
     id, loai: ttGoc ? `Hoá đơn ${ttGoc.toLowerCase()}` : loaiCt === 'XBAN' ? 'Hoá đơn gốc' : TEN_LOAI_CT[loaiCt], ttHd: nhap ? 'Dự thảo' : 'Đã phát hành',
-    mau: mauKh[0] ?? '', kyHieu: mauKh.slice(1), mauKh, soHd: hd?.so ?? '', ngay: hd?.ngay ?? String(r._ngayHd ?? ''), so: r.so,
+    mau: mauKh[0] ?? '', kyHieu: mauKh.slice(1), mauKh, loaiHddt: loaiHddtCua(mauKh), soHd: hd?.so ?? '', ngay: hd?.ngay ?? String(r._ngayHd ?? ''), so: r.so,
     tenDv: cty ? k.tenDv : '', mst: cty ? k.mst : '', diaChi: k.diaChi, email: k.email, nguoiMua: k.tenNm || hd?.nguoiMua || '', maQhns: cty ? k.maQhns : '',
     ttThue: nhap ? '' : !mtt ? 'Hợp lệ' : gui ? 'Đã gửi TCTN' : 'Chưa gửi TCTN',
     truoc: tien.truoc ?? 0, thue: tien.thue ?? 0, tong: tien.tong ?? 0, maCqt: !hd || (mtt && !gui) ? '' : hd.ma, traCuu: hd?.traCuu ?? '',
@@ -121,13 +125,24 @@ function lyDo(v: Viec, r: Row): string | null {
 }
 
 const COT_CO_DINH = new Set(['chk', 'loai', 'action'])
-const COT_CHON = new Set(['loai', 'ttHd', 'mauKh', 'ttThue'])
+const COT_CHON = new Set(['loai', 'ttHd', 'mauKh', 'loaiHddt', 'ttThue'])
 const COT_SO = new Set(['truoc', 'thue', 'tong'])
 const kieuCot = (k: string): KieuLoc => (k === 'ngay' ? 'ngay' : COT_CHON.has(k) ? 'chon' : COT_SO.has(k) ? 'so' : 'chu')
 const chuCot = (k: string, r: Row) => { const v = r[k]; return typeof v === 'number' ? `${money(v)} ${v}` : String(v ?? '') }
 
-interface GtLoc { thoiGian: KhoangNgay; tim: string }
-const locMacDinh = (): GtLoc => ({ thoiGian: thangMacDinh(), tim: '' })
+// Ô lọc chữ tìm gần đúng, ô chọn khớp đúng giá trị (T800)
+const O_CHU = ['traCuu', 'soHd', 'khach', 'mst'] as const
+const O_CHON = ['mauKh', 'loaiHddt', 'ttThue', 'loai'] as const
+type OChu = typeof O_CHU[number]
+type OChon = typeof O_CHON[number]
+type GtLoc = { thoiGian: KhoangNgay; tim: string } & Record<OChu | OChon, string>
+const locMacDinh = (): GtLoc => ({ thoiGian: thangMacDinh(), tim: '', traCuu: '', soHd: '', khach: '', mst: '', mauKh: '', loaiHddt: '', ttThue: '', loai: '' })
+const TEN_O: Record<OChu | OChon, [string, string]> = {
+  traCuu: ['Mã tra cứu', 'Mã tra cứu'], soHd: ['Số hoá đơn', 'Số hoá đơn'], khach: ['Tên khách', 'Tên đơn vị, người mua'], mst: ['Mã số thuế', 'MST người mua'],
+  mauKh: ['Mẫu số - Ký hiệu', ''], loaiHddt: ['Loại HĐĐT', ''], ttThue: ['Trạng thái thuế', ''], loai: ['Loại hoá đơn', ''],
+}
+/** Giá trị ô lọc chữ trên một dòng: Tên khách gộp tên đơn vị và người mua */
+const chuO = (k: OChu, r: Row) => (k === 'khach' ? `${r.tenDv} ${r.nguoiMua}` : String(r[k] ?? ''))
 
 /** Tab Hoá đơn điện tử: lọc như danh sách chứng từ, thao tác từng hoá đơn ở menu ⋯, chọn nhiều chỉ Gửi CQT, Tải XML, Tải PDF */
 export function DsHoaDon({ sc, mod }: ScreenProps) {
@@ -151,12 +166,27 @@ export function DsHoaDon({ sc, mod }: ScreenProps) {
     { k: 'thoiGian', ten: 'Thời gian', o: <ChonKhoangNgay value={nhap.thoiGian} onChange={k => dat('thoiGian', k)} /> },
     { k: 'tim', ten: 'Tìm kiếm', coGiaTri: Boolean(nhap.tim.trim()), o: <input className="ds-o-inp" value={nhap.tim} placeholder="Số HĐ, tên đơn vị, MST, người mua" aria-label="Tìm kiếm"
       onChange={e => dat('tim', e.target.value)} onKeyDown={e => { if (e.key === 'Enter') loc0.loc() }} /> },
+    ...O_CHU.map((k): OLocDef => ({ k, ten: TEN_O[k][0], coGiaTri: Boolean(nhap[k].trim()), o: <input className="ds-o-inp" value={nhap[k]} placeholder={TEN_O[k][1]}
+      aria-label={TEN_O[k][0]} onChange={e => dat(k, e.target.value)} onKeyDown={e => { if (e.key === 'Enter') loc0.loc() }} /> })),
+    ...O_CHON.map((k): OLocDef => {
+      // Loại HĐĐT, Trạng thái thuế đủ các giá trị; Mẫu số - Ký hiệu, Loại hoá đơn lấy theo hoá đơn đang có
+      const ds = k === 'loaiHddt' ? LOAI_HDDT : k === 'ttThue' ? ['Hợp lệ', 'Chưa gửi TCTN', 'Đã gửi TCTN']
+        : [...new Set(rows.map(r => String(r[k] ?? '')).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'vi'))
+      return { k, ten: TEN_O[k][0], coGiaTri: Boolean(nhap[k]), o: (
+        <Select className="ds-o-sel" value={nhap[k]} aria-label={TEN_O[k][0]} onChange={e => dat(k, e.target.value)}>
+          <option value="">Tất cả</option>
+          {ds.map(v => <option key={v} value={v}>{v}</option>)}
+        </Select>
+      ) }
+    }),
   ]
   const [cauHinhLoc, datCauHinhLoc] = useCauHinhLoc(path, oLoc.map(o => o.k), ['thoiGian', 'tim'])
 
   const truocChip = rows.filter(r => {
     if (!trongKhoang(docNgay(String(r.ngay)), ap.thoiGian)) return false
     if (ap.tim.trim() && !fold(`${r.soHd} ${r.tenDv} ${r.mst} ${r.nguoiMua}`).includes(fold(ap.tim.trim()))) return false
+    if (O_CHU.some(k => ap[k].trim() && !fold(chuO(k, r)).includes(fold(ap[k].trim())))) return false
+    if (O_CHON.some(k => ap[k] && String(r[k] ?? '') !== ap[k])) return false
     for (const [k, g] of Object.entries(locCot)) {
       if (dangLoc(g) && !khopLoc(kieuCot(k), g, chuCot(k, r), typeof r[k] === 'number' ? r[k] : undefined, k === 'ngay' ? docNgay(String(r.ngay)) : undefined)) return false
     }
@@ -219,10 +249,10 @@ export function DsHoaDon({ sc, mod }: ScreenProps) {
       return <>{r.loai}{bao && <span className="hd-canh-bao" title={bao} aria-label={bao}><Icon n="alert" className="ic sm" /></span>}</> } },
     { k: 'ttHd', t: 'Trạng thái HĐĐT', w: 140, r: r => <span className={`ph-tt${r.ttHd === 'Đã phát hành' ? ' da' : ''}`}>{r.ttHd}</span> },
     // Mẫu số ghép với ký hiệu như màn xuất (vd 1C26TAA): ký tự đầu là mẫu số, 6 ký tự sau là ký hiệu
-    chu('mauKh', 'Mẫu số - Ký hiệu', 140, 'code'),
-    // Dự thảo chưa có số: ghi 00000000, không mở xem (T796)
-    { k: 'soHd', t: 'Số HĐ', w: 110, r: r => r.soHd ? <button type="button" className="ds-link-so" title="Xem hoá đơn" onClick={e => { e.stopPropagation(); setXem(r) }}>{r.soHd}</button>
-      : r.ttHd === 'Dự thảo' ? <span className="code dim">{SO_NHAP}</span> : null },
+    chu('mauKh', 'Mẫu số - Ký hiệu', 140, 'code'), chu('loaiHddt', 'Loại HĐĐT', 190),
+    // Dự thảo chưa có số: ghi 00000000, bấm xem mẫu hoá đơn như tab Điều chỉnh thay thế (T796, T799)
+    { k: 'soHd', t: 'Số HĐ', w: 110, r: r => r.soHd || r.ttHd === 'Dự thảo'
+      ? <button type="button" className="ds-link-so" title={r.soHd ? 'Xem hoá đơn' : 'Xem mẫu hoá đơn dự thảo'} onClick={e => { e.stopPropagation(); setXem(r) }}>{r.soHd || SO_NHAP}</button> : null },
     { k: 'ngay', t: 'Ngày HĐ', w: 110 },
     { k: 'so', t: 'Số chứng từ', w: 140, r: r => <button type="button" className="ds-link-so" title="Mở chứng từ bán hàng"
       onClick={e => { e.stopPropagation(); nav(`/app/${r._man}/${(r._r as Row).id}`) }}>{r.so}</button> },
@@ -288,7 +318,7 @@ export function DsHoaDon({ sc, mod }: ScreenProps) {
           )}
         </section>
       </div>
-      {xem && <HopXemHd s={s} r={xem._r as Row} hd={xem._hd as HdDaXuat} toast={toast} onDong={() => setXem(null)} />}
+      {xem && <HopXemHd s={s} r={xem._r as Row} hd={(xem._hd as HdDaXuat | undefined) ?? hdNhap(xem._r as Row)} nhap={!xem._hd} toast={toast} onDong={() => setXem(null)} />}
       {chiaSe && <HopChiaSeHd hd={chiaSe._hd as HdDaXuat} t={ttXemHd(s, chiaSe._r as Row, chiaSe._hd as HdDaXuat)} toast={toast} onDong={() => setChiaSe(null)} />}
       {tbss && <HopTbss r={tbss} onDong={() => setTbss(null)} onLuu={({ noiDung, diaChi, email }, gui) => {
         dsTbss = [{

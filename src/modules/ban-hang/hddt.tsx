@@ -256,7 +256,7 @@ const NGUOI_MUA: Record<string, [string, string]> = {
   GRAB: ['268 Tô Hiến Thành, phường Diên Hồng, TP.HCM', 'hoadon.grabfood@iacc-demo.vn'],
 }
 
-let soHdCuoi = 128   // số hoá đơn đã cấp trong phiên, tăng dần như nhà cung cấp trả về
+let soHdCuoi = 134   // số lớn nhất ở HD_MAU (T799); số hoá đơn đã cấp trong phiên, tăng dần như nhà cung cấp trả về
 const maCqt = (i: number) => `M${String(HOM_NAY.getFullYear()).slice(2)}-${(0x3a7f21 + i * 7919).toString(16).toUpperCase()}`
 /** Mã tra cứu hoá đơn nhà cung cấp trả về, 10 ký tự */
 const maTraCuu = (i: number) => `PM${(i * 104729 + 2821109907).toString(36).toUpperCase().slice(-8)}`
@@ -353,7 +353,8 @@ const tienCua = (r: Row): TienHd => { const tong = Number(r.tong) || 0, thue = N
  *  Cửa hàng thứ hai dùng ký hiệu máy tính tiền như khai báo mẫu ở cauHinhHddt */
 const HD_MAU: Record<string, number> = { 'tay-0': 124, 'tay-1': 52, 'tay-6': 123, 'tay-8': 122, 'tay-9': 121,   // tay-6, 8, 9 thêm ở T790, số theo thứ tự ngày
   'tay-10': 119, 'tay-11': 120, 'tay-12': 125, 'tay-13': 126, 'tay-tt1': 127, 'tay-dc1': 128,   // gốc, hoá đơn thay thế, điều chỉnh mẫu (T795)
-  'tay-14': 41, 'tay-dc3': 63 }   // hoá đơn gốc kỳ đã nộp tờ khai và điều chỉnh tháng 8 (T788)
+  'tay-14': 41, 'tay-dc3': 63,   // hoá đơn gốc kỳ đã nộp tờ khai và điều chỉnh tháng 8 (T788)
+  'tay-15': 129, 'tay-16': 130, 'tay-17': 131, 'tay-18': 132, 'tay-tt3': 133, 'tay-dc4': 134 }   // hoá đơn máy tính tiền mẫu (T799)
 /** Số hoá đơn có sẵn của chứng từ mẫu, chưa có thì undefined */
 export const soHdMau = (id: string): number | undefined => HD_MAU[id]
 /** Ký hiệu hoá đơn mẫu theo cửa hàng: cửa hàng thứ hai dùng ký hiệu máy tính tiền */

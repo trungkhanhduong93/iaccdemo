@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 11/11/2026
+- T799: Menu Hoá đơn điện tử có thêm hoá đơn máy tính tiền mẫu (ký hiệu C26MAB) thay thế, điều chỉnh, cả đã phát hành chưa gửi CQT và dự thảo, để thử Gửi CQT, Phát hành và Gửi CQT. Tab Hoá đơn điện tử: bấm số 00000000 của hoá đơn dự thảo xem được mẫu hoá đơn.
 - T788: Gói Plus, màn Kê khai thuế: hoá đơn thay thế, điều chỉnh kê khai về kỳ của hoá đơn gốc. Tờ khai kỳ gốc chưa nộp tự cộng chênh lệch doanh thu, bước Kê khai doanh thu có bảng hoá đơn, hoá đơn bị thay thế gạch đi. Kỳ gốc đã nộp thì danh sách tờ khai nhắc số doanh thu, thuế thay đổi, kèm link Lập tờ khai bổ sung.
 - T798: Menu Hoá đơn điện tử, tab Điều chỉnh thay thế: hoá đơn điều chỉnh, thay thế có thêm cột Trạng thái HĐĐT (Đã phát hành, Dự thảo), Trạng thái thuế như tab Hoá đơn điện tử. Cột Thao tác thành menu ⋯: hoá đơn dự thảo có Phát hành, Gửi CQT, Phát hành và Gửi CQT; hoá đơn đã phát hành chỉ Gửi CQT (chỉ hoá đơn máy tính tiền). Bấm số 00000000 của hoá đơn dự thảo xem được mẫu hoá đơn. Cột Thao tác cố định bên phải khi cuộn ngang.
 - T797: Menu Hoá đơn điện tử, tab Điều chỉnh thay thế và Thông báo sai sót có thanh lọc như tab Hoá đơn điện tử: Thời gian (mặc định tháng này), Tìm kiếm, ô Loại hoặc Trạng thái thuế, nút Lọc. Thông báo sai sót mẫu trỏ đúng hoá đơn có trong tab Hoá đơn điện tử, không còn hoá đơn tháng 9 không tìm thấy.
