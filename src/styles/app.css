@@ -47590,7 +47590,7 @@ textarea.m-tpb-inp { height: auto; padding: 8px 12px; }
 }
 /* Ranh giới nhóm cột cấp 1: kẻ đậm từ tiêu đề xuống thân bảng. Cột: 1 Loại, 2-6 hoá đơn gốc, 7-12 hoá đơn mới, 13 Thao tác;
    dòng tiêu đề 2 chỉ có 11 ô của 2 nhóm. Ô nhóm ở dòng 1 có gạch dưới đậm để thấy nhóm phủ những cột nào */
-.hddt-bang .tbl { --hddt-nhom: rgba(5, 100, 173, .35); }
+.hddt-bang .tbl { --hddt-nhom: rgb(196, 205, 219); }   /* cùng tông xám với đường lưới --luoi-dong, đậm hơn */
 .hddt-bang .tbl thead tr:first-child th[colspan] { border-bottom: 2px solid var(--hddt-nhom); }
 .hddt-bang .tbl thead tr:first-child th[colspan],
 .hddt-bang .tbl thead tr + tr th:nth-child(5),
