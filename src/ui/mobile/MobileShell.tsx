@@ -54,6 +54,8 @@ function layTieuDe(pathname: string, search = '', s?: Session): string {
     return 'Nghiệp vụ'
   }
   if (pathname.startsWith('/app/khac')) return 'Khác'
+  if (pathname === '/app/thong-bao/cai-dat') return 'Cài đặt thông báo'
+  if (pathname.startsWith('/app/thong-bao')) return 'Thông báo'   // T803
   const parts = pathname.split('/').filter(Boolean)
   const modKey = parts[1]
   const slug = parts[2]
@@ -94,6 +96,7 @@ function laManConKhac(pathname: string): boolean {
   const [, modKey, slug] = pathname.split('/').filter(Boolean)
   if (modKey === 'danh-muc' && slug) return true
   if (modKey === 'he-thong' && slug) return true
+  if (modKey === 'thong-bao') return true   // Thông báo, Cài đặt thông báo (T803)
   if (modKey === 'tong-hop' && (slug === '10-1-6' || slug === 'khoa-so')) return true
   return false
 }
@@ -103,7 +106,7 @@ function coChipCn(pathname: string): boolean {
   if (laXemPhieu(pathname)) return false
   const [, modKey, slug] = pathname.split('/').filter(Boolean)
   if (!slug) return false
-  return !['bao-cao', 'danh-muc', 'he-thong'].includes(modKey) || laBaoCao(pathname)
+  return !['bao-cao', 'danh-muc', 'he-thong', 'thong-bao'].includes(modKey) || laBaoCao(pathname)
 }
 
 function layNhanCn(c?: { id: string; ten: string; ngan?: string }): string {

@@ -344,14 +344,15 @@ export function MTrangChuStandard(_props?: Partial<ScreenProps>) {
             >
               <Icon n="search" className="ic sm" />
             </button>
-            <button
-              type="button"
+            <Link
+              to="/app/thong-bao"
               className="m-tc-figma-nut-tron"
               title="Thông báo"
+              aria-label="Thông báo"
             >
               <Icon n="bell" className="ic sm" />
               <span className="m-tc-figma-cham-tb" />
-            </button>
+            </Link>
           </div>
         </div>
 

@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react'
 import { Icon } from './Icon'
 
-const PHIM: [string, string][] = [
+export const PHIM: [string, string][] = [
   ['Lưu chứng từ', 'Ctrl + S'], ['Lưu và thêm mới', 'Ctrl + Shift + S'], ['Sửa chứng từ', 'Ctrl + E'], ['Huỷ thay đổi', 'Ctrl + Q'],
   ['Thêm dòng chi tiết', 'Ctrl + Insert'], ['Xoá dòng chi tiết', 'Alt + Delete'], ['Sao chép chứng từ', 'Ctrl + O'], ['Xoá chứng từ', 'Ctrl + Delete'],
   ['Đóng form', 'Esc'],

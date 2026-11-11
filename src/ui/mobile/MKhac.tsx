@@ -8,6 +8,9 @@ import { Icon } from '../Icon'
 import { Pk } from '../Page'
 import { fold } from '../format'
 import type { ScreenDef } from '../../modules/types'
+import { D, Sv } from '../../app/thong-bao/chung'
+import { LINK_TAI_LIEU } from '../../app/thong-bao/data'
+import { MNutNgonNgu, MTamGopY, MTamMaHoTro } from './MThongBao'
 
 /** Tên ngắn ở nhóm Danh mục: bỏ chữ "Danh mục" đầu tên, 1.2 và 1.5 gọi gọn như web (T353) */
 const TEN_GON_DM: Record<string, string> = { '1.2': 'Hàng hoá', '1.5': 'Đối tượng' }
@@ -20,8 +23,9 @@ export function MKhac() {
   const { s, set } = useSession()
   const nav = useNavigate()
   const [q, setQ] = useState('')
+  const [tam, setTam] = useState<'' | 'gy' | 'ma'>('')   // tấm trượt Góp ý, Mã hỗ trợ (T803)
 
-  const ten = s.ten.split(' ').slice(-2).map(x => x[0]).join('')
+  const ten =s.ten.split(' ').slice(-2).map(x => x[0]).join('')
 
   const modDm = MODULES.find(m => m.key === 'danh-muc')
   const modHt = MODULES.find(m => m.key === 'he-thong')
@@ -37,6 +41,11 @@ export function MKhac() {
   const dsDmLoc = tuKhoa ? dsDm.filter(sc => fold(tenDm(sc)).includes(tuKhoa)) : dsDm
   const dsHtLoc = tuKhoa ? dsHt.filter(sc => fold(tenMan(sc)).includes(tuKhoa)) : dsHt
   const hienKhoaSo = coKhoaSoDuPhong && (!tuKhoa || fold('Khoá sổ').includes(tuKhoa))
+  const hienCaiDatTb = !tuKhoa || fold('Cài đặt thông báo').includes(tuKhoa)
+  // Mục Hỗ trợ (T803): tài liệu mở trang ngoài, góp ý và mã hỗ trợ mở tấm trượt
+  const dsHoTro = [
+    { ten: 'Tài liệu', d: D.sach }, { ten: 'Góp ý', d: D.gopY, tam: 'gy' as const }, { ten: 'Lấy mã hỗ trợ', d: D.khoa, tam: 'ma' as const },
+  ].filter(h => !tuKhoa || fold(h.ten).includes(tuKhoa))
 
   return (
     <div className="m-khac">
@@ -130,11 +139,26 @@ export function MKhac() {
       )}
 
       {/* 3. Nhóm Thiết lập */}
-      {modHt && (dsHtLoc.length > 0 || hienKhoaSo) && (
+      {modHt && (dsHtLoc.length > 0 || hienKhoaSo || hienCaiDatTb) && (
         <section className="m-khac-nhom-wrap">
           <h3 className="m-khac-nhom-tieu">THIẾT LẬP</h3>
           <div className="m-khac-the">
             <div className="m-khac-ds">
+              {hienCaiDatTb && (
+                <Link to="/app/thong-bao/cai-dat" className="m-khac-dong">
+                  <div className="m-khac-dong-trai">
+                    <span className="m-khac-dong-ic ht">
+                      <Icon n="bell" kieu="khoi" className="ic sm" />
+                    </span>
+                    <div className="m-khac-dong-nd">
+                      <span className="m-khac-dong-ten">Cài đặt thông báo</span>
+                    </div>
+                  </div>
+                  <div className="m-khac-dong-phai">
+                    <Icon n="chevr" className="ic sm m-khac-mui-ten" />
+                  </div>
+                </Link>
+              )}
               {dsHtLoc.map(sc => {
                 const khoa = !moDuoc(sc, s.goi)
                 const ma = maKhoa(sc)
@@ -177,6 +201,36 @@ export function MKhac() {
                   </div>
                 </Link>
               )}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Nhóm Hỗ trợ (T803) */}
+      {dsHoTro.length > 0 && (
+        <section className="m-khac-nhom-wrap">
+          <h3 className="m-khac-nhom-tieu">HỖ TRỢ</h3>
+          <div className="m-khac-the">
+            <div className="m-khac-ds">
+              {dsHoTro.map(h => {
+                const than = (
+                  <>
+                    <div className="m-khac-dong-trai">
+                      <span className="m-khac-dong-ic ho-tro"><Sv d={h.d} /></span>
+                      <div className="m-khac-dong-nd">
+                        <span className="m-khac-dong-ten">{h.ten}</span>
+                      </div>
+                    </div>
+                    <div className="m-khac-dong-phai">
+                      {h.tam ? <Icon n="chevr" className="ic sm m-khac-mui-ten" /> : <Sv d={D.moNgoai} c={16} net={2} className="m-khac-mui-ten" />}
+                    </div>
+                  </>
+                )
+                const loaiTam = h.tam
+                return loaiTam
+                  ? <button key={h.ten} type="button" className="m-khac-dong-btn" onClick={() => setTam(loaiTam)}>{than}</button>
+                  : <a key={h.ten} className="m-khac-dong" href={LINK_TAI_LIEU} target="_blank" rel="noopener noreferrer">{than}</a>
+              })}
             </div>
           </div>
         </section>
@@ -264,6 +318,14 @@ export function MKhac() {
           <span>Đăng xuất</span>
         </button>
       </section>
+
+      {/* Chân màn: đổi ngôn ngữ (T803) */}
+      <section className="m-khac-chan">
+        <MNutNgonNgu />
+      </section>
+
+      {tam === 'gy' && <MTamGopY onDong={() => setTam('')} />}
+      {tam === 'ma' && <MTamMaHoTro onDong={() => setTam('')} />}
     </div>
   )
 }

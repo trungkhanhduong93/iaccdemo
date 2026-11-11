@@ -3,7 +3,8 @@
 import { useNavigate } from 'react-router-dom'
 import { donViHienTai, dsCuaHang, dsDonVi, dungThuDv, loaiHinhDv, useSession, cheDoHienTai, denBoMst } from './session'
 import { cheDoCuaGoi } from './che-do'
-import { GOI, GOIS, coTrongGoi, demTheoGoi } from './plan'
+import { GOI, GOIS, demTheoGoi } from './plan'
+import { NutThanhTren } from './thong-bao/ThanhTren'
 import { ROLE } from '../data/mock'
 import { Icon } from '../ui/Icon'
 import { FigmaStoreIcon } from '../ui/FigmaIcon'
@@ -97,8 +98,8 @@ export function Topbar({ onSearch }: { onSearch?: () => void }) {
         </>}
       </Dropdown>
 
-      {/* Chuông mở Cảnh báo số liệu 11.6; gói không có tính năng này (Standard) thì ẩn chuông, không mở trang khoá (T669) */}
-      {coTrongGoi('11.6', s.goi) && <button className="icon-btn" title="Thông báo" onClick={() => nav('/app/tien-ich/11-6')}><Icon n="bell" /><span className="dot" /></button>}
+      {/* Hỗ trợ, tải ứng dụng, ngôn ngữ, chuông mở khung thông báo; mọi gói đều có (T803, QD108) */}
+      <NutThanhTren />
       <Dropdown btnClass="avatar" align="end" width={290} title={s.ten} label={ten}>
         {dong => <>
           <div className="mi-user">

@@ -1178,4 +1178,14 @@ dinhlanphuongipacc chốt trên mẫu https://claude.ai/artifact/C62u8HrNKThN4k2
 - Danh sách chứng từ bán hàng hiện đủ 4 loại, có cột lọc Loại chứng từ. Danh sách hoá đơn điện tử không hiện huỷ bán.
 - Mẫu số tự lấy theo phương pháp tính thuế khai ở Hệ thống, không cho chọn: khấu trừ là 1, trực tiếp theo % doanh thu là 2.
 
-## QD108. Thông báo, hỗ trợ, ngôn ngữ ở thanh trên (đang soạn)
+## QD108. Thông báo, hỗ trợ, ngôn ngữ ở thanh trên (12/11/2026)
+
+Trum chốt trên bản thiết kế https://claude.ai/artifact/WKJMseeaoH53WMsf6r38tp (T803).
+
+- Thanh trên web có thêm, từ trái sang: nút Hỗ trợ, tải ứng dụng, ngôn ngữ, chuông. Mọi gói đều có.
+- Chuông mở khung thông báo, không còn mở Cảnh báo số liệu 11.6. Màn 11.6 vẫn vào từ menu.
+- Thông báo chia 3 thẻ: Vận hành, Nhắc nhở, Hệ thống. Bấm một dòng là đánh dấu đã đọc; nút cuối dòng mở màn liên quan.
+- Cài đặt thông báo bật tắt theo 13 loại, dùng chung cho web và ứng dụng điện thoại, không tách kênh.
+- Hỗ trợ gồm Tài liệu hướng dẫn (mở trang ngoài), Góp ý, Lấy mã hỗ trợ, Phím tắt. Mã hỗ trợ 7 ký tự, hiệu lực 2 giờ, tạo mã mới thì mã cũ hết hiệu lực.
+- Ngôn ngữ trong app có Tiếng Việt và English. Trang đăng nhập giữ 4 ngôn ngữ theo QD105.
+- Điện thoại: Thông báo mở từ chuông ở Trang chủ; Cài đặt thông báo, Hỗ trợ, đổi ngôn ngữ nằm ở màn Khác. Điện thoại không có Phím tắt và tải ứng dụng.

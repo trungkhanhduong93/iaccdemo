@@ -549,6 +549,8 @@ function MTrangChuCoPhi() {
               type="button"
               className="m-tc-nut-tron"
               title="Thông báo"
+              aria-label="Thông báo"
+              onClick={() => nav('/app/thong-bao')}
             >
               <Icon n="bell" className="ic sm" />
               {dsTheoDoi.length > 0 && (

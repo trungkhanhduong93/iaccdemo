@@ -9,6 +9,8 @@ import { KhoiTaoFabi } from './modules/onboarding/KhoiTaoFabi'
 import { useLaMobile } from './ui/mobile/useLaMobile'
 import { MNghiepVu } from './ui/mobile/MNghiepVu'
 import { MKhac } from './ui/mobile/MKhac'
+import { MCaiDatThongBao, MThongBao } from './ui/mobile/MThongBao'
+import { TatCaThongBao } from './app/thong-bao/TatCaThongBao'
 
 function RouteNghiepVu() {
   const laMobile = useLaMobile()
@@ -18,6 +20,17 @@ function RouteNghiepVu() {
 function RouteKhac() {
   const laMobile = useLaMobile()
   return laMobile ? <MKhac /> : <Navigate to="/app" replace />
+}
+
+// Thông báo (T803): web là trang Xem tất cả, điện thoại là màn Thông báo và màn Cài đặt thông báo
+function RouteThongBao() {
+  const laMobile = useLaMobile()
+  return laMobile ? <MThongBao /> : <TatCaThongBao />
+}
+
+function RouteCaiDatThongBao() {
+  const laMobile = useLaMobile()
+  return laMobile ? <MCaiDatThongBao /> : <Navigate to="/app/thong-bao" replace />
 }
 
 export default function App() {
@@ -35,6 +48,8 @@ export default function App() {
             <Route index element={<HomeRedirect />} />
             <Route path="nghiep-vu" element={<RouteNghiepVu />} />
             <Route path="khac" element={<RouteKhac />} />
+            <Route path="thong-bao" element={<RouteThongBao />} />
+            <Route path="thong-bao/cai-dat" element={<RouteCaiDatThongBao />} />
             <Route path=":mod" element={<ScreenRoute />} />
             <Route path=":mod/:slug" element={<ScreenRoute />} />
             <Route path=":mod/:slug/:id" element={<ScreenRoute />} />
