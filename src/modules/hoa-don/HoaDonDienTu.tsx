@@ -1,12 +1,13 @@
 // Menu Hoá đơn điện tử (QD106, T786): danh sách hoá đơn đã lập từ chứng từ bán hàng, cặp hoá đơn điều chỉnh thay thế, thông báo sai sót.
 // Hoá đơn lấy từ chứng từ bán hàng lập tay đã phát hành (T785), hoá đơn thay thế, điều chỉnh kể cả dự thảo (T787)
-import { useEffect, useState, useSyncExternalStore } from 'react'
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import { useNavigate } from 'react-router-dom'
 import type { Col, Row, ScreenProps } from '../types'
 import { duongDan, tenMan } from '../../app/registry'
 import { gtgtTyLe, useSession } from '../../app/session'
 import { Icon } from '../../ui/Icon'
-import { Dropdown, Select } from '../../ui/Dropdown'
+import { Dropdown, Popover, Select } from '../../ui/Dropdown'
+import { ChonHaiCot } from '../../ui/ChonHaiCot'
 import { Table } from '../../ui/Table'
 import { dmy, fold, money } from '../../ui/format'
 import { DON_VI, HOM_NAY } from '../../data/mock'
@@ -68,10 +69,6 @@ const homNay = () => dmy(HOM_NAY)
 /** Số hoá đơn dự thảo chưa phát hành (T796) */
 const SO_NHAP = '00000000'
 
-/** Loại HĐĐT theo ký hiệu: chữ C có mã CQT, K không mã, M ở vị trí thứ 4 của ký hiệu là máy tính tiền (T800) */
-const LOAI_HDDT = ['Có mã của CQT', 'Không có mã của CQT', 'Có mã khởi tạo từ máy tính tiền']
-const loaiHddtCua = (mauKh: string) => (laMayTinhTien(mauKh) ? LOAI_HDDT[2] : mauKh[1] === 'K' ? LOAI_HDDT[1] : LOAI_HDDT[0])
-
 /** Một dòng danh sách hoá đơn từ chứng từ đã phát hành */
 function dongHd(r: Row, man: string): Row | null {
   const hd = hdCua(r)
@@ -90,7 +87,7 @@ function dongHd(r: Row, man: string): Row | null {
   return {
     // Bị thay thế, bị điều chỉnh là loại hoá đơn; trạng thái HĐĐT chỉ Dự thảo hoặc Đã phát hành (T795)
     id, loai: ttGoc ? `Hoá đơn ${ttGoc.toLowerCase()}` : loaiCt === 'XBAN' ? 'Hoá đơn gốc' : TEN_LOAI_CT[loaiCt], ttHd: nhap ? 'Dự thảo' : 'Đã phát hành',
-    mau: mauKh[0] ?? '', kyHieu: mauKh.slice(1), mauKh, loaiHddt: loaiHddtCua(mauKh), soHd: hd?.so ?? '', ngay: hd?.ngay ?? String(r._ngayHd ?? ''), so: r.so,
+    mau: mauKh[0] ?? '', kyHieu: mauKh.slice(1), mauKh, soHd: hd?.so ?? '', ngay: hd?.ngay ?? String(r._ngayHd ?? ''), so: r.so,
     tenDv: cty ? k.tenDv : '', mst: cty ? k.mst : '', diaChi: k.diaChi, email: k.email, nguoiMua: k.tenNm || hd?.nguoiMua || '', maQhns: cty ? k.maQhns : '',
     ttThue: nhap ? '' : !mtt ? 'Hợp lệ' : gui ? 'Đã gửi TCTN' : 'Chưa gửi TCTN',
     truoc: tien.truoc ?? 0, thue: tien.thue ?? 0, tong: tien.tong ?? 0, maCqt: !hd || (mtt && !gui) ? '' : hd.ma, traCuu: hd?.traCuu ?? '',
@@ -125,22 +122,27 @@ function lyDo(v: Viec, r: Row): string | null {
 }
 
 const COT_CO_DINH = new Set(['chk', 'loai', 'action'])
-const COT_CHON = new Set(['loai', 'ttHd', 'mauKh', 'loaiHddt', 'ttThue'])
+const COT_CHON = new Set(['loai', 'ttHd', 'mauKh', 'ttThue'])
 const COT_SO = new Set(['truoc', 'thue', 'tong'])
 const kieuCot = (k: string): KieuLoc => (k === 'ngay' ? 'ngay' : COT_CHON.has(k) ? 'chon' : COT_SO.has(k) ? 'so' : 'chu')
 const chuCot = (k: string, r: Row) => { const v = r[k]; return typeof v === 'number' ? `${money(v)} ${v}` : String(v ?? '') }
 
 // Ô lọc chữ tìm gần đúng, ô chọn khớp đúng giá trị (T800)
 const O_CHU = ['traCuu', 'soHd', 'khach', 'mst'] as const
-const O_CHON = ['mauKh', 'loaiHddt', 'ttThue', 'loai'] as const
+const O_CHON = ['mauKh', 'ttHd', 'ttThue', 'loai'] as const
 type OChu = typeof O_CHU[number]
 type OChon = typeof O_CHON[number]
-type GtLoc = { thoiGian: KhoangNgay; tim: string } & Record<OChu | OChon, string>
-const locMacDinh = (): GtLoc => ({ thoiGian: thangMacDinh(), tim: '', traCuu: '', soHd: '', khach: '', mst: '', mauKh: '', loaiHddt: '', ttThue: '', loai: '' })
+type GtLoc = { thoiGian: KhoangNgay; tim: string } & Record<OChu, string> & Record<OChon, string[]>
+const locMacDinh = (): GtLoc => ({ thoiGian: thangMacDinh(), tim: '', traCuu: '', soHd: '', khach: '', mst: '', mauKh: [], ttHd: [], ttThue: [], loai: [] })
 const TEN_O: Record<OChu | OChon, [string, string]> = {
   traCuu: ['Mã tra cứu', 'Mã tra cứu'], soHd: ['Số hoá đơn', 'Số hoá đơn'], khach: ['Tên khách', 'Tên đơn vị, người mua'], mst: ['Mã số thuế', 'MST người mua'],
-  mauKh: ['Mẫu số - Ký hiệu', ''], loaiHddt: ['Loại HĐĐT', ''], ttThue: ['Trạng thái thuế', ''], loai: ['Loại hoá đơn', ''],
+  mauKh: ['Mẫu số - Ký hiệu', ''], ttHd: ['Trạng thái hoá đơn', ''], ttThue: ['Trạng thái thuế', ''], loai: ['Loại hoá đơn', ''],
 }
+/** Ô lọc Trạng thái thuế: giá trị cột Trạng thái thuế, tên hiện trong ô lọc */
+const TT_THUE: [string, string][] = [
+  ['Chưa gửi TCTN', 'Hoá đơn chưa gửi TCTN'], ['TCTN từ chối', 'Hoá đơn bị TCTN từ chối'], ['Đã gửi TCTN', 'Hoá đơn đã gửi TCTN'],
+  ['Không hợp lệ', 'Hoá đơn không hợp lệ'], ['Hợp lệ', 'Hoá đơn hợp lệ'],
+]
 /** Giá trị ô lọc chữ trên một dòng: Tên khách gộp tên đơn vị và người mua */
 const chuO = (k: OChu, r: Row) => (k === 'khach' ? `${r.tenDv} ${r.nguoiMua}` : String(r[k] ?? ''))
 
@@ -161,6 +163,7 @@ export function DsHoaDon({ sc, mod }: ScreenProps) {
   const [xem, setXem] = useState<Row | null>(null)
   const [tbss, setTbss] = useState<Row | null>(null)
   const [chiaSe, setChiaSe] = useState<Row | null>(null)
+  const [guiMail, setGuiMail] = useState<Row | null>(null)
 
   const oLoc: OLocDef[] = [
     { k: 'thoiGian', ten: 'Thời gian', o: <ChonKhoangNgay value={nhap.thoiGian} onChange={k => dat('thoiGian', k)} /> },
@@ -169,15 +172,12 @@ export function DsHoaDon({ sc, mod }: ScreenProps) {
     ...O_CHU.map((k): OLocDef => ({ k, ten: TEN_O[k][0], coGiaTri: Boolean(nhap[k].trim()), o: <input className="ds-o-inp" value={nhap[k]} placeholder={TEN_O[k][1]}
       aria-label={TEN_O[k][0]} onChange={e => dat(k, e.target.value)} onKeyDown={e => { if (e.key === 'Enter') loc0.loc() }} /> })),
     ...O_CHON.map((k): OLocDef => {
-      // Loại HĐĐT, Trạng thái thuế đủ các giá trị; Mẫu số - Ký hiệu, Loại hoá đơn lấy theo hoá đơn đang có
-      const ds = k === 'loaiHddt' ? LOAI_HDDT : k === 'ttThue' ? ['Hợp lệ', 'Chưa gửi TCTN', 'Đã gửi TCTN']
+      // Trạng thái hoá đơn, Trạng thái thuế đủ các giá trị; Mẫu số - Ký hiệu, Loại hoá đơn lấy theo hoá đơn đang có
+      const ds = k === 'ttHd' ? ['Dự thảo', 'Đã phát hành'] : k === 'ttThue' ? TT_THUE.map(([v, t]) => ({ v, t }))
         : [...new Set(rows.map(r => String(r[k] ?? '')).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'vi'))
-      return { k, ten: TEN_O[k][0], coGiaTri: Boolean(nhap[k]), o: (
-        <Select className="ds-o-sel" value={nhap[k]} aria-label={TEN_O[k][0]} onChange={e => dat(k, e.target.value)}>
-          <option value="">Tất cả</option>
-          {ds.map(v => <option key={v} value={v}>{v}</option>)}
-        </Select>
-      ) }
+      // Tích chọn nhiều, gõ để tìm, hai khung Chưa chọn | Đã chọn như ô Loại phiếu ở danh sách Thu, chi tiền
+      const ten = TEN_O[k][0]
+      return { k, ten, coGiaTri: nhap[k].length > 0, o: <ChonHaiCot chip ds={ds} value={nhap[k]} onChange={v => dat(k, v)} nhan={ten} goiY={`Chọn ${ten[0].toLowerCase()}${ten.slice(1)}`} btnClass="ds-o-sel" /> }
     }),
   ]
   const [cauHinhLoc, datCauHinhLoc] = useCauHinhLoc(path, oLoc.map(o => o.k), ['thoiGian', 'tim'])
@@ -186,7 +186,7 @@ export function DsHoaDon({ sc, mod }: ScreenProps) {
     if (!trongKhoang(docNgay(String(r.ngay)), ap.thoiGian)) return false
     if (ap.tim.trim() && !fold(`${r.soHd} ${r.tenDv} ${r.mst} ${r.nguoiMua}`).includes(fold(ap.tim.trim()))) return false
     if (O_CHU.some(k => ap[k].trim() && !fold(chuO(k, r)).includes(fold(ap[k].trim())))) return false
-    if (O_CHON.some(k => ap[k] && String(r[k] ?? '') !== ap[k])) return false
+    if (O_CHON.some(k => ap[k].length && !ap[k].includes(String(r[k] ?? '')))) return false
     for (const [k, g] of Object.entries(locCot)) {
       if (dangLoc(g) && !khopLoc(kieuCot(k), g, chuCot(k, r), typeof r[k] === 'number' ? r[k] : undefined, k === 'ngay' ? docNgay(String(r.ngay)) : undefined)) return false
     }
@@ -212,6 +212,7 @@ export function DsHoaDon({ sc, mod }: ScreenProps) {
     // Tải XML, PDF: chọn nơi lưu như ở popup xem hoá đơn; Chia sẻ: mở popup chọn ứng dụng (T793)
     if (v === 'xml' || v === 'pdf') { const f = fileHd(r, v); void luuFile(f.blob, f.ten).then(m => m && toast(m)); return }
     if (v === 'share') { setChiaSe(r); return }
+    if (v === 'mail') { setGuiMail(r); return }   // popup điền email, gợi ý email cũ (T800)
     const BAO: Record<string, string> = { ph: 'Đã phát hành hoá đơn', mail: 'Đã gửi email hoá đơn cho người mua,', xoa: 'Đã xoá hoá đơn dự thảo' }
     toast(`${BAO[v]} ${tenSo(r)}`)
   }
@@ -249,7 +250,7 @@ export function DsHoaDon({ sc, mod }: ScreenProps) {
       return <>{r.loai}{bao && <span className="hd-canh-bao" title={bao} aria-label={bao}><Icon n="alert" className="ic sm" /></span>}</> } },
     { k: 'ttHd', t: 'Trạng thái HĐĐT', w: 140, r: r => <span className={`ph-tt${r.ttHd === 'Đã phát hành' ? ' da' : ''}`}>{r.ttHd}</span> },
     // Mẫu số ghép với ký hiệu như màn xuất (vd 1C26TAA): ký tự đầu là mẫu số, 6 ký tự sau là ký hiệu
-    chu('mauKh', 'Mẫu số - Ký hiệu', 140, 'code'), chu('loaiHddt', 'Loại HĐĐT', 190),
+    chu('mauKh', 'Mẫu số - Ký hiệu', 140, 'code'),
     // Dự thảo chưa có số: ghi 00000000, bấm xem mẫu hoá đơn như tab Điều chỉnh thay thế (T796, T799)
     { k: 'soHd', t: 'Số HĐ', w: 110, r: r => r.soHd || r.ttHd === 'Dự thảo'
       ? <button type="button" className="ds-link-so" title={r.soHd ? 'Xem hoá đơn' : 'Xem mẫu hoá đơn dự thảo'} onClick={e => { e.stopPropagation(); setXem(r) }}>{r.soHd || SO_NHAP}</button> : null },
@@ -299,7 +300,6 @@ export function DsHoaDon({ sc, mod }: ScreenProps) {
                 <button type="button" className="btn sm" onClick={() => lamNhieu('xml')}><Icon n="download" className="ic sm" />Tải XML</button>
                 <button type="button" className="btn sm" onClick={() => lamNhieu('pdf')}><Icon n="download" className="ic sm" />Tải PDF</button>
               </>}
-              <button type="button" className="icon-btn" title="Tải lại" aria-label="Tải lại" onClick={() => { loc0.xoaHet(); setLocCot({}); setChip('all') }}><Icon n="refresh" className="ic sm" /></button>
               <NutXuatExcel onXuat={() => toast(`Đã xuất ${list.length} hoá đơn ra Excel`)} />
               <NutTuyChinhCot cols={cot.colsDu} an={cot.an} coDinh={COT_CO_DINH} macDinh={cot.macDinh} dongBang={cot.dongBang} onLuu={cot.luu} onDoRongTuDong={cot.datDoRongTuDong} />
             </div>
@@ -320,6 +320,7 @@ export function DsHoaDon({ sc, mod }: ScreenProps) {
       </div>
       {xem && <HopXemHd s={s} r={xem._r as Row} hd={(xem._hd as HdDaXuat | undefined) ?? hdNhap(xem._r as Row)} nhap={!xem._hd} toast={toast} onDong={() => setXem(null)} />}
       {chiaSe && <HopChiaSeHd hd={chiaSe._hd as HdDaXuat} t={ttXemHd(s, chiaSe._r as Row, chiaSe._hd as HdDaXuat)} toast={toast} onDong={() => setChiaSe(null)} />}
+      {guiMail && <HopMailHd r={guiMail} dsHd={rows} toast={toast} onDong={() => setGuiMail(null)} />}
       {tbss && <HopTbss r={tbss} onDong={() => setTbss(null)} onLuu={({ noiDung, diaChi, email }, gui) => {
         dsTbss = [{
           id: `tb-${Date.now()}`, mau: String(tbss.mau), kyHieu: String(tbss.kyHieu), so: String(tbss.soHd), ngay: String(tbss.ngay), loai: String(tbss.loai), noiDung,
@@ -539,24 +540,31 @@ export function ThongBaoSaiSot({ sc, mod }: ScreenProps) {
     { k: 'loai', t: 'Loại hoá đơn', w: 170 }, { k: 'noiDung', t: 'Nội dung thông báo sai sót', w: 320 },
     { k: 'tt', t: 'Trạng thái thuế', w: 160, r: r => <span className={`hddt-thue ${r.tt === 'Chưa gửi' ? 'cho' : r.tt === 'CQT từ chối' ? 'loi' : 'tot'}`}>{r.tt}</span> },
     { k: 'ngayTao', t: 'Ngày tạo', w: 110 },
-    { k: 'xem', t: '', w: 90, c: true, dinh: 'phai', r: r => <button type="button" className="ds-link-so" onClick={e => { e.stopPropagation(); setXem(ds.find(x => x.id === r.id) ?? null) }}>Xem TBSS</button> },
+    { k: 'xem', t: 'Thao tác', w: 90, c: true, dinh: 'phai', r: r => <button type="button" className="ds-link-so" onClick={e => { e.stopPropagation(); setXem(ds.find(x => x.id === r.id) ?? null) }}>Xem TBSS</button> },
   ]
   return (
     <div className="page page-voucher">
       <h1 className="sr-only">{tenMan(sc)}</h1>
       <section className="card voucher-top hddt-tab">
         {loc.thanh}
-        <div className="ds-hang-trang-thai">
+        {/* Chỉ hiện hàng nút khi đã tích chọn thông báo, không chọn thì bảng lên sát thanh lọc (T800) */}
+        {chonDs.length > 0 && <div className="ds-hang-trang-thai">
           <span className="grow" />
           <div className="ds-toolbar-phai ds-cong-cu-h2">
+            <span className="hddt-da-chon">Đã chọn {chonDs.length}</span>
             <button type="button" className="btn sm" disabled={!nhap} title={lyDoNut}
               onClick={() => { dsTbss = dsTbss.map(x => (chon.has(x.id) ? { ...x, tt: 'CQT chấp nhận' as TtTbss } : x)); bao(); toast(`Đã gửi ${chon.size} thông báo sai sót lên cơ quan thuế`); setChon(new Set()) }}>
               <Icon n="upload" className="ic sm" />Gửi CQT</button>
+            <button type="button" className="btn sm" title="Gửi mẫu TBSS tới email người mua" onClick={() => {
+              const coMail = chonDs.filter(x => dungMail(x.email)), bo = chonDs.length - coMail.length
+              if (!coMail.length) { toast('Thông báo đã chọn chưa có email người mua'); return }
+              toast(`Đã gửi mẫu TBSS qua email cho ${coMail.length} thông báo${bo ? `, bỏ qua ${bo} thông báo chưa có email` : ''}`); setChon(new Set())
+            }}><Icon n="mail" className="ic sm" />Gửi email</button>
             <button type="button" className="btn sm" disabled={!nhap} title={lyDoNut}
               onClick={() => { dsTbss = dsTbss.filter(x => !chon.has(x.id)); bao(); toast(`Đã xoá ${chon.size} thông báo sai sót`); setChon(new Set()) }}>
               <Icon n="trash" className="ic sm" />Xoá</button>
           </div>
-        </div>
+        </div>}
         <Table cols={cols} rows={rows} motDong keDoc />
         <p className="hddt-ghi"><Icon n="info" className="ic sm" />Gửi CQT và Xoá chỉ bật với thông báo sai sót đang lưu nháp, chưa gửi.</p>
       </section>
@@ -593,6 +601,11 @@ function HopXemTbss({ s, tb, toast, onDong }: { s: ReturnType<typeof useSession>
     <Vo lop="hdx hdx-xem-ban tbss-hop" tieuDe={<>Thông báo sai sót hoá đơn <span className="code">{tb.mau}{tb.kyHieu}</span> số <span className="code hdx-do">{tb.so}</span>
       <span className={`ph-tt${tb.tt === 'CQT chấp nhận' ? ' da' : ''}`}>{tb.tt}</span></>} onDong={onDong} chan={<>
       <button type="button" className="xp-btn-outline" onClick={() => setMoMail(true)}><Icon n="mail" className="ic sm" />Gửi email</button>
+      {/* TBSS lưu nháp: gửi CQT ngay ở popup xem (T800) */}
+      {tb.tt === 'Chưa gửi' && <button type="button" className="xp-btn-outline" onClick={() => {
+        dsTbss = dsTbss.map(x => (x.id === tb.id ? { ...x, tt: 'CQT chấp nhận' as TtTbss } : x)); bao()
+        toast(`Đã gửi thông báo sai sót hoá đơn số ${tb.so} lên cơ quan thuế`); onDong()
+      }}><Icon n="upload" className="ic sm" />Gửi CQT</button>}
       <span className="grow" />
       <button type="button" className="xp-btn-outline" onClick={onDong}>Đóng</button>
       <button type="button" className="xp-btn-sua" onClick={() => setDangIn(true)}><Icon n="printer" className="ic sm" />In thông báo</button>
@@ -642,6 +655,77 @@ function HopXemTbss({ s, tb, toast, onDong }: { s: ReturnType<typeof useSession>
         </div>
       </div>
       {moMail && <HopMailTbss tb={tb} toast={toast} onDong={() => setMoMail(false)} />}
+    </Vo>
+  )
+}
+
+/** Email đã gửi hoá đơn trong phiên, theo id dòng hoá đơn: gợi ý lần gửi sau (T800) */
+const mailDaGui = new Map<string, string>()
+const dungMail = (x: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(x.trim())
+const tenKhach = (x: Row) => String(x.tenDv || x.nguoiMua || '')
+
+/** Email gợi ý kèm nguồn: trên hoá đơn, đã gửi hoá đơn này, hoá đơn khác của cùng khách; trùng email giữ nguồn đầu */
+function goiYMail(r: Row, dsHd: Row[]): { email: string; nguon: string }[] {
+  const khach = tenKhach(r)
+  const khac = dsHd.filter(x => x.id !== r.id && khach && tenKhach(x) === khach)
+  const ds = [
+    { email: String(r.email ?? ''), nguon: 'Trên hoá đơn' },
+    { email: mailDaGui.get(String(r.id)) ?? '', nguon: 'Đã gửi hoá đơn này' },
+    ...khac.flatMap(x => [
+      { email: String(x.email ?? ''), nguon: `Hoá đơn số ${x.soHd || SO_NHAP}` },
+      { email: mailDaGui.get(String(x.id)) ?? '', nguon: `Đã gửi hoá đơn số ${x.soHd || SO_NHAP}` },
+    ]),
+  ].filter(x => dungMail(x.email))
+  const da = new Set<string>()
+  return ds.filter(x => { const k = x.email.trim().toLowerCase(); if (da.has(k)) return false; da.add(k); return true })
+}
+
+/** Gửi hoá đơn qua email: điền sẵn email trên hoá đơn hoặc lần gửi trước, sửa sang email khác được, phải đúng dạng có @ (T800) */
+function HopMailHd({ r, dsHd, toast, onDong }: { r: Row; dsHd: Row[]; toast: (m: string) => void; onDong: () => void }) {
+  useDongEsc(onDong)
+  const id = String(r.id)
+  const [email, setEmail] = useState(mailDaGui.get(id) ?? String(r.email ?? ''))
+  const [thu, setThu] = useState(false)
+  // Danh sách gợi ý: bấm mũi tên hiện đủ, gõ chữ thì lọc theo chữ đã gõ
+  const [mo, setMo] = useState<'' | 'het' | 'loc'>('')
+  const oRef = useRef<HTMLDivElement>(null)
+  const goiY = goiYMail(r, dsHd)
+  const hien = mo === 'loc' && email.trim() ? goiY.filter(x => fold(x.email).includes(fold(email.trim()))) : goiY
+  const khach = tenKhach(r)
+  const sai = !dungMail(email)
+  return (
+    <Vo hep tieuDe="Gửi hoá đơn qua email" onDong={onDong} chan={<>
+      <button type="button" className="btn" onClick={onDong}>Huỷ</button>
+      <button type="button" className="btn pri" onClick={() => {
+        if (sai) { setThu(true); return }
+        mailDaGui.set(id, email.trim())
+        toast(`Đã gửi hoá đơn số ${r.soHd} tới ${email.trim()}`); onDong()
+      }}><Icon n="mail" className="ic sm" />Gửi</button>
+    </>}>
+      <div className="hddt-bang hddt-tbss">
+        <div className="hddt-o"><span>Hoá đơn</span><div><b className="hddt-gt code">{String(r.mauKh)} · {String(r.soHd)} · {String(r.ngay)}</b></div></div>
+        <div className="hddt-o"><span>Người mua</span><div><b className="hddt-gt">{khach || 'Người mua không lấy hoá đơn'}</b></div></div>
+        <div className={`hddt-o${thu && sai ? ' loi' : ''}`}><span>Email nhận<em>*</em></span>
+          <div ref={oRef} className="mail-hd-o">
+            <input className="hddt-inp" type="email" autoFocus value={email} aria-label="Email nhận" placeholder="Vd: ketoan@congty.vn"
+              onChange={e => { setEmail(e.target.value); setMo('loc') }}
+              onKeyDown={e => { if (e.key === 'ArrowDown') { e.preventDefault(); setMo('het') } }} />
+            <button type="button" className="mail-hd-mui" title="Email đã dùng" aria-label="Email đã dùng" aria-expanded={Boolean(mo)}
+              onClick={() => setMo(m => (m ? '' : 'het'))}><Icon n="chevd" className="ic sm" /></button>
+          </div>
+        </div>
+      </div>
+      <Popover anchor={oRef} open={Boolean(mo) && (mo === 'het' || hien.length > 0)} onClose={() => setMo('')} role="listbox" className="pop-sel mail-hd-pop">
+        {hien.length === 0 && <div className="pop-sel-trong">Chưa có email nào đã dùng cho khách này</div>}
+        {hien.map(x => (
+          <button key={x.email} data-mi type="button" role="option" aria-selected={x.email === email.trim()} className={`mi${x.email === email.trim() ? ' on' : ''}`}
+            onClick={() => { setEmail(x.email); setMo('') }}>
+            <span className="mi-t"><b>{x.email}</b><small>{x.nguon}</small></span>
+          </button>
+        ))}
+      </Popover>
+      {!r.email && <p className="mail-hd-ghi">Hoá đơn chưa có email người mua. Nhập email khách cung cấp.</p>}
+      {thu && sai && <p className="tbss-loi">Email phải đúng dạng, có chữ @, vd ketoan@congty.vn</p>}
     </Vo>
   )
 }

@@ -47735,7 +47735,7 @@ textarea.m-tpb-inp { height: auto; padding: 8px 12px; }
 .hddt-ds .hddt-dong.hddt-cong { position: sticky; bottom: 0; z-index: 2; background: var(--white); box-shadow: 0 -1px 0 var(--line); }
 
 /* ── Tải PDF, XML hoá đơn chọn nơi lưu; popup Chia sẻ hoá đơn qua Zalo, Messenger, Telegram, Gmail (T793) ── */
-.hddt-hop.cs-hd { width: 520px; }
+.hddt-hop.cs-hd { width: 600px; max-height: calc(100vh - 24px); }   /* rộng, cao hơn để khỏi cuộn (T800) */
 .cs-hd .hddt-than { padding-top: 4px; }
 .cs-hd .hddt-chan { justify-content: flex-end; gap: 8px; border-top: 1px solid var(--line); padding-top: 12px; }
 .cs-hd-than { display: flex; flex-direction: column; gap: 14px; font-size: 13.5px; color: var(--body); }
@@ -47820,3 +47820,12 @@ textarea.m-tpb-inp { height: auto; padding: 8px 12px; }
 .tk-bk-bang tr.gach td:last-child { text-decoration: none; }
 .tk-bk-bang tfoot td { font-weight: 600; border-bottom: 0; }
 .tk-bk-bang td:nth-child(4) { white-space: normal; min-width: 220px; }
+
+/* ── Popup Gửi hoá đơn qua email (T800) ── */
+.mail-hd-ghi { margin: 10px 0 0; color: var(--muted); font-size: 12.5px; }
+.mail-hd-o { position: relative; flex: 1; min-width: 0; display: flex; }
+.mail-hd-o .hddt-inp { flex: 1; min-width: 0; padding-right: 30px; }
+.mail-hd-mui { position: absolute; right: 2px; top: 50%; transform: translateY(-50%); width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; border: 0; border-radius: 6px; background: none; color: var(--muted); cursor: pointer; }
+.mail-hd-mui:hover { background: var(--fr-t); color: var(--ink); }
+.mail-hd-pop .mi-t { display: flex; flex-direction: column; gap: 1px; }
+.mail-hd-pop .mi-t small { color: var(--muted); font-size: 11.5px; font-weight: 400; }

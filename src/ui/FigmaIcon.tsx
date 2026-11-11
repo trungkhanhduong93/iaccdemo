@@ -81,6 +81,12 @@ const DUOTONE_SVGS: Record<string, string> = {
 <path id="Vector" opacity="0.5" d="M2 12.2C2 9.9 2 8.8 2.5 7.8C3 6.9 4 6.3 5.9 5.1L7.9 3.9C9.9 2.6 10.9 2 12 2C13.1 2 14.1 2.6 16.1 3.9L18.1 5.1C20 6.3 21 6.9 21.5 7.8C22 8.8 22 9.9 22 12.2V13.7C22 17.6 22 19.6 20.8 20.8C19.7 22 17.8 22 14 22H10C6.2 22 4.3 22 3.2 20.8C2 19.6 2 17.6 2 13.7V12.2Z" fill="currentColor"/>
 <path id="Vector_2" opacity="0.62" d="M11.3 18C11.3 18.4 11.6 18.8 12 18.8C12.4 18.8 12.8 18.4 12.8 18V15C12.8 14.6 12.4 14.3 12 14.3C11.6 14.3 11.3 14.6 11.3 15V18Z" fill="white"/>
 </g>`,
+  // Hoá đơn điện tử: tờ hoá đơn mép răng cưa, dòng chữ và số tiền (T800)
+  "hoa-don": `<g id="Icon/Duotone/Hoa don">
+<path opacity="0.5" d="M5 4.5C5 3.1 6.1 2 7.5 2H16.5C17.9 2 19 3.1 19 4.5V20.9C19 21.7 18.1 22.2 17.4 21.7L15.5 20.4L13.3 21.8C12.5 22.3 11.5 22.3 10.7 21.8L8.5 20.4L6.6 21.7C5.9 22.2 5 21.7 5 20.9V4.5Z" fill="currentColor"/>
+<path opacity="0.62" d="M8.5 6.8H15.5M8.5 10.3H15.5M8.5 13.8H12" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+<circle opacity="0.62" cx="15" cy="15.6" r="1.4" fill="white"/>
+</g>`,
 }
 
 export const MOD_DUOTONE_MAP: Record<string, string> = {
@@ -92,6 +98,7 @@ export const MOD_DUOTONE_MAP: Record<string, string> = {
   "tscd": "tai-san-co-dinh",
   "ccdc": "chi-phi-phan-bo",
   "thue": "ke-khai-thue",
+  "hoa-don": "hoa-don",
   "gia-thanh": "gia-thanh",
   "tong-hop": "tong-hop",
   "bao-cao": "bao-cao",

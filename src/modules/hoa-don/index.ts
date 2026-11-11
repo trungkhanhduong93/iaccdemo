@@ -4,7 +4,7 @@ import type { ModuleDef } from '../types'
 import { DieuChinhThayThe, DsHoaDon, ThongBaoSaiSot } from './HoaDonDienTu'
 
 const hoaDon: ModuleDef = {
-  key: 'hoa-don', ten: 'Hoá đơn điện tử', ngan: 'Hoá đơn', icon: 'receipt',
+  key: 'hoa-don', ten: 'Hoá đơn điện tử', ngan: 'Hoá đơn điện tử', icon: 'receipt',
   mota: 'Hoá đơn điện tử đã lập, điều chỉnh, thay thế, thông báo sai sót gửi cơ quan thuế',
   screens: [
     { slug: 'hddt', ten: 'Hoá đơn điện tử', ngan: 'Hoá đơn điện tử', nhom: 'Chứng từ', kind: 'custom', comp: DsHoaDon, can: ['3.1.5'] },
