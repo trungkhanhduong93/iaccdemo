@@ -14,6 +14,7 @@
 - `src/styles/app.css`: mục cuối file `(T787)`.
 - Góp ý của dinhlanphuongipacc sau lần push đầu, chỉ ở form Hoá đơn điều chỉnh: lựa chọn loại điều chỉnh lên cùng dòng hoá đơn gốc, Điều chỉnh tăng đứng trước. Khoá khối thông tin chung (kho, khách hàng, địa chỉ, MST, người giao dịch, kênh bán, ghi chú, người mua) bằng biến `suaTtc`. Ngày hoá đơn, ký hiệu, ngày chứng từ, lý do vẫn sửa được. Form Hoá đơn thay thế giữ nguyên.
 - Góp ý tiếp: form điều chỉnh gõ được số âm ở số lượng, đơn giá, các ô tiền. `OSoGo` thêm prop `am` cho gõ dấu trừ đứng đầu, `BangHangBan` thêm prop `choAm`. Hàm `theoChieu` (BangHangBan.tsx) thay `dauDong` ở form: dòng nào thành tiền sai chiều tăng, giảm thì đổi dấu đơn giá; ô tiền gõ thẳng sai chiều thì đổi dấu ô đó. Đã thử: gõ -5 ở số lượng thì đơn giá về dương, thành tiền âm.
+- Góp ý tiếp: form hoá đơn thay thế, điều chỉnh (thêm mới và xem) ẩn ô Ghi chú, ô Email để bảng chi tiết rộng hơn. Ghi chú vẫn chép từ chứng từ gốc và lưu như cũ.
 
 ## Đã kiểm
 

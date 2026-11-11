@@ -868,7 +868,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
       <input className="inp" readOnly={!suaTtc} value={nguoiGiao} onChange={e => setNguoiGiao(e.target.value)} />
     </div>
   )
-  const oGhiChu = hienDau('ghiChu') && (
+  const oGhiChu = hienDau('ghiChu') && !laHdMoi && (   // hoá đơn thay thế, điều chỉnh ẩn Ghi chú (T787)
     <div className="f" style={keoGc ? { gridColumn: '1 / 3' } : undefined}>
       <label>Ghi chú</label>
       <input className="inp" readOnly={!suaTtc} value={ghiChu} placeholder={suaTtc ? 'Ghi chú thêm cho phiếu' : ''}
@@ -1448,10 +1448,11 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
                   <div className="f"><label>Số hoá đơn</label><input className="inp" readOnly value="" placeholder={laHdMoi ? 'Cấp khi phát hành' : 'Cấp khi xuất'} /></div>
                 </>}
                 {/* Email nhận hoá đơn dưới ô hoá đơn, chung trường với popup Thay đổi thông tin VAT; người mua không lấy hoá đơn thì để trống, khoá (T790) */}
-                <div className="f"><label>Email</label>
+                {/* Hoá đơn thay thế, điều chỉnh ẩn Email, Ghi chú cho bảng chi tiết rộng hơn (T787) */}
+                {!laHdMoi && <div className="f"><label>Email</label>
                   <input className="inp" type="email" value={khongLayHd ? '' : khachHd.email} readOnly={Boolean(hdDaXuat) || !suaTtc || khongLayHd}
                     placeholder={khongLayHd ? 'Không lấy hoá đơn' : 'Email nhận hoá đơn'} onChange={e => setKhachHd(k => ({ ...k, email: e.target.value.trim() }))} />
-                </div>
+                </div>}
               </div>
             )}
             {coHdDau && !hdDienTu && (
