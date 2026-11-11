@@ -363,8 +363,12 @@ export function phatHanhNhap(s: Session, man: string, r: Row): HdDaXuat {
 }
 
 /** Một dòng nhãn bên trái, ô nhập bên phải như bảng */
-function Dong({ nhan, bb, loi, children }: { nhan: string; bb?: boolean; loi?: boolean; children: ReactNode }) {
-  return <div className={`hddt-o${loi ? ' loi' : ''}`}><span>{nhan}{bb && <em>*</em>}</span><div>{children}</div></div>
+function Dong({ nhan, phu, bb, loi, children }: { nhan: string; phu?: string; bb?: boolean; loi?: boolean; children: ReactNode }) {
+  const tieuDe = <>{nhan}{bb && <em>*</em>}</>
+  return <div className={`hddt-o${loi ? ' loi' : ''}`}>
+    {phu ? <span className="co-phu"><span>{tieuDe}</span><small>{phu}</small></span> : <span>{tieuDe}</span>}
+    <div>{children}</div>
+  </div>
 }
 
 /** Chọn Cá nhân, Công ty và các ô thông tin khách hàng trên hoá đơn (QD106).
@@ -893,11 +897,11 @@ function HopHangLoat({ s, man, ds, boQua, onDong }: { s: Session; man: string; d
       </button>
     </>}>
       <div className="hddt-bang hddt-hai">
-        <Dong nhan="Ngày hoá đơn, áp dụng cho tất cả" bb loi={!ngayChung}>
+        <Dong nhan="Ngày hoá đơn" phu="Áp dụng cho tất cả" bb loi={!ngayChung}>
           <ONgay value={ngayChung} placeholder="Chọn ngày hoá đơn" inputClassName="hddt-inp" ariaLabel="Ngày hoá đơn áp dụng cho tất cả"
             onChange={v => { setNgayChung(v); setRieng(x => Object.fromEntries(Object.entries(x).map(([k, o]) => [k, { ...o, ngay: undefined }]))) }} />
         </Dong>
-        <Dong nhan="Ký hiệu, áp dụng cho tất cả">
+        <Dong nhan="Ký hiệu" phu="Áp dụng cho tất cả">
           <Select className="hddt-inp" value={kyChung} aria-label="Ký hiệu áp dụng cho tất cả"
             onChange={e => { setKyChung(e.target.value); setRieng(x => Object.fromEntries(Object.entries(x).map(([k, o]) => [k, { ...o, kyHieu: undefined }]))) }}
             ds={[{ v: '', t: 'Theo cửa hàng của chứng từ' }, ...dsKyHieu(h).map(x => ({ v: x.v, t: `${x.v} · ${x.t}` }))]} />

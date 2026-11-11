@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 11/11/2026
+- T792: Popup Xuất hoá đơn điện tử nhiều chứng từ: nhãn "Ngày hoá đơn", "Ký hiệu" có dòng phụ "Áp dụng cho tất cả" bên dưới, màn thấp không còn bị che. Ô ngày hoá đơn từng dòng cao bằng ô ký hiệu, hết vênh. Dòng Cộng luôn nằm ở đáy danh sách khi cuộn.
 - T791: Danh sách Bán hàng gói Plus: cột Loại chứng từ ghi "Xuất bán POS" cho chứng từ đồng bộ từ FABi (trước để trống). Mở chứng từ rồi đóng thì quay về đúng tab đang đứng (Tất cả, Xuất bán POS, Bán hàng), không nhảy về Tất cả. Cột Số hoá đơn tách thành hai cột Mẫu số - Ký hiệu và Số hoá đơn.
 - T787: Mọi form chứng từ gọn hơn: khoảng cách giữa các khối và lề trên dưới hẹp lại, bảng chi tiết rộng thêm. Form hoá đơn thay thế, điều chỉnh ẩn ô Ghi chú; ô Lý do thu lại, Email nhận hoá đơn nằm cùng hàng bên phải, sửa được.
 - T790: Chứng từ bán hàng có nút Thêm hàng loạt dưới bảng hàng như phiếu mua hàng: tích nhiều hàng một lần, mỗi hàng thành một dòng số lượng 1, giá bán theo danh mục. Lưu chứng từ mua, bán bắt buộc chọn Kho ở đầu phiếu, xem lại không còn trống ô Kho xuất. Tab Bán hàng thêm 6 chứng từ lập tay mẫu tháng 10, 3 chứng từ đã xuất HĐĐT, 3 chứng từ chưa xuất. Form chứng từ bán hàng có ô Email nhận hoá đơn dưới ô Số hoá đơn, ẩn cùng các ô hoá đơn khi tắt Xuất HĐĐT. Chứng từ bán hàng mẫu đã xuất HĐĐT: tiền hoá đơn khớp chứng từ, giảm trừ thuế tính theo tỷ lệ của từng hàng.

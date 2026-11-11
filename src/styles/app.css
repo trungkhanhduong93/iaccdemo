@@ -47725,3 +47725,11 @@ textarea.m-tpb-inp { height: auto; padding: 8px 12px; }
 /* ── Form chứng từ gọn hơn, mọi cỡ màn (T787, dinhlanphuongipacc 11/11/2026): khoảng cách giữa các khối 10px còn 6px, lề trên dưới 18px, 14px còn 8px ── */
 .fsf-b:has(> .ct-co-dinh) { padding-top: 8px; padding-bottom: 8px; }
 .fsf-b > .ct-co-dinh { gap: 6px !important; }
+
+/* ── Popup xuất HĐĐT nhiều chứng từ: tiêu đề phụ Áp dụng cho tất cả, ô ngày cùng cỡ ô ký hiệu (T792) ── */
+.hddt-o > span.co-phu { flex-direction: column; align-items: flex-start; justify-content: center; gap: 1px; padding-top: 6px; padding-bottom: 6px; }
+.hddt-o > span.co-phu small { font-size: 12px; color: var(--muted); }
+.hddt-lo .hddt-dong .ct-ngay .inp.hddt-inp.nho { height: 30px; min-height: 30px; border-radius: 6px; padding-left: 8px; }
+.hddt-than > .hddt-bang { flex-shrink: 0; }   /* màn thấp không ép khung áp dụng cho tất cả, khỏi che tiêu đề phụ */
+.hddt-ds .hddt-dong.hddt-dau { z-index: 2; }
+.hddt-ds .hddt-dong.hddt-cong { position: sticky; bottom: 0; z-index: 2; background: var(--white); box-shadow: 0 -1px 0 var(--line); }
