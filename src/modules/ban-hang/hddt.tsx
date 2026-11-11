@@ -597,11 +597,11 @@ export function HopXemHd({ s, r, hd, onDong, toast }: { s: Session; r: Row; hd: 
       </section>
       <section className="hdx-the">
         <h4>Tiền hoá đơn</h4>
-        {/* Khấu trừ: thuế suất trên hoá đơn đã là mức giảm, không có giảm trừ thuế (QD106); tiền thuế luôn hiện, giảm trừ thuế chỉ mẫu 2 (hoá đơn bán hàng) */}
+        {/* Khấu trừ: thuế suất trên hoá đơn đã là mức giảm, không có giảm trừ thuế (QD106); tiền thuế luôn hiện, giảm trừ thuế chỉ mẫu 2 (hoá đơn bán hàng) và khác 0 */}
         <div className="hdx-so-tien">
           <div><span>Tổng tiền trước thuế</span><b>{money(t.congHang)}</b></div>
           <div><span>Tiền thuế{!mau2 && ` (${t.ts}%)`}</span><b>{money(mau2 ? 0 : tien.thue)}</b></div>
-          {mau2 && <div><span>Giảm trừ thuế</span><b>{t.giamTru ? `-${money(t.giamTru)}` : money(0)}</b></div>}
+          {mau2 && t.giamTru !== 0 && <div><span>Giảm trừ thuế</span><b>-{money(t.giamTru)}</b></div>}
           <div className="tong"><span>Tổng tiền hoá đơn</span><b>{money(tien.tong)}</b></div>
         </div>
       </section>
