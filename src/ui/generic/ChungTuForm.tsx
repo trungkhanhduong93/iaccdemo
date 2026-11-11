@@ -1503,15 +1503,22 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
               )}
             </div>
             {keoGc && oGhiChu}
+            {/* Hàng cuối hoá đơn thay thế, điều chỉnh (T787): Lý do bắt buộc qua hai cột trái; Email nhận hoá đơn qua hai cột phải, sửa được khi lập, sửa */}
+            {laHdMoi && (
+              <div className={`f ct-ly-do-hd${thuLuuHd && !lyDoHd.trim() ? ' loi' : ''}`} style={{ gridColumn: '1 / 3', marginTop: 0 }}>
+                <label>Lý do {loaiCt === 'HDTHAYTHE' ? 'thay thế' : 'điều chỉnh'} <em>*</em></label>
+                <input className="inp" readOnly={!dangSua} value={lyDoHd} onChange={e => setLyDoHd(e.target.value)} aria-label="Lý do"
+                  placeholder={dangSua ? (loaiCt === 'HDTHAYTHE' ? 'Vd: sai đơn giá, đơn giá đúng theo báo giá ngày 20/10/2026' : 'Vd: giảm giá do phục vụ trễ, theo biên bản ngày 05/11/2026') : ''} />
+              </div>
+            )}
+            {laHdMoi && (
+              <div className="f" style={{ gridColumn: '3 / 5' }}>
+                <label>Email</label>
+                <input className="inp" type="email" value={khongLayHd ? '' : khachHd.email} readOnly={Boolean(hdDaXuat) || !dangSua || khongLayHd} aria-label="Email nhận hoá đơn"
+                  placeholder={khongLayHd ? 'Không lấy hoá đơn' : 'Email nhận hoá đơn'} onChange={e => setKhachHd(k => ({ ...k, email: e.target.value.trim() }))} />
+              </div>
+            )}
           </div>
-          {/* Lý do thay thế, điều chỉnh bắt buộc, trải hết chiều ngang form (T787) */}
-          {laHdMoi && (
-            <div className={`f ct-ly-do-hd${thuLuuHd && !lyDoHd.trim() ? ' loi' : ''}`}>
-              <label>Lý do {loaiCt === 'HDTHAYTHE' ? 'thay thế' : 'điều chỉnh'} <em>*</em></label>
-              <input className="inp" readOnly={!dangSua} value={lyDoHd} onChange={e => setLyDoHd(e.target.value)} aria-label="Lý do"
-                placeholder={dangSua ? (loaiCt === 'HDTHAYTHE' ? 'Vd: sai đơn giá, đơn giá đúng theo báo giá ngày 20/10/2026' : 'Vd: giảm giá do phục vụ trễ, theo biên bản ngày 05/11/2026') : ''} />
-            </div>
-          )}
           {/* Dòng Tham chiếu chung cuối phần thông tin chung, nhãn thẳng cột nhãn phía trên (T585).
               Thêm loại tham chiếu mới thì nối vào dsThamChieu */}
           {dsThamChieu.length > 0 && (
