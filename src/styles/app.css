@@ -47702,3 +47702,7 @@ textarea.m-tpb-inp { height: auto; padding: 8px 12px; }
 .ct-ttc .ct-ly-do-hd.loi .inp { border-color: var(--red); }
 .hddt-cap-nut { white-space: nowrap; }
 .hddt-cap-nut .ds-link-so + .ds-link-so { margin-left: 8px; }
+
+/* ── Form chứng từ gọn hơn, mọi cỡ màn (T787, dinhlanphuongipacc 11/11/2026): khoảng cách giữa các khối 10px còn 6px, lề trên dưới 18px, 14px còn 8px ── */
+.fsf-b:has(> .ct-co-dinh) { padding-top: 8px; padding-bottom: 8px; }
+.fsf-b > .ct-co-dinh { gap: 6px !important; }
