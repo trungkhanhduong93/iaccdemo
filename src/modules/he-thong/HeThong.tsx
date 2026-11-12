@@ -7,7 +7,7 @@ import { donViHienTai, dsCuaHang, dsDonVi, gtgtTyLe, loaiHinhDv, useSession, che
 import { ChonKenh, KENH_ONLINE, KENH_SAN, NHOM_HKD, type LoaiHinh, type PpHkd } from '../onboarding/OnboardFabi'
 import { FEATURE, FEATURES, GOI, GOIS, MODS, demTheoGoi, kieuGhiSo, type Goi } from '../../app/plan'
 import { CHE_DO, CHE_DO_HOP_LE, cheDoCuaGoi, type CheDo } from '../../app/che-do'
-import { CUA_HANG, KHO, NGUOI_DUNG, type Role } from '../../data/mock'
+import { CUA_HANG, NGUOI_DUNG, type Role } from '../../data/mock'
 import { Icon } from '../../ui/Icon'
 import { Card, Note, PageHead, Pk } from '../../ui/Page'
 import { St, Table } from '../../ui/Table'
@@ -26,7 +26,6 @@ import { NGHI_QUYET_GIAM_VAT, cauHinhGiamVat, type CauHinhGiamVat, type DongGiam
 
 export const VAI_TRO = ['Chủ doanh nghiệp', 'Kế toán trưởng', 'Kế toán viên', 'Quản lý cửa hàng', 'Thủ kho']
 const PHAM_VI_DS = ['Tất cả cửa hàng', ...CUA_HANG.map(c => c.ten)]
-const KHO_DS = ['Tất cả kho', ...KHO]
 
 export const CAU_HINH_NGUOI_DUNG: CauHinhDM = {
   ten: 'Người sử dụng',
@@ -54,14 +53,6 @@ export const CAU_HINH_NGUOI_DUNG: CauHinhDM = {
           goiY: 'Tất cả cửa hàng',
           caHang: true,
         },
-        {
-          k: 'kho',
-          nhan: 'Kho',
-          kieu: 'chonHaiCot',
-          ds: KHO,
-          goiY: 'Tất cả kho',
-          caHang: true,
-        },
       ],
     },
     {
@@ -81,10 +72,6 @@ export const CAU_HINH_NGUOI_DUNG: CauHinhDM = {
       ten: 'Thông tin hệ thống',
       chiKhiXem: true,
       truong: [
-        { k: 'nguoiTao', nhan: 'Người tạo', kieu: 'chu', chiDoc: true },
-        { k: 'ngayTao', nhan: 'Ngày tạo', kieu: 'chu', chiDoc: true },
-        { k: 'nguoiCapNhat', nhan: 'Người cập nhật', kieu: 'chu', chiDoc: true },
-        { k: 'ngayCapNhat', nhan: 'Ngày cập nhật', kieu: 'chu', chiDoc: true },
         { k: 'lan', nhan: 'Đăng nhập gần nhất', kieu: 'chu', chiDoc: true },
       ],
     },
@@ -95,12 +82,7 @@ export const CAU_HINH_NGUOI_DUNG: CauHinhDM = {
     lan: 'Chưa đăng nhập',
     vaiTro: 'Kế toán viên',
     pham: '',
-    kho: '',
     dongY: false,
-    nguoiTao: 'Tự ghi khi lưu',
-    ngayTao: 'Tự ghi khi lưu',
-    nguoiCapNhat: 'Tự ghi khi lưu',
-    ngayCapNhat: 'Tự ghi khi lưu',
   }),
 }
 
@@ -159,10 +141,10 @@ export function NguoiDung({ sc }: ScreenProps) {
       an: true,
       r: r => (r.xacThuc ? 'Đã xác thực' : 'Chưa xác thực'),
     },
-    { k: 'nguoiTao', t: 'Người tạo', an: true },
-    { k: 'ngayTao', t: 'Ngày tạo', an: true },
-    { k: 'nguoiCapNhat', t: 'Người cập nhật', an: true },
-    { k: 'ngayCapNhat', t: 'Ngày cập nhật', an: true },
+    { k: 'nguoiTao', t: 'Người tạo' },
+    { k: 'ngayTao', t: 'Ngày tạo', cls: 'dim' },
+    { k: 'nguoiCapNhat', t: 'Người cập nhật' },
+    { k: 'ngayCapNhat', t: 'Ngày cập nhật', cls: 'dim' },
     {
       k: 'x',
       t: 'Hành động',
@@ -360,7 +342,7 @@ export function NguoiDung({ sc }: ScreenProps) {
         )}
       </section>
       <Note icon="shield">
-        Người sử dụng chỉ thấy dữ liệu của cửa hàng, kho được chọn. Để trống là được xem tất cả.
+        Người sử dụng chỉ thấy dữ liệu của cửa hàng được chọn. Để trống là được xem tất cả.
       </Note>
 
       {editUser && (
@@ -387,7 +369,6 @@ export function NguoiDung({ sc }: ScreenProps) {
                 vaiTro: val.vaiTro || 'Kế toán viên',
                 role: (val.vaiTro === 'Chủ doanh nghiệp' ? 'owner' : val.vaiTro === 'Kế toán trưởng' ? 'ktt' : 'ktv') as Role,
                 pham: val.pham || '',
-                kho: val.kho || '',
                 _tt: 1,
                 xacThuc: false,
                 lan: 'Chưa đăng nhập',

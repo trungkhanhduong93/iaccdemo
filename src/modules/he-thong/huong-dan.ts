@@ -8,10 +8,10 @@ export const huongDan: Record<string, HuongDanMan> = {
       { chu: 'Xem số lượng người sử dụng đang có trên tổng số tài khoản cho phép của gói.', o: 'tong' },
       { chu: 'Bấm Thêm mới để tạo tài khoản người sử dụng cho nhân viên.', o: 'them' },
       { chu: 'Xem họ tên, email, chức vụ, cửa hàng và trạng thái của từng người sử dụng.', o: 'bang' },
-      { chu: 'Bấm icon cây bút ở cột Hành động để chỉnh sửa chức vụ hoặc cửa hàng, kho.', o: 'bang' },
+      { chu: 'Bấm icon cây bút ở cột Hành động để chỉnh sửa chức vụ hoặc cửa hàng.', o: 'bang' },
     ],
     luuY: [
-      'Người sử dụng chỉ xem và thao tác trên dữ liệu các cửa hàng, kho được phân công.',
+      'Người sử dụng chỉ xem và thao tác trên dữ liệu các cửa hàng được phân công.',
       'Xác thực hai lớp áp dụng cho chức vụ Kế toán trưởng và Chủ doanh nghiệp.',
     ],
     soDo: [
@@ -30,7 +30,7 @@ export const huongDan: Record<string, HuongDanMan> = {
       { chu: 'Bấm Lưu để áp dụng phân quyền vừa sửa.', o: 'luuQuyen' },
     ],
     luuY: [
-      'Phạm vi cửa hàng và kho của từng người được đặt ở màn Người dùng.',
+      'Phạm vi cửa hàng của từng người được đặt ở màn Người sử dụng.',
       'Chủ doanh nghiệp và Kế toán trưởng có sẵn bộ quyền mặc định của hệ thống.',
     ],
     soDo: [

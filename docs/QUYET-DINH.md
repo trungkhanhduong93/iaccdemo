@@ -1197,4 +1197,9 @@ Trum chốt 12/11/2026 (T805).
 - Chip trên danh sách Bán hàng gói Plus chia theo nguồn chứng từ: Tất cả, Đồng bộ từ POS, Lập thủ công. Tên cũ Xuất bán POS, Bán hàng trùng tên tab phân hệ và trùng mục trong bộ lọc Loại chứng từ.
 - Bộ lọc Loại chứng từ giữ đủ 5 mục. Xuất bán POS và Xuất bán là hai loại chứng từ riêng (hai tran_id), không gộp.
 
-## QD110. Người sử dụng bỏ phân quyền kho (đang soạn)
+## QD110. Người sử dụng bỏ phân quyền kho (12/11/2026)
+
+Trum chốt 12/11/2026 (T810). Thay một phần QD96.
+
+- Bỏ ô Kho khỏi panel Người sử dụng. Người sử dụng chỉ được phân quyền theo cửa hàng, để trống là xem tất cả.
+- Panel chi tiết không hiện Người tạo, Ngày tạo, Người cập nhật, Ngày cập nhật. Bốn thông tin này hiện sẵn thành cột ở danh sách. Khối Thông tin hệ thống chỉ còn Đăng nhập gần nhất, vẫn chỉ hiện khi xem (T809).
