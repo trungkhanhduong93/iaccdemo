@@ -3,7 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 13/11/2026
-- T812: Danh mục Bảng giá: tab Giá nhập đổi thành Giá mua. Form bảng giá gọn lại: hàng 1 Loại bảng giá, Tên, Cửa hàng áp dụng; hàng 2 Áp dụng cho mọi nhà cung cấp (khách hàng) hoặc một nhà cung cấp (khách hàng). Góc phải là Số bảng giá (chỉ hiện khi xem, sửa) và Thời gian áp dụng gõ được Từ ngày, Đến ngày. Lưới bỏ cột nhà cung cấp, khách hàng, thêm cột Giá sau thuế; một mặt hàng khai nhiều dòng, mỗi ĐVT một giá; ô Mặt hàng gõ tìm mã, tên như phiếu mua, hiện cả mã và tên. Nút Lưu và thêm mới. Nền, chân form như phiếu thu chi. Bộ lọc danh sách: Thời gian áp dụng lọc bằng Từ ngày, Đến ngày.
+- T812: Danh mục Bảng giá: tab Giá nhập đổi thành Giá mua. Form bảng giá gọn lại: hàng 1 Loại bảng giá, Tên, Cửa hàng áp dụng; hàng 2 Áp dụng cho mọi nhà cung cấp (khách hàng) hoặc một nhà cung cấp (khách hàng). Góc phải là Số bảng giá (chỉ hiện khi xem, sửa) và Thời gian áp dụng gõ được Từ ngày, Đến ngày. Lưới bỏ cột nhà cung cấp, khách hàng, thêm cột Giá sau thuế, Ghi chú (danh sách cũng có cột Ghi chú); một mặt hàng khai nhiều dòng, mỗi ĐVT một giá; ô Mặt hàng gõ tìm mã, tên như phiếu mua, hiện cả mã và tên. Nút Lưu và thêm mới. Nền, chân form như phiếu thu chi. Bộ lọc danh sách: Thời gian áp dụng lọc bằng Từ ngày, Đến ngày.
 
 ## 12/11/2026
 - T811: Điện thoại, danh sách Người sử dụng: mỗi thẻ hiện hai dòng riêng "Quyền: ..." và "Cửa hàng: ...".

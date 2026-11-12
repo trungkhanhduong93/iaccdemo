@@ -316,14 +316,15 @@ const danhMuc: ModuleDef = {
     // T724: 2 tab Giá nhập, Giá bán thay lọc Loại giá; Bộ lọc có Trạng thái
     // T761: mỗi lần khai giá là một bảng giá có mã, tên; danh sách hiện chi tiết mỗi mặt hàng một dòng kèm mã, tên bảng giá.
     // Bấm dòng mở cùng form với cả bảng giá để sửa. Dữ liệu mẫu gieo vào kho phiên (ThemBangGia.tsx) nên rows trả rỗng
-    '1.14': { catalog: { them: 'Thêm bảng giá', formThem: ThemBangGia, khongLoc: ['loai', 'dvt', 'gia', 'vat'],
+    '1.14': { catalog: { them: 'Thêm bảng giá', formThem: ThemBangGia, khongLoc: ['loai', 'dvt', 'gia', 'vat', 'ghiChu'],
       // T812: đổi tên tab Giá nhập thành Giá mua; để trống nhà cung cấp, khách hàng là giá chung
       tabTheo: { k: 'loai', ds: ['Giá mua', 'Giá bán'], anCot: { 'Giá mua': ['kh'], 'Giá bán': ['ncc'] } },
       locKhoangNgay: ['thoiGian'],   // lọc Thời gian áp dụng bằng Từ ngày, Đến ngày (T812)
       cols: [{ k: 'soBg', t: 'Mã bảng giá', cls: 'code' }, { k: 'tenBg', t: 'Tên bảng giá' }, { k: 'tenHang', t: 'Hàng hoá' }, { k: 'dvt', t: 'ĐVT' },
         { k: 'thoiGian', t: 'Thời gian áp dụng', w: 200 }, { k: 'gia', t: 'Đơn giá', num: true }, { k: 'vat', t: 'VAT (%)', num: true },
         { k: 'ncc', t: 'Nhà cung cấp', r: (r: Row) => r.ncc || 'Tất cả nhà cung cấp' },
-        { k: 'kh', t: 'Khách hàng', r: (r: Row) => r.kh || 'Tất cả khách hàng' }, { k: 'cuaHang', t: 'Cửa hàng áp dụng', r: (r: Row) => r.cuaHang || 'Tất cả cửa hàng' }],
+        { k: 'kh', t: 'Khách hàng', r: (r: Row) => r.kh || 'Tất cả khách hàng' }, { k: 'cuaHang', t: 'Cửa hàng áp dụng', r: (r: Row) => r.cuaHang || 'Tất cả cửa hàng' },
+        { k: 'ghiChu', t: 'Ghi chú' }],
       rows: () => [] } },
     '1.15': { cheDo: ['TT133', 'TT99'], catalog: { them: 'Thêm bút toán', nhomLoc: 'lct', nhanLoc: 'Loại chứng từ',
       cols: [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Nghiệp vụ' }, { k: 'lct', t: 'Loại chứng từ' }, { k: 'loc', t: 'Lọc theo', cls: 'dim' },

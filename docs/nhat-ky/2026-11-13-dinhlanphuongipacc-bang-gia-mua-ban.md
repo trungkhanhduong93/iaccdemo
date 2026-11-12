@@ -7,7 +7,7 @@
 ## Đã làm
 
 - `src/modules/danh-muc/ThemBangGia.tsx`: loại giá Giá mua, Giá bán. Đầu form 2 hàng thẳng cột: Loại, Tên, Cửa hàng; Áp dụng cho (Mọi, Một nhà cung cấp hoặc khách hàng), ô chọn đối tượng dưới ô Tên. Góc phải Số bảng giá (chỉ khi sửa) và Thời gian áp dụng hai ô `ONgay` gõ được. Bỏ chữ giải thích dưới các ô.
-- Đối tượng khai ở đầu form, lưu vào `dtMa` mọi dòng; rỗng là giá chung. Lưới bỏ cột đối tượng, thêm Giá sau thuế, hệ số quy đổi dưới ô ĐVT. Trùng chỉ khi cùng mặt hàng và ĐVT; chọn hàng đã có dòng khác thì lấy ĐVT chưa khai đầu tiên.
+- Đối tượng khai ở đầu form, lưu vào `dtMa` mọi dòng; rỗng là giá chung. Lưới bỏ cột đối tượng, thêm Giá sau thuế, Ghi chú (lưu `ghiChu`, danh sách có cột Ghi chú). Không ghi hệ số quy đổi dưới ô ĐVT vì một hàng có nhiều quy đổi. Cột đầu của đầu form rộng cố định 300px để đổi Giá mua, Giá bán các ô không xê dịch. Trùng chỉ khi cùng mặt hàng và ĐVT; chọn hàng đã có dòng khác thì lấy ĐVT chưa khai đầu tiên.
 - Ô Mặt hàng dùng `ChonDanhMuc` như phiếu mua (tìm mã, tên, thêm hàng tại form), không `chiMa` nên hiện cả mã và tên. Hàng thêm tại form giữ trong `hangThem`.
 - Nút Lưu và thêm mới (giữ loại, thời gian, cửa hàng, đối tượng). `footClass="fsf-f-xem"`, `iconNet`, bọc thân form bằng `ct-co-dinh` để bảng chi tiết kéo hết chiều cao như phiếu thu chi.
 - Dữ liệu mẫu: BG0001, BG0003 là giá chung; BG0004 giá mua một nhà cung cấp, mỗi mặt hàng 2 ĐVT.
