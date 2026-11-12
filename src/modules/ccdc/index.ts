@@ -103,7 +103,7 @@ const ccdc: ModuleDef = {
           return bo ? `Đã xoá phân bổ ${tenKy(ky)}: ${bo} thẻ` : `Tháng ${ky % 100}/${Math.floor(ky / 100)} chưa có khoản nào đã phân bổ`
         },
       }],
-      dsChungTu: { cotCong: ['gt', 'kyNay', 'da', 'con'], cotSo: 'soThe', so: r => r.soThe, moTa: r => `(${r.ngay}) — ${r.ten}`, chiTiet: veChiTietThe }, cols: [{ k: 'soThe', t: 'Số thẻ', cls: 'code' }, { k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Tên' }, { k: 'loai', t: 'Loại' }, { k: 'ngay', t: 'Ngày ghi tăng' },
+      dsChungTu: { cotCong: ['gt', 'kyNay', 'da', 'con'], cotSo: 'soThe', so: r => r.soThe, moTa: r => `(${r.ngay}) — ${r.ten}`, chiTiet: veChiTietThe }, cols: [{ k: 'soThe', t: 'Số thẻ', cls: 'code' }, { k: 'ten', t: 'Tên' }, { k: 'loai', t: 'Loại' }, { k: 'ngay', t: 'Ngày ghi tăng' },
       // Phân bổ trong kỳ: số phân bổ đúng tháng đang lọc ở tab Đã phân bổ, thẻ nhiều dòng cộng các dòng (T296)
       { k: 'gt', t: 'Giá trị', num: true }, { k: 'kyNay', t: 'Phân bổ trong kỳ', num: true }, { k: 'da', t: 'Đã phân bổ', num: true }, { k: 'con', t: 'Còn lại', num: true }],
       // Mặc định ẩn thẻ hết phân bổ: chỉ hiện thẻ còn phân bổ ở kỳ này hoặc còn giá trị sau kỳ này

@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T804 | Màn Thẻ chi phí phân bổ (8.1.1) bỏ cột Mã ở danh sách | Trum | 12/11/2026 | `2026-11-12-trum-bo-cot-ma-chi-phi-tra-truoc.md` |
 | T803 | Thanh trên web: chuông mở khung thông báo (3 thẻ, lọc chưa đọc, đọc hết), hộp Cài đặt thông báo, tải ứng dụng bằng mã QR, đổi ngôn ngữ, menu Hỗ trợ (tài liệu, góp ý, lấy mã hỗ trợ, phím tắt); trang Xem tất cả thông báo; điện thoại: màn Thông báo, Cài đặt thông báo, mục Hỗ trợ và nút đổi ngôn ngữ ở màn Khác (`src/app/thong-bao/`, `MThongBao.tsx`, `Topbar.tsx`, `MKhac.tsx`, QD108) | Trum | 12/11/2026 | `2026-11-12-trum-thong-bao-ho-tro.md` |
 | T802 | Danh sách Bán hàng gói Plus: bỏ cột Trạng thái xuất HĐĐT; dòng có hoá đơn (lập tay hoặc FABi xuất tại máy POS) có nhãn VAT trên số chứng từ, Số hoá đơn bấm xem hoá đơn ở cả 3 tab; tab Bán hàng có cột Thao tác (Xuất HĐĐT, Xem hoá đơn); số chứng từ POS chỉ hiện 5 ký tự cuối | dinhlanphuongipacc | 12/11/2026 | [nhật ký](../nhat-ky/2026-11-12-dinhlanphuongipacc-nhan-vat-ban-hang.md) |
 | T801 | Bán hàng gói Plus: bộ lọc ô chọn nhiều có hộp tích, ô Khách hàng gõ tìm như Mua hàng; thêm ô Loại chứng từ (Xuất bán POS, Xuất bán, Hoá đơn điều chỉnh, Hoá đơn thay thế, Huỷ bán hàng); huỷ bán ẩn Ghi chú; form hoá đơn thay thế, điều chỉnh hàng Lý do, Email cách đều, thẳng cột | dinhlanphuongipacc | 12/11/2026 | [nhật ký](../nhat-ky/2026-11-12-dinhlanphuongipacc-loc-ban-hang.md) |
