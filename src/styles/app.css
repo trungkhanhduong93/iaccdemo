@@ -48121,7 +48121,8 @@ textarea.m-tpb-inp { height: auto; padding: 8px 12px; }
 .bgf-than > .bg-chi-tiet > .bg-bang-cuon { flex: 1 1 auto; min-height: 0; overflow: auto; }
 .bgf-than > .bg-chi-tiet thead th { position: sticky; top: 0; z-index: 1; }
 .bgf-trai { display: grid; grid-template-columns: max-content minmax(200px, 1.3fr) minmax(180px, 1fr); gap: 10px 16px; padding: 12px 16px; align-items: start; }
-.bgf-trai .bgf-ca { grid-column: 1 / -1; }
+.bgf-trai > .bg-dau-o > .bg-loai { display: flex; width: 100%; }
+.bgf-trai > .bg-dau-o > .bg-loai > button { flex: 1 1 0; white-space: nowrap; }
 .bgf-dau .bg-dau-o { gap: 4px; }
 .bgf-phai { display: flex; flex-direction: column; gap: 10px; padding: 12px 16px; border-left: 1px dashed var(--line); }
 .bgf-so { display: flex; align-items: baseline; gap: 10px; min-height: 34px; }
