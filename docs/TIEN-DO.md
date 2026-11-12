@@ -11,7 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T812 | Bảng giá mua, bán: bố trí lại form (số bảng giá, thời gian áp dụng góc phải; loại, tên, cửa hàng, nhà cung cấp/khách hàng ở đầu form, để trống là giá chung); một mặt hàng khai nhiều ĐVT; ô chọn hàng có tìm như phiếu mua | dinhlanphuongipacc | Đang làm | Sửa `ThemBangGia.tsx`, `danh-muc/index.ts`, `app.css` (mục T812 cuối file). Đổi QD101 |
 | T781 | Giảm thuế GTGT xét hiệu lực nghị quyết theo ngày của từng chứng từ, không theo ngày làm việc (`ptGiamHienHanh` dùng `HOM_NAY`) | | Chờ | Thấy lúc soát T780, `giam-thue.ts` |
 | T776 | Màn Tính giá vốn: sang trang 2 thì dòng "Cộng 51 dòng" mất đường kẻ dưới, dưới dòng tổng còn khoảng trống trong bảng, dưới khung bảng còn khoảng trống xám | | Chờ | Trum báo lúc làm T774, ảnh chụp ở trang 2, tháng 10/2026 |
 | T771 | `tools/kiem_tra.py` ca đăng nhập đợt 8 (hàm `kiem_tra_dang_nhap_dot_8`) báo "Nghiệp vụ: không tìm thấy phân hệ Thu chi" ở màn 390px | | Chờ | Thấy lúc làm T769, bản trước T769 cũng báo. Ca này không nằm trong `--nhanh` |

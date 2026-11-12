@@ -62,6 +62,8 @@ export interface CatalogCfg {
   // Chia danh sách thành tab theo giá trị cột k (vd Bảng giá: Giá nhập, Giá bán, T724); tab thay hàng chip trạng thái, trạng thái lọc trong Bộ lọc (mặc định đang hoạt động);
   // anCot: cột ẩn khỏi bảng và bộ lọc ở từng tab
   tabTheo?: { k: string; ds: string[]; anCot?: Record<string, string[]> }
+  // Cột khoảng ngày "dd/mm/yyyy - dd/mm/yyyy" lọc bằng hai ô Từ ngày, Đến ngày gõ được, giữ dòng có khoảng giao khoảng lọc (vd Bảng giá, T812)
+  locKhoangNgay?: string[]
 }
 
 /** Chứng từ: danh sách + form chi tiết */

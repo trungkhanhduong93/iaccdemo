@@ -1109,6 +1109,7 @@ PhuongXT chọn khi làm T761, chưa hỏi Trum. Bổ sung T723, T724.
 - Thêm mới và sửa dùng chung một form toàn màn. Bấm một dòng mở form với mọi dòng cùng mã bảng giá, dòng vừa bấm tô nhẹ. Sửa không đổi được loại giá. Xoá xoá cả bảng giá.
 - Lưới Chi tiết giá có phễu lọc dòng như bảng chi tiết phiếu mua hàng (T383): bấm phễu hiện hàng ô lọc dưới tiêu đề cột, tắt phễu thì bỏ lọc.
 - Một mặt hàng đã có giá ở bảng giá khác đang dùng, cùng loại, cùng nhà cung cấp hoặc khách hàng, cùng ĐVT, giao thời gian và cửa hàng: hỏi lại, vẫn cho lưu. Khi lấy giá, bảng bắt đầu muộn hơn được ưu tiên. Điểm này chờ Trum chốt.
+- T812 (dinhlanphuongipacc, 13/11/2026, chờ Trum duyệt): loại giá đổi tên Giá nhập thành Giá mua. Mỗi bảng giá áp dụng cho một nhà cung cấp (giá mua) hoặc một khách hàng (giá bán), hoặc cho mọi đối tượng (giá chung); lưới bỏ cột đối tượng. Bảng giá riêng được ưu tiên hơn giá chung. Một mặt hàng khai nhiều dòng, mỗi dòng một ĐVT; chỉ trùng khi cùng mặt hàng và ĐVT. Đầu form: Loại, Tên, Cửa hàng hàng 1; Áp dụng cho, Nhà cung cấp hoặc Khách hàng hàng 2; góc phải Số bảng giá (chỉ khi xem, sửa) và Thời gian áp dụng hai ô Từ ngày, Đến ngày gõ được. Danh sách lọc Thời gian áp dụng bằng Từ ngày, Đến ngày, giữ bảng giá có khoảng giao khoảng lọc.
 
 ## QD102. Xuất hoá đơn điện tử từ chứng từ bán hàng (07/11/2026, chờ Trum duyệt)
 

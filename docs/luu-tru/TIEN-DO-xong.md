@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T812 | Bảng giá mua, bán: đầu form gọn 2 hàng thẳng cột (Loại, Tên, Cửa hàng; Áp dụng cho mọi hoặc một nhà cung cấp/khách hàng), góc phải Số bảng giá (khi xem, sửa) và Thời gian áp dụng gõ được; nhiều ĐVT cho một mặt hàng; ô chọn hàng có tìm như phiếu mua; nền, chân form như phiếu thu chi; danh sách lọc thời gian bằng Từ ngày, Đến ngày (`ThemBangGia.tsx`, `CatalogScreen.tsx`, `danh-muc/index.ts`, `types.ts`, `app.css`) | dinhlanphuongipacc | 13/11/2026 | `2026-11-13-dinhlanphuongipacc-bang-gia-mua-ban.md` |
 | T811 | Điện thoại, danh sách Người sử dụng: thẻ tách hai dòng "Quyền: <chức vụ>" và "Cửa hàng: <cửa hàng>" (`MHeThong.tsx`) | dinhlanphuongipacc | 12/11/2026 | `2026-11-12-dinhlanphuongipacc-the-nguoi-su-dung-dien-thoai.md` |
 | T810 | Người sử dụng: bỏ ô phân quyền Kho; panel chi tiết bỏ Người tạo, Ngày tạo, Người cập nhật, Ngày cập nhật, bốn cột này hiện sẵn ở danh sách (QD110) | Trum | 12/11/2026 | `2026-11-12-trum-nguoi-su-dung-bo-kho.md` |
 | T809 | Form Thêm người sử dụng: bỏ dòng phụ dưới tiêu đề; Thông tin hệ thống chỉ hiện ở chế độ xem, Đăng nhập gần nhất xuống cuối khối này; Đồng ý chia sẻ thông tin cá nhân thành công tắc trong khối Trạng thái (`HeThong.tsx`, `CatalogScreen.tsx`, `truong-dm.ts`) | dinhlanphuongipacc | 12/11/2026 | `2026-11-12-dinhlanphuongipacc-form-nguoi-su-dung.md` |

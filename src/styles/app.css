@@ -48115,3 +48115,36 @@ textarea.m-tpb-inp { height: auto; padding: 8px 12px; }
 .m-tb-nn-menu button { width: 100%; min-height: 48px; padding: 0 10px; border-radius: 10px; display: flex; align-items: center; gap: 10px; text-align: left; font-size: 15px; font-weight: 500; color: var(--ink); }
 .m-tb-nn-menu button.on { font-weight: 600; background: var(--tint); }
 .m-tb-nn-menu button.on > svg:last-child { color: var(--blue); }
+/* ── Form bảng giá mua, bán: đầu form gọn 2 hàng, số bảng giá và thời gian ở góc phải, nhiều ĐVT (T812) ── */
+.bgf-than { gap: 10px; }
+.bgf-dau { display: grid; grid-template-columns: minmax(0, 1fr) auto; padding: 0; margin: 0; overflow: visible; }
+.bgf-than > .bg-chi-tiet > .bg-bang-cuon { flex: 1 1 auto; min-height: 0; overflow: auto; }
+.bgf-than > .bg-chi-tiet thead th { position: sticky; top: 0; z-index: 1; }
+.bgf-trai { display: grid; grid-template-columns: max-content minmax(200px, 1.3fr) minmax(180px, 1fr); gap: 10px 16px; padding: 12px 16px; align-items: start; }
+.bgf-trai .bgf-ca { grid-column: 1 / -1; }
+.bgf-dau .bg-dau-o { gap: 4px; }
+.bgf-phai { display: flex; flex-direction: column; gap: 10px; padding: 12px 16px; border-left: 1px dashed var(--line); }
+.bgf-so { display: flex; align-items: baseline; gap: 10px; min-height: 34px; }
+.bgf-so-nhan { font-size: 13px; font-weight: 600; color: var(--ink); }
+.bgf-so-gt { font-size: 20px; font-weight: 700; color: var(--blue); font-variant-numeric: tabular-nums; }
+.bgf-cham { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; vertical-align: 1px; }
+.bgf-cham.mua { background: var(--orange); }
+.bgf-cham.ban { background: var(--green); }
+.bgf-dt { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.bgf-dt-chon { flex: 1 1 260px; min-width: 0; max-width: 460px; }
+.bgf-ngay, .ds-o-khoang { display: flex; align-items: center; gap: 6px; }
+.bgf-ngay > .ct-ngay { width: 132px; }
+.ds-o-khoang > .ct-ngay { flex: 1 1 0; min-width: 0; }
+.ds-o-khoang .inp { height: 34px; width: 100%; }
+.bgf-ngay > span, .ds-o-khoang > span { color: var(--muted); }
+.bgf-ngay.loi .inp { border-color: var(--red); }
+.bgf-he-so { display: block; margin-top: 2px; font-size: 11.5px; color: var(--muted); }
+.btn.bgf-nut-vien { border-color: var(--blue); color: var(--blue); }
+@media (max-width: 1100px) {
+  .bgf-trai { grid-template-columns: auto minmax(0, 1fr); }
+}
+@media (max-width: 900px) {
+  .bgf-dau { grid-template-columns: 1fr; }
+  .bgf-phai { order: -1; border-left: 0; border-bottom: 1px dashed var(--line); flex-direction: row; flex-wrap: wrap; gap: 10px 24px; }
+  .bgf-trai { grid-template-columns: 1fr; }
+}

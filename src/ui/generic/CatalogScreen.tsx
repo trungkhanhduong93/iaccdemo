@@ -41,6 +41,15 @@ import { dmy } from '../format'
 import { addCatalogRow, suaCatalogRow, useAddedCatalogRows, sinhMaKeTiep } from './danhMucStore'
 import { suaPhieu, useDaXoa, xoaPhieu } from './daXoa'
 
+
+/** Dòng có khoảng ngày "dd/mm/yyyy - dd/mm/yyyy" giao khoảng lọc "tu|den" (để trống một đầu là không giới hạn đầu đó, T812) */
+function giaoKhoangLoc(oDong: unknown, loc: string): boolean {
+  const m = String(oDong ?? '').match(/(\d{1,2}\/\d{1,2}\/\d{4})\s*-\s*(\d{1,2}\/\d{1,2}\/\d{4})/)
+  if (!m) return false
+  const [tu, den] = loc.split('|').map(x => docNgay(x ?? ''))
+  const a = docNgay(m[1]), b = docNgay(m[2])
+  return (isNaN(den?.getTime()) || a <= den) && (isNaN(tu?.getTime()) || b >= tu)
+}
 export function CatalogScreen({ sc }: ScreenProps) {
   const { s, set, toast } = useSession()
   const catKey = sc.code ?? sc.slug ?? ''
@@ -189,6 +198,8 @@ export function CatalogScreen({ sc }: ScreenProps) {
             if (!r[k]) return false
           } else if (v === '__khong') {
             if (Boolean(r[k])) return false
+          } else if (cfg.locKhoangNgay?.includes(k)) {
+            if (!giaoKhoangLoc(r[k], v)) return false
           } else {
             if (String(r[k] ?? '') !== v) return false
           }
@@ -372,6 +383,21 @@ export function CatalogScreen({ sc }: ScreenProps) {
       ),
     }] : []),
     ...cacCotLoc.filter(c => !keysDaCo.has(c.k) && !anTheoTab.has(c.k)).map(c => {
+      // Cột khoảng ngày (T812): hai ô Từ ngày, Đến ngày gõ được hoặc chọn lịch, giá trị lọc lưu "tu|den"
+      if (cfg.locKhoangNgay?.includes(c.k)) {
+        const [tu = '', den = ''] = String(locDm.nhap.nangCao[c.k] ?? '').split('|')
+        const dat = (t: string, d: string) => locDm.dat('nangCao', { ...locDm.nhap.nangCao, [c.k]: t || d ? `${t}|${d}` : '' })
+        return {
+          k: c.k, ten: c.t, coGiaTri: Boolean(locDm.nhap.nangCao[c.k]),
+          o: (
+            <div className="ds-o-khoang">
+              <ONgay value={tu} onChange={v => dat(v, den)} placeholder="Từ ngày" ariaLabel={`${c.t} từ ngày`} />
+              <span aria-hidden="true">–</span>
+              <ONgay value={den} onChange={v => dat(tu, v)} placeholder="Đến ngày" ariaLabel={`${c.t} đến ngày`} />
+            </div>
+          ),
+        }
+      }
       const laBool = c.k === 'tonKho' || c.k === 'chiPhi' || c.k === 'dongY' || all.some(r => typeof r[c.k] === 'boolean')
       const dsGiaTri = [...new Set(all.map(r => r[c.k]).filter(v => v !== undefined && v !== '' && typeof v !== 'object'))].sort()
       return {
@@ -392,7 +418,7 @@ export function CatalogScreen({ sc }: ScreenProps) {
         ),
       }
     }),
-  ], [locDm.nhap, nhoms, cfg.nhanLoc, coTrangThai, cacCotLoc, all, anTheoTab])
+  ], [locDm.nhap, nhoms, cfg.nhanLoc, cfg.locKhoangNgay, coTrangThai, cacCotLoc, all, anTheoTab])
   // Màn có tab (tabTheo) không còn chip trạng thái, ô Trạng thái hiện sẵn trên thanh lọc (T724)
   const [cauHinhLocDm, datCauHinhLocDm] = useCauHinhLoc(pathDm, oLocDm.map(o => o.k), ['tim', ...(nhoms.length > 1 ? [khoaNhomLoc] : []), ...(tabTheo && coTrangThai ? ['trangThai'] : [])])
 
