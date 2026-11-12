@@ -120,6 +120,7 @@ export interface KhoiDM {
   anDau?: boolean    // không vẽ thanh tiêu đề khối, khối luôn mở, nhường chỗ cho lưới bên dưới (T165)
   congTac?: string   // khoá ô tích hiện thành công tắc ở đầu khối, vd '_tt' trạng thái (T154)
   khongGap?: boolean // khối luôn mở, không có nút gập ở đầu khối
+  chiKhiXem?: boolean // khối chỉ hiện khi mở dòng có sẵn, ẩn khi thêm mới, vd Thông tin hệ thống
   chonDau?: { k: string; ds: string[] }   // nhóm nút chọn tròn ngay cạnh tên khối, vd Tổ chức / Cá nhân của đối tượng (T471)
 }
 
@@ -128,6 +129,7 @@ export interface CauHinhDM {
   ten?: string                                       // tên trên đầu panel: "Thêm <ten>", "Sửa <ten>"
   moTa?: string                                      // dòng phụ dưới tên khi thêm mới
   anPhuDe?: boolean                                  // không hiện dòng phụ (mã, tên) dưới tên panel
+  anPhuDeMoi?: boolean                               // không hiện dòng phụ dưới tên panel khi thêm mới
   soQuocTe?: boolean                                 // ô số, ô tiền gõ có ngăn nghìn ngay khi gõ, lưu dạng chuẩn; hiện kiểu Việt Nam 1.234.567,89 (T284)
   toanMan?: { icon: string }                         // mở toàn màn hình như form chứng từ, khối lưới thành tab cạnh tab Lịch sử
   haiCot?: boolean                                   // lưới ô nhập luôn 2 cột như form iFaster (T154)

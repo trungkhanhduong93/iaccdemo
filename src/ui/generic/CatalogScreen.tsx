@@ -782,7 +782,7 @@ export function CatalogPanel({
   }, [edit, onDong])
 
   const dsKhoi: KhoiDM[] = useMemo(() => {
-    if (cauHinh?.khoi) return cauHinh.khoi.filter(kh => (!kh.goi || kh.goi.includes(s.goi)) && (!kh.cheDo || kh.cheDo.includes(s.cheDo)) && hopPp(kh.pp, s))
+    if (cauHinh?.khoi) return cauHinh.khoi.filter(kh => (!kh.goi || kh.goi.includes(s.goi)) && (!kh.cheDo || kh.cheDo.includes(s.cheDo)) && hopPp(kh.pp, s) && (!kh.chiKhiXem || dangSua))
     if (cols0.length > 0) {
       const dsTuCot: TruongDM[] = cols0.map(c => ({
         k: c.k,
@@ -793,7 +793,7 @@ export function CatalogPanel({
       return [{ ten: 'Thông tin chung', truong: dsTuCot }]
     }
     return []
-  }, [cauHinh, cols0, s.goi, s.cheDo, s.ppGtgt, s.ppTndn])
+  }, [cauHinh, cols0, s.goi, s.cheDo, s.ppGtgt, s.ppTndn, dangSua])
 
   const dsTk = useMemo(() => heThongTk(s.cheDo), [s.cheDo])
   // Lựa chọn của ô chọn tính một lần theo khoá trường, dùng lại giữa các lần vẽ
@@ -1256,7 +1256,7 @@ export function CatalogPanel({
             <div className="pn-dau">
               <div>
                 <h3>{chiXem ? `Chi tiết ${tenNganHien}` : dangSua ? `Sửa ${tenNganHien}` : `Thêm ${tenNganHien}`}</h3>
-                {!cauHinh?.anPhuDe && <small className="muted">
+                {!cauHinh?.anPhuDe && !(cauHinh?.anPhuDeMoi && !dangSua) && <small className="muted">
                   {dangSua
                     ? ([formVal.ma, formVal.ten].filter(Boolean).join(' - ') || tenNganHien)
                     : (cauHinh?.moTa ?? tenNganHien)}

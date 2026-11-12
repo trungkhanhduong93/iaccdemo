@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T809 | Form Thêm người sử dụng: bỏ dòng phụ dưới tiêu đề; Thông tin hệ thống chỉ hiện ở chế độ xem, Đăng nhập gần nhất xuống cuối khối này; Đồng ý chia sẻ thông tin cá nhân thành công tắc trong khối Trạng thái (`HeThong.tsx`, `CatalogScreen.tsx`, `truong-dm.ts`) | dinhlanphuongipacc | 12/11/2026 | `2026-11-12-dinhlanphuongipacc-form-nguoi-su-dung.md` |
 | T808 | Favicon bo tròn 4 góc, khung viền xanh cùng màu dải iPOS.VN (tiếp T806) | Trum | 12/11/2026 | `2026-11-12-trum-favicon-khung-xanh.md` |
 | T807 | Danh mục Quy đổi ĐVT: Từ ĐVT, Đến ĐVT chỉ hiện tên ở danh sách và form; tỷ lệ quy đổi theo tiêu chuẩn định dạng số; form bỏ mã dưới tiêu đề, nút gập khối, trạng thái xuống khối dưới; điện thoại hiện diễn giải, hàng hoá áp dụng | dinhlanphuongipacc | 12/11/2026 | `2026-11-12-dinhlanphuongipacc-quy-doi-dvt-hien-ten.md` |
 | T806 | Đổi favicon web sang icon kế toán iPOS.VN (`icon accounting_Final.png`) | Trum | 12/11/2026 | `2026-11-12-trum-doi-favicon.md` |

@@ -30,6 +30,7 @@ const KHO_DS = ['Tất cả kho', ...KHO]
 
 export const CAU_HINH_NGUOI_DUNG: CauHinhDM = {
   ten: 'Người sử dụng',
+  anPhuDeMoi: true,
   haiCot: true,
   khoi: [
     {
@@ -68,30 +69,23 @@ export const CAU_HINH_NGUOI_DUNG: CauHinhDM = {
       truong: [
         { k: '_tt', nhan: 'Đang sử dụng', kieu: 'tich' },
         { k: 'xacThuc', nhan: 'Xác thực', kieu: 'tich' },
-        { k: 'lan', nhan: 'Đăng nhập gần nhất', kieu: 'chu', chiDoc: true },
+        {
+          k: 'dongY',
+          nhan: 'Đồng ý chia sẻ thông tin cá nhân',
+          kieu: 'tich',
+          batBuoc: true,
+        },
       ],
     },
     {
       ten: 'Thông tin hệ thống',
+      chiKhiXem: true,
       truong: [
         { k: 'nguoiTao', nhan: 'Người tạo', kieu: 'chu', chiDoc: true },
         { k: 'ngayTao', nhan: 'Ngày tạo', kieu: 'chu', chiDoc: true },
         { k: 'nguoiCapNhat', nhan: 'Người cập nhật', kieu: 'chu', chiDoc: true },
         { k: 'ngayCapNhat', nhan: 'Ngày cập nhật', kieu: 'chu', chiDoc: true },
-      ],
-    },
-    {
-      ten: 'Đồng ý',
-      anDau: true,
-      truong: [
-        {
-          k: 'dongY',
-          nhan: 'Đồng ý chia sẻ thông tin cá nhân',
-          kieu: 'tich',
-          oVuong: true,
-          caHang: true,
-          batBuoc: true,
-        },
+        { k: 'lan', nhan: 'Đăng nhập gần nhất', kieu: 'chu', chiDoc: true },
       ],
     },
   ],
