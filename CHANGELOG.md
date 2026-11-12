@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 12/11/2026
+- T806: Biểu tượng trên tab trình duyệt đổi sang icon kế toán iPOS.VN.
 - T805: Gói Plus, danh sách Bán hàng: hai chip đổi tên thành Đồng bộ từ POS, Lập thủ công.
 - T804: Màn Thẻ chi phí phân bổ bỏ cột Mã, danh sách còn Số thẻ, Tên, Loại.
 - T803: Thanh trên có thêm nút Hỗ trợ (Tài liệu hướng dẫn, Góp ý, Lấy mã hỗ trợ, Phím tắt), nút tải ứng dụng bằng mã QR, nút đổi ngôn ngữ. Chuông mở khung thông báo chia 3 thẻ Vận hành, Nhắc nhở, Hệ thống, có số chưa đọc, lọc Chỉ hiện chưa đọc, Đọc hết; bánh răng mở Cài đặt thông báo; cuối khung có Xem tất cả thông báo. Điện thoại: bấm chuông ở Trang chủ mở màn Thông báo; màn Khác thêm Cài đặt thông báo, nhóm Hỗ trợ, nút đổi ngôn ngữ.
