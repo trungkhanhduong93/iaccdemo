@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T808 | Favicon bo tròn 4 góc, khung viền xanh cùng màu dải iPOS.VN (tiếp T806) | Trum | 12/11/2026 | `2026-11-12-trum-favicon-khung-xanh.md` |
 | T807 | Danh mục Quy đổi ĐVT: Từ ĐVT, Đến ĐVT chỉ hiện tên ở danh sách và form; tỷ lệ quy đổi theo tiêu chuẩn định dạng số; form bỏ mã dưới tiêu đề, nút gập khối, trạng thái xuống khối dưới; điện thoại hiện diễn giải, hàng hoá áp dụng | dinhlanphuongipacc | 12/11/2026 | `2026-11-12-dinhlanphuongipacc-quy-doi-dvt-hien-ten.md` |
 | T806 | Đổi favicon web sang icon kế toán iPOS.VN (`icon accounting_Final.png`) | Trum | 12/11/2026 | `2026-11-12-trum-doi-favicon.md` |
 | T805 | Gói Plus, danh sách Bán hàng: chip nguồn chứng từ đổi tên thành Đồng bộ từ POS, Lập thủ công (QD109) | Trum | 12/11/2026 | `2026-11-12-trum-doi-ten-chip-ban-hang.md` |
