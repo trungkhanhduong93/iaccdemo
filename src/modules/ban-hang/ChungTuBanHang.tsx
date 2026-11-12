@@ -567,8 +567,8 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
 
   const chips: Chip[] = [
     { k: 'all', ten: 'Tất cả', mau: 'var(--blue)', so: list.length },
-    { k: 'pos', ten: 'Xuất bán POS', mau: 'var(--green)', so: list.filter(laPos).length },
-    { k: 'tay', ten: 'Bán hàng', mau: 'var(--orange)', so: list.filter(r => !laPos(r)).length },
+    { k: 'pos', ten: 'Đồng bộ từ POS', mau: 'var(--green)', so: list.filter(laPos).length },
+    { k: 'tay', ten: 'Lập thủ công', mau: 'var(--orange)', so: list.filter(r => !laPos(r)).length },
   ]
   const cols: Col[] = [
     ...(plus && chipTab === 'tay' ? [cotChon(pagedRows, chon, setChon)] : []),   // chọn để phát hành HĐĐT, chỉ ở tab Bán hàng (T765)

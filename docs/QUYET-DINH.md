@@ -1190,4 +1190,9 @@ Trum chốt trên bản thiết kế https://claude.ai/artifact/WKJMseeaoH53WMsf
 - Ngôn ngữ trong app có Tiếng Việt và English. Trang đăng nhập giữ 4 ngôn ngữ theo QD105.
 - Điện thoại: Thông báo mở từ chuông ở Trang chủ; Cài đặt thông báo, Hỗ trợ, đổi ngôn ngữ nằm ở màn Khác. Điện thoại không có Phím tắt và tải ứng dụng.
 
-## QD109. Bán hàng gói Plus: tên chip nguồn chứng từ (đang soạn)
+## QD109. Bán hàng gói Plus: tên chip nguồn chứng từ (12/11/2026)
+
+Trum chốt 12/11/2026 (T805).
+
+- Chip trên danh sách Bán hàng gói Plus chia theo nguồn chứng từ: Tất cả, Đồng bộ từ POS, Lập thủ công. Tên cũ Xuất bán POS, Bán hàng trùng tên tab phân hệ và trùng mục trong bộ lọc Loại chứng từ.
+- Bộ lọc Loại chứng từ giữ đủ 5 mục. Xuất bán POS và Xuất bán là hai loại chứng từ riêng (hai tran_id), không gộp.

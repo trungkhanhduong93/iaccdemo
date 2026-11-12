@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 12/11/2026
+- T805: Gói Plus, danh sách Bán hàng: hai chip đổi tên thành Đồng bộ từ POS, Lập thủ công.
 - T804: Màn Thẻ chi phí phân bổ bỏ cột Mã, danh sách còn Số thẻ, Tên, Loại.
 - T803: Thanh trên có thêm nút Hỗ trợ (Tài liệu hướng dẫn, Góp ý, Lấy mã hỗ trợ, Phím tắt), nút tải ứng dụng bằng mã QR, nút đổi ngôn ngữ. Chuông mở khung thông báo chia 3 thẻ Vận hành, Nhắc nhở, Hệ thống, có số chưa đọc, lọc Chỉ hiện chưa đọc, Đọc hết; bánh răng mở Cài đặt thông báo; cuối khung có Xem tất cả thông báo. Điện thoại: bấm chuông ở Trang chủ mở màn Thông báo; màn Khác thêm Cài đặt thông báo, nhóm Hỗ trợ, nút đổi ngôn ngữ.
 - T802: Gói Plus, danh sách Bán hàng: bỏ cột Trạng thái xuất HĐĐT. Chứng từ đã có hoá đơn điện tử có nhãn VAT nhỏ cạnh số chứng từ; bấm số ở cột Số hoá đơn để xem hoá đơn. Tab Tất cả, Xuất bán POS cũng vậy, chứng từ POS lấy hoá đơn FABi đã xuất tại máy POS. Số chứng từ Xuất bán POS chỉ hiện 5 ký tự cuối, rê chuột xem đủ. Tab Bán hàng có thêm cột Thao tác: Xuất HĐĐT cho chứng từ chưa xuất, Xem hoá đơn.
