@@ -3,7 +3,7 @@ import { createElement } from 'react'
 import type { Col, Row } from '../types'
 import type { CheDo } from '../../app/che-do'
 import { CCDC_HANG, CUA_HANG, HANG, KHO, NVL } from '../../data/mock'
-import { locSo } from '../../ui/format'
+import { soQT } from '../../ui/format'
 
 export const tkCot = (k: string, t: string): Col => ({
   k, t, cls: 'code',
@@ -304,7 +304,7 @@ export const TEN_THUONG_HIEU = DS_THUONG_HIEU.map(t => t.ten)
 /** Diễn giải quy đổi theo cú pháp "1 Thùng = 24 Lon"; tỷ lệ gõ tay giữ nguyên chữ (T154) */
 export function dienGiaiQd(tu: unknown, den: unknown, tl: unknown): string {
   if (!tu || !den || tl === undefined || tl === null || tl === '') return ''
-  return `1 ${tu} = ${typeof tl === 'number' ? tl.toLocaleString(locSo(), { maximumFractionDigits: 4 }) : String(tl)} ${den}`
+  return `1 ${tu} = ${soQT(tl)} ${den}`
 }
 
 /** Quy đổi đơn vị tính (1.4): 1 tu = tl den, vd 1 Thùng = 24 Lon. hangAd là hàng hoá áp dụng dạng "A, B", để trống là mọi hàng hoá (T151, T154) */

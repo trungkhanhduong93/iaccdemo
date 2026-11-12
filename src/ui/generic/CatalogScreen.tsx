@@ -969,10 +969,10 @@ export function CatalogPanel({
   const veKhoi = (kh: KhoiDM) => {
     const truongHien = kh.truong.filter(hienO)
     if (!kh.bang && !kh.ve && truongHien.length === 0) return null
-    const mo = kh.anDau || isMo(kh.ten)
+    const mo = kh.anDau || kh.khongGap || isMo(kh.ten)
     return (
       <div key={kh.ten} className={`pn-khoi${mo ? ' mo' : ''}${kh.anDau ? ' pn-an-dau' : ''}`}>
-        {!kh.anDau && <div className="pn-khoi-dau" onClick={() => toggleKhoi(kh.ten)}>
+        {!kh.anDau && <div className="pn-khoi-dau" onClick={() => !kh.khongGap && toggleKhoi(kh.ten)}>
           {/* Form toàn màn hình: mô tả nằm cạnh tên khối đầu, đầu form chỉ có nhãn cửa hàng như phiếu chi */}
           <span>{kh.ten}{cauHinh?.toanMan && cauHinh.moTa && kh === dsKhoi[0] && <small className="muted"> · {cauHinh.moTa}</small>}</span>
           {kh.chonDau && (
@@ -995,7 +995,7 @@ export function CatalogPanel({
                 className={`ds-ct pn-cong-tac${bat ? ' on' : ''}`} onClick={e => { e.stopPropagation(); doiO(kh.congTac!, bat ? 0 : 1) }}><i /></button>
             )
           })()}
-          <Icon n={mo ? 'chevd' : 'chevr'} className="ic sm" />
+          {!kh.khongGap && <Icon n={mo ? 'chevd' : 'chevr'} className="ic sm" />}
         </div>}
         {mo && kh.bang && <div className="pn-khoi-than">{veBang(kh)}</div>}
         {mo && kh.ve && <div className="pn-khoi-than">{kh.ve(formVal, doiO, xem)}</div>}
@@ -1069,7 +1069,7 @@ export function CatalogPanel({
                       // Ô chọn có tìm, mỗi dòng tên và mã; ô đã chọn hiện "mã · tên" (T151), có maDs thì "Tên (MÃ)" (T154)
                       <ChonCoTim nhan={tr.nhan} value={String(formVal[tr.k] ?? '')}
                         ds={(tr.ds ?? []).map(v => ({ v, t: tr.nhanDs ? tr.nhanDs(v) : v, phu: tr.maDs ? (tr.maDs(v) && `Mã: ${tr.maDs(v)}`) : `Mã: ${v}` }))}
-                        hienChon={m => tr.maDs ? (tr.maDs(m.v) ? `${m.t} (${tr.maDs(m.v)})` : m.t) : `${m.v} · ${m.t}`}
+                        hienChon={m => tr.chiTen ? m.t : tr.maDs ? (tr.maDs(m.v) ? `${m.t} (${tr.maDs(m.v)})` : m.t) : `${m.v} · ${m.t}`}
                         onChange={v => { doiO(tr.k, v); setErrors(err => ({ ...err, [tr.k]: '' })) }} />
                     ) : tr.kieu === 'khoangNgay' ? (
                       // Khoảng ngày lưu "dd/mm/yyyy - dd/mm/yyyy", dùng khung chọn khoảng ngày chung (T154)
@@ -1256,11 +1256,11 @@ export function CatalogPanel({
             <div className="pn-dau">
               <div>
                 <h3>{chiXem ? `Chi tiết ${tenNganHien}` : dangSua ? `Sửa ${tenNganHien}` : `Thêm ${tenNganHien}`}</h3>
-                <small className="muted">
+                {!cauHinh?.anPhuDe && <small className="muted">
                   {dangSua
                     ? ([formVal.ma, formVal.ten].filter(Boolean).join(' - ') || tenNganHien)
                     : (cauHinh?.moTa ?? tenNganHien)}
-                </small>
+                </small>}
               </div>
               <button type="button" className="icon-btn" onClick={onDong} aria-label="Đóng">
                 <Icon n="x" />

@@ -97,6 +97,8 @@ export const MDanhMuc: FC<ScreenProps> = ({ sc }) => {
   }, [all, cfg.nhomLoc])
 
   const laHangHoa = sc.code === '1.2' || sc.slug === 'hang-hoa' || sc.slug === '1-2'
+  // Quy đổi ĐVT: thẻ hiện diễn giải, hàng hoá áp dụng; không hiện mã, không hiện tỷ lệ kiểu tiền (T807)
+  const laQuyDoi = sc.code === '1.4' || sc.slug === '1-4'
   const CAC_DM_FABI = ['1.2', '1-2', 'hang-hoa', 'nhom-hang-hoa', 'cua-hang', 'phuong-thuc-thanh-toan', '1.3']
   const hienFabi = CAC_DM_FABI.includes(sc.code ?? '') || CAC_DM_FABI.includes(sc.slug ?? '')
 
@@ -378,12 +380,14 @@ export const MDanhMuc: FC<ScreenProps> = ({ sc }) => {
               <div className="m-the-dm-v2-dong-chinh">
                 <span className="m-the-dm-v2-stt">{i + 1}.</span>
                 <div className="m-the-dm-v2-khoi-ten">
-                  <b className="m-the-dm-v2-ten m-the-dm-ten">{r.ten || r.ma}</b>
-                  {r.ma && <span className="m-the-dm-v2-ma m-the-dm-ma"> - {r.ma}</span>}
+                  <b className="m-the-dm-v2-ten m-the-dm-ten">{laQuyDoi ? r.dienGiai : r.ten || r.ma}</b>
+                  {r.ma && !laQuyDoi && <span className="m-the-dm-v2-ma m-the-dm-ma"> - {r.ma}</span>}
                 </div>
               </div>
               <div className="m-the-dm-v2-dong-phu m-the-dm-phu">
-                {laLyDo
+                {laQuyDoi
+                  ? `Hàng hoá áp dụng: ${r.hangAd || 'Tất cả hàng hoá'}`
+                  : laLyDo
                   ? [`Nguồn: ${r.nguon === 'FABi' ? 'FABi' : 'Thủ công'}`,   // T708
                       r.dung === 'Chi tiền' && (laCo(r.phanBo) ? 'Chi phí phân bổ nhiều kỳ' : laCo(r.chiPhi) ? 'Là chi phí' : '')].filter(Boolean).join(' · ')   // T700
                   : laHangHoa
@@ -392,7 +396,7 @@ export const MDanhMuc: FC<ScreenProps> = ({ sc }) => {
               </div>
             </div>
             <div className="m-the-dm-v2-phai m-the-dm-phai">
-              {!laHangHoa && cotSo && r[cotSo.k] !== undefined && cotSo.k !== 'thueGtgt' && cotSo.k !== 'ts' && (
+              {!laHangHoa && !laQuyDoi && cotSo && r[cotSo.k] !== undefined && cotSo.k !== 'thueGtgt' && cotSo.k !== 'ts' && (
                 <span className="m-the-dm-so">
                   {typeof r[cotSo.k] === 'number' ? `${money(r[cotSo.k])} đ` : String(r[cotSo.k])}
                 </span>

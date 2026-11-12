@@ -30,8 +30,6 @@ const BIEU_TUONG: Record<string, string> = {
   '1.12': 'quytien', '1.14': 'banggia', '1.15': 'buttoan', '1.16': 'lydo',
 }
 
-/** Cột ĐVT ở danh sách Quy đổi ĐVT hiện mã kèm tên, vd "THUNG - Thùng" */
-const maTenDvt = (ten: string) => { const d = DON_VI_TINH.find(x => x[1] === ten); return d ? `${d[0]} - ${d[1]}` : ten }
 
 /** 5 màn danh mục nhóm ngoài Excel (T136) */
 const nhomHangHoa: ScreenDef = {
@@ -230,7 +228,7 @@ const danhMuc: ModuleDef = {
       cols: [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Tên đơn vị tính' }, { k: 'mota', t: 'Mô tả', cls: 'dim' }],
       rows: () => DON_VI_TINH.map(([ma, ten, mota]) => ({ ma, ten, mota })) } },
     // T154: 1 Từ ĐVT = tỷ lệ Đến ĐVT; hàng hoá áp dụng để trống là mọi hàng hoá
-    '1.4': { catalog: { them: 'Thêm quy đổi', khongLoc: ['tl', 'dienGiai'], cols: [{ k: 'tu', t: 'Từ ĐVT', c: true, r: (r: Row) => maTenDvt(r.tu) }, { k: 'den', t: 'Đến ĐVT', c: true, r: (r: Row) => maTenDvt(r.den) }, { k: 'tl', t: 'Tỷ lệ', num: true },
+    '1.4': { catalog: { them: 'Thêm quy đổi', khongLoc: ['tl', 'dienGiai'], cols: [{ k: 'tu', t: 'Từ ĐVT', c: true, r: (r: Row) => r.tu }, { k: 'den', t: 'Đến ĐVT', c: true, r: (r: Row) => r.den }, { k: 'tl', t: 'Tỷ lệ', num: true },
       { k: 'dienGiai', t: 'Diễn giải' }, { k: 'hangAd', t: 'Hàng hoá áp dụng', r: (r: Row) => r.hangAd || 'Tất cả hàng hoá' }],
       rows: () => QUY_DOI_DVT } },
     '1.5': { catalog: { them: 'Thêm đối tượng', nhomLoc: 'loai', nhanLoc: 'Loại',

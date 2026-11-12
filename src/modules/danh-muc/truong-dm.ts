@@ -93,6 +93,7 @@ export interface TruongDM {
   chuThich?: string | null | ((v: Record<string, any>, s?: { goi: Goi; cheDo: CheDo }) => string | null)   // dòng chú thích nhỏ dưới ô
   goiY?: string                                // chữ mờ khi ô chọn nhiều để trống (T151)
   maDs?: (v: string) => string                 // mã của mục trong ô chọn nhiều, ô chọn có tìm: dòng hiện "Mã: X", ô hiện "Tên (MÃ)" (T154)
+  chiTen?: boolean                             // ô chọn có tìm đã chọn chỉ hiện tên, không kèm mã, vd đơn vị tính ở quy đổi ĐVT
   // Ô ngày khi thêm mới so với ngày đầu năm của đơn vị: 'tu' phải từ ngày đầu năm trở đi, 'truoc' phải trước ngày đầu năm (khai số dư)
   dauNam?: (v: Record<string, any>) => 'tu' | 'truoc' | undefined
 }
@@ -118,6 +119,7 @@ export interface KhoiDM {
   ve?: (v: Record<string, any>, doi: (k: string, val: unknown) => void, xem: boolean) => ReactNode   // khối vẽ riêng (vd Thông tin mua: ô nhập, hoặc chỉ xem khi lấy từ phiếu gốc); xem: form đang ở chế độ xem (T284)
   anDau?: boolean    // không vẽ thanh tiêu đề khối, khối luôn mở, nhường chỗ cho lưới bên dưới (T165)
   congTac?: string   // khoá ô tích hiện thành công tắc ở đầu khối, vd '_tt' trạng thái (T154)
+  khongGap?: boolean // khối luôn mở, không có nút gập ở đầu khối
   chonDau?: { k: string; ds: string[] }   // nhóm nút chọn tròn ngay cạnh tên khối, vd Tổ chức / Cá nhân của đối tượng (T471)
 }
 
@@ -125,6 +127,7 @@ export interface CauHinhDM {
   khoi: KhoiDM[]
   ten?: string                                       // tên trên đầu panel: "Thêm <ten>", "Sửa <ten>"
   moTa?: string                                      // dòng phụ dưới tên khi thêm mới
+  anPhuDe?: boolean                                  // không hiện dòng phụ (mã, tên) dưới tên panel
   soQuocTe?: boolean                                 // ô số, ô tiền gõ có ngăn nghìn ngay khi gõ, lưu dạng chuẩn; hiện kiểu Việt Nam 1.234.567,89 (T284)
   toanMan?: { icon: string }                         // mở toàn màn hình như form chứng từ, khối lưới thành tab cạnh tab Lịch sử
   haiCot?: boolean                                   // lưới ô nhập luôn 2 cột như form iFaster (T154)
@@ -340,20 +343,29 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
     ],
   },
 
-  // 1.4 Quy đổi ĐVT (chưa có bảng DM_ trong schema, chờ đối chiếu). Form theo iFaster: 1 Từ ĐVT = tỷ lệ Đến ĐVT, trạng thái là công tắc (T154)
+  // 1.4 Quy đổi ĐVT (chưa có bảng DM_ trong schema, chờ đối chiếu). Form theo iFaster: 1 Từ ĐVT = tỷ lệ Đến ĐVT (T154); trạng thái ở khối dưới như các danh mục khác
   '1.4': {
     haiCot: true,
+    soQuocTe: true,   // tỷ lệ quy đổi hiện, gõ theo tiêu chuẩn định dạng số của đơn vị
+    anPhuDe: true,
     khoi: [
       {
         ten: 'Thông tin chung',
-        congTac: '_tt',
+        khongGap: true,
         truong: [
-          { k: 'tu', nhan: 'Từ đơn vị tính', kieu: 'chonTim', batBuoc: true, ds: TEN_DVT, maDs: maDvt },
-          { k: 'den', nhan: 'Đến đơn vị tính', kieu: 'chonTim', batBuoc: true, ds: TEN_DVT, maDs: maDvt },
+          { k: 'tu', nhan: 'Từ đơn vị tính', kieu: 'chonTim', batBuoc: true, ds: TEN_DVT, maDs: maDvt, chiTen: true },
+          { k: 'den', nhan: 'Đến đơn vị tính', kieu: 'chonTim', batBuoc: true, ds: TEN_DVT, maDs: maDvt, chiTen: true },
           { k: 'tl', nhan: 'Tỷ lệ quy đổi', kieu: 'so', batBuoc: true },
           { k: 'dienGiai', nhan: 'Diễn giải', kieu: 'chu', chiDoc: true },
           { k: 'hangAd', nhan: 'Hàng hoá áp dụng', kieu: 'chonNhieu', ds: TEN_HANG, maDs: maHang, caHang: true, goiY: 'Để trống nếu áp dụng cho mọi hàng hoá' },
           { k: 'moTa', nhan: 'Mô tả', kieu: 'nhieuDong' },
+        ],
+      },
+      {
+        ten: 'Trạng thái',
+        khongGap: true,
+        truong: [
+          { k: '_tt', nhan: 'Đang sử dụng', kieu: 'tich', caHang: true },
         ],
       },
     ],
