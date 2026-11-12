@@ -3,7 +3,7 @@
 // Bấm một dòng mở form này với mọi dòng cùng mã bảng giá để sửa cả lưới. Trùng mặt hàng với bảng giá khác cùng thời gian, cửa hàng thì hỏi lại, bảng bắt đầu muộn hơn được ưu tiên.
 // T812: bố trí lại. Bên trái khai lần lượt loại bảng giá (Giá mua, Giá bán), tên, cửa hàng, đối tượng; góc phải là số bảng giá và thời gian áp dụng như số, ngày chứng từ.
 // Đối tượng khai ở đầu form: một nhà cung cấp (giá mua) hoặc một khách hàng (giá bán), hoặc giá chung cho mọi đối tượng; lưới bỏ cột đối tượng.
-// Một mặt hàng khai được nhiều dòng, mỗi dòng một ĐVT với giá riêng; chỉ trùng khi cùng mặt hàng và cùng ĐVT. Cột Ghi chú tự nhập cho từng dòng. Ô chọn hàng có tìm như phiếu mua, hiện cả mã và tên.
+// Một mặt hàng khai được nhiều dòng, mỗi dòng một ĐVT với giá riêng; chỉ trùng khi cùng mặt hàng và cùng ĐVT. Cột Ghi chú tự nhập; trống thì form tự điền phần quy đổi khi dòng dùng ĐVT khác ĐVT chính. Ô chọn hàng có tìm như phiếu mua, hiện cả mã và tên.
 import { useState } from 'react'
 import { useSession } from '../../app/session'
 import { FormToanMan } from '../../ui/FormToanMan'
@@ -24,7 +24,7 @@ import { ONhap } from '../ccdc/the-phan-bo'
 
 type LoaiGia = 'Giá mua' | 'Giá bán'
 interface HangGia { ma: string; ten: string; dvt: string; nhom?: string; gia: number; vat: number }
-interface DongGia { key: number; ma: string; dvt: string; gia: string; vat: string; ghiChu?: string }
+interface DongGia { key: number; ma: string; dvt: string; gia: string; vat: string; ghiChu?: string; ghiTu?: boolean }   // ghiTu: ghi chú do form tự điền phần quy đổi, người dùng chưa sửa
 interface DongLuu { ma: string; ten?: string; dvt: string; gia: number; vat: number; ghiChu?: string }   // một mặt hàng của bảng giá trước khi thành dòng danh sách
 
 /** Giá bán: món, hàng bán; giá mua: nguyên vật liệu và hàng mua về bán lại (có tồn kho) */
@@ -42,11 +42,23 @@ function dvtCua(h: HangGia): { dv: string; heSo: number }[] {
   return [{ dv: h.dvt, heSo: 1 }, ...quyDoiTuDanhMuc(h.ten, h.dvt).map(q => ({ dv: q.dv, heSo: q.nguoc ? q.tl : 1 / q.tl }))]
 }
 
+/** Ghi chú quy đổi của ĐVT khác ĐVT chính, vd "1 Thùng = 24 Lon"; ĐVT chính thì rỗng */
+function ghiQuyDoi(h: HangGia | undefined, dvt: string, heSo?: number): string {
+  if (!h || !dvt || dvt === h.dvt) return ''
+  const hs = heSo ?? dvtCua(h).find(x => x.dv === dvt)?.heSo
+  return hs ? `1 ${dvt} = ${(Math.round(hs * 1000) / 1000).toLocaleString('vi-VN')} ${h.dvt}` : ''
+}
+
 let soKhoa = 0
-const dongMoi = (h?: HangGia, dvt?: string, heSo = 1): DongGia => ({
-  key: ++soKhoa, ma: h?.ma ?? '', dvt: dvt ?? h?.dvt ?? '',
-  gia: h && h.gia ? String(Math.round(h.gia * heSo * 100) / 100) : '', vat: h ? String(h.vat) : '',
-})
+const dongMoi = (h?: HangGia, dvt?: string, heSo = 1): DongGia => {
+  const dv = dvt ?? h?.dvt ?? ''
+  const ghi = ghiQuyDoi(h, dv, heSo)
+  return {
+    key: ++soKhoa, ma: h?.ma ?? '', dvt: dv,
+    gia: h && h.gia ? String(Math.round(h.gia * heSo * 100) / 100) : '', vat: h ? String(h.vat) : '',
+    ghiChu: ghi, ghiTu: Boolean(ghi),
+  }
+}
 
 /** Đọc "dd/mm/yyyy - dd/mm/yyyy" của dòng bảng giá thành khoảng ngày */
 function docKhoang(t: unknown): KhoangNgay | null {
@@ -82,7 +94,7 @@ gieoCatalogRows(DM, [
   ...bangGia('BG0003', 'Giá mua nguyên vật liệu Q4/2026', 'Giá mua', '01/10/2026 - 31/03/2027', '', '',
     NVL.slice(0, 8).map(h => ({ ma: h.ma, dvt: h.dvt, gia: h.gia, vat: h.ts }))),
   ...bangGia('BG0004', `Giá mua ${NCC[0]?.ten ?? ''} theo ĐVT`, 'Giá mua', '01/11/2026 - 31/01/2027', '', NCC[0]?.ma ?? '',
-    NVL_NHIEU_DVT.flatMap(h => [dvtCua(h)[0], dvtCua(h).find(x => x.heSo > 1)!].map(x => ({ ma: h.ma, dvt: x.dv, gia: Math.round(h.gia * x.heSo * 0.97), vat: h.vat })))),
+    NVL_NHIEU_DVT.flatMap(h => [dvtCua(h)[0], dvtCua(h).find(x => x.heSo > 1)!].map(x => ({ ma: h.ma, dvt: x.dv, gia: Math.round(h.gia * x.heSo * 0.97), vat: h.vat, ghiChu: ghiQuyDoi(h, x.dv, x.heSo) })))),
 ])
 
 /** Mã bảng giá kế tiếp: BG + 4 số, lớn nhất đang có cộng 1 */
@@ -178,7 +190,7 @@ export function ThemBangGia({ onDong, tab, sua: dongSua }: { onDong: () => void;
     const daKhai = dong.filter(x => x.key !== d.key && x.ma === ma).map(x => x.dvt)
     const dv = dvtCua(h).find(x => !daKhai.includes(x.dv)) ?? dvtCua(h)[0]
     const m = dongMoi(h, dv.dv, dv.heSo)
-    sua(d.key, { ma, dvt: m.dvt, gia: m.gia, vat: m.vat })
+    sua(d.key, { ma, dvt: m.dvt, gia: m.gia, vat: m.vat, ...(!d.ghiChu?.trim() || d.ghiTu ? { ghiChu: m.ghiChu, ghiTu: m.ghiTu } : {}) })
   }
   // Chọn nhiều hàng một lần: bỏ dòng trống còn thừa, thêm mỗi hàng một dòng ĐVT chính
   const themHangLoat = (ds: HangChon[]) => {
@@ -192,7 +204,10 @@ export function ThemBangGia({ onDong, tab, sua: dongSua }: { onDong: () => void;
     const cu = ds.find(x => x.dv === d.dvt)?.heSo ?? 1
     const moi = ds.find(x => x.dv === dv)?.heSo ?? 1
     const gia = docSoQT(d.gia)
-    sua(d.key, { dvt: dv, ...(gia > 0 ? { gia: String(Math.round(gia / cu * moi * 100) / 100) } : {}) })
+    // Ghi chú trống hoặc do form tự điền: ghi lại phần quy đổi của ĐVT mới, người dùng đã tự ghi thì giữ
+    const ghi = ghiQuyDoi(h, dv, moi)
+    sua(d.key, { dvt: dv, ...(gia > 0 ? { gia: String(Math.round(gia / cu * moi * 100) / 100) } : {}),
+      ...(!d.ghiChu?.trim() || d.ghiTu ? { ghiChu: ghi, ghiTu: Boolean(ghi) } : {}) })
   }
 
   const dongDien = dong.filter(d => d.ma || d.gia)
@@ -369,7 +384,7 @@ export function ThemBangGia({ onDong, tab, sua: dongSua }: { onDong: () => void;
                     <td><ONhap v={d.gia} so ten={`Đơn giá dòng ${i + 1}`} onDoi={t => sua(d.key, { gia: t })} /></td>
                     <td><ONhap v={d.vat} so ten={`VAT dòng ${i + 1}`} onDoi={t => sua(d.key, { vat: t })} /></td>
                     <td className="r muted">{docSoQT(d.gia) > 0 ? money(Math.round(giaSauThue(d))) : ''}</td>
-                    <td><input className="inp sm" value={d.ghiChu ?? ''} onChange={e => sua(d.key, { ghiChu: e.target.value })} aria-label={`Ghi chú dòng ${i + 1}`} /></td>
+                    <td><input className="inp sm" value={d.ghiChu ?? ''} onChange={e => sua(d.key, { ghiChu: e.target.value, ghiTu: false })} aria-label={`Ghi chú dòng ${i + 1}`} /></td>
                     <td className="c">
                       <button type="button" className="icon-btn sm" aria-label={`Xoá dòng ${i + 1}`} title="Xoá dòng" onClick={() => xoa(d.key)}>
                         <Icon n="trash" className="ic sm" />
