@@ -6,8 +6,8 @@
 
 ## Đã làm
 
-- `public/favicon.png`: dựng lại từ `D:\IACC-CLOUD\gitbook-docs\icon accounting_Final.png`. Vẽ ở 256×256: khung xanh `#0560A6` (cùng màu dải iPOS.VN) dày 6px (lần đầu 12px, Trum chê dày), bo góc 56px, ảnh gốc đặt bên trong bo góc 50px. Thu về 64×64.
-- `index.html`: đường dẫn favicon đổi `?v=2` thành `?v=4` để trình duyệt bỏ bản cũ.
+- `public/favicon.png`: dựng lại từ `D:\IACC-CLOUD\gitbook-docs\icon accounting_Final.png`. Vẽ ở 256×256: khung xanh `#0560A6` (cùng màu dải iPOS.VN) dày 6px (lần đầu 12px, Trum chê dày), bo góc 36px (lần đầu 56px, Trum chê bo nhiều), ảnh gốc đặt bên trong bo góc 30px. Thu về 64×64.
+- `index.html`: đường dẫn favicon đổi `?v=2` thành `?v=5` để trình duyệt bỏ bản cũ.
 
 ## Đã kiểm
 
