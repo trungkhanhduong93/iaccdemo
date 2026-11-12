@@ -124,9 +124,8 @@ export const MNguoiDung: FC<ScreenProps> = ({ sc }) => {
                   <div className="m-ht-user-info">
                     <span className="m-ht-user-ten">{u.ten}</span>
                     <span className="m-ht-user-email">{u.email}</span>
-                    <span className="m-ht-user-phu">
-                      {u.vaiTro} · {u.pham || 'Tất cả cửa hàng'}
-                    </span>
+                    <span className="m-ht-user-phu">Quyền: {u.vaiTro}</span>
+                    <span className="m-ht-user-phu">Cửa hàng: {u.pham || 'Tất cả cửa hàng'}</span>
                   </div>
                 </div>
                 <div className="m-ht-user-phai">

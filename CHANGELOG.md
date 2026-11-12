@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 12/11/2026
+- T811: Điện thoại, danh sách Người sử dụng: mỗi thẻ hiện hai dòng riêng "Quyền: ..." và "Cửa hàng: ...".
 - T809: Form Thêm người sử dụng bỏ dòng phụ dưới tiêu đề, ẩn Thông tin hệ thống và Đăng nhập gần nhất (chỉ hiện khi xem người có sẵn, Đăng nhập gần nhất nằm cuối Thông tin hệ thống). Đồng ý chia sẻ thông tin cá nhân thành nút bật tắt trong khối Trạng thái.
 - T808: Biểu tượng trên tab trình duyệt bo tròn 4 góc, có khung viền xanh.
 - T807: Danh mục Quy đổi ĐVT: cột Từ ĐVT, Đến ĐVT và ô chọn trong form chỉ hiện tên đơn vị tính. Tỷ lệ quy đổi, diễn giải hiện và gõ theo tiêu chuẩn định dạng số ở Cấu hình kế toán. Form bỏ mã dưới tiêu đề và nút gập khối; Đang sử dụng chuyển xuống khối Trạng thái như các danh mục khác. Điện thoại: thẻ hiện diễn giải (vd 1 Thùng = 24 Lon) và hàng hoá áp dụng, bỏ mã và số kiểu tiền.
