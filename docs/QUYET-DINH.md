@@ -1189,3 +1189,5 @@ Trum chốt trên bản thiết kế https://claude.ai/artifact/WKJMseeaoH53WMsf
 - Hỗ trợ gồm Tài liệu hướng dẫn (mở trang ngoài), Góp ý, Lấy mã hỗ trợ, Phím tắt. Mã hỗ trợ 7 ký tự, hiệu lực 2 giờ, tạo mã mới thì mã cũ hết hiệu lực.
 - Ngôn ngữ trong app có Tiếng Việt và English. Trang đăng nhập giữ 4 ngôn ngữ theo QD105.
 - Điện thoại: Thông báo mở từ chuông ở Trang chủ; Cài đặt thông báo, Hỗ trợ, đổi ngôn ngữ nằm ở màn Khác. Điện thoại không có Phím tắt và tải ứng dụng.
+
+## QD109. Bán hàng gói Plus: tên chip nguồn chứng từ (đang soạn)
