@@ -733,7 +733,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
             </div>
           ) : (
             <div>
-              <div className="m-pb-nhan-gt">Tổng thanh toán</div>
+              <div className="m-pb-nhan-gt">{sc.code === '5.1.1' ? 'Tổng tiền' : 'Tổng thanh toán'}</div>{/* Nhập kho ghi theo giá nhập kho, không thuế, chiết khấu (T824) */}
               <div className="m-pb-so-gt">{money(tongThanhToan)} đ</div>
             </div>
           )}

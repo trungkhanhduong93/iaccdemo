@@ -395,6 +395,7 @@ interface TheHangMuaProps {
   onXoa: () => void
   autoFocusSl?: boolean
   chiSl?: boolean   // trả lại hàng mua lập từ phiếu mua (T819, như web T816): chỉ sửa số lượng (tối đa dong.slMax), xoá dòng
+  gon?: boolean   // phiếu Nhập kho (T824): Số lượng gộp ĐVT như phiếu mua, bỏ Chiết khấu, VAT
 }
 
 function TheHangMua({
@@ -406,6 +407,7 @@ function TheHangMua({
   onXoa,
   autoFocusSl,
   chiSl,
+  gon,
 }: TheHangMuaProps) {
   const kieuGiam = dong.kieuGiam ?? (dong?.ck && !dong?.ptCk ? 'đ' : '%')
 
@@ -672,6 +674,8 @@ function TheHangMua({
           <span style={{ position: 'absolute', right: 10, fontSize: 12, fontWeight: 500, color: '#9ca3af', pointerEvents: 'none' }}>đ</span>
         </div>
 
+        {/* Phiếu Nhập kho (T824): ghi theo giá nhập kho, bỏ Chiết khấu, VAT */}
+        {!gon && (<>
         {/* Hàng Chiết khấu */}
         <span className="m-t601-grid-lbl">Chiết khấu</span>
         <div className="m-t601-box" style={{ position: 'relative', paddingRight: 34 }}>
@@ -805,8 +809,10 @@ function TheHangMua({
           </div>
         )}
 
+        </>)}
+
         {/* Hàng Tổng tiền */}
-        <span className="m-t601-grid-lbl tg">Tổng tiền</span>
+        <span className="m-t601-grid-lbl tg">{gon ? 'Thành tiền' : 'Tổng tiền'}</span>
         {suaTongTien ? (
           <div className="m-t601-box" style={{ gridColumn: '2 / -1', position: 'relative', paddingRight: 24, marginTop: 4 }}>
             <input
@@ -891,6 +897,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
   const bo = boO(nhom, cfg)
   const laTien = mod.key === 'tien' || cfg.dong === 'tien'
   const laCq = nhom === 'cq' || loai?.k === 'cq'
+  const laNk = sc.code === '5.1.1'   // phiếu Nhập kho (T824, như web T818): không đối tượng, có Người thực hiện
   const cnChon = cuaHangHienTai(s)
   const [cuaHang, setCuaHang] = useState(() => (gocData?.cn ? String(gocData.cn) : cnChon?.ten ?? ''))
   const tenLoai = loai?.ten ?? (gocData?.tenLoai ? String(gocData.tenLoai) : tenMan(sc))
@@ -1010,6 +1017,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
   // Đối tượng
   const [doiTuong, setDoiTuong] = useState(() => {
     if (gocData?.doiTuong) return String(gocData.doiTuong)
+    if (laNk) return ''
     return dsDoiTuong[0] ?? ''
   })
 
@@ -1032,7 +1040,6 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
   })
 
   // Nhập kho (T824, như web T818): Người thực hiện lưu ở _nhanVien, phiếu mẫu lấy người tạo như cột danh sách
-  const laNk = sc.code === '5.1.1'
   const [nhanVien, setNhanVien] = useState(() => String(gocData?._nhanVien ?? (row?.so ? nguoiTaoMau(row.so) : NHAN_VIEN[0].ten)))
   const [moChonNv, setMoChonNv] = useState(false)
 
@@ -2068,7 +2075,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
     const dsTomTatChung: DongTomTat[] = [
       { nhan: 'Số phiếu', giaTri: <b>{soPhieuMoi}</b> },
       { nhan: 'Số tiền', giaTri: `${money(tongTienDaLuu || tongThanhToan)} đ`, noiBat: true },
-      ...(doiTuongDaLuu || doiTuong ? [{ nhan: nhom === 'ban' ? 'Khách hàng' : 'Đối tượng', giaTri: doiTuongDaLuu || doiTuong }] : []),
+      ...(laNk ? [{ nhan: 'Người thực hiện', giaTri: nhanVien }] : doiTuongDaLuu || doiTuong ? [{ nhan: nhom === 'ban' ? 'Khách hàng' : 'Đối tượng', giaTri: doiTuongDaLuu || doiTuong }] : []),
     ]
     return (
       <MThanhCong
@@ -2412,7 +2419,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
               {loiO.cuaHang && <div className="m-lp-loi-o">{loiO.cuaHang}</div>}
 
               <div>
-                <div className="m-pb-nhan-gt">Tổng thanh toán (tự tính)</div>
+                <div className="m-pb-nhan-gt">{laNk ? 'Tổng tiền (tự tính)' : 'Tổng thanh toán (tự tính)'}</div>
                 <div className="m-pb-so-gt cam">{money(tongThanhToan)} đ</div>
               </div>
             </div>
@@ -2455,7 +2462,20 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
 
             <div className="m-pb-nhom">MẶT HÀNG ({dsDong.length})</div>
             <div id="m-lp-o-hang" data-hd="chi-tiet">
-              {dsDong.map((d, i) => (
+              {laNk && dsDong.map((d, i) => (
+                <TheHangMua
+                  key={d.id ?? i}
+                  stt={i + 1}
+                  dong={d}
+                  onDoiDong={patch => doiDong(i, patch)}
+                  onDoiDvt={dvMoi => doiDvt(i, dvMoi)}
+                  onNhanBan={() => nhanBanDong(i)}
+                  onXoa={() => xoaDong(i)}
+                  autoFocusSl={d.moi && i === dsDong.length - 1}
+                  gon
+                />
+              ))}
+              {!laNk && dsDong.map((d, i) => (
                 <TheHangMoi
                   key={i}
                   idx={i}
