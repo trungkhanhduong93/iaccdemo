@@ -69,16 +69,54 @@ const phatSong = () => { listeners.forEach(l => l()) }
 
 const khoPath = new Map<string, TrangThaiLoc>()
 
+// Mở báo cáo ở tab trình duyệt mới kèm kỳ, bộ lọc (T814): tab mới không có kho trạng thái của tab cũ nên gửi qua đường dẫn
+const TS_KY = 'bcKy'
+const TS_LOC = 'bcLoc'
+
+/** Đường dẫn (#/app/...) mở báo cáo ở tab mới, sẵn kỳ và bộ lọc */
+export function linkBaoCaoTabMoi(path: string, loc: Record<string, string[]>, ky: string): string {
+  return `#${path}?${new URLSearchParams({ [TS_KY]: ky, [TS_LOC]: JSON.stringify(loc) })}`
+}
+
+/** Kỳ, bộ lọc gửi kèm đường dẫn của trang đang mở (linkBaoCaoTabMoi), chỉ khi đúng báo cáo này */
+function docLocTuDuongDan(path: string): BanLoc | null {
+  if (typeof window === 'undefined') return null
+  const h = window.location.hash.slice(1)
+  const i = h.indexOf('?')
+  if (i < 0 || h.slice(0, i) !== path) return null
+  const q = new URLSearchParams(h.slice(i + 1))
+  const ky = q.get(TS_KY)
+  const raw = q.get(TS_LOC)
+  if (!ky || !raw) return null
+  try {
+    const v = JSON.parse(raw) as Record<string, unknown>
+    if (!v || typeof v !== 'object') return null
+    const loc = Object.fromEntries(Object.entries(v).filter(([, ds]) => Array.isArray(ds)).map(([k, ds]) => [k, (ds as unknown[]).map(String)]))
+    return { loc, ky }
+  } catch {
+    return null
+  }
+}
+
+/** Kỳ, bộ lọc đã xem của báo cáo trên trang đang mở */
+export function daXemTrangHienTai(): BanLoc {
+  const path = typeof window === 'undefined' ? '' : window.location.hash.slice(1).split('?')[0]
+  return khoPath.get(path)?.daXem ?? { loc: {}, ky: '9' }
+}
+
 function layTrangThai(path: string): TrangThaiLoc {
   let s = khoPath.get(path)
   if (!s) {
-    const defaultBan: BanLoc = { loc: {}, ky: '9' }
+    // Mở từ liên kết tab mới (T814): xem ngay theo kỳ, bộ lọc gửi kèm; kỳ mặc định của trang không ghi đè
+    const tuDuongDan = docLocTuDuongDan(path)
+    const defaultBan: BanLoc = tuDuongDan ?? { loc: {}, ky: '9' }
     s = {
-      loc: {},
-      ky: '9',
+      loc: { ...defaultBan.loc },
+      ky: defaultBan.ky,
       daXem: { ...defaultBan },
       nhap: { ...defaultBan },
       coThayDoi: false,
+      ...(tuDuongDan ? { kyDatSan: true } : {}),
       tuyChon: {},
       cotNhuDangXem: true,
     }

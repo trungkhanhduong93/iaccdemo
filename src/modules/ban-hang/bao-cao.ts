@@ -1,11 +1,13 @@
 // Báo cáo bán hàng theo ngày, tổng hợp, chi tiết bán hàng (T157). Lấy đúng dòng món của chứng từ Xuất bán POS 3.1.1
 // (tổng hợp theo kênh mỗi ngày, cửa hàng), nên doanh thu, thuế cộng lại bằng DAILY và ba báo cáo khớp nhau
+import { createElement, type MouseEvent } from 'react'
 import type { Col, Row } from '../types'
 import { CUA_HANG, DAILY, HANG, trongThang } from '../../data/mock'
 import { dmy } from '../../ui/format'
 import { dongCuaPhieu, soFabi, theoKenh } from './ChungTuBanHang'
 import { giamThueHang } from './giam-thue'
-import { docLocNguon, quaLocDong, quaLocDt, quaLocKenh } from '../bao-cao/loc-nguon'
+import { docLocNguon, KHOA_LOC_NGUON, quaLocDong, quaLocDt, quaLocKenh } from '../bao-cao/loc-nguon'
+import { daXemTrangHienTai, linkBaoCaoTabMoi } from '../../ui/bao-cao/tuyChinhBC'
 
 interface DongBan {
   ngay: string; so: string; kenh: string; kh: string; cn: string; ma: string; ten: string; nhom: string; dvt: string
@@ -69,9 +71,21 @@ export const banHangTheoNgay = {
   },
 }
 
+/** Ô mã hàng của Tổng hợp bán hàng (T814): bấm mở Bảng kê chi tiết bán hàng 3.2.8 ở tab trình duyệt mới,
+ *  cùng kỳ, bộ lọc đang xem, thêm lọc Hàng hoá theo mặt hàng của dòng; dòng tổng, dòng nhóm giữ chữ */
+const oMaHang = (x: Row) => {
+  if (x._t || x._nhom || !x.ma || !x.ten) return x.ma
+  const { loc, ky } = daXemTrangHienTai()
+  return createElement('a', {
+    className: 'ds-link-so', href: linkBaoCaoTabMoi('/app/ban-hang/3-2-8', { ...loc, [KHOA_LOC_NGUON.hang]: [String(x.ten)] }, ky),
+    target: '_blank', rel: 'noopener', title: 'Xem Bảng kê chi tiết bán hàng của mặt hàng này ở tab mới',
+    onClick: (e: MouseEvent) => e.stopPropagation(),
+  }, x.ma)
+}
+
 /** Tổng hợp bán hàng: gom theo mặt hàng, xếp theo nhóm hàng như danh mục */
 export const tongHopBanHang = {
-  cols: [{ k: 'nhom', t: 'Nhóm hàng', w: 110 }, { k: 'ma', t: 'Mã hàng', cls: 'code', w: 80 }, { k: 'ten', t: 'Tên hàng' }, { k: 'dvt', t: 'ĐVT', c: true, w: 60 },
+  cols: [{ k: 'nhom', t: 'Nhóm hàng', w: 110 }, { k: 'ma', t: 'Mã hàng', cls: 'code', w: 80, r: oMaHang }, { k: 'ten', t: 'Tên hàng' }, { k: 'dvt', t: 'ĐVT', c: true, w: 60 },
     { k: 'sl', t: 'Số lượng', num: true }, ...COT_TIEN] as Col[],   // bỏ Giá vốn, Lãi gộp (T454)
   rows: (thang: number, cn?: string, loc?: Record<string, string[]>, tyLe?: boolean): Row[] => {
     const nhom = new Map<string, Row>()
