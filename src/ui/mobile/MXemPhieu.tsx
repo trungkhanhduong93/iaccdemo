@@ -555,7 +555,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
                   </div>
                 )}
                 <div className="m-t449-hang-dong">
-                  <span className="lbl">Tổng tiền:</span>
+                  <span className="lbl">{laNk ? 'Thành tiền:' : 'Tổng tiền:'}</span>
                   <span className="val bold num">{money(tongDong)} đ</span>
                 </div>
               </div>
@@ -713,10 +713,10 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
               <span className="m-tc-badge-nguon m-tc-xem-nguon">{NGUON[row.nguon]?.[1] ?? 'Thủ công'}</span>
             </div>
           )}
-          <div className="m-pb-hang-chip">
+          {!laNk && <div className="m-pb-hang-chip">
             <span className="m-pb-chip-loai">{tenLoai}</span>
             {chipTt && <span className={`m-pb-chip-tt ${chipTt.kieu}`}>{chipTt.ten}</span>}
-          </div>
+          </div>}
 
           {!laNk && <div className="m-pb-ten-the">{tenChinhThe}</div>}
 
@@ -978,6 +978,33 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
 
                 {renderDsHangHoaMua()}
               </>
+            ) : laNk ? (
+              <>
+                {/* Nhập kho (T824): chi tiết như phiếu mua, không nhà cung cấp, hoá đơn; có Người thực hiện (như web T818) */}
+                <div className="m-pb-nhom">THÔNG TIN CHUNG</div>
+                <div className="m-pb-the m-pb-the-gon m-t655-gon">
+                  <div className="m-pb-dong">
+                    <span className="n">Ngày chứng từ</span>
+                    <span className="g">{String(row.ngay ?? '').split(' ')[0]}</span>
+                  </div>
+                  <div className="m-pb-dong">
+                    <span className="n">Kho nhập</span>
+                    <span className="g">{kho}</span>
+                  </div>
+                  <div className="m-pb-dong">
+                    <span className="n">Người thực hiện</span>
+                    <span className="g">{String(row._nhanVien ?? row._nguoiTao ?? nguoiTaoMau(row.so))}</span>
+                  </div>
+                  {(row.dienGiai || row._ghiChu) && (
+                    <div className="m-pb-dong">
+                      <span className="n">Ghi chú</span>
+                      <span className="g">{String(row.dienGiai || row._ghiChu)}</span>
+                    </div>
+                  )}
+                </div>
+
+                {renderDsHangHoaMua()}
+              </>
             ) : laKk ? (
               <>
                 <div className="m-pb-nhom">THÔNG TIN KIỂM KÊ</div>
@@ -1092,15 +1119,8 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
                   )}
                   {kho && (
                     <div className="m-pb-dong">
-                      <span className="n">{sc.code === '5.1.1' ? 'Kho nhập' : 'Kho'}</span>
+                      <span className="n">Kho</span>
                       <span className="g">{kho}</span>
-                    </div>
-                  )}
-                  {/* Nhập kho (T824, như web T818): Người thực hiện đã lưu trên phiếu, phiếu mẫu lấy người tạo */}
-                  {sc.code === '5.1.1' && (
-                    <div className="m-pb-dong">
-                      <span className="n">Người thực hiện</span>
-                      <span className="g">{String(row._nhanVien ?? row._nguoiTao ?? nguoiTaoMau(row.so))}</span>
                     </div>
                   )}
                   {/* Phiếu điều chỉnh: tham chiếu về phiếu kiểm kê gốc (T603) */}

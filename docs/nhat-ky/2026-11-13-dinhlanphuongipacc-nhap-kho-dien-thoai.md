@@ -10,6 +10,8 @@
 - `src/ui/mobile/MLapPhieu.tsx`: form lập phiếu Nhập kho có tiêu đề "Lập phiếu nhập kho", ô "Kho nhập", ô "Người thực hiện" chọn từ danh sách nhân viên. Lưu vào `_nhanVien`.
 - `src/ui/mobile/MLapPhieu.tsx` (theo góp ý người dùng): phiếu Nhập kho ghi theo giá nhập kho, không thuế, chiết khấu, như web. Thẻ mặt hàng dùng `TheHangMua` (ô Số lượng gộp ĐVT như phiếu mua), thêm prop `gon` để bỏ Chiết khấu, VAT, ghi "Thành tiền". Đầu phiếu ghi "Tổng tiền (tự tính)". Phiếu không có đối tượng (trước tự điền "Khách lẻ POS"), màn lưu thành công ghi Người thực hiện.
 - `src/ui/mobile/MXemPhieu.tsx`: màn xem phiếu Nhập kho có "Kho nhập", "Người thực hiện", ô tổng ghi "Tổng tiền" thay "Tổng thanh toán". Thẻ đầu như phiếu mua: cửa hàng và nguồn chứng từ ở dòng đầu, bỏ tên thẻ và hai ô Cửa hàng, Nguồn chứng từ. Phiếu mẫu chưa lưu kho thì lấy kho đầu của cửa hàng, như bản in web.
+- `src/ui/mobile/MXemPhieu.tsx` (theo góp ý người dùng): xem phiếu Nhập kho làm giống phiếu mua. Thẻ đầu chỉ cửa hàng, nguồn, Tổng tiền (bỏ chip loại, trạng thái). Tab Chi tiết có THÔNG TIN CHUNG (Ngày chứng từ, Kho nhập, Người thực hiện, Ghi chú) và HÀNG HOÁ, DỊCH VỤ dùng `renderDsHangHoaMua`, mỗi dòng ghi Thành tiền.
+- `src/ui/mobile/MChungTu.tsx`: màn Nhập kho mở từ menu không còn tab Xuất khác, Báo cáo theo dõi; tiêu đề danh sách ghi Nhập kho.
 - `src/ui/mobile/MobileShell.tsx`: tiêu đề tách theo tab, Nhập kho và Xuất khác (trước chung "Nhập xuất khác").
 - `src/ui/mobile/MNghiepVu.tsx`: nhóm Kho ở menu Nghiệp vụ đổi "KIỂM KÊ" thành "KHO" (người dùng yêu cầu).
 - `src/ui/generic/gen.ts`: `nguoiTaoMau` mặc định bỏ lượt rng đầu, như `taoCua` của danh sách. Trước đó, với phiếu mẫu, cột Người thực hiện ở danh sách web có thể khác người ở form và bản in (T818).
@@ -27,9 +29,10 @@
 ## Dở dang, việc tiếp theo
 
 - Không.
-- Trạng thái Chưa ghi sổ và nút Ghi sổ vẫn hiện ở gói Plus doanh nghiệp theo QD81. Người dùng muốn bỏ, đã ghi việc T825 chờ Trum chốt.
+- Trạng thái ghi sổ ở gói Plus: Trum chốt chỉ gói Pro có ghi sổ, làm ở T825 cùng phiên (`kieuGhiSoDv`, sửa QD81).
 - `MLapPhieu.tsx`, `MXemPhieu.tsx`, `MNghiepVu.tsx` Trum đang giữ ở T552, T497, T498. Người dùng đồng ý sửa vài dòng riêng màn 5.1.1 và tên nhóm KHO.
 
 ## Bẫy, quyết định mới
 
-- Không.
+- Người dùng dặn: chứng từ nào trên điện thoại cũng làm cùng phong cách phiếu mua (thẻ đầu, Chi tiết, thẻ mặt hàng).
+- T825: QD81 sửa thành chỉ gói Pro có ghi sổ.

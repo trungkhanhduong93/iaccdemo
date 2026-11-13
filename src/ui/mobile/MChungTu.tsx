@@ -499,6 +499,8 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
       const isNk = sc.code === '5.1.1' || sc.slug === '5-1-1'
       const isXk = sc.code === '5.1.2-4' || sc.slug === '5-1-2-4'
       const isXh = sc.code === '5.1.2-3' || sc.slug === '5-1-2-3'
+      // Nhập kho mở từ menu (T824): không có tab Xuất khác, Báo cáo theo dõi, tiêu đề ghi Nhập kho
+      if (isNk) return null
       return (
         <div className="m-tc-tabs" role="tablist">
           <button
@@ -787,7 +789,7 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
     <>
       {dungKhungChuan ? (
         <MDsChungTuChuan
-          tieuDe={mod.ngan ?? mod.ten}
+          tieuDe={sc.code === '5.1.1' ? 'Nhập kho' : mod.ngan ?? mod.ten}
           hangTabs={hangTabs}
           onQuayLai={quayLai}
           onMoLoc={() => setLocMo(true)}
