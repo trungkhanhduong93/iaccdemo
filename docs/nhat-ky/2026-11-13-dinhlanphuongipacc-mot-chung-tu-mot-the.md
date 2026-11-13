@@ -12,6 +12,7 @@
 - Bản mẫu artifact: sửa ghi chú cho đúng quy tắc mới.
 - Gộp ô thông tin chung của một thẻ (dinhlanphuongipacc yêu cầu thêm): `src/ui/Table.tsx` thêm `gopO` (khoá nhóm dòng) và `Col.gop` (`modules/types.ts`), các dòng liền nhau cùng khoá gộp một ô (rowSpan), mặc định tắt nên bảng khác không đổi, không dùng khi cuộn ảo. Form Ghi tăng bổ sung gộp Số chứng từ, Ngày chứng từ, Loại thẻ (một ô chọn), Số thẻ, Ngày ghi tăng; dòng đầu thẻ kẻ đậm hơn (`app.css` mục T828). Bỏ tích một dòng của thẻ thì số thẻ vẫn hiện ở ô gộp.
 - Ô tích theo thẻ (dinhlanphuongipacc yêu cầu): cột chọn cũng gộp, một ô tích cho cả thẻ, chọn hoặc bỏ mọi dòng của thẻ; dòng cộng ghi "Cộng n thẻ chọn (m dòng)", "Chọn tất cả (n thẻ)". Đã thử: 6 ô tích cho 6 thẻ, bỏ tích UNC2610-0245 thì còn 5 thẻ, 8 dòng.
+- Kéo giãn độ rộng cột form Ghi tăng bổ sung (dinhlanphuongipacc báo không kéo được): bật `useDoRongCot('ccdc/ghi-tang-bo-sung')`, nhớ độ rộng trên trình duyệt như lưới chứng từ T618. Đã thử kéo cột Nội dung chi tiết từ 175 lên 302 px.
 
 ## Đã kiểm
 

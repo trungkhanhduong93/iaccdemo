@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom'
 import type { Row } from '../types'
 import { useSession } from '../../app/session'
 import { FormToanMan } from '../../ui/FormToanMan'
-import { Table } from '../../ui/Table'
+import { Table, useDoRongCot } from '../../ui/Table'
 import { Select } from '../../ui/Dropdown'
 import { docSoQT, money, short, soQT } from '../../ui/format'
 import { apKhoPhieu, suaPhieu, useDaXoa } from '../../ui/generic/daXoa'
@@ -118,6 +118,7 @@ export function useCanhBaoCho(ky: number) {
 export function GhiTangHangLoat({ rows: daCo, onDong }: { soDong: number; rows: Row[]; onDong: () => void }) {
   const { s, toast } = useSession()
   const dongCho = useDongCho()
+  const doRong = useDoRongCot('ccdc/ghi-tang-bo-sung')   // kéo giãn độ rộng cột, nhớ trên trình duyệt (T828, như lưới chứng từ T618)
   // Loại thẻ chung cho cả chứng từ: mọi dòng là công cụ dụng cụ thì CCDC, còn lại Chi phí trả trước (T828)
   const goc = useMemo((): DongCho[] => dongCho.map(d => {
     const cung = dongCho.filter(x => theCuaDong(x) === theCuaDong(d))
@@ -189,7 +190,7 @@ export function GhiTangHangLoat({ rows: daCo, onDong }: { soDong: number; rows: 
       )}>
       <section className="card bang-sua gt-hl">
         {rows.length ? (
-          <Table motDong rows={rows} rowCls={r => [loi.has(r.key) ? 'gt-hl-loi' : '', dauThe.has(r.key) ? 'gt-hl-dau' : ''].join(' ')}
+          <Table motDong doRong={doRong} rows={rows} rowCls={r => [loi.has(r.key) ? 'gt-hl-loi' : '', dauThe.has(r.key) ? 'gt-hl-dau' : ''].join(' ')}
             gopO={r => r.key === undefined ? undefined : theCuaDong(r as DongCho)}   // thông tin chung của một thẻ gộp một ô cho các dòng của thẻ (T828)
             sum={{ ten: `Cộng ${soTheChon} thẻ chọn (${chon.length} dòng)`, gt: soQT(chon.reduce((s, r) => s + r.gt, 0)), tienKy: soQT(chon.reduce((s, r) => s + r.tienKy, 0)) }}
             cols={[
