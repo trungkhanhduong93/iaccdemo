@@ -13,6 +13,7 @@
 - `ui/generic/nhom.ts`: nhóm `mua` có `khongKho` thì bỏ kho, bỏ Giá trị nhập kho, thêm ô Lý do nghiệp vụ (`LY_HD_MUA` = lý do chi bỏ các lý do chỉ là chuyển tiền: CHI02, CHI10, CHI16, CHI23, CHI32, CHI33, CHI34).
 - `ChungTuForm.tsx`: ô Lý do nghiệp vụ dùng chung cơ chế phiếu chi (nhãn Chi phí, nhắc và hộp tạo thẻ chi phí phân bổ khi lưu); không có Trả hàng; dòng đầu phiếu mới để trống mã; tiêu đề form có dòng phụ.
 - `BangSua.tsx`: cột "Diễn giải", thêm dòng là dòng trống mã, gõ tự do.
+- `ChonDanhMuc.tsx` (hộp `HopThemHang`), `truong-dm.ts` (xuất `LOAI_HANG`, `LOAI_HANG_PRO`): gói Plus, Pro thêm hàng tại form chứng từ chọn được Loại hàng hoá, Nhóm hàng hoá, tiêu đề hộp "Thêm hàng hoá"; gói Standard giữ loại khoá theo màn.
 - `gen.ts`: `tkTheoLyDo('mua')` Nợ TK theo lý do, Có 331.
 - `VoucherScreen.tsx`: danh sách Hoá đơn mua hàng có cột Lý do, bộ lọc Lý do nghiệp vụ.
 - Tab chỉ ghi "Hoá đơn mua hàng"; tiêu đề phụ "Mua hàng không qua kho" chữ nhỏ cùng dòng sau tiêu đề form (`app.css`).

@@ -71,8 +71,8 @@ const laTich = (x: unknown) => x === 1 || x === true || x === '1'
 const coTonKho = (v: Record<string, any>) => v.tonKho !== 0 && v.tonKho !== false && v.tonKho !== '0'
 
 /** 5 loại hàng hoá theo iPOS Inventory; gói Pro có thêm Bán thành phẩm (T144) */
-const LOAI_HANG = ['Nguyên vật liệu', 'Thành phẩm', 'Hàng bán thẳng', 'Khác (Công cụ dụng cụ)', 'Ghi chú']
-const LOAI_HANG_PRO = ['Nguyên vật liệu', 'Thành phẩm', 'Hàng bán thẳng', 'Bán thành phẩm', 'Khác (Công cụ dụng cụ)', 'Ghi chú']
+export const LOAI_HANG = ['Nguyên vật liệu', 'Thành phẩm', 'Hàng bán thẳng', 'Khác (Công cụ dụng cụ)', 'Ghi chú']
+export const LOAI_HANG_PRO = ['Nguyên vật liệu', 'Thành phẩm', 'Hàng bán thẳng', 'Bán thành phẩm', 'Khác (Công cụ dụng cụ)', 'Ghi chú']
 
 export interface TruongDM {
   k: string

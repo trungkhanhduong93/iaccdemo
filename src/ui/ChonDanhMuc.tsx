@@ -7,7 +7,8 @@ import { Icon } from './Icon'
 import { fold } from './format'
 import { CatalogPanel } from './generic/CatalogScreen'
 import { getDmMeta, addCatalogRow, useAddedCatalogRows, sinhMaKeTiep, type DmMeta } from './generic/danhMucStore'
-import { DON_VI_TINH } from '../modules/danh-muc/data'
+import { DON_VI_TINH, TEN_NHOM_HANG } from '../modules/danh-muc/data'
+import { LOAI_HANG, LOAI_HANG_PRO } from '../modules/danh-muc/truong-dm'
 import { ngayDauNam, useSession } from '../app/session'
 import type { Row } from '../modules/types'
 
@@ -242,7 +243,8 @@ function HopThem({ nhan, coMa, tenGoc, onDong, onLuu }: { nhan: string; coMa?: b
 }
 
 /** Hộp nhỏ thêm hàng hoá ngay tại form chứng từ (T388): Mã (tự sinh theo loại), Tên, Đơn vị tính, Loại hàng hoá;
- *  loại khoá theo màn (Mua hàng, Kiểm kê: Nguyên vật liệu; Chi phí trả trước: Khác (Công cụ dụng cụ)), các giá trị khác lấy theo giá trị sẵn (theo dõi tồn kho) */
+ *  loại khoá theo màn (Mua hàng, Kiểm kê: Nguyên vật liệu; Chi phí trả trước: Khác (Công cụ dụng cụ)), các giá trị khác lấy theo giá trị sẵn (theo dõi tồn kho).
+ *  Từ gói Plus (T821): chọn được Loại hàng hoá (mã tự sinh lại theo loại) và Nhóm hàng hoá; gói Standard giữ loại khoá, không có nhóm */
 function HopThemHang({ meta, nhan, onDong, onLuu }: { meta: DmMeta; nhan: string; onDong: () => void; onLuu: (v: Record<string, any>) => void }) {
   const { s } = useSession()
   // Giá trị sẵn khi thêm mới của danh mục, vd ngành nghề 301-5 của hàng hoá (T469), rồi tới giá trị điền từ phiếu
@@ -258,10 +260,12 @@ function HopThemHang({ meta, nhan, onDong, onLuu }: { meta: DmMeta; nhan: string
     return () => window.removeEventListener('keydown', esc, true)
   }, [onDong])
   const enter = (e: PhimReact<HTMLInputElement>) => { if (e.key === 'Enter') luu() }
+  const chonLoai = s.goi !== 'S' && meta.catKey === '1.2'   // gói Plus, Pro chọn Loại, Nhóm hàng hoá (T821)
+  const dsLoai = (s.goi === 'PR' ? LOAI_HANG_PRO : LOAI_HANG).concat(v.loai && !(s.goi === 'PR' ? LOAI_HANG_PRO : LOAI_HANG).includes(v.loai) ? [v.loai] : [])
   return createPortal(
     <div className="overlay ds-hop-nen" onMouseDown={e => { if (e.target === e.currentTarget) onDong() }}>
       <div className="ds-hop ds-hop-nho" role="dialog" aria-modal="true" aria-label={`Thêm ${nhan}`}>
-        <div className="ds-hop-dau"><b>Thêm {nhan}</b></div>
+        <div className="ds-hop-dau"><b>Thêm {chonLoai ? 'hàng hoá' : nhan}</b></div>
         <div className="dm-hop-than">
           <div className="f">
             <label>Mã hàng <em>*</em></label>
@@ -278,8 +282,18 @@ function HopThemHang({ meta, nhan, onDong, onLuu }: { meta: DmMeta; nhan: string
           </div>
           <div className="f">
             <label>Loại hàng hoá</label>
-            <input className="inp" value={v.loai ?? ''} aria-label="Loại hàng hoá" readOnly disabled />
+            {chonLoai ? (
+              <Select className="inp" value={v.loai ?? ''} aria-label="Loại hàng hoá" onChange={e => doi('loai', e.target.value)}
+                ds={dsLoai.map(t => ({ v: t, t }))} />
+            ) : <input className="inp" value={v.loai ?? ''} aria-label="Loại hàng hoá" readOnly disabled />}
           </div>
+          {chonLoai && (
+            <div className="f">
+              <label>Nhóm hàng hoá</label>
+              <Select className="inp" value={v.nhom ?? ''} aria-label="Nhóm hàng hoá" onChange={e => doi('nhom', e.target.value)}
+                ds={[{ v: '', t: '(Chọn nhóm hàng hoá)' }, ...TEN_NHOM_HANG.map(t => ({ v: t, t }))]} />
+            </div>
+          )}
         </div>
         <div className="ds-chan">
           <span className="grow" />
