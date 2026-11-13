@@ -5,7 +5,7 @@ import { duongDan, moDuoc, tenMan, timMan } from '../../app/registry'
 import { dsCuaHang, useSession } from '../../app/session'
 import { type Goi, kieuGhiSoDv } from '../../app/plan'
 import { money, soLuong } from '../format'
-import { NGUON, TT_CT, dongCua, doanLyDoThuChi, ttNghiepVu, type Dong } from '../generic/gen'
+import { NGUON, TT_CT, dongCua, doanLyDoThuChi, nguoiTaoMau, ttNghiepVu, type Dong } from '../generic/gen'
 import { boO, nhomCua, theoLoai } from '../generic/nhom'
 import { useDongChungTu } from '../generic/VoucherScreen'
 import { useDsPhieuDcn } from '../../modules/kho/BangDieuChuyen'
@@ -177,7 +177,8 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
   const hanTt = (coHanTt && nhomMb) ? String(row._hanTt ?? nv?.hanTt ?? '') : ''
 
   // Kho
-  const khoMacDinh = nhomMb === 'mua' ? (CUA_HANG.find(c => c.ten === cuaHangTen)?.kho[0] ?? 'Kho hàng') : ''
+  // Nhập kho (T824): phiếu mẫu chưa lưu kho thì lấy kho đầu của cửa hàng, như bản in web T818
+  const khoMacDinh = nhomMb === 'mua' || sc.code === '5.1.1' ?(CUA_HANG.find(c => c.ten === cuaHangTen)?.kho[0] ?? 'Kho hàng') : ''
   const kho = String(
     row._kho ??
       row.kho ??
@@ -1079,8 +1080,15 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
                   )}
                   {kho && (
                     <div className="m-pb-dong">
-                      <span className="n">Kho</span>
+                      <span className="n">{sc.code === '5.1.1' ? 'Kho nhập' : 'Kho'}</span>
                       <span className="g">{kho}</span>
+                    </div>
+                  )}
+                  {/* Nhập kho (T824, như web T818): Người thực hiện đã lưu trên phiếu, phiếu mẫu lấy người tạo */}
+                  {sc.code === '5.1.1' && (
+                    <div className="m-pb-dong">
+                      <span className="n">Người thực hiện</span>
+                      <span className="g">{String(row._nhanVien ?? row._nguoiTao ?? nguoiTaoMau(row.so))}</span>
                     </div>
                   )}
                   {/* Phiếu điều chỉnh: tham chiếu về phiếu kiểm kê gốc (T603) */}

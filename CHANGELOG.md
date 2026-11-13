@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 13/11/2026
+- T824: Điện thoại, Kho hàng, màn Nhập kho: thẻ danh sách, form lập và màn xem phiếu ghi Người thực hiện, Kho nhập; tiêu đề ghi Nhập kho hoặc Xuất khác theo tab; nhóm Kho ở menu Nghiệp vụ đổi tên KHO. Phiếu mẫu ở web có Người thực hiện ở form, bản in khớp cột danh sách.
 - T822: Hoá đơn mua hàng: ô Mã hàng có thêm tab CCDC; hoá đơn có dòng công cụ dụng cụ lý do chi phí chờ phân bổ, lưu xong mở thẻ chi phí loại Công cụ dụng cụ, điền sẵn Mã, Tên, ĐVT, Số lượng (vẫn đổi được loại thẻ). Ghi tăng thẻ chi phí phân bổ: danh sách khoản chờ tạo thẻ gồm cả hoá đơn mua hàng (gói Plus, Pro), dòng hàng CCDC mặc định loại Công cụ dụng cụ.
 - T823: Danh sách, form xem/sửa và bản in chứng từ chỉ ghi ngày, không còn giờ phút (cả phiếu sản xuất, điều chuyển, Xuất bán POS, bản điện thoại); riêng phiếu kiểm kê vẫn ghi ngày giờ.
 - T821: Gói Plus, Pro, thêm mã hàng ngay tại form chứng từ (hộp Thêm hàng hoá): chọn được Loại hàng hoá (mã tự sinh lại theo loại) và Nhóm hàng hoá. Gói Standard giữ như cũ.

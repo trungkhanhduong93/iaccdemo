@@ -9,7 +9,7 @@ import { docNgay, khoangThang, trongKhoang } from '../ChonNgay'
 import { money, rutGonSo } from '../format'
 import { dsChipTT, khopChipTT } from '../LocNangCao'
 import { chieuTien, dauTien, lopChieu } from './chieuTien'
-import { TT_CT, dongCua } from '../generic/gen'
+import { TT_CT, dongCua, nguoiTaoMau } from '../generic/gen'
 import { ttTienTheoTra } from '../generic/daXoa'
 import { boO, nhomCua, theoLoai, TT_TIEN } from '../generic/nhom'
 import { ChungTuForm, lyMacDinh } from '../generic/ChungTuForm'
@@ -827,6 +827,8 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
 
             const tien = Number(r.tong ?? r.tien ?? 0)
             const hienTien = mod.key !== 'kho'
+            // Nhập kho (T824, như web T818): thẻ ghi Người thực hiện đã lưu trên phiếu, phiếu mẫu lấy người tạo
+            const dongPhu2 = sc.code === '5.1.1' ? `Người thực hiện: ${String(r._nhanVien ?? r._nguoiTao ?? nguoiTaoMau(r.so))}` : undefined
 
             return (
               <MDsDongPhieu
@@ -834,6 +836,7 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
                 so={String(r.so ?? '')}
                 soDongHang={soDongHang}
                 dongPhu={dongPhu}
+                dongPhu2={dongPhu2}
                 tien={tien}
                 hienTien={hienTien}
                 onClick={() => nav(`${path}/${r.id}`)}

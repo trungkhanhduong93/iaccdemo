@@ -101,7 +101,7 @@ export function MNghiepVu() {
     if (key === 'tien') return 'THU CHI'
     if (key === 'ban-hang') return 'KẾ TOÁN BÁN HÀNG'
     if (key === 'mua-hang') return 'KẾ TOÁN MUA HÀNG'
-    if (key === 'kho') return 'KIỂM KÊ'
+    if (key === 'kho') return 'KHO'   // nhóm Kho gồm Nhập kho, xuất, kiểm kê (T824)
     if (key === 'ccdc') return 'CHI PHÍ PHÂN BỔ'
     return tenGoc.toUpperCase()
   }

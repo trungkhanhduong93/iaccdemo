@@ -2,7 +2,7 @@ import { Fragment, useEffect, useMemo, useRef, useState, type FC } from 'react'
 import { baoDaLuu, ganForm, huongDanDangChay } from '../../ui/huongDanForm'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import type { Row, ScreenProps } from '../../modules/types'
-import { dongCua, tkTheoLyDo, ttNghiepVu, type Dong } from '../generic/gen'
+import { dongCua, nguoiTaoMau, tkTheoLyDo, ttNghiepVu, type Dong } from '../generic/gen'
 import { duongDan, tenMan } from '../../app/registry'
 import { cuaHangHienTai, ngayDauNam, truocDauNam, useSession } from '../../app/session'
 import { type Goi, kieuGhiSoDv } from '../../app/plan'
@@ -1031,6 +1031,11 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
     return String(gocData?._ghiChu ?? gocData?.dienGiai ?? cfg.dienGiai?.[0] ?? '')
   })
 
+  // Nhập kho (T824, như web T818): Người thực hiện lưu ở _nhanVien, phiếu mẫu lấy người tạo như cột danh sách
+  const laNk = sc.code === '5.1.1'
+  const [nhanVien, setNhanVien] = useState(() => String(gocData?._nhanVien ?? (row?.so ? nguoiTaoMau(row.so) : NHAN_VIEN[0].ten)))
+  const [moChonNv, setMoChonNv] = useState(false)
+
   // Người nhận / nộp
   const [nguoiNhanNop, setNguoiNhanNop] = useState(() => {
     return String(gocData?._nguoiGiao ?? gocData?._nguoi ?? '')
@@ -1802,6 +1807,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
       _quy: quy,
       _denQuy: laCq ? denQuy : undefined,
       _kho: khoLuu,
+      ...(laNk ? { _nhanVien: nhanVien } : {}),
       _soHd: soHd,
       _kyHieuHd: kyHieuHd,
       _ngayHd: ngayHd,
@@ -2080,7 +2086,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
     ? (dangSua ? `Sửa phiếu ${row?.so ?? gocData?.so ?? soCtDuKien}` : traTu ? 'Lập phiếu trả lại hàng mua' : 'Lập phiếu mua hàng')
     : dangSua
     ? `Sửa ${row?.so ?? ''}`.trim()
-    : (nhom === 'chi' ? 'Lập phiếu chi' : nhom === 'thu' ? 'Lập phiếu thu' : nhom === 'cq' ? 'Lập phiếu chuyển quỹ' : `Lập ${tenLoai.toLowerCase()}`)
+    : (nhom === 'chi' ? 'Lập phiếu chi' : nhom === 'thu' ? 'Lập phiếu thu' : nhom === 'cq' ? 'Lập phiếu chuyển quỹ' : laNk ? 'Lập phiếu nhập kho' : `Lập ${tenLoai.toLowerCase()}`)
 
   const laLyChoPb = laTien && dsDong.some(d => laLyPhanBo(d.ly, s))
 
@@ -2415,7 +2421,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
             <div className="m-pb-the m-pb-the-gon">
               {bo.kho && (
                 <div className="m-pb-dong" onClick={() => setMoChonKho(true)} style={{ cursor: 'pointer' }}>
-                  <span className="n">Kho <i className="f-sao">*</i></span>
+                  <span className="n">{laNk ? 'Kho nhập' : 'Kho'} <i className="f-sao">*</i></span>
                   <span className="f-gt f-chon">{kho || 'Chọn kho'} ›</span>
                 </div>
               )}
@@ -2429,6 +2435,12 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                   </svg>
                 </span>
               </div>
+              {laNk && (
+                <div className="m-pb-dong" onClick={() => setMoChonNv(true)} style={{ cursor: 'pointer' }}>
+                  <span className="n">Người thực hiện</span>
+                  <span className="f-gt f-chon">{nhanVien} ›</span>
+                </div>
+              )}
               <div className="m-pb-dong">
                 <span className="n">Diễn giải</span>
                 <input
@@ -2991,6 +3003,19 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
             </div>
           </div>
         </div>
+      )}
+
+      {/* ── SHEET CHỌN NGƯỜI THỰC HIỆN, phiếu Nhập kho (T824) ── */}
+      {laNk && (
+        <MChon
+          mo={moChonNv}
+          onDong={() => setMoChonNv(false)}
+          tieuDe="Chọn người thực hiện"
+          ds={NHAN_VIEN.map(n => ({ k: n.ten, ten: n.ten }))}
+          chon={nhanVien}
+          onChon={setNhanVien}
+          tim
+        />
       )}
 
       {/* ── SHEET CHỌN KHO ── */}
