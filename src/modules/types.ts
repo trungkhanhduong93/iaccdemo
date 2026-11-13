@@ -22,6 +22,7 @@ export interface Col {
   kyHieu?: string        // ký hiệu cột in sẵn (A, B, C, 1, 2... theo biểu mẫu TT58)
   chiManHinh?: boolean   // cột chỉ hiện trên màn hình (vd nút Thanh toán ngay), bỏ khi xem trước, in, xuất Excel (T304)
   goi?: Goi[]            // cột báo cáo bảng kê chỉ có ở các gói này (vd Báo cáo kiểm kê gói Free chỉ Thừa, Thiếu, T502)
+  gop?: boolean          // ô gộp chung cho các dòng liền nhau cùng khoá gopO của Table, vd thông tin chung của một thẻ (T828)
 }
 
 /** Danh mục: bảng có tìm kiếm, nút thêm */

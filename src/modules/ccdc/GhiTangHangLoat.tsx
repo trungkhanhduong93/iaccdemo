@@ -139,11 +139,13 @@ export function GhiTangHangLoat({ rows: daCo, onDong }: { soDong: number; rows: 
   // chỉ đánh cho dòng được chọn; các dòng cùng chứng từ chung một số thẻ (T828); số tiền mỗi kỳ = số tiền / số kỳ, làm tròn tới đồng (T284)
   const daDanh: unknown[] = daCo.map(r => r.soThe)
   const soTheNhom = new Map<string, string>()
+  const nhomChon = new Set(ds.filter(d => d.chon).map(theCuaDong))   // thẻ có ít nhất một dòng được chọn: mọi dòng của thẻ hiện số thẻ ở ô gộp
+  const dauThe = new Set(ds.filter((d, i) => i === 0 || theCuaDong(ds[i - 1]) !== theCuaDong(d)).map(d => d.key))
   const rows = ds.map(d => {
     const ky = docSoQT(d.ky)
     const g = theCuaDong(d)
     let soThe = ''
-    if (d.chon) {
+    if (nhomChon.has(g)) {
       soThe = soTheNhom.get(g) ?? soTheKeTiep(daDanh, 'the', d.ngayCt)
       if (!soTheNhom.has(g)) { soTheNhom.set(g, soThe); daDanh.push(soThe) }
     }
@@ -187,17 +189,18 @@ export function GhiTangHangLoat({ rows: daCo, onDong }: { soDong: number; rows: 
       )}>
       <section className="card bang-sua gt-hl">
         {rows.length ? (
-          <Table motDong rows={rows} rowCls={r => loi.has(r.key) ? 'gt-hl-loi' : ''}
+          <Table motDong rows={rows} rowCls={r => [loi.has(r.key) ? 'gt-hl-loi' : '', dauThe.has(r.key) ? 'gt-hl-dau' : ''].join(' ')}
+            gopO={r => r.key === undefined ? undefined : theCuaDong(r as DongCho)}   // thông tin chung của một thẻ gộp một ô cho các dòng của thẻ (T828)
             sum={{ ten: `Cộng ${chon.length} dòng chọn`, gt: soQT(chon.reduce((s, r) => s + r.gt, 0)), tienKy: soQT(chon.reduce((s, r) => s + r.tienKy, 0)) }}
             cols={[
               { k: 'chon', t: '', w: 36, c: true, r: r => r.key === undefined ? null
                 : <input type="checkbox" aria-label={`Chọn ${r.soCt} ${r.ten}`} checked={r.chon} onChange={e => sua(r.key, { chon: e.target.checked })} /> },
-              { k: 'soCt', t: 'Số chứng từ', w: 120, r: r => r._goc ? <Link className="tt-mua-so" to={r._goc}>{r.soCt}</Link> : r.soCt },
-              { k: 'ngayCt', t: 'Ngày chứng từ', w: 110 },
+              { k: 'soCt', t: 'Số chứng từ', w: 120, gop: true, r: r => r._goc ? <Link className="tt-mua-so" to={r._goc}>{r.soCt}</Link> : r.soCt },
+              { k: 'ngayCt', t: 'Ngày chứng từ', w: 110, gop: true },
               { k: 'ten', t: 'Nội dung chi tiết', r: r => r.key === undefined ? <b>{r.ten}</b> : r.ten },
               { k: 'gt', t: 'Số tiền', num: true, w: 130, r: r => r.key === undefined ? <b>{r.gt}</b> : soQT(r.gt) },
-              { k: 'loai', t: 'Loại thẻ', w: 170, r: r => r.key === undefined ? null
-                : <Select className="inp" value={r.loai} aria-label={`Loại thẻ ${r.ten}`}
+              { k: 'loai', t: 'Loại thẻ', w: 170, gop: true, r: r => r.key === undefined ? null
+                : <Select className="inp" value={r.loai} aria-label={`Loại thẻ của ${r.soCt}`}
                   // Chuyển sang CCDC: số lượng mặc định 1
                   onChange={e => sua(r.key, { loai: e.target.value, ...(e.target.value === CCDC && !r.sl ? { sl: '1' } : {}) })}
                   ds={loaiTheTheoGoi(s.goi).map(l => ({ v: l, t: l }))} /> },
@@ -216,8 +219,8 @@ export function GhiTangHangLoat({ rows: daCo, onDong }: { soDong: number; rows: 
                 { k: 'dg', t: 'Đơn giá', num: true, w: 120, r: (r: Row) => r.key === undefined || r.loai !== CCDC ? null
                   : <ONhap v={docSoQT(r.sl) > 0 ? Math.round(r.gt / docSoQT(r.sl) * 100) / 100 : ''} so ten={`Đơn giá ${r.ten}`} chiDoc /> },
               ] : []),
-              { k: 'soThe', t: 'Số thẻ', w: 125 },
-              { k: 'ngayGt', t: 'Ngày ghi tăng', w: 110, r: r => r.key === undefined ? null : r.ngayCt },
+              { k: 'soThe', t: 'Số thẻ', w: 125, gop: true },
+              { k: 'ngayGt', t: 'Ngày ghi tăng', w: 110, gop: true, r: r => r.key === undefined ? null : r.ngayCt },
               { k: 'ngayPb', t: 'Ngày bắt đầu phân bổ', w: 130, r: r => r.key === undefined ? null
                 : <ONhap v={r.ngayPb} ten={`Ngày bắt đầu phân bổ ${r.ten}`} onDoi={s => sua(r.key, { ngayPb: s })} /> },
               { k: 'ky', t: 'Số kỳ phân bổ', num: true, w: 100, r: r => r.key === undefined ? null

@@ -48211,3 +48211,7 @@ textarea.m-tpb-inp { height: auto; padding: 8px 12px; }
 .m-t825-muc-ky input { width: 44px; border: 0; outline: 0; padding: 0; font: inherit; font-size: 14px; color: var(--ink); background: transparent; text-align: right; }
 .m-t825-tong { position: absolute; left: 0; right: 0; bottom: calc(68px + env(safe-area-inset-bottom, 0px)); display: flex; justify-content: space-between; align-items: center; padding: 8px 16px; background: #fff; border-top: 1px solid var(--line); font-size: 13px; color: var(--muted); }
 .m-t825-tong b { font-size: 15px; color: var(--blue); }
+
+/* ── Ghi tăng bổ sung: ô thông tin chung của một thẻ gộp cho các dòng của thẻ (T828) ── */
+.tbl td.o-gop { vertical-align: middle; background: var(--white); border-right: 1px solid var(--line-2); }
+.gt-hl .tbl tr.gt-hl-dau td { border-top: 2px solid var(--line); }

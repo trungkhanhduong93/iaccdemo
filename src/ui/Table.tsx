@@ -156,6 +156,7 @@ export function Table({
   keDoc,
   virtual,
   onToggleGroup,
+  gopO,
 }: {
   cols: Col[]
   rows: (Row | GroupNode)[]
@@ -171,6 +172,7 @@ export function Table({
   keDoc?: boolean                       // kẻ dọc giữa các cột
   virtual?: boolean                     // bật cuộn ảo cho danh sách lớn
   onToggleGroup?: (id: string) => void  // đóng mở nhóm
+  gopO?: (r: Row) => string | undefined  // khoá nhóm dòng: các dòng liền nhau cùng khoá gộp chung một ô ở cột có gop (T828); không dùng khi cuộn ảo
 }) {
   const doRongCtx = useContext(BaoCaoDoRongCtx)
   const doRong = doRongProp ?? doRongCtx
@@ -460,13 +462,23 @@ export function Table({
             }
             const r = item as Row
             const rowKey = vs.fast ? `f${idx}` : (r.id ?? i)
+            // Gộp ô (T828): dòng đầu nhóm trải ô xuống các dòng cùng khoá, dòng sau bỏ ô đó
+            const khoaGop = gopO && !vs.isVirtual ? gopO(r) : undefined
+            let soGop = 1
+            if (khoaGop !== undefined) {
+              const truoc = visibleRows[idx - 1] as Row | undefined
+              if (idx > 0 && !(truoc as any)?.isGroup && gopO!(truoc!) === khoaGop) soGop = 0
+              else while (idx + soGop < visibleRows.length && !(visibleRows[idx + soGop] as any).isGroup && gopO!(visibleRows[idx + soGop] as Row) === khoaGop) soGop++
+            }
             return (
               <tr key={rowKey} className={[onRow ? 'click' : '', sel?.(r) ? 'dang-chon' : '', rowCls?.(r) ?? ''].join(' ')}
                 onClick={onRow ? () => onRow(r) : undefined} onDoubleClick={onDbl ? () => onDbl(r) : undefined}>
                 {cols.map((c, j) => {
+                  if (c.gop && soGop === 0) return null
                   const v = cell(c, r)
                   const title = motDong && (typeof v === 'string' || typeof v === 'number') ? String(v) : undefined
-                  return <td key={c.k} className={[lop(c, j), c.cls ?? ''].join(' ')} style={tdStyle(c, j)} title={title}>{v}</td>
+                  const rs = c.gop && soGop > 1 ? soGop : undefined
+                  return <td key={c.k} rowSpan={rs} className={[lop(c, j), c.cls ?? '', rs ? 'o-gop' : ''].join(' ')} style={tdStyle(c, j)} title={title}>{v}</td>
                 })}
               </tr>
             )

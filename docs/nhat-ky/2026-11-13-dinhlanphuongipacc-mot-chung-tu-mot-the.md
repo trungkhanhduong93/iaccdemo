@@ -10,11 +10,13 @@
 - `src/modules/ccdc/GhiTangHangLoat.tsx`: xuất `theCuaDong` (khoá thẻ: `_goc` của chứng từ, không có thì số chứng từ). Form Ghi tăng bổ sung web: các dòng cùng chứng từ chung một số thẻ; Loại thẻ mặc định theo cả chứng từ (mọi dòng là CCDC thì CCDC); đổi loại ở một dòng thì đổi cả các dòng cùng chứng từ; nút "Tạo (n thẻ)" và thông báo đếm theo thẻ; `_theCp` của chứng từ không lặp số thẻ. Dòng phụ đầu form thêm câu "Mỗi chứng từ một thẻ, mỗi dòng một mục chi tiết của thẻ."
 - `src/ui/mobile/MTaoTheBoSung.tsx`: gom theo `theCuaDong` cho mọi chứng từ; chứng từ nhiều dòng không phải hoá đơn ghi "ngày · n dòng".
 - Bản mẫu artifact: sửa ghi chú cho đúng quy tắc mới.
+- Gộp ô thông tin chung của một thẻ (dinhlanphuongipacc yêu cầu thêm): `src/ui/Table.tsx` thêm `gopO` (khoá nhóm dòng) và `Col.gop` (`modules/types.ts`), các dòng liền nhau cùng khoá gộp một ô (rowSpan), mặc định tắt nên bảng khác không đổi, không dùng khi cuộn ảo. Form Ghi tăng bổ sung gộp Số chứng từ, Ngày chứng từ, Loại thẻ (một ô chọn), Số thẻ, Ngày ghi tăng; dòng đầu thẻ kẻ đậm hơn (`app.css` mục T828). Bỏ tích một dòng của thẻ thì số thẻ vẫn hiện ở ô gộp.
 
 ## Đã kiểm
 
 - `npm run typecheck`, `npm run build`: không lỗi. `python tools/kiem_tra.py --nhanh`: Không có lỗi. `kiem_van.py` 2 file: sạch.
 - Web gói Plus, `ccdc/8-1-1?moi=hang-loat`: 10 dòng ra 6 thẻ; UNC2610-0245 hai dòng chung TPB2610-0013, HDM2610-0253 hai dòng chung TPB2610-0015; đổi loại thẻ dòng Tiền thuê kho lạnh sang Công cụ dụng cụ thì dòng Phí bảo trì cùng chứng từ đổi theo. Chưa bấm Tạo trên web.
+- Web sau khi gộp ô: các thẻ 2 dòng (UNC2610-0245, HDM2610-0253, HDM2609-0230, HDM2609-0205) hiện một ô Số chứng từ, Ngày, Loại thẻ, Số thẻ, Ngày ghi tăng; bỏ tích dòng đầu UNC2610-0245 thì ô vẫn ghi TPB2610-0013.
 - Điện thoại 375x812: màn Tạo thẻ bổ sung "Đã chọn 10 khoản · 6 thẻ", UNC2610-0245 một thẻ 2 dòng.
 
 ## Dở dang, việc tiếp theo
