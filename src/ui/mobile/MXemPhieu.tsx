@@ -111,6 +111,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
 
   const laKk = Boolean(cfg.kiemKe)
   const laDc = Boolean(cfg.dieuChinh)
+  const laNk = sc.code === '5.1.1'   // phiếu Nhập kho (T824, như web T818)
   const sx = cfg.sanXuat
   const laSx = Boolean(sx)
   const sxNhap = sx ? SX[sx].nhap : false
@@ -701,14 +702,25 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
           </div>
         ) : (
         <div className="m-pb-the m-pb-the-tong-quan">
+          {/* Nhập kho (T824): như phiếu mua, cửa hàng và nguồn lên dòng đầu, bỏ tên thẻ (diễn giải đã có ở Chi tiết), bỏ ô Cửa hàng, Nguồn chứng từ */}
+          {laNk && (
+            <div className="m-tc-xem-dong-cn">
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                <polyline points="9 22 9 12 15 12 15 22" />
+              </svg>
+              <span>{cuaHangTen}</span>
+              <span className="m-tc-badge-nguon m-tc-xem-nguon">{NGUON[row.nguon]?.[1] ?? 'Thủ công'}</span>
+            </div>
+          )}
           <div className="m-pb-hang-chip">
             <span className="m-pb-chip-loai">{tenLoai}</span>
             {chipTt && <span className={`m-pb-chip-tt ${chipTt.kieu}`}>{chipTt.ten}</span>}
           </div>
 
-          <div className="m-pb-ten-the">{tenChinhThe}</div>
+          {!laNk && <div className="m-pb-ten-the">{tenChinhThe}</div>}
 
-          <div className="m-pb-dong-cn">
+          {!laNk && <div className="m-pb-dong-cn">
             <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="1.8" fill="none">
               <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
               <polyline points="9 22 9 12 15 12 15 22" />
@@ -716,7 +728,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
             <span>{cuaHangTen}</span>
             {/* Phiếu điều chỉnh: nguồn chứng từ cạnh cửa hàng như xem thu chi (T603) */}
             {laDc && <span className="m-tc-badge-nguon m-tc-xem-nguon">{NGUON[row.nguon]?.[1] ?? 'Thủ công'}</span>}
-          </div>
+          </div>}
 
           {/* Số tiền lớn */}
           {laDc ? null : laTien ? (
@@ -733,7 +745,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
             </div>
           ) : (
             <div>
-              <div className="m-pb-nhan-gt">{sc.code === '5.1.1' ? 'Tổng tiền' : 'Tổng thanh toán'}</div>{/* Nhập kho ghi theo giá nhập kho, không thuế, chiết khấu (T824) */}
+              <div className="m-pb-nhan-gt">{laNk ? 'Tổng tiền' : 'Tổng thanh toán'}</div>{/* Nhập kho ghi theo giá nhập kho, không thuế, chiết khấu (T824) */}
               <div className="m-pb-so-gt">{money(tongThanhToan)} đ</div>
             </div>
           )}
@@ -765,7 +777,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
                 </div>
               </div>
             </div>
-          ) : laDc ? null : (
+          ) : laDc || laNk ? null : (
             <div className="m-pb-luoi-stat">
               <div className="m-pb-o-stat da">
                 <div className="m-pb-o-stat-nhan">Cửa hàng</div>
