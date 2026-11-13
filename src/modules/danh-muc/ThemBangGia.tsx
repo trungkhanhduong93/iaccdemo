@@ -3,13 +3,14 @@
 // Bấm một dòng mở form này với mọi dòng cùng mã bảng giá để sửa cả lưới. Trùng mặt hàng với bảng giá khác cùng thời gian, cửa hàng thì hỏi lại, bảng bắt đầu muộn hơn được ưu tiên.
 // T812: bố trí lại. Bên trái khai lần lượt loại bảng giá (Giá mua, Giá bán), tên, cửa hàng, đối tượng; góc phải là số bảng giá và thời gian áp dụng như số, ngày chứng từ.
 // Đối tượng khai ở đầu form: một nhà cung cấp (giá mua) hoặc một khách hàng (giá bán), hoặc giá chung cho mọi đối tượng; lưới bỏ cột đối tượng.
+// Như phiếu thu chi: mở bảng giá có sẵn ở chế độ xem, bấm Sửa mới sửa; đầu form có nhãn Thêm mới, Chi tiết, Đang chỉnh sửa kèm số bảng giá.
 // Một mặt hàng khai được nhiều dòng, mỗi dòng một ĐVT với giá riêng; chỉ trùng khi cùng mặt hàng và cùng ĐVT. Cột Ghi chú tự nhập; trống thì form tự điền phần quy đổi khi dòng dùng ĐVT khác ĐVT chính. Ô chọn hàng có tìm như phiếu mua, hiện cả mã và tên.
 import { useState } from 'react'
 import { useSession } from '../../app/session'
 import { FormToanMan } from '../../ui/FormToanMan'
 import { Icon } from '../../ui/Icon'
 import { HopXacNhan } from '../../ui/LocNangCao'
-import { Select } from '../../ui/Dropdown'
+import { Dropdown, MenuItem, Select } from '../../ui/Dropdown'
 import { ONgay, docNgay, type KhoangNgay } from '../../ui/ChonNgay'
 import { ChonDanhMuc } from '../../ui/ChonDanhMuc'
 import { ThemHangLoat, type HangChon } from '../../ui/generic/ThemHangLoat'
@@ -138,6 +139,9 @@ export function ThemBangGia({ onDong, tab, sua: dongSua }: { onDong: () => void;
   // Dòng vừa bấm ở danh sách: tô nhẹ trong lưới để dễ thấy
   const [keyBam] = useState(() => { const i = dongCu.findIndex(r => r._k === dongSua?._k); return i >= 0 ? dong[i].key : -1 })
   const [loi, setLoi] = useState<Set<number>>(new Set())
+  // Bảng giá có sẵn mở ở chế độ xem; Sửa lưu ảnh trạng thái để Huỷ trả lại như cũ
+  const [dangSua, setDangSua] = useState(!soBgGoc)
+  const [anhCu, setAnhCu] = useState<{ ten: string; tuNgay: string; denNgay: string; cuaHang: string[]; dt: string; rieng: boolean; dong: DongGia[] } | null>(null)
   const [moHangLoat, setMoHangLoat] = useState(false)
   const [hoiXoa, setHoiXoa] = useState(false)
   // Lọc dòng chi tiết giá như bảng chi tiết phiếu mua hàng (T383): bấm phễu hiện hàng ô lọc dưới tiêu đề cột, tắt phễu thì bỏ lọc
@@ -245,34 +249,62 @@ export function ThemBangGia({ onDong, tab, sua: dongSua }: { onDong: () => void;
       dongDien.map(d => ({ ma: d.ma, ten: hangCua(d.ma)?.ten, dvt: d.dvt || hangCua(d.ma)?.dvt || '', gia: docSoQT(d.gia), vat: docSoQT(d.vat), ghiChu: d.ghiChu?.trim() })), maSua ? (dau?._tt ?? 1) : 1)
     thayNhomCatalogRows(DM, r => r.soBg === soBg, rows)   // thêm mới: chưa có dòng nào cùng mã nên thêm vào cuối
     toast(`Đã lưu bảng giá ${soBg} (${dongDien.length} dòng), áp dụng cho ${maDt ? tenDtCua(maDt) : `mọi ${nhanDt}`}`)
-    if (!themTiep) { onDong(); return }
+    // Lưu: như phiếu thu chi, về chế độ xem bảng giá vừa lưu, bỏ dòng trống
+    if (!themTiep) { setMaSua(soBg); setDong(dongDien); setLoi(new Set()); setAnhCu(null); setDangSua(false); return }
     // Lưu và thêm mới: giữ loại, thời gian, cửa hàng, đối tượng; xoá tên và lưới
     setMaSua(''); setTen(''); setDong([dongMoi(), dongMoi(), dongMoi()]); setLoi(new Set()); setGtLoc({})
   }
+
+  const batSua = () => { setAnhCu({ ten, tuNgay, denNgay, cuaHang, dt, rieng, dong }); setDangSua(true) }
+  const huySua = () => {
+    if (!maSua) { onDong(); return }   // thêm mới: Huỷ là đóng form
+    if (anhCu) { setTen(anhCu.ten); setTuNgay(anhCu.tuNgay); setDenNgay(anhCu.denNgay); setCuaHang(anhCu.cuaHang); setDt(anhCu.dt); setRieng(anhCu.rieng); setDong(anhCu.dong) }
+    setLoi(new Set()); setAnhCu(null); setDangSua(false)
+  }
+  // Sao chép: mở form thêm mới điền sẵn như bảng giá đang xem, số mới sinh khi lưu
+  const saoChep = () => {
+    setMaSua(''); setTen(`${ten} (bản sao)`); setDong(dong.map(d => ({ ...d, key: ++soKhoa }))); setAnhCu(null); setDangSua(true)
+  }
+  const xem = !dangSua
 
   const dsMucDt = dsDt.map(n => ({ v: n.ma, t: n.ten, phu: `Mã: ${n.ma}${n.nhom ? ` · ${n.nhom}` : ''}` }))
   const dsMucHang = dsHang.map(h => ({ v: h.ma, t: `${h.ma} - ${h.ten}`, dvt: h.dvt }))
 
   return (
-    <FormToanMan icon="banggia" iconNet footClass="fsf-f-xem" title={maSua ? `Sửa bảng giá ${maSua}` : `Thêm bảng giá ${laMua ? 'mua' : 'bán'}`} chuaMenu onClose={onDong}
-      meta={<span className="muted">Khai giá cho nhiều mặt hàng, mỗi ĐVT một giá.</span>}
-      foot={(
+    <FormToanMan icon="banggia" iconNet xem={xem} footClass="fsf-f-xem" title={`Bảng giá ${laMua ? 'mua' : 'bán'}`} chuaMenu onClose={onDong}
+      // Nhãn giữa đầu form như phiếu thu chi: Thêm mới, Chi tiết, Đang chỉnh sửa kèm số bảng giá
+      giua={!maSua ? <span className="fsf-tt moi">Thêm mới</span>
+        : dangSua ? <span className="fsf-tt sua">Đang chỉnh sửa <b>{maSua}</b></span>
+          : <span className="fsf-tt xem">Chi tiết bảng giá <b>{maSua}</b></span>}
+      foot={dangSua ? (
         <>
-          <button type="button" className="btn" onClick={onDong}>Huỷ</button>
-          {maSua && (
-            <button type="button" className="btn" onClick={() => setHoiXoa(true)}>
-              <Icon n="trash" className="ic sm" />Xoá
-            </button>
-          )}
+          <button type="button" className="xp-btn-outline" onClick={huySua}>Huỷ</button>
           <span className="grow" />
-          <button type="button" className="btn bgf-nut-vien" onClick={() => luu(true)}>Lưu và thêm mới</button>
-          <button type="button" className="btn pri" onClick={() => luu(false)}>Lưu</button>
+          <button type="button" className="xp-btn-outline" onClick={() => luu(false)}>Lưu</button>
+          <button type="button" className="xp-btn-sua" onClick={() => luu(true)}>Lưu và thêm</button>
+        </>
+      ) : (
+        <>
+          <div className="xp-footer-trai">
+            <Dropdown btnClass="xp-btn-outline" align="start" width={200} label={<><span>Tiện ích</span><Icon n="chevd" className="ic sm" /></>}>
+              {dongMenu => (
+                <>
+                  <MenuItem icon="copy" onClick={() => { dongMenu(); saoChep() }}>Sao chép</MenuItem>
+                  <MenuItem icon="trash" danger onClick={() => { dongMenu(); setHoiXoa(true) }}>Xoá bảng giá</MenuItem>
+                </>
+              )}
+            </Dropdown>
+          </div>
+          <div className="xp-footer-phai">
+            <button type="button" className="xp-btn-sua" onClick={batSua}><Icon n="edit" className="ic sm" /><span>Sửa</span></button>
+          </div>
         </>
       )}>
       {/* Như phiếu thu chi: bảng chi tiết kéo hết chiều cao form, chân trắng (T812) */}
       <div className="ct-co-dinh bgf-than">
       <section className="card bgf-dau">
-        <div className="bgf-trai">
+        {/* Chế độ xem: khoá mọi ô đầu form bằng fieldset disabled */}
+        <fieldset className="bgf-trai" disabled={xem}>
           <div className="bg-dau-o">
             <label className="bg-nhan">Loại bảng giá <span className="req">*</span></label>
             <div className="bg-loai" role="radiogroup" aria-label="Loại bảng giá">
@@ -306,16 +338,10 @@ export function ThemBangGia({ onDong, tab, sua: dongSua }: { onDong: () => void;
               <ChonCoTim key={loai} ds={dsMucDt} value={dt} onChange={setDt} nhan={nhanDt} hienChon={m => `${m.v} - ${m.t}`} />
             </div>
           )}
-        </div>
+        </fieldset>
 
-        <aside className="bgf-phai">
-          {/* Số bảng giá chỉ hiện khi xem, sửa; thêm mới thì số tự sinh lúc lưu */}
-          {maSua && (
-            <div className="bgf-so">
-              <span className="bgf-so-nhan">Số bảng giá</span>
-              <span className="bgf-so-gt">{maSua}</span>
-            </div>
-          )}
+        {/* Số bảng giá nằm ở nhãn giữa đầu form; góc phải còn Thời gian áp dụng */}
+        <fieldset className="bgf-phai" disabled={xem}>
           <div className="bg-dau-o">
             <label className="bg-nhan">Thời gian áp dụng <span className="req">*</span></label>
             <div className={`bgf-ngay${ngayHong ? ' loi' : ''}`}>
@@ -324,7 +350,7 @@ export function ThemBangGia({ onDong, tab, sua: dongSua }: { onDong: () => void;
               <ONgay value={denNgay} onChange={setDenNgay} placeholder="Đến ngày" ariaLabel="Áp dụng đến ngày" />
             </div>
           </div>
-        </aside>
+        </fieldset>
       </section>
 
       <section className="card bang-sua bg-chi-tiet ct-than-card">
@@ -337,8 +363,10 @@ export function ThemBangGia({ onDong, tab, sua: dongSua }: { onDong: () => void;
           </button>
           {moLoc && soKhop < dong.length && <span className="muted bg-dem-loc">{soKhop}/{dong.length} dòng</span>}
           <span className="grow" />
-          <button type="button" className="btn sm ghost" onClick={() => setMoHangLoat(true)}><Icon n="layers" className="ic sm" />Chọn nhiều mặt hàng</button>
-          <button type="button" className="btn sm ghost" onClick={() => setDong(ds => [...ds, dongMoi()])}><Icon n="plus" className="ic sm" />Thêm dòng</button>
+          {dangSua && <>
+            <button type="button" className="btn sm ghost" onClick={() => setMoHangLoat(true)}><Icon n="layers" className="ic sm" />Chọn nhiều mặt hàng</button>
+            <button type="button" className="btn sm ghost" onClick={() => setDong(ds => [...ds, dongMoi()])}><Icon n="plus" className="ic sm" />Thêm dòng</button>
+          </>}
         </div>
         <div className="bg-bang-cuon">
           <table className="bg-bang">
@@ -369,6 +397,19 @@ export function ThemBangGia({ onDong, tab, sua: dongSua }: { onDong: () => void;
                 if (!khop(d)) return null   // giữ số thứ tự gốc của dòng khi đang lọc
                 const h = hangCua(d.ma)
                 const dsDv = h ? dvtCua(h) : []
+                // Chế độ xem: dòng chỉ là chữ, không ô nhập
+                if (xem) return (
+                  <tr key={d.key} className={d.key === keyBam ? 'bg-bam' : ''}>
+                    <td className="c muted">{i + 1}</td>
+                    <td>{d.ma ? `${d.ma} - ${h?.ten ?? ''}` : ''}</td>
+                    <td>{d.dvt}</td>
+                    <td className="r">{money(docSoQT(d.gia))}</td>
+                    <td className="r">{d.vat}</td>
+                    <td className="r">{money(Math.round(giaSauThue(d)))}</td>
+                    <td>{d.ghiChu}</td>
+                    <td />
+                  </tr>
+                )
                 return (
                   <tr key={d.key} className={loi.has(d.key) ? 'bg-loi' : d.key === keyBam ? 'bg-bam' : ''}>
                     <td className="c muted">{i + 1}</td>
@@ -403,7 +444,7 @@ export function ThemBangGia({ onDong, tab, sua: dongSua }: { onDong: () => void;
       {hoiXoa && maSua && (
         <HopXacNhan tieuDe={`Xoá bảng giá ${maSua}?`} nut="Xoá" onDong={() => setHoiXoa(false)}
           onDongY={() => { thayNhomCatalogRows(DM, r => r.soBg === maSua, []); toast(`Đã xoá bảng giá ${maSua}`); onDong() }}>
-          Xoá bảng giá {String(dau?.tenBg ?? '')} cùng {dongCu.length} dòng mặt hàng, áp dụng {String(dau?.thoiGian ?? '')}.
+          Xoá bảng giá {ten} cùng {dongDien.length} dòng mặt hàng, áp dụng {tuNgay} - {denNgay}.
         </HopXacNhan>
       )}
       {hoiTrung && (

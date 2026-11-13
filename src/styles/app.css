@@ -48120,14 +48120,11 @@ textarea.m-tpb-inp { height: auto; padding: 8px 12px; }
 .bgf-dau { display: grid; grid-template-columns: minmax(0, 1fr) auto; padding: 0; margin: 0; overflow: visible; }
 .bgf-than > .bg-chi-tiet > .bg-bang-cuon { flex: 1 1 auto; min-height: 0; overflow: auto; }
 .bgf-than > .bg-chi-tiet thead th { position: sticky; top: 0; z-index: 1; }
-.bgf-trai { display: grid; grid-template-columns: 300px minmax(200px, 1.3fr) minmax(180px, 1fr); gap: 10px 16px; padding: 12px 16px; align-items: start; }
+.bgf-trai { border: 0; margin: 0; min-width: 0; display: grid; grid-template-columns: 300px minmax(200px, 1.3fr) minmax(180px, 1fr); gap: 10px 16px; padding: 12px 16px; align-items: start; }
 .bgf-trai > .bg-dau-o > .bg-loai { display: flex; width: 100%; }
 .bgf-trai > .bg-dau-o > .bg-loai > button { flex: 1 1 0; white-space: nowrap; }
 .bgf-dau .bg-dau-o { gap: 4px; }
-.bgf-phai { display: flex; flex-direction: column; gap: 10px; padding: 12px 16px; border-left: 1px dashed var(--line); }
-.bgf-so { display: flex; align-items: baseline; gap: 10px; min-height: 34px; }
-.bgf-so-nhan { font-size: 13px; font-weight: 600; color: var(--ink); }
-.bgf-so-gt { font-size: 20px; font-weight: 700; color: var(--blue); font-variant-numeric: tabular-nums; }
+.bgf-phai { display: flex; flex-direction: column; gap: 10px; padding: 12px 16px; margin: 0; min-width: 0; border: 0; border-left: 1px dashed var(--line); }
 .bgf-cham { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; vertical-align: 1px; }
 .bgf-cham.mua { background: var(--orange); }
 .bgf-cham.ban { background: var(--green); }
@@ -48139,7 +48136,6 @@ textarea.m-tpb-inp { height: auto; padding: 8px 12px; }
 .ds-o-khoang .inp { height: 34px; width: 100%; }
 .bgf-ngay > span, .ds-o-khoang > span { color: var(--muted); }
 .bgf-ngay.loi .inp { border-color: var(--red); }
-.btn.bgf-nut-vien { border-color: var(--blue); color: var(--blue); }
 @media (max-width: 1100px) {
   .bgf-trai { grid-template-columns: auto minmax(0, 1fr); }
 }
@@ -48148,3 +48144,9 @@ textarea.m-tpb-inp { height: auto; padding: 8px 12px; }
   .bgf-phai { order: -1; border-left: 0; border-bottom: 1px dashed var(--line); flex-direction: row; flex-wrap: wrap; gap: 10px 24px; }
   .bgf-trai { grid-template-columns: 1fr; }
 }
+/* Chế độ xem như phiếu thu chi: ô đầu form nền trắng chữ đậm, nút loại giá giữ màu đang chọn (T812) */
+.fsf-xem .bgf-dau .inp:disabled, .fsf-xem .bgf-dau .sel:disabled { background: var(--white); color: var(--ink); border-color: var(--line); opacity: 1; cursor: default; }
+.fsf-xem .bgf-dau .bg-loai button:disabled { opacity: 1; cursor: default; }
+.fsf-xem .bgf-dau .bg-loai button:disabled:not(.on) { color: var(--muted); }
+.fsf-xem .bg-bang td { height: 38px; }
+.bgf-trai > .bg-dau-o > .sel.inp { width: 100%; }
