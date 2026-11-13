@@ -64,7 +64,7 @@ export function PhieuSanXuat({ sc, mod }: ScreenProps) {
     dai: <DaiGiaiThich soChe={t.soChe} />,
     cot: [
       { k: 'kho', t: nhanKho, w: 170 },
-      { k: 'ngay', t: t.nhap ? 'Thời gian nhập' : 'Thời gian xuất', w: 140 },
+      { k: 'ngay', t: t.nhap ? 'Ngày nhập' : 'Ngày xuất', w: 110 },   // chứng từ chỉ ghi ngày, không ghi giờ phút (T823)
       { k: 'ghiChu', t: 'Ghi chú' },
       { k: 'ngayTao', t: 'Ngày tạo', w: 140 },
       { k: 'nguoiTao', t: 'Người tạo', w: 140 },
@@ -112,7 +112,7 @@ export function DsPhieuTc({ sc, mod, kieu: t, rows: rowsGoc }: ScreenProps & { k
   const rows: Row[] = rowsGoc.map(r => {
     const pn = r._phieuNhap as { id: string; so: string } | undefined
     return {
-      ...r, kho: String(r._kho ?? ''), khoNhan: String(r._khoNhan ?? ''), khoXuat: String(r._khoXuat ?? ''), cnNhan: String(r._cnNhan ?? ''), cnXuat: String(r._cnXuat ?? ''), ghiChu: String(r._ghiChu ?? r.dienGiai ?? ''),
+      ...r, ngay: String(r.ngay ?? '').split(' ')[0], kho: String(r._kho ?? ''), khoNhan: String(r._khoNhan ?? ''), khoXuat: String(r._khoXuat ?? ''), cnNhan: String(r._cnNhan ?? ''), cnXuat: String(r._cnXuat ?? ''), ghiChu: String(r._ghiChu ?? r.dienGiai ?? ''),
       thamChieu: t.nhap ? String(r._thamChieu ?? '') : pn?.so ?? '', _tcId: t.nhap ? String(r._thamChieuId ?? '') : pn?.id ?? '',
       ngayTao: String(r._ngayTao ?? ''), nguoiTao: String(r._nguoiTao ?? ''), ngayCapNhat: String(r._ngayCapNhat ?? ''), nguoiCapNhat: String(r._nguoiCapNhat ?? ''),
     }

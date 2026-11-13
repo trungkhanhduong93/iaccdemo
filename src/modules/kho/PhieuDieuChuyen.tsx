@@ -7,7 +7,7 @@ import { useDsPhieuDcn } from './BangDieuChuyen'
 import { DCN } from './dieu-chuyen'
 import { DsPhieuTc, type KieuDs } from './PhieuSanXuat'
 
-const COT_NGUOI: Col[] = [{ k: 'ngay', t: 'Thời gian', w: 140 }, { k: 'ghiChu', t: 'Ghi chú' }, { k: 'nguoiTao', t: 'Người tạo', w: 140 }]
+const COT_NGUOI: Col[] = [{ k: 'ngay', t: 'Ngày', w: 110 }, { k: 'ghiChu', t: 'Ghi chú' }, { k: 'nguoiTao', t: 'Người tạo', w: 140 }]
 
 /** Cột, chip theo loại phiếu: xuất, nhập có Chờ nhập (phiếu nhập sinh kèm phiếu xuất, T748), Đã nhập, Đã huỷ; bỏ cột Cửa hàng nhận (T748); chuyển kho không có trạng thái, không có tiền */
 const KIEU: Record<'xdc' | 'ndc' | 'ck', KieuDs> = {

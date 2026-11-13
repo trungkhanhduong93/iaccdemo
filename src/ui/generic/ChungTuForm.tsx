@@ -179,7 +179,12 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
       : [hinhThucTt === 'congno' ? 'TK công nợ (131)' : hinhThucTt === 'tienmat' ? 'TK tiền mặt (1111)' : 'TK tiền gửi (1121)', bo.tk[1]]
 
   // Thông tin chung
-  const [ngayCt, setNgayCt] = useState(r0?.ngay ? String(r0.ngay) : laSx || laDcn ? bayGio() : '07/10/2026')   // phiếu sản xuất ghi cả giờ xuất, nhập như IVT (T152)
+  // Chứng từ chỉ ghi ngày, không ghi giờ phút; riêng phiếu kiểm kê ghi cả giờ phút lúc kiểm (T823)
+  const [ngayCt, setNgayCt] = useState(() => {
+    if (!r0?.ngay) return laKk ? bayGio() : '07/10/2026'
+    const [d, g = String(r0.gio ?? '')] = String(r0.ngay).split(' ')
+    return laKk && g ? `${d} ${g}` : d
+  })
   const [soCt, setSoCt] = useState(row?.so ? String(row.so) : lapHd ? soCtMoi(rows ?? [], TIEN_TO_CT[loaiCt]) : soKeTiep(`${mod.key}/${sc.slug}`, `${cfg.prefix}2610-`))
   // Cửa hàng không sửa trên form: phiếu cũ giữ cửa hàng đã lập, phiếu mới theo cửa hàng chọn trên thanh trên
   // Thêm mới có ?cn=mã cửa hàng (vd Thanh toán ngay ở dòng cửa hàng của báo cáo công nợ NCC, T308) thì lập cho cửa hàng đó, không hỏi chọn
@@ -1506,13 +1511,13 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
             {/* Cột 3: Ngày chứng từ; số chứng từ chỉ hiện ở tiêu đề giữa, không lặp ô riêng (T647). Cửa hàng hiện trên đầu form. Ghi chú kéo dài thì cột này chiếm cả hàng Ghi chú (T78) */}
             <div className="stack" style={{ gap: 10, gridRow: keoGc ? 'span 2' : undefined }}>
               <div className="f">
-                <label>{laSx ? (sxNhap ? 'Thời gian nhập' : 'Thời gian xuất') : laDcn ? 'Thời gian' : 'Ngày chứng từ'} <em>*</em></label>
-                {/* Mọi màn chọn ngày bằng lịch (T464); phiếu sản xuất, điều chuyển kèm giờ: chọn ngày trên lịch thì giữ giờ đang có, giờ gõ ngay trong ô */}
+                <label>{laSx ? (sxNhap ? 'Ngày nhập' : 'Ngày xuất') : laKk ? 'Thời gian kiểm kê' : 'Ngày chứng từ'} <em>*</em></label>
+                {/* Mọi màn chọn ngày bằng lịch (T464); phiếu kiểm kê kèm giờ (T823): chọn ngày trên lịch thì giữ giờ đang có, giờ gõ ngay trong ô */}
                 {dangSua ? (
                   <ONgay
                     value={ngayCt}
-                    placeholder={laSx || laDcn ? 'dd/mm/yyyy hh:mm' : undefined}
-                    onChange={v => setNgayCt(c => (laSx || laDcn) && /^\d{2}\/\d{2}\/\d{4}$/.test(v) && c.includes(' ') ? `${v} ${c.split(' ')[1]}` : v)}
+                    placeholder={laKk ? 'dd/mm/yyyy hh:mm' : undefined}
+                    onChange={v => setNgayCt(c => laKk && /^\d{2}\/\d{2}\/\d{4}$/.test(v) && c.includes(' ') ? `${v} ${c.split(' ')[1]}` : v)}
                   />
                 ) : (
                   <input className="inp" readOnly value={ngayCt} />

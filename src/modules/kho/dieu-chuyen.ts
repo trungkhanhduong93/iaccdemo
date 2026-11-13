@@ -98,7 +98,7 @@ const sauPhut = (ngay: string, p: number) => {
 function phieuTuMau(loai: LoaiDcn, m: Omit<Mau, 'khoNhan' | 'dong'>, dong: DongDcn[], rieng: Row): Row {
   const tong = dong.reduce((a, d) => a + (d.tien || 0), 0)
   return {
-    id: idCua(loai, m.so), so: soCua(loai, m), ngay: m.ngay, thang: thangCua(m.ngay), nguon: 'IVT', tt: m.tt === 'huy' || m.tt === 'cho' ? 'nhap' : 'ghi',
+    id: idCua(loai, m.so), so: soCua(loai, m), ngay: m.ngay.split(' ')[0], gio: m.ngay.split(' ')[1], thang: thangCua(m.ngay), nguon: 'IVT', tt: m.tt === 'huy' || m.tt === 'cho' ? 'nhap' : 'ghi',
     ...(m.tt ? { ttSx: m.tt } : {}), dienGiai: m.gc, doiTuong: '', tien: tong, thue: 0, tong,
     _dong: dong, _kho: m.kho, _ghiChu: m.gc, _ngayTao: sauPhut(m.ngay, 4), _nguoiTao: NV[m.nv],
     _ngayCapNhat: m.capNhat ?? '', _nguoiCapNhat: m.capNhat ? NV[(m.nv + 3) % NV.length] : '',

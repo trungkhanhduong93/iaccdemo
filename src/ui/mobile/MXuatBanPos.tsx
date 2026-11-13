@@ -62,7 +62,8 @@ export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
       .map((x, i) => ({
         id: String(i),
         so: soFabi(`fabi-${x.seed}`),
-        ngay: `${dmy(x.date)} ${x.gio}`,
+        ngay: dmy(x.date),   // chứng từ chỉ ghi ngày, không ghi giờ phút (T823)
+        gio: x.gio,
         thang: x.date.getMonth() + 1,
         cn: cnTen(x.cn),
         x,
@@ -388,7 +389,7 @@ export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
                 tieuDe={<span>{r.tenMon} <span className="m-ma">{r.maMon}</span></span>}
                 soLuong={r.sl}
                 dvt={r.dvt}
-                dongPhu={`${r.soFabi} · ${r.cn} · ${r.gio}`}
+                dongPhu={`${r.soFabi} · ${r.cn} · ${String(r.ngay ?? '').split(' ')[0]}`}
                 tien={Number(r.tong ?? 0)}
                 hienTien={true}
                 lyDo={r.lyDo}

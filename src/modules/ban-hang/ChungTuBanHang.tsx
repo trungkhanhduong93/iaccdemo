@@ -341,7 +341,7 @@ export function ChungTuBanHang({ sc, mod }: ScreenProps) {
   const tatCa = useMemo(() => DAILY.filter(x => x.date.getMonth() >= 8).slice().reverse().flatMap(x => theoDon(x).reverse())   // đồng bộ FABi chỉ kéo chi tiết, mỗi hoá đơn một chứng từ (T247)
    
     .map((x, i) => ({
-      id: String(i), so: soFabi(`fabi-${x.seed}`), ngay: `${dmy(x.date)} ${x.gio}`, thang: x.date.getMonth() + 1, cn: cnTen(x.cn), x, kenh: x.kenh,
+      id: String(i), so: soFabi(`fabi-${x.seed}`), ngay: dmy(x.date), gio: x.gio, thang: x.date.getMonth() + 1, cn: cnTen(x.cn), x, kenh: x.kenh,
       dienGiai: x.loai === 'don' ? `Hoá đơn FABi ${x.kenh.toLowerCase()} ${x.gio} ngày ${dmy(x.date).slice(0, 5)}` : `Doanh thu ${x.kenh.toLowerCase()} ${x.don} đơn POS ngày ${dmy(x.date).slice(0, 5)}`,
       doiTuong: donPosCua(x).khach?.ten ?? 'Khách lẻ POS',
       tenHang: tomTatTenHang(monCua(x).map(m => m.ten)), _tenHangDu: [...new Set(monCua(x).map(m => m.ten))].join(', '),   // cột Diễn giải là tên món trong phiếu (T286)
@@ -1045,8 +1045,8 @@ function ChiTiet({ sc, mod, row }: ScreenProps & { row: Row }) {
                   <div className="xp637-tri">{dp.soDon ? <span className="xp637-code">{dp.soDon}</span> : <span className="xp637-trong">—</span>}</div>
                 </div>
                 <div className="xp637-o xp637-o-phu xp637-o-rong">
-                  <span className="xp637-nhan">Thời gian xuất</span>
-                  <div className="xp637-tri"><span>{dmy(x.date)} {(x as XPos).gio ?? '23:30'}</span></div>
+                  <span className="xp637-nhan">Ngày xuất</span>
+                  <div className="xp637-tri"><span>{dmy(x.date)}</span></div>
                 </div>
               </div>
               <div className="xp637-o">

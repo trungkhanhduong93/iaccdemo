@@ -203,7 +203,7 @@ function phieuTuMau(loai: LoaiSx, m: Mau, dong: DongSx[]): Row {
   const tong = dong.reduce((a, d) => a + (d.tien || 0), 0)
   const doi = SX[loai].doi!
   return {
-    id: idCua(loai, m.so), so: soCua(loai, m.so), ngay: m.ngay, thang: 10, cn: CN_CUA_KHO[m.kho], nguon: 'IVT', tt: m.tt === 'da' ? 'ghi' : 'nhap',
+    id: idCua(loai, m.so), so: soCua(loai, m.so), ngay: m.ngay.split(' ')[0], gio: m.ngay.split(' ')[1], thang: 10, cn: CN_CUA_KHO[m.kho], nguon: 'IVT', tt: m.tt === 'da' ? 'ghi' : 'nhap',
     ttSx: m.tt, dienGiai: m.gc, doiTuong: '', tien: tong, thue: 0, tong,
     _dong: dong, _kho: m.kho, _ghiChu: m.gc, _nhanVien: NV[m.nv],
     _ngayTao: sauPhut(m.ngay, 4), _nguoiTao: NV[m.nv],

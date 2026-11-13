@@ -1886,8 +1886,8 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
             <div className="m-lp-dong-trai">
               <Icon n="clock" className="ic sm m-lp-dong-ic" kieu="net" />
               <div className="m-lp-dong-nd">
-                <span className="m-lp-dong-nhan">Thời gian <b className="m-lp-sao">*</b></span>
-                <span className="m-lp-dong-tri m-lp-tri-xanh">{thoiGian}</span>
+                <span className="m-lp-dong-nhan">Ngày chứng từ <b className="m-lp-sao">*</b></span>
+                <span className="m-lp-dong-tri m-lp-tri-xanh">{thoiGian.slice(0, 10)}</span>
                 <input
                   type="text"
                   className="m-lp-inp-tri"

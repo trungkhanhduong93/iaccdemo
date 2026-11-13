@@ -468,6 +468,8 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
       r: (r: Row) => {
         const dStr = String(r.ngay ?? '')
         const ngayPart = dStr.split(' ')[0]
+        // Chứng từ chỉ hiện ngày, không hiện giờ phút; riêng phiếu kiểm kê hiện cả giờ phút (T823)
+        if (!cfg.kiemKe) return <span className="ds-time">{ngayPart}</span>
         const gioPart = r.gio ?? (r.so ? gioPhieu(String(r.so)) : '08:00')
         const full = dStr.includes(':') ? dStr : `${ngayPart} ${gioPart}`
         return <span className="ds-time" title={full}>{full}</span>

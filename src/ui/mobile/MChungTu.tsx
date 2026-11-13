@@ -889,7 +889,9 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
           }
 
           const doiTuongOrCn = r.doiTuong || r.cn || r.dienGiai || '—'
-          const ngayHienThi = String(r.ngay ?? '').split(' ')[0]
+          // Chứng từ chỉ hiện ngày; riêng phiếu kiểm kê hiện cả giờ phút (T823)
+          const [ngayD, gioD = String(r.gio ?? '')] = String(r.ngay ?? '').split(' ')
+          const ngayHienThi = cfg.kiemKe && gioD ? `${ngayD} ${gioD}` : ngayD
           const thongTinHang = soDongHang > 0 ? `${ngayHienThi} · ${soDongHang} hàng hoá` : ngayHienThi
           const ttNhan = (r.tt === 1 || r.tt === 'ok' || r.tt === '1' || r.tt === 2) ? 'Hoàn thành' : (r.tt === 0 ? 'Chưa ghi sổ' : (ttInfo[1] || 'Hoàn thành'))
           const ttCls = (r.tt === 1 || r.tt === 'ok' || r.tt === '1' || r.tt === 2) ? 'ok' : (r.tt === 0 ? 'cho' : 'ok')

@@ -807,8 +807,8 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
                 </div>
                 <div className="m-pb-the m-pb-the-gon">
                   <div className="m-pb-dong">
-                    <span className="n">Thời gian lập</span>
-                    <span className="g">{[row.ngay, row.gio].filter(Boolean).join(' ')}</span>
+                    <span className="n">Ngày lập</span>
+                    <span className="g">{String(row.ngay ?? '').split(' ')[0]}</span>
                   </div>
                   {row.doiTuong && (
                     <div className="m-pb-dong">
@@ -1068,8 +1068,8 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
                 <div className="m-pb-nhom">THÔNG TIN CHỨNG TỪ</div>
                 <div className="m-pb-the m-pb-the-gon">
                   <div className="m-pb-dong">
-                    <span className="n">Thời gian</span>
-                    <span className="g">{[row.ngay, row.gio].filter(Boolean).join(' ')}</span>
+                    <span className="n">Ngày chứng từ</span>
+                    <span className="g">{String(row.ngay ?? '').split(' ')[0]}</span>
                   </div>
                   {row.doiTuong && (
                     <div className="m-pb-dong">

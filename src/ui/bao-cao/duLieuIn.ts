@@ -81,10 +81,11 @@ export function duLieuIn(
   }
 
   const so = String(row.so ?? '')
-  const ngay = String(row.ngay ?? '07/10/2026')
-  // Mẫu in từ chứng từ bán hàng gói Plus chỉ ghi ngày, không ghi giờ phút
-  const boGio = mau.id === 'hoa-don-ban-hang' || mau.id === 'phieu-xuat-kho-ban'
-  const ngayChu = dinhDangNgayChu(boGio ? ngay.split(' ')[0] : ngay)
+  // Chứng từ in chỉ ghi ngày, không ghi giờ phút; riêng biên bản kiểm kê giữ giờ lúc kiểm (T823)
+  const ngayGoc = String(row.ngay ?? '07/10/2026')
+  const laKk = mau.id === 'bien-ban-kiem-ke'
+  const ngay = !laKk ? ngayGoc.split(' ')[0] : ngayGoc.includes(' ') || !row.gio ? ngayGoc : `${ngayGoc} ${row.gio}`
+  const ngayChu = dinhDangNgayChu(ngay.split(' ')[0])
 
   const idSeed = `${seedPrefix ?? cfg.prefix ?? 'ct'}-${row.id ?? '0'}`
   // Dòng chi tiết: dòng đã lưu của phiếu nếu có, không thì sinh theo cùng hạt giống với form chứng từ
@@ -208,9 +209,9 @@ export function duLieuIn(
     nganHang: 'Vietcombank - CN TP.HCM (0071001234567)',
     boPhan: String(row.cn ?? 'Cửa hàng 1'),
     cn: String(row.cn ?? 'Cửa hàng 1'),
-    ngayBan: boGio ? ngay.split(' ')[0] : ngay,
+    ngayBan: ngay,
     nguon: String(row.nguon ?? 'FABi POS'),
-    thoiDiem: `${ngay} 18:00`,
+    thoiDiem: laKk && ngay.includes(' ') ? ngay : `${ngay.split(' ')[0]} 18:00`,
     banKiemKe: 'Ông Nguyễn Văn An (Trưởng ban), Bà Trần Thị Mai (Thủ kho)',
     canCu: 'Quyết định số 26/QĐ-TGĐ ngày 01/10/2026',
     benGiao: donVi.ten,
