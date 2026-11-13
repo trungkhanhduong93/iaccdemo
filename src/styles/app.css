@@ -48171,3 +48171,43 @@ textarea.m-tpb-inp { height: auto; padding: 8px 12px; }
 .m-t824-them { display: flex; gap: 8px; padding: 12px 16px; border-bottom: 1px solid var(--line-2); }
 .m-t824-them .m-t601-btn-them-dong { flex: 1; }
 .m-t601-hang-row-dau:has(.m-t824-dg) { align-items: flex-start; }
+
+/* ── Thẻ chi phí điện thoại: cảnh báo khoản chờ tạo thẻ, màn Tạo thẻ bổ sung (T827) ── */
+.m-t825-canh { grid-column: 1 / -1; margin: 6px -14px -12px; display: flex; align-items: center; gap: 10px; padding: 12px 14px; border: 0; border-top: 1px solid #f2dfb8; background: var(--amber-t); color: var(--amber); font: inherit; text-align: left; cursor: pointer; }
+.m-t825-canh svg { flex: none; }
+.m-t825-canh .nd { flex: 1; min-width: 0; font-size: 13px; line-height: 1.4; color: var(--ink); }
+.m-t825-canh .nd b { color: #8a5508; }
+.m-t825-canh .nd small { display: block; font-size: 12px; color: var(--muted); }
+.m-t825-canh .nut { flex: none; padding: 8px 10px; border-radius: 8px; background: var(--amber); color: #fff; font-size: 12.5px; font-weight: 600; }
+.m-t825-goi-y { grid-column: 1 / -1; padding-top: 8px; font-size: 12px; line-height: 1.4; color: var(--muted); }
+.m-pb-noi-dung:has(.m-t825-dau) { padding-bottom: 170px; }
+.m-t825-dau { display: flex; justify-content: space-between; align-items: center; padding: 2px 2px 10px; font-size: 13px; color: var(--muted); }
+.m-t825-dau button { border: 0; background: none; padding: 6px 0; font: inherit; font-weight: 600; color: var(--blue); cursor: pointer; }
+.m-t825-trong { padding: 32px 12px; text-align: center; color: var(--muted); font-size: 14px; }
+.m-t825-the { background: #fff; border: 1px solid var(--line); border-radius: 12px; margin-bottom: 10px; overflow: hidden; }
+.m-t825-the.chon { border: 1.5px solid var(--blue); }
+.m-t825-the.loi { border-color: var(--red); }
+.m-t825-the-dau { display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; }
+.m-t825-the-dau.nhom { background: var(--tint); }
+.m-t825-tich { flex: none; width: 22px; height: 22px; box-sizing: border-box; border: 1.5px solid var(--faint); border-radius: 5px; background: #fff; display: flex; align-items: center; justify-content: center; padding: 0; color: #fff; cursor: pointer; }
+.m-t825-tich.on { background: var(--blue); border-color: var(--blue); }
+.m-t825-ten { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; font-size: 14px; }
+.m-t825-ten span { font-size: 12px; color: var(--muted); }
+.m-t825-tien { flex: none; font-size: 14px; font-variant-numeric: tabular-nums; }
+.m-t825-than { padding: 0 14px 10px; display: flex; flex-direction: column; gap: 8px; }
+.m-t825-the-dau.nhom + .m-t825-than { padding-top: 10px; }
+.m-t825-mot { font-size: 13px; font-weight: 600; }
+.m-t825-mot span, .m-t825-so { font-weight: 400; font-size: 12px; color: var(--muted); }
+.m-t825-luoi { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.m-t825-luoi > div { display: flex; flex-direction: column; gap: 3px; font-size: 12px; color: var(--muted); }
+.m-t825-luoi button { height: 36px; box-sizing: border-box; border: 1px solid var(--line); border-radius: 8px; background: #fff; padding: 0 8px; font: inherit; font-size: 13px; color: var(--blue); text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; }
+.m-t825-muc { display: flex; flex-direction: column; gap: 6px; padding-top: 8px; border-top: 1px solid var(--line-2); }
+.m-t825-muc-ten { display: flex; justify-content: space-between; gap: 8px; font-size: 13.5px; }
+.m-t825-muc-ten span { min-width: 0; }
+.m-t825-muc-ky { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); }
+.m-t825-muc-ky > span { flex: 1; min-width: 0; }
+.m-t825-muc-ky label { flex: none; display: flex; align-items: center; gap: 4px; height: 36px; box-sizing: border-box; border: 1px solid var(--blue); border-radius: 8px; padding: 0 8px; color: var(--muted); }
+.m-t825-muc-ky label.loi { border-color: var(--red); }
+.m-t825-muc-ky input { width: 44px; border: 0; outline: 0; padding: 0; font: inherit; font-size: 14px; color: var(--ink); background: transparent; text-align: right; }
+.m-t825-tong { position: absolute; left: 0; right: 0; bottom: calc(68px + env(safe-area-inset-bottom, 0px)); display: flex; justify-content: space-between; align-items: center; padding: 8px 16px; background: #fff; border-top: 1px solid var(--line); font-size: 13px; color: var(--muted); }
+.m-t825-tong b { font-size: 15px; color: var(--blue); }

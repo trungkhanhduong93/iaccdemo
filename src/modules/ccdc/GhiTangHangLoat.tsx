@@ -37,7 +37,7 @@ interface DongCho {
 }
 const CCDC = 'Công cụ dụng cụ'
 
-type DongGoc = Pick<DongCho, 'key' | 'soCt' | 'ngayCt' | 'ten' | 'gt' | '_goc'> & Partial<Pick<DongCho, 'loai' | 'ma' | 'tenCc' | 'dvt' | 'sl'>>
+export type DongGoc = Pick<DongCho, 'key' | 'soCt' | 'ngayCt' | 'ten' | 'gt' | '_goc'> & Partial<Pick<DongCho, 'loai' | 'ma' | 'tenCc' | 'dvt' | 'sl'>> & { cn?: string }   // cn: cửa hàng của chứng từ, điện thoại tạo thẻ đúng cửa hàng (T827)
 
 /** Hoá đơn mua hàng mẫu, sinh một lần */
 let hdmMau: Row[] | undefined
@@ -48,14 +48,14 @@ function dongChoCua(man: string, phieu: Row[], s: Parameters<typeof laLyPhanBo>[
   return phieu.filter(p => !(Array.isArray(p._theCp) && p._theCp.length)).flatMap(p => ((p._dong as Row[] | undefined) ?? []).map((d, i) => ({ d, i }))
     .filter(({ d }) => laLyPhanBo(String(d.ly ?? p._lyDo ?? ''), s))
     .map(({ d, i }) => ({
-      key: `${man}|${p.id}-${i}`, soCt: String(p.so), ngayCt: String(p.ngay).split(' ')[0], ten: String(d.ten ?? ''), gt: Number(d.tien) || 0, _goc: `/app/${man}/${p.id}`,
+      key: `${man}|${p.id}-${i}`, cn: String(p.cn ?? ''), soCt: String(p.so), ngayCt: String(p.ngay).split(' ')[0], ten: String(d.ten ?? ''), gt: Number(d.tien) || 0, _goc: `/app/${man}/${p.id}`,
       ...(laMaCcdc(d.ma) ? { loai: CCDC, ma: String(d.ma), tenCc: String(d.ten ?? ''), dvt: String(d.dvt ?? ''), sl: String(d.sl || 1) } : {}),
     })))
 }
 
 /** Dòng chờ: mẫu cộng các phiếu chi lưu trong phiên có dòng lý do tích Chi phí phân bổ nhiều kỳ (T700), bỏ dòng đã tạo thẻ.
  *  Dùng chung cho form Ghi tăng và cảnh báo ở danh sách thẻ (T287); tính lại mỗi lần vẽ vì daTao đổi khi tạo thẻ */
-function useDongCho(): DongGoc[] {
+export function useDongCho(): DongGoc[] {
   const { s } = useSession()
   const { phieuMoi: moi, apSua } = useDaXoa(MAN_THU_CHI)
   useDaXoa(MAN_HDM)   // tính lại khi lập, sửa, xoá hoá đơn mua hàng
@@ -68,6 +68,9 @@ function useDongCho(): DongGoc[] {
     ...dongChoCua(MAN_HDM, hoaDon, s),
   ].filter(d => !daTao.has(d.key))
 }
+
+/** Đánh dấu dòng chờ đã tạo thẻ, dùng ở màn Tạo thẻ bổ sung trên điện thoại (T827) */
+export function danhDauDaTao(keys: string[]) { keys.forEach(k => daTao.add(k)) }
 
 /** Các bước lập thẻ cho người ít nghiệp vụ, mở từ link Cách làm ở dải cảnh báo (T287) */
 const CACH_LAM = (

@@ -16,6 +16,7 @@ import { MChon } from './MChon'
 import { MTheNoiDung, MTheSua, type TheMobile } from './MThePhanBo'
 import { LichDon } from '../ChonNgay'
 import { HopXacNhan } from '../LocNangCao'
+import { MTaoTheBoSung, useKhoanCho } from './MTaoTheBoSung'
 import {
   daPhanBoToiKy,
   loaiTheTheoGoi,
@@ -144,6 +145,9 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
   }))
   const kyHienTai = locVal.ky ?? kyMacDinhNay
   const anHet = locVal.anHet ?? true
+  // Khoản chi phí chờ phân bổ chưa tạo thẻ tới hết kỳ đang xem, như dải cảnh báo web (T827)
+  const khoanCho = useKhoanCho(kyHienTai)
+  const [moBoSung, setMoBoSung] = useState(false)
 
   const dsChiNhanh = useMemo(
     () => [{ k: 'all', ten: 'Tất cả chi nhánh' }, ...CUA_HANG.map(c => ({ k: c.id, ten: c.ten }))],
@@ -458,6 +462,19 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
               <b>{money(ds.reduce((a, t) => a + (t.kyNay ?? 0), 0))} đ</b>
               <span>Giá trị còn lại</span>
               <b>{money(ds.reduce((a, t) => a + (t.con ?? 0), 0))} đ</b>
+              {/* Dải cảnh báo khoản chờ tạo thẻ ở khu tổng hợp, bấm mở Tạo thẻ bổ sung (T827, như web T287) */}
+              {khoanCho.length > 0 ? (
+                <button type="button" className="m-t825-canh" onClick={() => setMoBoSung(true)}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 3l9.5 17h-19z" /><path d="M12 10v4M12 17.5v.01" /></svg>
+                  <span className="nd">
+                    <b>{khoanCho.length} khoản chờ tạo thẻ</b> · {money(khoanCho.reduce((a, d) => a + d.gt, 0))} đ
+                    <small>Từ phiếu chi, hoá đơn mua hàng</small>
+                  </span>
+                  <span className="nut">Tạo thẻ bổ sung</span>
+                </button>
+              ) : (
+                <div className="m-t825-goi-y">Có khoản chi cần phân bổ nhiều kỳ? Lập phiếu chi lý do Chi phí chờ phân bổ, lưu xong phần mềm mở tạo thẻ.</div>
+              )}
             </div>
           )
         }}
@@ -502,6 +519,21 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
         nhanThem="Thêm mới"
         thongBaoTrong="Không có thẻ chi phí nào phù hợp"
       />
+
+      {/* ── TẠO THẺ BỔ SUNG (T827) ── */}
+      {moBoSung && (
+        <MTaoTheBoSung
+          ky={kyHienTai}
+          cnMacDinh={cnChon?.ten || CUA_HANG[0].ten}
+          dsSoThe={theList.map(t => t.soThe)}
+          onDong={() => setMoBoSung(false)}
+          onTao={dsMoi => {
+            setTheList(prev => [...dsMoi, ...prev])
+            theTaoPhien.unshift(...dsMoi)
+            setMoBoSung(false)
+          }}
+        />
+      )}
 
       {/* Màn lọc toàn màn (T583) */}
       <MLoc

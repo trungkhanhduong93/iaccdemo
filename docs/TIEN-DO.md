@@ -11,7 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T827 | Điện thoại, danh sách thẻ chi phí phân bổ: dải cảnh báo khoản chờ tạo thẻ ở khu tổng hợp như web, nút Tạo thẻ bổ sung mở màn tạo thẻ hàng loạt; hoá đơn mua hàng nhiều dòng thành một thẻ nhiều mục, phiếu chi mỗi dòng một thẻ | dinhlanphuongipacc | Đang làm | `MCcdc.tsx` (Trum giữ ở T552, người dùng duyệt làm), `ccdc/GhiTangHangLoat.tsx` (xuất hàm dùng chung), `app.css` |
 | T781 | Giảm thuế GTGT xét hiệu lực nghị quyết theo ngày của từng chứng từ, không theo ngày làm việc (`ptGiamHienHanh` dùng `HOM_NAY`) | | Chờ | Thấy lúc soát T780, `giam-thue.ts` |
 | T776 | Màn Tính giá vốn: sang trang 2 thì dòng "Cộng 51 dòng" mất đường kẻ dưới, dưới dòng tổng còn khoảng trống trong bảng, dưới khung bảng còn khoảng trống xám | | Chờ | Trum báo lúc làm T774, ảnh chụp ở trang 2, tháng 10/2026 |
 | T771 | `tools/kiem_tra.py` ca đăng nhập đợt 8 (hàm `kiem_tra_dang_nhap_dot_8`) báo "Nghiệp vụ: không tìm thấy phân hệ Thu chi" ở màn 390px | | Chờ | Thấy lúc làm T769, bản trước T769 cũng báo. Ca này không nằm trong `--nhanh` |
