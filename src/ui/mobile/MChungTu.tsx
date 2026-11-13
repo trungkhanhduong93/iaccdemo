@@ -85,6 +85,7 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
   const rowsSx = useDsPhieuSx(cfg.sanXuat ?? 'xsc')
   const rowsGocChung = cfg.dieuChuyen ? rowsDcn : cfg.sanXuat ? rowsSx : rowsGoc
   const rows = useMemo(() => {
+    if (cfg.khongKho) return rowsGocChung.map((r): Row => ({ ...r, lyDo: String(r._lyDo ?? '') }))   // Hoá đơn mua hàng: Lý do nghiệp vụ (T826)
     if (mod.key !== 'tien') return rowsGocChung
     return rowsGocChung.map((r): Row => {
       const loaiK = cfg.loai?.find(x => x.k === r.loai)?.k ?? cfg.loai?.[0]?.k
@@ -162,8 +163,8 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
     return raw.filter(Boolean).sort()
   }, [rows])
   const dsLyDo = useMemo(
-    () => mod.key === 'tien' ? [...new Set(rows.map(r => String(r.lyDo ?? '')).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'vi')) : [],
-    [rows, mod.key],
+    () => mod.key === 'tien' || cfg.khongKho ? [...new Set(rows.map(r => String(r.lyDo ?? '')).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'vi')) : [],   // Hoá đơn mua hàng lọc theo Lý do nghiệp vụ (T826)
+    [rows, mod.key, cfg.khongKho],
   )
 
   // Lọc sơ bộ (thời gian, cửa hàng, loại, bộ lọc nâng cao)
@@ -802,7 +803,7 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
             const cfgLoai = theoLoai(cfg, r.loai)
             const laHang = cfgLoai.dong === 'hang' || cfgLoai.dong === 'nvl'
             let soDongHang = 0
-            if (laHang || cfg.dieuChuyen || cfg.sanXuat || cfg.kiemKe) {
+            if ((laHang && !cfg.khongKho) || cfg.dieuChuyen || cfg.sanXuat || cfg.kiemKe) {   // Hoá đơn mua hàng không đếm hàng hoá, dòng là diễn giải (T826)
               if (Array.isArray(r._dong)) {
                 soDongHang = r._dong.length
               } else {
@@ -841,6 +842,7 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
                 dongPhu2={dongPhu2}
                 tien={tien}
                 hienTien={hienTien}
+                lyDo={cfg.khongKho ? String(r.lyDo ?? '') : undefined}
                 onClick={() => nav(`${path}/${r.id}`)}
               />
             )

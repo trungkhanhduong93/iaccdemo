@@ -7,6 +7,7 @@ import { type Goi, kieuGhiSoDv } from '../../app/plan'
 import { money, soLuong } from '../format'
 import { NGUON, TT_CT, dongCua, doanLyDoThuChi, nguoiTaoMau, ttNghiepVu, type Dong } from '../generic/gen'
 import { boO, nhomCua, theoLoai } from '../generic/nhom'
+import { laLyChiPhi } from '../generic/danhMucStore'
 import { useDongChungTu } from '../generic/VoucherScreen'
 import { useDsPhieuDcn } from '../../modules/kho/BangDieuChuyen'
 import { useDsPhieuSx } from '../../modules/kho/BangSanXuat'
@@ -259,11 +260,13 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
       }
     }
     for (const c of dsTraCon(row)) ds.push({ so: c.so, url: `/app/${MAN_TRA_MUA}/${c.id}` })   // phiếu trả lại lập từ phiếu mua (T819)
+    // Hoá đơn mua hàng: thẻ chi phí phân bổ lập từ hoá đơn (T826, như web T821)
+    if (cfg.khongKho) for (const so of theCuaPhieu(row)) if (!ds.some(x => x.so === so)) ds.push({ so, url: `/app/ccdc/8-1-1?mo=${so}` })
     if (row._thamChieu && !ds.some(x => x.so === row._thamChieu)) {
       ds.push({ so: String(row._thamChieu), url: String(row._thamChieuDi || path) })
     }
     return ds
-  }, [dsTt, row, path])
+  }, [dsTt, row, path, cfg.khongKho])
 
   // Thanh toán từ sheet: lập luôn phiếu chi hoặc uỷ nhiệm chi, không mở form điền lại (T655, thay T610)
   const handleLapPhieuChi = (tt: ThongTinTt) => {
@@ -403,7 +406,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
 
   // Trả hàng ở phiếu mua có dòng hàng (T819, như web T727): mở lập phiếu trả lại hàng mua điền sẵn từ phiếu này
   const manTra = timMan('mua-hang', '4-1-4').sc
-  const coTraHang = nhomMb === 'mua' && cfg.prefix !== 'TLN' && cfg.dong === 'nvl' && Boolean(manTra) && moDuoc(manTra!, s.goi)
+  const coTraHang = nhomMb === 'mua' && cfg.prefix !== 'TLN' && cfg.dong === 'nvl' && !cfg.khongKho && Boolean(manTra) && moDuoc(manTra!, s.goi)   // hoá đơn mua hàng không có Trả hàng (T826)
   const moTraHang = () => {
     const tu: TraTu = {
       id: String(row.id), so: soCt, man: `${mod.key}/${sc.slug}`, di: `${path}/${row.id}`, cn: cuaHangTen,
@@ -627,7 +630,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
             <path d="M19 12H5M12 19l-7-7 7-7" />
           </svg>
         </button>
-        <h2 className="m-pb-tieu-de">{nhomMb === 'mua' ? `Phiếu mua hàng ${soCt}` : soCt}</h2>
+        <h2 className="m-pb-tieu-de">{cfg.khongKho ? `Hoá đơn mua hàng ${soCt}` : nhomMb === 'mua' ? `Phiếu mua hàng ${soCt}` : soCt}</h2>
         <span className="m-pb-thanh-dau-phai" />
       </header>
 
@@ -924,10 +927,21 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
                     <span className="n">Ngày chứng từ</span>
                     <span className="g">{row.ngay}</span>
                   </div>
+                  {cfg.khongKho ? (
+                    /* Hoá đơn mua hàng: Lý do nghiệp vụ thay Kho nhập, lý do tích Là chi phí có nhãn Chi phí (T826) */
+                    <div className="m-pb-dong">
+                      <span className="n">Lý do</span>
+                      <span className="g">
+                        {String(row._lyDo ?? dsDong[0]?.ly ?? '')}
+                        {laLyChiPhi(String(row._lyDo ?? dsDong[0]?.ly ?? ''), s) && <span className="m-t824-cp">Chi phí</span>}
+                      </span>
+                    </div>
+                  ) : (
                   <div className="m-pb-dong">
                     <span className="n">Kho nhập</span>
                     <span className="g">{kho}</span>
                   </div>
+                  )}
                   {(row.dienGiai || row._ghiChu) && (
                     <div className="m-pb-dong">
                       <span className="n">Ghi chú</span>

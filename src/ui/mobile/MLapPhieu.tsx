@@ -6,15 +6,15 @@ import { dongCua, nguoiTaoMau, tkTheoLyDo, ttNghiepVu, type Dong } from '../gene
 import { duongDan, tenMan } from '../../app/registry'
 import { cuaHangHienTai, ngayDauNam, truocDauNam, useSession } from '../../app/session'
 import { type Goi, kieuGhiSoDv } from '../../app/plan'
-import { CUA_HANG, HANG, KHACH, KHO, LY_CAN_DOI_TUONG, LY_DO, NCC, NHAN_VIEN, NVL, MA_LY_CHO_PHAN_BO, TK_NGAN_HANG } from '../../data/mock'
-import { boO, nhomCua, theoLoai } from '../generic/nhom'
+import { CCDC_HANG, CUA_HANG, HANG, KHACH, KHO, LY_CAN_DOI_TUONG, LY_DO, NCC, NHAN_VIEN, NVL, MA_LY_CHO_PHAN_BO, TK_NGAN_HANG } from '../../data/mock'
+import { LY_HD_MUA, boO, nhomCua, theoLoai } from '../generic/nhom'
 import { DS_DOI_TUONG } from '../generic/BangSua'
 import { ghiNhatKy, soKeTiep, suaPhieu, themPhieu, soDaTra, dsTtCon, ttTienTheoTra, type PhieuTt } from '../generic/daXoa'
 import { MLichSu } from './MLichSu'
 import { MThanhCong, type DongTomTat } from './MThanhCong'
 import { MThanhToanNgay, lapPhieuChiTraNcc, type ThongTinTt } from './MThanhToanNgay'
 import { soLuong } from '../format'
-import { MAN_THU_CHI, QUY_TIEN, TEN_CT_TT, TIEN_TO_CT_TT, type TraTu } from '../generic/ChungTuForm'
+import { MAN_THU_CHI, QUY_TIEN, TEN_CT_TT, TIEN_TO_CT_TT, lyMacDinh, type TraTu } from '../generic/ChungTuForm'
 import { useDongChungTu } from '../generic/VoucherScreen'
 import { chuanKyHieuHd, chuanSoHd, fold, money } from '../format'
 import { Icon } from '../Icon'
@@ -23,7 +23,7 @@ import { MChon, MThanhThem } from './MChon'
 import { MTrong } from './MTrong'
 import { MLapPhieuKho } from './MLapPhieuKho'
 import { MFormDm } from './MFormDm'
-import { addCatalogRow, getAllCatalogRows, getDmMeta, laLyPhanBo, sinhMaKeTiep, useAddedCatalogRows } from '../generic/danhMucStore'
+import { addCatalogRow, getAllCatalogRows, getDmMeta, laLyChiPhi, laLyPhanBo, laMaCcdc, sinhMaKeTiep, useAddedCatalogRows } from '../generic/danhMucStore'
 import { TAI_KHOAN } from '../../modules/danh-muc/data'
 import { tinhButToan } from './butToan'
 import { quyDoiTuDanhMuc } from '../../modules/danh-muc/QuyDoiDvt'
@@ -395,6 +395,7 @@ interface TheHangMuaProps {
   onXoa: () => void
   autoFocusSl?: boolean
   chiSl?: boolean   // trả lại hàng mua lập từ phiếu mua (T819, như web T816): chỉ sửa số lượng (tối đa dong.slMax), xoá dòng
+  dienGiai?: boolean   // Hoá đơn mua hàng (T826, như web T821): dòng có mã hoặc trống mã, tên dòng là ô Diễn giải gõ tự do
   gon?: boolean   // phiếu Nhập kho (T824): Số lượng gộp ĐVT như phiếu mua, bỏ Chiết khấu, VAT
 }
 
@@ -407,6 +408,7 @@ function TheHangMua({
   onXoa,
   autoFocusSl,
   chiSl,
+  dienGiai,
   gon,
 }: TheHangMuaProps) {
   const kieuGiam = dong.kieuGiam ?? (dong?.ck && !dong?.ptCk ? 'đ' : '%')
@@ -587,12 +589,27 @@ function TheHangMua({
   return (
     <div id={`m-hang-${dong.id ?? stt}`} className={`m-t601-hang-row ${dong.moi ? 'moi' : ''}`}>
       <div className="m-t601-hang-row-dau">
+        {dienGiai ? (
+          <div className="m-t824-dg">
+            <span className="m-t824-stt">{stt}.</span>
+            <input
+              type="text"
+              className="m-t824-dg-o"
+              aria-label={`Diễn giải dòng ${stt}`}
+              placeholder="Diễn giải"
+              value={dong.ten}
+              onChange={e => onDoiDong({ ten: e.target.value })}
+            />
+            {dong.ma && <span className="m-t824-ma">{dong.ma}</span>}
+          </div>
+        ) : (
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
           <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--ink)' }}>
             {stt}. {tenClean} {dong.ma && <span style={{ fontSize: 12, fontWeight: 400, color: '#9ca3af' }}>{dong.ma}</span>}
           </span>
           {dong.moi && <span className="m-t600-chip-moi">Mới</span>}
         </div>
+        )}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <button
             type="button"
@@ -897,6 +914,8 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
   const bo = boO(nhom, cfg)
   const laTien = mod.key === 'tien' || cfg.dong === 'tien'
   const laCq = nhom === 'cq' || loai?.k === 'cq'
+  // Hoá đơn mua hàng, mua hàng không qua kho (T826, như web T821): không có kho, có Lý do nghiệp vụ, dòng là diễn giải
+  const khongKho = nhom === 'mua' && Boolean(cfg.khongKho)
   const laNk = sc.code === '5.1.1'   // phiếu Nhập kho (T824, như web T818): không đối tượng, có Người thực hiện
   const cnChon = cuaHangHienTai(s)
   const [cuaHang, setCuaHang] = useState(() => (gocData?.cn ? String(gocData.cn) : cnChon?.ten ?? ''))
@@ -921,10 +940,12 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
       gia: Number(h.gia) || Number(h.giaMua) || 0,
       ts: Number(h.ts) || 0,
     }))
-    return [...base, ...added]
-  }, [cfg.dong, addedHang])
+    // Hoá đơn mua hàng chọn thêm được công cụ dụng cụ (T826, như web T821)
+    const ccdc = khongKho ? CCDC_HANG.map(h => ({ ma: h.ma, ten: h.ten, nhom: h.nhom, dvt: h.dvt, gia: 0, ts: 0 })) : []
+    return [...base, ...ccdc, ...added]
+  }, [cfg.dong, addedHang, khongKho])
   // Phiếu dòng NVL: sheet chọn hàng chia 2 tab như web (T705). Thực đơn là mọi mặt hàng từ FABi, NVL là hàng nguồn khác có theo dõi tồn kho
-  const coTabHang = cfg.dong === 'nvl'
+  const coTabHang = cfg.dong === 'nvl' && !khongKho
   const [tabHang, setTabHang] = useState<'td' | 'nvl'>('nvl')
   const dsThucDon = useMemo(() => HANG.map(({ ma, ten, nhom, dvt, gia, ts }) => ({ ma, ten, nhom, dvt, gia, ts })), [])
   const dsHangTab = coTabHang && tabHang === 'td' ? dsThucDon : danhMucHang
@@ -1010,6 +1031,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
 
   // Kho
   const [kho, setKho] = useState(() => {
+    if (khongKho) return ''
     if (gocData?._kho || gocData?.kho) return String(gocData._kho ?? gocData.kho)
     return cuaHang ? (dsKho[0] ?? 'Kho trung tâm') : 'Kho trung tâm'
   })
@@ -1036,6 +1058,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
 
   // Diễn giải / Ghi chú
   const [ghiChu, setGhiChu] = useState(() => {
+    if (khongKho && !gocData) return ''   // hoá đơn mua hàng mới để trống ghi chú, lưu thì diễn giải lấy theo lý do (T826, như web T821)
     return String(gocData?._ghiChu ?? gocData?.dienGiai ?? cfg.dienGiai?.[0] ?? '')
   })
 
@@ -1047,6 +1070,21 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
   const [nguoiNhanNop, setNguoiNhanNop] = useState(() => {
     return String(gocData?._nguoiGiao ?? gocData?._nguoi ?? '')
   })
+
+  // Lý do nghiệp vụ của Hoá đơn mua hàng (T826, như web T821): lý do chi bỏ các lý do chỉ là chuyển tiền, thêm lý do chi mới trong phiên.
+  // Phiếu mới lấy theo ?ly= (mã lý do), không có thì đoán từ diễn giải
+  const dsLyHd = useMemo(() => {
+    const them = addedLy.filter(x => !x.dung || x.dung === 'Chi tiền').map(x => String(x.ten ?? '')).filter(t => t && !LY_HD_MUA.includes(t))
+    return [...LY_HD_MUA, ...them]
+  }, [addedLy])
+  const [lyHd, setLyHd] = useState(() => {
+    if (!khongKho) return ''
+    if (gocData?._lyDo) return String(gocData._lyDo)
+    const lyUrl = LY_DO.find(x => x.ma === sp.get('ly'))?.ten
+    if (!gocData && lyUrl && LY_HD_MUA.includes(lyUrl)) return lyUrl
+    return lyMacDinh(LY_HD_MUA, String(gocData?.dienGiai ?? cfg.dienGiai?.[0] ?? ''))
+  })
+  const [moChonLyHd, setMoChonLyHd] = useState(false)
 
   // Hoá đơn & Thông tin bổ sung phiếu mua
   const nvGoc = gocData && !traTu ? ttNghiepVu(gocData) : undefined   // trả lại hàng mua (T819): không chép hoá đơn, hạn thanh toán mẫu của phiếu mua
@@ -1160,8 +1198,19 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
         tkCo: tk.tkCo,
       }]
     }
+    // Hoá đơn mua hàng mới: sẵn một dòng trống mã, gõ diễn giải (T826, như web T821)
+    if (khongKho) return [{ id: `dong-0-${Math.random().toString(36).slice(2, 7)}`, ma: '', ten: '', dvt: '', sl: 1, gia: 0, tien: 0, ts: 8, thue: 0, ptCk: 0, ck: 0 }]
     return []
   })
+
+  // Hoá đơn mua hàng: mọi dòng theo lý do đầu phiếu, Nợ TK theo lý do, Có 331 (T826, như web T821)
+  useEffect(() => {
+    if (!khongKho) return
+    const tk = tkTheoLyDo('mua', lyHd)
+    setDsDong(ds => ds.some(d => d.ly !== lyHd || d.tkNo !== tk.tkNo || d.tkCo !== tk.tkCo)
+      ? ds.map(d => ({ ...d, ly: lyHd, tkNo: tk.tkNo, tkCo: tk.tkCo }))
+      : ds)
+  }, [khongKho, lyHd, dsDong.length])
 
   // Phiếu thu, chi chỉ bắt buộc đối tượng khi có dòng lý do thu nợ, đi vay, chi công nợ, cho vay (T330)
   const canDt = laTien && dsDong.some(d => LY_CAN_DOI_TUONG.includes(d.ly ?? ''))
@@ -1275,7 +1324,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
       gio: thoiGian.split(' ')[1] || '10:00',
       thang: Number(ngayChiTiet.split('/')[1]) || 10,
       doiTuong: dtVal,
-      dienGiai: ghiChu || cfg.dienGiai?.[0] || 'Chứng từ mua hàng',
+      dienGiai: ghiChu || (khongKho ? lyHd : '') || cfg.dienGiai?.[0] || 'Chứng từ mua hàng',
       tien: tongTien - tongCk,
       thue: tongThue,
       tong: tongThanhToan,
@@ -1285,7 +1334,8 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
       _nguoi: nguoiGiaoDich,
       _diaChi: diaChi,
       _mst: mst,
-      _kho: khoVal,
+      _kho: khongKho ? '' : khoVal,
+      ...(khongKho ? { _lyDo: lyHd } : {}),
       _nhanKemHd: nhanKemHd,
       _soHd: nhanKemHd ? soHd : '',
       _kyHieuHd: nhanKemHd ? kyHieuHd : '',
@@ -1739,8 +1789,11 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
       if (!doiTuongLuu.trim()) {
         loiMoi.doiTuong = 'Vui lòng chọn nhà cung cấp'
       }
-      if (!khoLuu.trim()) {
+      if (!khongKho && !khoLuu.trim()) {
         loiMoi.kho = 'Vui lòng chọn kho nhận'
+      }
+      if (khongKho && !lyHd.trim()) {
+        loiMoi.lyDo = 'Vui lòng chọn lý do nghiệp vụ'
       }
       if (traNgay && !quy.trim()) {
         loiMoi.quy = 'Vui lòng chọn quỹ'
@@ -1751,7 +1804,11 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
         if (!ngayHd.trim()) loiMoi.ngayHd = 'Vui lòng chọn ngày hoá đơn'
       }
       if (dsDongLuu.length === 0) {
-        loiMoi.hang = 'Vui lòng chọn ít nhất một mặt hàng'
+        loiMoi.hang = khongKho ? 'Vui lòng nhập ít nhất một dòng' : 'Vui lòng chọn ít nhất một mặt hàng'
+      }
+      const dongTrongDg = khongKho ? dsDongLuu.findIndex(d => !String(d.ten ?? '').trim()) : -1
+      if (dongTrongDg >= 0) {
+        loiMoi.hang = `Nhập diễn giải dòng ${dongTrongDg + 1}`
       }
       const sai = chiSl ? dsDongLuu.find(d => !(Number(d.sl) > 0) || (d.slMax !== undefined && Number(d.sl) > d.slMax)) : undefined
       if (sai) {
@@ -1942,6 +1999,12 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
       ganTraVaoPhieuMua(idLuu, soCt)
       toast(`Đã lưu ${soCt}`)
 
+      // Hoá đơn mua hàng lý do Chi phí phân bổ nhiều kỳ: báo rồi mở tạo thẻ chi phí phân bổ (T826, như web T821)
+      if (khongKho && laLyPhanBo(lyHd, s)) {
+        setHoiThe({ soCt, idMoi: idLuu })
+        return
+      }
+
       setSoPhieuMoi(soCt)
       setIdPhieuMoi(idLuu)
       setSoPhieuChiMoi(soPhieuChi)
@@ -1973,7 +2036,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
     }
 
     // Phiếu chi có lý do tích Chi phí phân bổ nhiều kỳ: báo rồi mở tạo thẻ chi phí phân bổ (Mục 4 spec; T419: thông báo, không hỏi; T700)
-    const laLyChoPb = laTien && dsDong.some(d => laLyPhanBo(d.ly, s))
+    const laLyChoPb = (laTien && dsDong.some(d => laLyPhanBo(d.ly, s))) || (khongKho && laLyPhanBo(lyHd, s))   // hoá đơn mua hàng (T826)
 
     if (laLyChoPb) {
       setHoiThe({ soCt, idMoi: idLuu })
@@ -2007,7 +2070,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
           tkCo: tk.tkCo,
         }])
       } else {
-        setDsDong([])
+        setDsDong(khongKho ? [{ id: `dong-0-${Date.now()}`, ma: '', ten: '', dvt: '', sl: 1, gia: 0, tien: 0, ts: 8, thue: 0, ptCk: 0, ck: 0 }] : [])
       }
     } else {
       setSoPhieuMoi(soCt)
@@ -2036,7 +2099,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
     setMst('')
     setDiaChi('')
     setNguoiGiaoDich('')
-    setDsDong([])
+    setDsDong(khongKho ? [{ id: `dong-0-${Date.now()}`, ma: '', ten: '', dvt: '', sl: 1, gia: 0, tien: 0, ts: 8, thue: 0, ptCk: 0, ck: 0 }] : [])   // hoá đơn mua hàng sẵn một dòng trống (T826)
     setHinhThucTt('congno')
     setQuy('')
     setLoiO({})
@@ -2089,7 +2152,9 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
   }
 
   const lyDoHienTai = dsDong[0]?.ly || dsLyDo[0] || (nhom === 'chi' ? 'Chi tiền' : 'Thu tiền')
-  const tieuDe = nhom === 'mua'
+  const tieuDe = khongKho
+    ? (dangSua ? `Sửa hoá đơn ${row?.so ?? gocData?.so ?? soCtDuKien}` : 'Lập hoá đơn mua hàng')
+    : nhom === 'mua'
     ? (dangSua ? `Sửa phiếu ${row?.so ?? gocData?.so ?? soCtDuKien}` : traTu ? 'Lập phiếu trả lại hàng mua' : 'Lập phiếu mua hàng')
     : dangSua
     ? `Sửa ${row?.so ?? ''}`.trim()
@@ -2151,6 +2216,24 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                     </div>
                     {loiO.doiTuong && <div className="m-lp-loi-o m-t655-loi">{loiO.doiTuong}</div>}
 
+                    {khongKho ? (
+                      <>
+                        {/* Hoá đơn mua hàng: Lý do nghiệp vụ thay Kho nhập; lý do tích Là chi phí có nhãn Chi phí (T826, như web T821) */}
+                        <div className="m-t655-hang">
+                          <span className="m-t655-nhan">Lý do nghiệp vụ <em>*</em></span>
+                          <button type="button" className="m-t655-o" id="m-lp-o-lyDo" onClick={() => setMoChonLyHd(true)}>
+                            <span className={lyHd ? 'chu' : 'goi'}>{lyHd || 'Chọn lý do'}</span>
+                            {laLyChiPhi(lyHd, s) && <span className="m-t824-cp">Chi phí</span>}
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
+                          </button>
+                        </div>
+                        {loiO.lyDo && <div className="m-lp-loi-o m-t655-loi">{loiO.lyDo}</div>}
+                        {!dangSua && laLyPhanBo(lyHd, s) && (
+                          <div className="m-t824-nhac-the">Lưu hoá đơn xong sẽ tạo Thẻ chi phí phân bổ</div>
+                        )}
+                      </>
+                    ) : (
+                      <>
                     <div className="m-t655-hang">
                       <span className="m-t655-nhan">Kho nhập <em>*</em></span>
                       <button type="button" className="m-t655-o" id="m-lp-o-kho" onClick={() => setMoChonKho(true)}>
@@ -2159,6 +2242,8 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                       </button>
                     </div>
                     {loiO.kho && <div className="m-lp-loi-o m-t655-loi">{loiO.kho}</div>}
+                      </>
+                    )}
 
                     <div className="m-t655-hang">
                       <span className="m-t655-nhan">Ngày chứng từ <em>*</em></span>
@@ -2271,7 +2356,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
 
                 {/* 4. HÀNG HOÁ, DỊCH VỤ */}
                 <div className="sec" style={{ padding: '4px 20px 8px', fontSize: 12, fontWeight: 600, letterSpacing: '.04em', color: '#6b7280', textTransform: 'uppercase', display: 'flex', justifyContent: 'space-between' }}>
-                  <span>Hàng hoá, dịch vụ</span>
+                  <span>{khongKho ? 'Chi tiết' : 'Hàng hoá, dịch vụ'}</span>
                   <span style={{ textTransform: 'none', letterSpacing: 0, fontWeight: 400, color: '#9ca3af' }}>{dsDong.length} dòng</span>
                 </div>
 
@@ -2305,10 +2390,36 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                         onXoa={() => xoaDong(originalIdx)}
                         autoFocusSl={d.moi && index === dsDongHienThiTrongPhieu.length - 1}
                         chiSl={chiSl}
+                        dienGiai={khongKho}
                       />
                     ))}
 
-                    {!chiSl && <div style={{ padding: '12px 16px', borderBottom: '1px solid #eeeeee' }}>
+                    {khongKho && (
+                      /* Hoá đơn mua hàng: Thêm dòng là dòng trống mã gõ diễn giải; Chọn hàng hoá lấy theo mã (T826, như web T821) */
+                      <div className="m-t824-them">
+                        <button
+                          type="button"
+                          className="m-t601-btn-them-dong"
+                          onClick={() => {
+                            setDsDong(ds => [...ds, { id: `dong-${Date.now()}`, ma: '', ten: '', dvt: '', sl: 1, gia: 0, tien: 0, ts: 8, thue: 0, ptCk: 0, ck: 0, moi: true }])
+                            if (loiO.hang) setLoiO(l => { const n = { ...l }; delete n.hang; return n })
+                          }}
+                        >
+                          + Thêm dòng
+                        </button>
+                        <button
+                          type="button"
+                          className="m-t601-btn-them-dong"
+                          onClick={() => {
+                            setHangDaChonMoi(new Set())
+                            setMoChonHang(true)
+                          }}
+                        >
+                          Chọn hàng hoá
+                        </button>
+                      </div>
+                    )}
+                    {!chiSl && !khongKho && <div style={{ padding: '12px 16px', borderBottom: '1px solid #eeeeee' }}>
                       <button
                         type="button"
                         className="m-t601-btn-them-dong"
@@ -2327,6 +2438,13 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                       <div style={{ fontSize: 15, fontWeight: 600, marginBottom: 6, color: 'var(--ink)' }}>
                         Tổng cộng ({dsDong.length} dòng)
                       </div>
+                      {khongKho ? (
+                        /* Hoá đơn mua hàng chỉ còn Tổng tiền (T826, như web T821) */
+                        <div className="m-t601-tong-dong">
+                          <span className="lb">Tổng tiền</span>
+                          <b>{money(tongThanhToan)}</b>
+                        </div>
+                      ) : (<>
                       <div className="m-t601-tong-dong">
                         <span className="lb">Thành tiền</span>
                         <span>{money(tongTien)}</span>
@@ -2339,6 +2457,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                         <span className="lb">Tiền thuế</span>
                         <span>{money(tongThue)}</span>
                       </div>
+                      </>)}
                     </div>
                   </div>
                 </div>
@@ -2686,6 +2805,28 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
         apDung
         tim
       />
+
+      {/* ── SHEET CHỌN LÝ DO NGHIỆP VỤ HOÁ ĐƠN MUA HÀNG (T826) ── */}
+      {khongKho && (
+        <MChon
+          mo={moChonLyHd}
+          onDong={() => setMoChonLyHd(false)}
+          tieuDe="Chọn lý do nghiệp vụ"
+          ds={dsLyHd.map(l => ({ k: l, ten: l }))}
+          chon={lyHd}
+          onChon={ly => {
+            setLyHd(ly)
+            if (loiO.lyDo) setLoiO(l => { const n = { ...l }; delete n.lyDo; return n })
+          }}
+          onThem={() => {
+            setMoChonLyHd(false)
+            setMoThemDm('ly:chi')
+          }}
+          nhanThem="Thêm lý do nghiệp vụ"
+          apDung
+          tim
+        />
+      )}
 
       {/* ── SHEET CHỌN CỬA HÀNG ── */}
       <MChon
@@ -3613,6 +3754,16 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                 onClick={() => {
                   const h = hoiThe
                   setHoiThe(null)
+                  // Hoá đơn mua hàng: mỗi dòng một dòng thẻ, tiền trước thuế; mọi dòng là công cụ dụng cụ thì thẻ loại CCDC (T826, như web T821, T822)
+                  const theCcdc = khongKho && dsDong.every(d => laMaCcdc(d.ma))
+                  const tuHd = khongKho ? {
+                    gt: tongTien - tongCk,
+                    tien: tongTien - tongCk,
+                    ...(theCcdc ? { loai: 'Công cụ dụng cụ' } : {}),
+                    dong: dsDong.map(d => theCcdc
+                      ? { ma: d.ma, ten: d.ten, dvt: d.dvt, gt: String(d.tien), sl: d.sl || 1, _maTay: true }
+                      : { ten: d.ten, gt: String(d.tien), sl: 1 }),
+                  } : {}
                   nav('/app/ccdc/8-1-1?moi=the', {
                     state: {
                       tuPhieu: {
@@ -3631,6 +3782,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                           ten: ghiChu || dsDong[0]?.ten || 'Chi phí chờ phân bổ',
                           gt: tongThanhToan,
                         }],
+                        ...tuHd,
                       },
                     },
                   })
@@ -3678,6 +3830,8 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
               if (meta.catKey === '1.5') {
                 setDoiTuong(ten)
                 if (loiO.doiTuong) setLoiO(l => { const n = { ...l }; delete n.doiTuong; return n })
+              } else if (meta.catKey === '1.16' && khongKho) {
+                setLyHd(ten)
               } else if (meta.catKey === '1.16') {
                 const tk = tkTheoLyDo(loai?.k ?? nhom, ten)
                 doiDong(0, { ly: ten, tkNo: tk.tkNo, tkCo: tk.tkCo })
