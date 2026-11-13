@@ -879,6 +879,8 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
   const tcGiua = laTien && nhom !== 'cq'
   // Ô kho đứng đầu cột 1 (T248) làm cột 1 dài thêm một hàng: Ghi chú lên cột giữa dưới Người giao dịch, đầu phiếu vẫn 3 hàng
   const keoGc = muaBan && !khoDau
+  // Hoá đơn mua hàng không qua kho (T821): Lý do nghiệp vụ xuống hàng cuối dưới Địa chỉ, Ghi chú cạnh đó dưới Người giao dịch, mỗi ô một cột
+  const lyDuoi = Boolean(cfg.khongKho) && keoGc
   const oNguoi = hienDau('nguoi') && (
     <div className="f">
       <label>{nhanNguoi}</label>
@@ -886,10 +888,30 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
     </div>
   )
   const oGhiChu = hienDau('ghiChu') && !laHdMoi && loaiCt !== 'HUYBAN' && (   // hoá đơn thay thế, điều chỉnh (T787), huỷ bán (T801) ẩn Ghi chú
-    <div className="f" style={keoGc ? { gridColumn: '1 / 3' } : undefined}>
+    <div className="f" style={keoGc && !lyDuoi ? { gridColumn: '1 / 3' } : undefined}>
       <label>Ghi chú</label>
       <input className="inp" readOnly={!suaTtc} value={ghiChu} placeholder={suaTtc ? 'Ghi chú thêm cho phiếu' : ''}
         onChange={e => { setGhiChu(e.target.value); setDienGiai(e.target.value) }} />
+    </div>
+  )
+
+  const oLyDo = oLy && (
+    <div className="f">
+      {/* Lý do chi được tích Là chi phí (danh mục Lý do nghiệp vụ) thì hiện nhãn Chi phí cạnh tên ô (T246) */}
+      <label>{oLy.nhan}</label>
+      {/* Lý do được tích Là chi phí: nhãn Chi phí nằm cuối ô lý do (T246, T419) */}
+      <div className={`ly-o${laLyChiPhi(lyDo, s) ? ' co-cp' : ''}${suaTtc ? ' sua' : ''}`}>
+        {suaTtc ? (
+          <ChonDanhMuc dm={`ly:${oLy.nhan}`} nhan={oLy.nhan.toLowerCase()} value={lyDo} onChange={chonLyDo} ds={oLy.ds!} />
+        ) : (
+          <input className="inp" readOnly value={lyDo} />
+        )}
+        {laLyChiPhi(lyDo, s) && <span className="chip ok ly-cp" title="Lý do nghiệp vụ được tích Là chi phí: khoản chi tính vào Chi phí trong tháng">Chi phí</span>}
+      </div>
+      {/* T419: phiếu mới có khoản chờ phân bổ thì nhắc trước, lưu xong sẽ mở màn tạo thẻ */}
+      {suaTtc && (moi || !theCuaPhieu(row).length) && dsDong.some(d => laLyPhanBo(d.ly ?? lyDo, s)) && (
+        <div className="ly-nhac-the"><Icon n="info" className="ic sm" />Lưu phiếu xong sẽ tạo Thẻ chi phí phân bổ</div>
+      )}
     </div>
   )
 
@@ -1345,25 +1367,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
 
             {/* Cột 2: lý do, nhân viên, mã số thuế, hạn thanh toán */}
             <div className="stack" style={{ gap: 10 }}>
-              {oLy && (
-                <div className="f">
-                  {/* Lý do chi được tích Là chi phí (danh mục Lý do nghiệp vụ) thì hiện nhãn Chi phí cạnh tên ô (T246) */}
-                  <label>{oLy.nhan}</label>
-                  {/* Lý do được tích Là chi phí: nhãn Chi phí nằm cuối ô lý do (T246, T419) */}
-                  <div className={`ly-o${laLyChiPhi(lyDo, s) ? ' co-cp' : ''}${suaTtc ? ' sua' : ''}`}>
-                    {suaTtc ? (
-                      <ChonDanhMuc dm={`ly:${oLy.nhan}`} nhan={oLy.nhan.toLowerCase()} value={lyDo} onChange={chonLyDo} ds={oLy.ds!} />
-                    ) : (
-                      <input className="inp" readOnly value={lyDo} />
-                    )}
-                    {laLyChiPhi(lyDo, s) && <span className="chip ok ly-cp" title="Lý do nghiệp vụ được tích Là chi phí: khoản chi tính vào Chi phí trong tháng">Chi phí</span>}
-                  </div>
-                  {/* T419: phiếu mới có khoản chờ phân bổ thì nhắc trước, lưu xong sẽ mở màn tạo thẻ */}
-                  {suaTtc && (moi || !theCuaPhieu(row).length) && dsDong.some(d => laLyPhanBo(d.ly ?? lyDo, s)) && (
-                    <div className="ly-nhac-the"><Icon n="info" className="ic sm" />Lưu phiếu xong sẽ tạo Thẻ chi phí phân bổ</div>
-                  )}
-                </div>
-              )}
+              {!lyDuoi && oLyDo}
               {/* Chuyển quỹ: hàng 1 Từ quỹ, Đến quỹ; hàng 2 Người thực hiện, Ghi chú (T77) */}
               {nhom === 'cq' && oQuyCq('Đến quỹ', denQuy, setDenQuy)}
               {tcGiua && oDiaChi}
@@ -1520,6 +1524,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
                 </div>
               )}
             </div>
+            {lyDuoi && oLyDo}
             {keoGc && oGhiChu}
             {/* Hàng cuối hoá đơn thay thế, điều chỉnh (T787): Lý do bắt buộc qua hai cột trái; Email nhận hoá đơn qua hai cột phải, sửa được khi lập, sửa */}
             {laHdMoi && (

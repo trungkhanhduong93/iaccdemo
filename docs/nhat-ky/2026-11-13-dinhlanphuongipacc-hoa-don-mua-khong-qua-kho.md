@@ -15,7 +15,8 @@
 - `BangSua.tsx`: cột "Tên hàng hoá/Diễn giải", thêm dòng là dòng trống mã, gõ tự do.
 - `gen.ts`: `tkTheoLyDo('mua')` Nợ TK theo lý do, Có 331.
 - `VoucherScreen.tsx`: danh sách Hoá đơn mua hàng có cột Lý do, bộ lọc Lý do nghiệp vụ.
-- `ModuleTabs.tsx`, `app.css`: chữ phụ nhỏ cạnh nhãn tab.
+- Tab chỉ ghi "Hoá đơn mua hàng"; tiêu đề phụ "Mua hàng không qua kho" chữ nhỏ cùng dòng sau tiêu đề form (`app.css`).
+- Đầu form hoá đơn (`lyDuoi` trong `ChungTuForm.tsx`): hàng 1 Nhà cung cấp, Mã số thuế; hàng 2 Địa chỉ, Người giao dịch; hàng 3 Lý do nghiệp vụ, Ghi chú (Ghi chú rộng một cột).
 - Chi phí: `home/chiPhiPhieu.ts` (Chi phí trong tháng, KQKD trang chủ, web và điện thoại), `bao-cao/so-bo-sung.ts` (Sổ chi phí 10.4.3), `tong-hop/BaoCaoTaiChinh.tsx` (KQKD gói Standard) cộng hoá đơn có lý do Là chi phí, số tiền trước thuế. `ChiPhiThang.tsx`, `MChiPhiThang.tsx` mở đúng hoá đơn, ghi loại Hoá đơn mua hàng.
 
 ## Đã kiểm

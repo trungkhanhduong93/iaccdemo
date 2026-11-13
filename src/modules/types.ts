@@ -137,7 +137,7 @@ export interface ScreenDef {
   cheDo?: CheDo[]          // màn chỉ áp dụng cho các thông tư này (T147)
   ten?: string
   ngan?: string            // nhãn ngắn trên thanh tab
-  phu?: string             // tiêu đề phụ: chữ nhỏ cạnh nhãn tab và dưới tiêu đề form, vd Hoá đơn mua hàng "Mua hàng không qua kho" (T821)
+  phu?: string             // tiêu đề phụ: chữ nhỏ cùng dòng sau tiêu đề form (tab chỉ ghi tên), vd Hoá đơn mua hàng "Mua hàng không qua kho" (T821)
   tabChaGoi?: Partial<Record<Goi, string>>   // như tabCha nhưng chỉ ở gói này, vd Nhập điều chuyển nằm trong tab Điều chuyển gói Plus (T721)
   nganGoi?: Partial<Record<Goi, string>>     // nhãn tab riêng theo gói, vd Xuất điều chuyển gói Plus gọi Điều chuyển (T721)
   tabCha?: string          // màn con không có tab riêng trên thanh tab; mở màn này thì tab có slug này sáng (T167)
