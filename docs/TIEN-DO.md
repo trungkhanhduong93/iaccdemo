@@ -11,7 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T819 | Điện thoại, xem phiếu mua hàng: menu ba chấm có Trả hàng, mở lập phiếu trả lại hàng mua điền sẵn từ phiếu mua, không thêm hàng, số lượng không quá số đã mua, như web (T727, T816) | dinhlanphuongipacc | Đang làm | Sửa `MXemPhieu.tsx`, `MLapPhieu.tsx` (Trum đang giữ ở T497, T498, T552) |
 | T818 | Kho, màn Nhập khác đổi tên Nhập kho (phiếu nhập kho thêm tay); cột Người tạo thành Người thực hiện; bỏ phiếu nhập thừa do kiểm kê khỏi danh sách, phiếu đó chỉ ở tab Kiểm kê, Nhập điều chỉnh | dinhlanphuongipacc | Đang làm | `kho/index.ts`, `kho/quy-trinh.ts`, `SidebarFlyout.tsx`, có thể `VoucherScreen.tsx` (cột Người thực hiện) |
 | T781 | Giảm thuế GTGT xét hiệu lực nghị quyết theo ngày của từng chứng từ, không theo ngày làm việc (`ptGiamHienHanh` dùng `HOM_NAY`) | | Chờ | Thấy lúc soát T780, `giam-thue.ts` |
 | T776 | Màn Tính giá vốn: sang trang 2 thì dòng "Cộng 51 dòng" mất đường kẻ dưới, dưới dòng tổng còn khoảng trống trong bảng, dưới khung bảng còn khoảng trống xám | | Chờ | Trum báo lúc làm T774, ảnh chụp ở trang 2, tháng 10/2026 |

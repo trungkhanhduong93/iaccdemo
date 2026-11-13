@@ -1725,7 +1725,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
 
 /** Các quỹ chuyển qua lại trên phiếu chuyển quỹ: quỹ tiền mặt từng cửa hàng, rồi tài khoản ngân hàng */
 /** Phiếu mua gửi sang Thêm phiếu trả lại hàng mua (T727); chứng từ bán hàng lập tay gửi sang Thêm hàng bán trả lại (ban, T815) */
-interface TraTu {
+export interface TraTu {   // điện thoại dùng chung khi lập trả lại hàng mua (T819)
   id: string; so: string; man: string; di: string; cn: string; doiTuong: string; mst: string; diaChi: string; kho: string; dong: Dong[]; dsTra: CtTt[]
   ban?: boolean; httt?: 'congno' | 'tienmat' | 'chuyenkhoan'; pttt?: string
 }

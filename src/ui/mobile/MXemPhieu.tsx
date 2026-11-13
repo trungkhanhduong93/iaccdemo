@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState, type FC } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import type { Row, ScreenProps } from '../../modules/types'
-import { duongDan, tenMan } from '../../app/registry'
-import { useSession } from '../../app/session'
+import { duongDan, moDuoc, tenMan, timMan } from '../../app/registry'
+import { dsCuaHang, useSession } from '../../app/session'
 import { type Goi, kieuGhiSoDv } from '../../app/plan'
 import { money, soLuong } from '../format'
 import { NGUON, TT_CT, dongCua, doanLyDoThuChi, ttNghiepVu, type Dong } from '../generic/gen'
@@ -14,8 +14,8 @@ import { SX, TT_SX } from '../../modules/kho/san-xuat'
 import { DCN } from '../../modules/kho/dieu-chuyen'
 import { MAN_DC } from '../../modules/kho/dieu-chinh'
 import { CUA_HANG, KHOAN_MUC, TK_NGAN_HANG, daKhoaSo } from '../../data/mock'
-import { ctTtCon, dsDcCon, dsTtCon, ghiNhatKy, soDaTra, soKeTiep, suaPhieu, themPhieu, ttThamChieu, xoaPhieu } from '../generic/daXoa'
-import { MAN_THU_CHI, TEN_CT_TT, TIEN_TO_CT_TT, lyDoKhongXoaTheCuaPhieu, theCuaPhieu, xoaTheCuaPhieu } from '../generic/ChungTuForm'
+import { ctTtCon, dsDcCon, dsTraCon, dsTtCon, MAN_TRA_MUA, ghiNhatKy, soDaTra, soKeTiep, suaPhieu, themPhieu, ttThamChieu, xoaPhieu } from '../generic/daXoa'
+import { MAN_THU_CHI, TEN_CT_TT, TIEN_TO_CT_TT, lyDoKhongXoaTheCuaPhieu, theCuaPhieu, xoaTheCuaPhieu, type TraTu } from '../generic/ChungTuForm'
 import { MLichSu } from './MLichSu'
 import { loaiXuLy } from '../generic/BangKiemKe'
 import { HopXacNhan } from '../LocNangCao'
@@ -87,7 +87,7 @@ export const MXemPhieu: FC<MXemPhieuProps> = ({ sc, mod, id }) => {
 type TabKey = 'chitiet' | 'hanghoa' | 'buttoan' | 'thanhtoan' | 'lichsu'
 
 const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
-  const { s, toast } = useSession()
+  const { s, set, toast } = useSession()
   const nav = useNavigate()
   const path = duongDan(mod, sc)
   const cfgMan = sc.voucher ?? { prefix: 'CT', doiTuong: 'none', dienGiai: [tenMan(sc)], tien: [0, 0] }
@@ -256,6 +256,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
         ds.push({ so: cp, url: `/app/ccdc/8-1-1?mo=${cp}` })
       }
     }
+    for (const c of dsTraCon(row)) ds.push({ so: c.so, url: `/app/${MAN_TRA_MUA}/${c.id}` })   // phiếu trả lại lập từ phiếu mua (T819)
     if (row._thamChieu && !ds.some(x => x.so === row._thamChieu)) {
       ds.push({ so: String(row._thamChieu), url: String(row._thamChieuDi || path) })
     }
@@ -398,6 +399,21 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
     }
   }
 
+  // Trả hàng ở phiếu mua có dòng hàng (T819, như web T727): mở lập phiếu trả lại hàng mua điền sẵn từ phiếu này
+  const manTra = timMan('mua-hang', '4-1-4').sc
+  const coTraHang = nhomMb === 'mua' && cfg.prefix !== 'TLN' && cfg.dong === 'nvl' && Boolean(manTra) && moDuoc(manTra!, s.goi)
+  const moTraHang = () => {
+    const tu: TraTu = {
+      id: String(row.id), so: soCt, man: `${mod.key}/${sc.slug}`, di: `${path}/${row.id}`, cn: cuaHangTen,
+      doiTuong: String(row.doiTuong ?? ''), mst: String(row._mst ?? nv?.mst ?? ''), diaChi: String(row._diaChi ?? row.diaChi ?? nv?.dc ?? ''), kho,
+      dong: dsDong.filter(d => Number(d.sl) > 0).map(d => ({ ...d, slMax: Number(d.sl) })), dsTra: dsTraCon(row),
+    }
+    // Đang xem Tất cả cửa hàng: lấy luôn cửa hàng của phiếu mua, không hỏi chọn cửa hàng (T418)
+    const cn = CUA_HANG.find(c => c.ten === cuaHangTen)
+    if ((!s.cuaHang || s.cuaHang === 'all') && cn && dsCuaHang(s).some(c => c.id === cn.id)) set({ cuaHang: cn.id })
+    nav(`/app/${MAN_TRA_MUA}/moi`, { state: { traTu: tu } })
+  }
+
   // Menu ba chấm
   // Điện thoại bỏ Xuất Excel; phiếu điều chỉnh không còn thao tác nào (T603, T660)
   const dsMenu = laDc
@@ -406,6 +422,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
         // Phiếu kiểm kê: Xoá, Sao chép, Sửa nằm ở thanh dưới, không mở menu này (T660)
         ...(nhomMb !== 'mua' && !laKk ? [{ k: 'sua', ten: 'Sửa chứng từ' }] : []),
         ...(!laKk ? [{ k: 'copy', ten: 'Sao chép chứng từ' }] : []),
+        ...(coTraHang ? [{ k: 'tra', ten: 'Trả hàng' }] : []),
         { k: 'xoa', ten: 'Xoá chứng từ' },
       ]
 
@@ -416,6 +433,8 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
       moSua()
     } else if (k === 'thanhtoan') {
       setMoThanhToan(true)
+    } else if (k === 'tra') {
+      moTraHang()
     } else if (k === 'copy') {
       toast('Đã sao chép chứng từ')
       nav(`${path}/moi${row.loai ? `?loai=${row.loai}` : ''}`, { state: { saoChep: row } })

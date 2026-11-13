@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 13/11/2026
+- T819: Điện thoại, xem phiếu mua hàng: menu ba chấm có Trả hàng, bấm mở Lập phiếu trả lại hàng mua điền sẵn nhà cung cấp, cửa hàng, kho và các dòng hàng của phiếu mua (không kèm hoá đơn). Phiếu trả lại không thêm được hàng, chỉ gõ lại số lượng (không quá số đã mua) hoặc xoá dòng. Hai phiếu hiện số của nhau ở dòng Tham chiếu.
 - T818: Điện thoại, xem phiếu mua hàng: tab Hạch toán chỉ còn ở gói Pro, gói Plus và thấp hơn chỉ có Chi tiết, Lịch sử, như bản web.
 - T817: Phiếu mua hàng, Chi phí mua hàng: ô chi phí ở từng dòng gõ được, ô tổng ở dưới tự bằng tổng các dòng; vẫn gõ được tổng rồi bấm Phân bổ để chia theo giá trị hàng. Bỏ chữ "Chưa phân bổ" cạnh nút Phân bổ.
 - T816: Phiếu mua hàng, Tiện ích Trả hàng: phiếu trả lại hàng mua lập ra không thêm được hàng, chỉ gõ lại số lượng (không quá số lượng đã mua) hoặc xoá dòng, như hàng bán trả lại.

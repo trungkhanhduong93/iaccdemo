@@ -14,7 +14,7 @@ import { MLichSu } from './MLichSu'
 import { MThanhCong, type DongTomTat } from './MThanhCong'
 import { MThanhToanNgay, lapPhieuChiTraNcc, type ThongTinTt } from './MThanhToanNgay'
 import { soLuong } from '../format'
-import { MAN_THU_CHI, QUY_TIEN, TEN_CT_TT, TIEN_TO_CT_TT } from '../generic/ChungTuForm'
+import { MAN_THU_CHI, QUY_TIEN, TEN_CT_TT, TIEN_TO_CT_TT, type TraTu } from '../generic/ChungTuForm'
 import { useDongChungTu } from '../generic/VoucherScreen'
 import { chuanKyHieuHd, chuanSoHd, fold, money } from '../format'
 import { Icon } from '../Icon'
@@ -394,6 +394,7 @@ interface TheHangMuaProps {
   onNhanBan: () => void
   onXoa: () => void
   autoFocusSl?: boolean
+  chiSl?: boolean   // trả lại hàng mua lập từ phiếu mua (T819, như web T816): chỉ sửa số lượng (tối đa dong.slMax), xoá dòng
 }
 
 function TheHangMua({
@@ -404,6 +405,7 @@ function TheHangMua({
   onNhanBan,
   onXoa,
   autoFocusSl,
+  chiSl,
 }: TheHangMuaProps) {
   const kieuGiam = dong.kieuGiam ?? (dong?.ck && !dong?.ptCk ? 'đ' : '%')
 
@@ -513,6 +515,72 @@ function TheHangMua({
   }
 
   const tenClean = dong.ten.replace(/^\d+\.\s*/, '')
+
+  const nutXoa = (
+    <button
+      type="button"
+      aria-label="Xoá dòng"
+      className="m-t601-btn-xoa"
+      onClick={onXoa}
+      title="Xoá dòng"
+    >
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c2362b" strokeWidth="2" aria-hidden="true">
+        <polyline points="3 6 5 6 21 6" />
+        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+      </svg>
+    </button>
+  )
+
+  // Trả lại hàng mua từ phiếu mua (T819): giữ giá, giảm, thuế của phiếu mua, chỉ gõ số lượng không quá số đã mua
+  if (chiSl) {
+    const slMax = dong.slMax
+    return (
+      <div id={`m-hang-${dong.id ?? stt}`} className="m-t601-hang-row">
+        <div className="m-t601-hang-row-dau">
+          <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--ink)', minWidth: 0 }}>
+            {stt}. {tenClean} {dong.ma && <span style={{ fontSize: 12, fontWeight: 400, color: '#9ca3af' }}>{dong.ma}</span>}
+          </span>
+          {nutXoa}
+        </div>
+        <div className="m-t601-grid">
+          <span className="m-t601-grid-lbl">Số lượng</span>
+          <div className="m-t601-box">
+            <input
+              type="text"
+              inputMode="decimal"
+              aria-label={`Số lượng trả lại mặt hàng ${stt}`}
+              style={{ border: 0, outline: 0, flex: 1, minWidth: 0, font: 'inherit', color: 'inherit', background: 'transparent' }}
+              value={focusSl ? strSl : String(sl)}
+              onFocus={() => {
+                setFocusSl(true)
+                setStrSl(String(sl))
+              }}
+              onChange={e => {
+                const s = goSoVN(e.target.value, true)
+                const v = docSoVN(s)
+                if (slMax !== undefined && v > slMax) {
+                  setStrSl(String(slMax))
+                  handleDoiSl(slMax)
+                  return
+                }
+                setStrSl(s)
+                handleDoiSl(v)
+              }}
+              onBlur={() => setFocusSl(false)}
+            />
+            <span className="m-t601-dvt">{dvt}</span>
+          </div>
+          {slMax !== undefined && (
+            <span className="m-t601-tra-max" style={{ gridColumn: '2 / -1' }}>Đã mua {slMax} {dvt}</span>
+          )}
+          <span className="m-t601-grid-lbl">Đơn giá</span>
+          <div className="m-t601-amt" style={{ gridColumn: '2 / -1' }}><span>{money(gia)} đ</span></div>
+          <span className="m-t601-grid-lbl tg">Tổng tiền</span>
+          <div className="m-t601-amt tg" style={{ gridColumn: '2 / -1' }}><span>{money(tongHienTai)} đ</span></div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div id={`m-hang-${dong.id ?? stt}`} className={`m-t601-hang-row ${dong.moi ? 'moi' : ''}`}>
@@ -805,7 +873,15 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
 
   const cfgMan = sc.voucher ?? { prefix: 'CT', doiTuong: 'none', dienGiai: [tenMan(sc)], tien: [0, 0] }
   const saoChep = (loc.state as { saoChep?: Row } | null)?.saoChep
-  const gocData = row ?? saoChep
+  // Trả hàng ở phiếu mua (T819, như web T727, T816): điền sẵn nhà cung cấp, kho, dòng hàng; chỉ sửa số lượng, không quá số đã mua
+  const traTu = row ? undefined : (loc.state as { traTu?: TraTu } | null)?.traTu
+  const nhanTra = traTu ? `Trả lại hàng mua theo ${traTu.so}` : ''
+  const gocTra: Row | undefined = traTu ? {
+    id: traTu.id, cn: traTu.cn, doiTuong: traTu.doiTuong, _mst: traTu.mst, _diaChi: traTu.diaChi, _kho: traTu.kho,
+    _dong: traTu.dong, _ghiChu: nhanTra, dienGiai: nhanTra, _httt: 'congno',
+  } : undefined
+  const gocData = row ?? saoChep ?? gocTra
+  const chiSl = Boolean(traTu) || Boolean(row?._traTuMua)
   const dangSua = Boolean(row)
 
   const loaiKey = gocData?.loai ?? sp.get('loai') ?? cfgMan.loai?.[0]?.k
@@ -961,7 +1037,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
   })
 
   // Hoá đơn & Thông tin bổ sung phiếu mua
-  const nvGoc = gocData ? ttNghiepVu(gocData) : undefined
+  const nvGoc = gocData && !traTu ? ttNghiepVu(gocData) : undefined   // trả lại hàng mua (T819): không chép hoá đơn, hạn thanh toán mẫu của phiếu mua
   const [soHd, setSoHd] = useState(() => String(gocData?._soHd ?? nvGoc?.soHd ?? ''))
   const [kyHieuHd, setKyHieuHd] = useState(() => String(gocData?._kyHieuHd ?? nvGoc?.kyHieuHd ?? ''))
   const [ngayHd, setNgayHd] = useState(() => {
@@ -1665,6 +1741,10 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
       if (dsDongLuu.length === 0) {
         loiMoi.hang = 'Vui lòng chọn ít nhất một mặt hàng'
       }
+      const sai = chiSl ? dsDongLuu.find(d => !(Number(d.sl) > 0) || (d.slMax !== undefined && Number(d.sl) > d.slMax)) : undefined
+      if (sai) {
+        loiMoi.hang = Number(sai.sl) > 0 ? `Số lượng trả lại của ${sai.ten} không được quá ${sai.slMax} (số lượng đã mua)` : `Nhập số lượng trả lại của ${sai.ten}`
+      }
     } else {
       if (bo.kho && !khoLuu.trim()) {
         loiMoi.kho = 'Vui lòng chọn kho'
@@ -1766,6 +1846,12 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
       return
     }
 
+    // Phiếu trả lại lập từ phiếu mua (T819): hai phiếu hiện số của nhau ở dòng Tham chiếu như web (T727)
+    const thamChieuTra = traTu ? { _thamChieu: traTu.so, _thamChieuDi: traTu.di, _traTuMua: traTu.id } : {}
+    const ganTraVaoPhieuMua = (idTra: string, soTra: string) => {
+      if (traTu) suaPhieu(traTu.man, traTu.id, { _dsTra: [...traTu.dsTra, { id: idTra, so: soTra, loai: 'tra' }] })
+    }
+
     // Lưu phiếu mua kèm tự động tạo phiếu chi nếu thanh toán ngay (T629)
     if (nhom === 'mua' && hinhThucTt !== 'congno') {
       const MAN_THU_CHI = 'tien/2-1-1'
@@ -1837,8 +1923,10 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
         tenLoai: loai?.ten ?? tenMan(sc),
         tt: ttLuu,
         ...noiDungMuaTt,
+        ...thamChieuTra,
       }, s.ten)
-      ghiNhatKy(man, idLuu, soCt, s.ten, 'Thêm mới chứng từ')
+      ghiNhatKy(man, idLuu, soCt, s.ten, traTu ? `Thêm mới chứng từ, trả lại hàng của ${traTu.so}` : 'Thêm mới chứng từ')
+      ganTraVaoPhieuMua(idLuu, soCt)
       toast(`Đã lưu ${soCt}`)
 
       setSoPhieuMoi(soCt)
@@ -1859,8 +1947,10 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
       tenLoai: loai?.ten ?? tenMan(sc),
       tt: ttLuu,
       ...noiDung,
+      ...thamChieuTra,
     }, s.ten)
-    ghiNhatKy(man, idLuu, soCt, s.ten, 'Thêm mới chứng từ')
+    ghiNhatKy(man, idLuu, soCt, s.ten, traTu ? `Thêm mới chứng từ, trả lại hàng của ${traTu.so}` : 'Thêm mới chứng từ')
+    ganTraVaoPhieuMua(idLuu, soCt)
     toast(`Đã lưu ${soCt}`)
 
     if (tour) {
@@ -1987,7 +2077,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
 
   const lyDoHienTai = dsDong[0]?.ly || dsLyDo[0] || (nhom === 'chi' ? 'Chi tiền' : 'Thu tiền')
   const tieuDe = nhom === 'mua'
-    ? (dangSua ? `Sửa phiếu ${row?.so ?? gocData?.so ?? soCtDuKien}` : 'Lập phiếu mua hàng')
+    ? (dangSua ? `Sửa phiếu ${row?.so ?? gocData?.so ?? soCtDuKien}` : traTu ? 'Lập phiếu trả lại hàng mua' : 'Lập phiếu mua hàng')
     : dangSua
     ? `Sửa ${row?.so ?? ''}`.trim()
     : (nhom === 'chi' ? 'Lập phiếu chi' : nhom === 'thu' ? 'Lập phiếu thu' : nhom === 'cq' ? 'Lập phiếu chuyển quỹ' : `Lập ${tenLoai.toLowerCase()}`)
@@ -2201,10 +2291,11 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                         onNhanBan={() => nhanBanDong(originalIdx)}
                         onXoa={() => xoaDong(originalIdx)}
                         autoFocusSl={d.moi && index === dsDongHienThiTrongPhieu.length - 1}
+                        chiSl={chiSl}
                       />
                     ))}
 
-                    <div style={{ padding: '12px 16px', borderBottom: '1px solid #eeeeee' }}>
+                    {!chiSl && <div style={{ padding: '12px 16px', borderBottom: '1px solid #eeeeee' }}>
                       <button
                         type="button"
                         className="m-t601-btn-them-dong"
@@ -2215,7 +2306,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                       >
                         + Thêm dòng
                       </button>
-                    </div>
+                    </div>}
                     {loiO.hang && <div className="m-lp-loi-o" style={{ padding: '0 16px 8px' }}>{loiO.hang}</div>}
 
                     {/* Khối Tổng cộng 5 dòng (B9) */}

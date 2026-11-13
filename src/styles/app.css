@@ -48149,3 +48149,6 @@ textarea.m-tpb-inp { height: auto; padding: 8px 12px; }
 .fsf-xem .bgf-dau .bg-loai button:disabled:not(.on) { color: var(--muted); }
 .fsf-xem .bg-bang td { height: 38px; }
 .bgf-trai > .bg-dau-o > .sel.inp { width: 100%; }
+
+/* ── Trả lại hàng mua từ phiếu mua trên điện thoại (T819) ── */
+.m-t601-tra-max { font-size: 12px; color: var(--muted); margin-top: -2px; }
