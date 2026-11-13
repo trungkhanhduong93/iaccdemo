@@ -27,6 +27,7 @@ import {
   BoLoc, ChipTrangThai, NutTuyChinhCot, cotChon, useCauHinhLoc, useCotDs, useLocNhap, type Chip, type OLocDef,
 } from '../../ui/LocNangCao'
 import { HopInChungTu, type PhieuIn } from '../../ui/bao-cao/InChungTu'
+import { giaVonBq, tienVon, useGiaVonBq } from '../kho/tinh-gia-von/giaVonBq'
 import { NGUON, TT_CT, tomTatTenHang, type Dong } from '../../ui/generic/gen'
 import { ChungTuForm } from '../../ui/generic/ChungTuForm'
 import { dongTuHang, dtDong, tinhDong } from './BangHangBan'
@@ -799,22 +800,26 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
 const COT_POS: [string, string][] = [
   ['ma', 'Mã hàng'], ['dvt', 'ĐVT'], ['sl', 'Số lượng'], ['gia', 'Đơn giá'], ['thanh', 'Thành tiền'], ['pt', 'Giảm giá (%)'], ['giam', 'Tiền giảm giá'],
   ['ptCk', '% CK'], ['ck', 'Tiền CK'], ['ptPhiDv', '% Phí dịch vụ'], ['phiDv', 'Phí dịch vụ'], ['giamThue', 'Giảm thuế GTGT'], ['phiVc', 'Phí vận chuyển'],
-  ['dtTruocThue', 'Doanh thu tính thuế'], ['ts', 'Thuế suất'], ['thue', 'Tiền thuế'], ['giamVat', 'Giảm thuế theo quy định'], ['tonKho', 'Theo dõi tồn kho'],
+  ['dtTruocThue', 'Doanh thu tính thuế'], ['ts', 'Thuế suất'], ['thue', 'Tiền thuế'], ['giamVat', 'Giảm thuế theo quy định'], ['giaVon', 'Giá vốn'], ['tienVon', 'Tiền vốn'], ['tonKho', 'Theo dõi tồn kho'],
 ]
 const AN_POS_MAC_DINH = ['giamThue', 'phiVc', 'giamVat']
 
 function NoiDungTab({ x, tab, kieu, an: an0 = AN_POS_MAC_DINH, tyLe = false, hienLoc = false }: { x: (typeof DAILY)[number]; tab: string; kieu: ReturnType<typeof kieuGhiSo>; an?: string[]; tyLe?: boolean; hienLoc?: boolean }) {
   const { s } = useSession()
   const an = anTheoLoai(an0, tyLe)
-  const dong0 = dongCuaPhieu(x)
+  useGiaVonBq()
+  // Giá vốn bình quân của tháng bán, áp từ Tính giá vốn (5.1.7); tháng chưa tính thì trống
+  const dong0 = dongCuaPhieu(x).map(d => { const giaVon = giaVonBq(d.ma, x.date); return { ...d, giaVon, tienVon: tienVon(giaVon, d.sl) } })
   const doRong = useDoRongCot(`xuat-ban-pos:${tab}`)   // kéo giãn cột, nhớ riêng từng tab (T618)
   // GTGT theo % doanh thu: giảm thuế GTGT theo từng món đúng QD97 (T780)
   const dong = tyLe ? dong0.map(d => ({ ...d, giamThue: giamThueHang(d.dtTruocThue, d.ma) })) : dong0
+  // Giá vốn hạch toán = tổng Tiền vốn các món (giá vốn bình quân × số lượng); tháng chưa tính giá vốn thì chưa có bút toán 632
+  const tongVon = dong0.some(d => d.tienVon !== undefined) ? dong0.reduce((a, d) => a + (d.tienVon ?? 0), 0) : undefined
   const ht = [
     { dg: 'Thu tiền mặt', no: '1111', co: tyLe ? '5111' : '5111, 33311', tien: x.tm },
     { dg: 'Thu chuyển khoản, QR, thẻ', no: '1121', co: tyLe ? '5111' : '5111, 33311', tien: x.ck + x.the },
     { dg: 'Phải thu app giao đồ ăn', no: '131', co: tyLe ? '5111' : '5111, 33311', tien: x.app },
-    { dg: 'Giá vốn xuất bán theo định lượng', no: '632', co: '152', tien: x.gv },
+    ...(tongVon === undefined ? [] : [{ dg: 'Giá vốn xuất bán theo định lượng', no: '632', co: '152', tien: tongVon }]),
   ]
   const rowsSo = [
     { so: 'Sổ doanh thu bán hàng hoá, dịch vụ', tien: x.dt },
@@ -848,6 +853,8 @@ function NoiDungTab({ x, tab, kieu, an: an0 = AN_POS_MAC_DINH, tyLe = false, hie
               k: 'giamVat', t: 'Giảm thuế theo quy định', c: true, w: 140,
               r: (r: (typeof dong)[number]) => <input type="checkbox" className="o-tich-xem" checked={hangDuocGiam(s, r.ma)} readOnly tabIndex={-1} aria-label="Giảm thuế theo quy định" />,
             }] : []),
+            { k: 'giaVon', t: 'Giá vốn', num: true, w: 110, r: r => r.giaVon === undefined ? '' : money(r.giaVon) },
+            { k: 'tienVon', t: 'Tiền vốn', num: true, w: 120, r: r => r.tienVon === undefined ? '' : money(r.tienVon) },
             // Theo danh mục hàng hoá: tích là mặt hàng theo dõi tồn kho, chỉ xem; cột cuối, cố định phải (T114)
             { k: 'tonKho', t: 'Theo dõi tồn kho', c: true, w: 120, dinh: 'phai', r: r => <input type="checkbox" className="o-tich-xem" checked={Boolean(r.tonKho)} readOnly tabIndex={-1} aria-label="Theo dõi tồn kho" /> },
           ] as Col[]).filter(c => !an.includes(c.k))
@@ -871,6 +878,7 @@ function NoiDungTab({ x, tab, kieu, an: an0 = AN_POS_MAC_DINH, tyLe = false, hie
             ten: `Tổng cộng (${dong.length} dòng)`,   // nhãn ở cột Hàng hoá để cột # cố định không giãn (T106)
             ...Object.fromEntries((['sl', 'thanh', 'giam', 'ck', 'phiDv', 'giamThue', 'phiVc', 'dtTruocThue', 'thue'] as const)
               .map(k => [k, dong.reduce((a, r) => a + r[k], 0)])),
+            ...(dong.some(r => r.tienVon !== undefined) ? { tienVon: dong.reduce((a, r) => a + (r.tienVon ?? 0), 0) } : {}),
           }}
         />
       )}
@@ -893,7 +901,7 @@ function NoiDungTab({ x, tab, kieu, an: an0 = AN_POS_MAC_DINH, tyLe = false, hie
             <Table
               cols={[{ k: 'dg', t: 'Diễn giải' }, { k: 'no', t: 'TK Nợ', cls: 'code' }, { k: 'co', t: 'TK Có', cls: 'code' }, { k: 'tien', t: 'Số tiền', num: true }]}
               rows={ht}
-              sum={{ dg: `Doanh thu ${moneyD(x.dt)} · thuế ${moneyD(x.vat)}`, tien: x.tm + x.ck + x.the + x.app + x.gv }}
+              sum={{ dg: `Doanh thu ${moneyD(x.dt)} · thuế ${moneyD(x.vat)}`, tien: x.tm + x.ck + x.the + x.app + (tongVon ?? 0) }}
             />
           )}
         </div>
@@ -970,7 +978,7 @@ function ChiTiet({ sc, mod, row }: ScreenProps & { row: Row }) {
   // In: bảng kê lấy đúng các món của chứng từ, không sinh dòng giả
   const moIn = () => setPhieuIn([{
     sc, row, cfg: NGOAI_POS,
-    dong: dongCuaPhieu(x).map(d => ({ stt: d.stt, ma: d.ma, ten: d.ten, dvt: d.dvt, sl: d.sl, gia: d.gia, tien: d.tien, thue: d.thue, ts: d.ts })),
+    dong: dongCuaPhieu(x).map(d => ({ stt: d.stt, ma: d.ma, ten: d.ten, dvt: d.dvt, sl: d.sl, slCt: d.sl, gia: d.gia, tien: d.tien, thue: d.thue, ts: d.ts })),
   }])
   // Phiếu đồng bộ xong từ FABi ghi "Đã đồng bộ" thay cho "Đã ghi sổ" (T613)
   const [cTt, tTt] = kieu === 'khong' || row.tt === 'ghi' ? ['ok', 'Đã đồng bộ'] : TT_CT[row.tt] ?? ['warn', 'Chưa ghi sổ']

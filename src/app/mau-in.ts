@@ -1,5 +1,6 @@
 // Mẫu in chứng từ theo chế độ kế toán (QD31, kế hoạch mục 8.6). Mẫu chuẩn không sửa trực tiếp; mẫu riêng của đơn vị lưu ở tiện ích Thiết kế mẫu in (11.11).
 import type { CheDo } from './che-do'
+import type { Goi } from './plan'
 
 export type KhoIn = 'A4' | 'A5'
 export type HuongIn = 'doc' | 'ngang'
@@ -374,6 +375,49 @@ export const MAU_IN: MauIn[] = [
     boPhan: true,
   },
 
+  // 6b. Phiếu xuất kho in từ chứng từ bán hàng, gói Plus (DNSN TT58, HKD TT152). Theo mẫu 02-VT TT58 dinhlanphuongipacc gửi 13/11/2026:
+  // khổ A4 ngang, ngày không ghi giờ phút, không quyển số, "Bộ phận" cùng dòng người nhận hàng, "Địa điểm" cùng dòng kho. HKD không có ký hiệu nên không in Mẫu số, căn cứ
+  {
+    id: 'phieu-xuat-kho-ban',
+    ten: 'Phiếu xuất kho bán hàng',
+    kyHieu: { TT58: '02-VT' },
+    tieuDe: 'PHIẾU XUẤT KHO',
+    trang: { kho: 'A4', huong: 'doc', le: [10, 10, 10, 15], lien: 1, coChu: 10.5, phong: 'app' },
+    khoi: taoKhoi(true, false, true, true),
+    soCotThongTin: 2,
+    thongTin: [
+      { k: 'nguoi', nhan: 'Họ và tên người nhận hàng', batBuoc: true },
+      { k: 'boPhan', nhan: 'Bộ phận' },
+      { k: 'lyDo', nhan: 'Lý do xuất kho', batBuoc: true, caHang: true },
+      { k: 'kho', nhan: 'Xuất tại kho', batBuoc: true },
+      { k: 'diaDiem', nhan: 'Địa điểm' },
+    ],
+    bang: {
+      cot: [
+        { k: 'stt', t: 'Số thứ tự', rong: 10, can: 'giua', batBuoc: true, kyHieu: 'A' },
+        { k: 'ten', t: 'Tên, nhãn hiệu, quy cách, phẩm chất vật tư, dụng cụ, sản phẩm, hàng hoá', rong: 55, can: 'trai', batBuoc: true, kyHieu: 'B' },
+        { k: 'ma', t: 'Mã số', rong: 18, can: 'trai', kyHieu: 'C' },
+        { k: 'dvt', t: 'Đơn vị tính', rong: 14, can: 'giua', kyHieu: 'D' },
+        { k: 'slCt', t: 'Yêu cầu', rong: 18, can: 'phai', so: true, nhom: 'Số lượng', kyHieu: '1' },
+        { k: 'sl', t: 'Thực xuất', rong: 18, can: 'phai', so: true, batBuoc: true, nhom: 'Số lượng', kyHieu: '2' },
+        { k: 'gia', t: 'Đơn giá', rong: 22, can: 'phai', so: true, kyHieu: '3' },
+        { k: 'tien', t: 'Thành tiền', rong: 30, can: 'phai', so: true, batBuoc: true, kyHieu: '4' },
+      ],
+      caoDong: 7,
+      dongTrongToiThieu: 5,
+      dongTong: true,
+    },
+    bangChu: 'Tổng số tiền (viết bằng chữ)',
+    ghiChu: ['Số chứng từ gốc kèm theo: ......'],
+    ky: [
+      { chucDanh: 'Người lập phiếu', goiY: '(Ký, họ tên)' },
+      { chucDanh: 'Người nhận hàng', goiY: '(Ký, họ tên)' },
+      { chucDanh: 'Thủ kho', goiY: '(Ký, họ tên)' },
+      { chucDanh: 'Kế toán trưởng', goiY: '(Ký, họ tên)' },
+      { chucDanh: 'Người đại diện theo pháp luật', goiY: '(Ký, họ tên)' },
+    ],
+  },
+
   // 7. Bảng kê mua hàng
   {
     id: 'bang-ke-mua-hang',
@@ -715,6 +759,48 @@ export const MAU_IN: MauIn[] = [
     ],
   },
 
+  // 15b. Hoá đơn bán hàng in từ chứng từ bán hàng gói Plus: thay Bảng kê bán hàng theo ngày, ngày không ghi giờ phút,
+  // thêm khách hàng, địa chỉ, mã số thuế thay dòng Nguồn dữ liệu
+  {
+    id: 'hoa-don-ban-hang',
+    ten: 'Hoá đơn bán hàng',
+    kyHieu: {},
+    tieuDe: 'HOÁ ĐƠN BÁN HÀNG',
+    trang: { kho: 'A4', huong: 'doc', le: [10, 10, 10, 15], lien: 1, coChu: 10.5, phong: 'app' },
+    khoi: taoKhoi(true, true, false, false),
+    soCotThongTin: 1,
+    thongTin: [
+      { k: 'cn', nhan: 'Cửa hàng', batBuoc: true },
+      { k: 'ngayBan', nhan: 'Ngày bán', batBuoc: true },
+      { k: 'doiTuong', nhan: 'Khách hàng', batBuoc: true },
+      { k: 'diaChi', nhan: 'Địa chỉ' },
+      { k: 'mst', nhan: 'Mã số thuế' },
+    ],
+    bang: {
+      cot: [
+        { k: 'stt', t: 'STT', rong: 10, can: 'giua', batBuoc: true },
+        { k: 'ten', t: 'Tên, nhãn hiệu, quy cách, phẩm chất vật tư, dụng cụ, sản phẩm, hàng hoá', rong: 55, can: 'trai', batBuoc: true },
+        { k: 'dvt', t: 'Đơn vị tính', rong: 15, can: 'giua' },
+        { k: 'sl', t: 'Số lượng', rong: 18, can: 'phai', so: true, batBuoc: true },
+        { k: 'gia', t: 'Đơn giá', rong: 25, can: 'phai', so: true },
+        { k: 'tien', t: 'Thành tiền', rong: 32, can: 'phai', so: true, batBuoc: true },
+        { k: 'thue', t: 'Tiền thuế', rong: 30, can: 'phai', so: true },
+      ],
+      caoDong: 7,
+      dongTrongToiThieu: 5,
+      dongTong: true,
+    },
+    tongCong: [
+      { k: 'tien', nhan: 'Cộng tiền hàng' },
+      { k: 'thue', nhan: 'Tiền thuế GTGT' },
+      { k: 'tong', nhan: 'Tổng cộng' },
+    ],
+    ky: [
+      { chucDanh: 'Người lập', goiY: '(Ký, họ tên)' },
+      { chucDanh: 'Kế toán trưởng', goiY: '(Ký, họ tên)' },
+    ],
+  },
+
   // 16. Hoá đơn giá trị gia tăng
   {
     id: 'hoa-don',
@@ -818,8 +904,9 @@ export function doiTrangMau(m: MauIn, trang: MauIn['trang']): MauIn {
   return { ...m, trang, bang: { ...m.bang, cot: cot.map((c, i) => ({ ...c, rong: nua[i] / 2 })) } }
 }
 
-/** Các mẫu in của một màn chứng từ (mã Excel, vd '2.1.1') và loại phiếu (vd 'thu'); mẫu đầu là mặc định. Không có thì [] */
-export function mauCuaChungTu(code: string, loai?: string, cd?: CheDo): MauIn[] {
+/** Các mẫu in của một màn chứng từ (mã Excel, vd '2.1.1') và loại phiếu (vd 'thu'); mẫu đầu là mặc định. Không có thì [].
+ *  goi: chứng từ bán hàng gói Plus in Phiếu xuất kho (mặc định) và Hoá đơn bán hàng, không in Hoá đơn GTGT */
+export function mauCuaChungTu(code: string, loai?: string, cd?: CheDo, goi?: Goi): MauIn[] {
   const ids: string[] = (() => {
     switch (code) {
       case '2.1.1':
@@ -834,7 +921,7 @@ export function mauCuaChungTu(code: string, loai?: string, cd?: CheDo): MauIn[] 
       case '2.1.3':
         return ['phieu-ke-toan']
       case '3.1.1':
-        return ['bang-ke-ban-hang', 'hoa-don']
+        return goi === 'PL' ? ['phieu-xuat-kho-ban', 'hoa-don-ban-hang'] : ['bang-ke-ban-hang', 'hoa-don']
       case '3.1.2':
       case '3.1.5':
       case '3.1.6':

@@ -12,6 +12,7 @@ import { fold } from '../../../ui/format'
 import { HANG, KHO, NHOM, taoDsGiaVon, type DongGiaVon, type KetQuaTinh } from './du-lieu'
 import { DsMaLoiGiaVon } from './DsMaLoiGiaVon'
 import { TinhGiaVonModal } from './TinhGiaVonModal'
+import { luuGiaVonThang } from './giaVonBq'
 
 interface GiaTriLocGiaVon {
   thang: Thang
@@ -214,6 +215,7 @@ export function TinhGiaVon(_props: ScreenProps): JSX.Element {
   const dsTrang = dsLoc.slice(dau, dau + SO_DONG)
 
   const onXongTinhGia = useCallback((kq: KetQuaTinh) => {
+    luuGiaVonThang(kq.dieuKien.thang.t, kq.dieuKien.thang.n)   // phiếu bán trong tháng áp đơn giá vốn bình quân
     setCapNhatMoi(prev => {
       const next = new Map(prev)
       const khoaTh = `${kq.dieuKien.thang.t}/${kq.dieuKien.thang.n}`

@@ -8,6 +8,7 @@ import { OSoGo } from '../../ui/OSoGo'
 import { Icon } from '../../ui/Icon'
 import { dauThap, money } from '../../ui/format'
 import { ThemHangLoat } from '../../ui/generic/ThemHangLoat'
+import { giaVonBq, tienVon, useGiaVonBq } from '../kho/tinh-gia-von/giaVonBq'
 
 const tron = (v: number) => Math.round(v)
 const phanTram = (v: number) => (v ? `${v}%` : '0%')
@@ -146,11 +147,12 @@ export function ApDauBangBan({ dong, onChange, an, coThue }: { dong: Dong[]; onC
 export const COT_BHB: [string, string][] = [
   ['ma', 'Mã hàng'], ['dvt', 'ĐVT'], ['sl', 'Số lượng'], ['gia', 'Đơn giá'], ['thanh', 'Thành tiền'], ['pt', 'Giảm giá (%)'], ['giam', 'Tiền giảm giá'],
   ['ptCk', '% CK'], ['ck', 'Tiền CK'], ['ptPhiDv', '% Phí dịch vụ'], ['phiDv', 'Phí dịch vụ'], ['giamThue', 'Giảm thuế GTGT'], ['phiVc', 'Phí vận chuyển'],
-  ['dtTruocThue', 'Doanh thu tính thuế'], ['ts', 'Thuế suất'], ['thue', 'Tiền thuế'], ['tonKho', 'Theo dõi tồn kho'],
+  ['dtTruocThue', 'Doanh thu tính thuế'], ['ts', 'Thuế suất'], ['thue', 'Tiền thuế'], ['giaVon', 'Giá vốn'], ['tienVon', 'Tiền vốn'], ['tonKho', 'Theo dõi tồn kho'],
 ]
 
-export function BangHangBan({ dong, onChange, cheDo, tyLe, giamThue, an = [], choAm }: {
+export function BangHangBan({ dong, onChange, cheDo, tyLe, giamThue, an = [], choAm, ngay }: {
   dong: Dong[]
+  ngay?: string                          // ngày chứng từ: lấy đơn giá vốn bình quân của tháng đó; tháng chưa tính giá vốn thì cột trống
   choAm?: boolean                        // hoá đơn điều chỉnh (T787): gõ được số âm ở số lượng, đơn giá, các ô tiền
   onChange?: (d: Dong[]) => void
   cheDo: 'sua' | 'xem'
@@ -172,6 +174,10 @@ export function BangHangBan({ dong, onChange, cheDo, tyLe, giamThue, an = [], ch
   const xoa = (i: number) => onChange?.(dong.filter((_, j) => j !== i))
   const tonKho = (ma: string) => Boolean(HANG.find(h => h.ma === ma)?.tonKho)
   const gt = (d: Dong) => (tyLe && giamThue ? giamThue(dtDong(d), d.ma) : 0)
+  useGiaVonBq()
+  const gv = (d: Dong) => (ngay ? giaVonBq(d.ma, ngay) : undefined)
+  const tv = (d: Dong) => tienVon(gv(d), d.sl)
+  const soTrong = (v?: number) => (v === undefined ? '' : money(v))
 
   const o = (v: number, f: (x: number) => void, laPt = false) => sua
     ? <OSoGo val={v} onChange={f} hien={laPt ? String : money} max={laPt ? 100 : undefined} am={choAm && !laPt} />
@@ -200,6 +206,9 @@ export function BangHangBan({ dong, onChange, cheDo, tyLe, giamThue, an = [], ch
       { k: 'ts', t: 'Thuế suất', w: 80, o: (d: Dong) => `${d.ts}%` },
       { k: 'thue', t: 'Tiền thuế', w: 105, o: (d: Dong) => money(d.thue), tong: (d: Dong) => d.thue || 0 },
     ]),
+    // Giá vốn bình quân áp từ Tính giá vốn (5.1.7), chỉ xem
+    { k: 'giaVon', t: 'Giá vốn', w: 105, o: (d: Dong) => soTrong(gv(d)) },
+    { k: 'tienVon', t: 'Tiền vốn', w: 115, o: (d: Dong) => soTrong(tv(d)), tong: (d: Dong) => tv(d) ?? 0 },
     { k: 'tonKho', t: 'Theo dõi tồn kho', w: 110, o: (d: Dong) => <input type="checkbox" className="o-tich-xem" checked={tonKho(d.ma)} readOnly tabIndex={-1} aria-label="Theo dõi tồn kho" /> },
   ]).filter(c => hien(c.k))
 

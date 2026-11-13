@@ -3,6 +3,7 @@ import type { Row, VoucherCfg, LoaiCT } from '../../modules/types'
 import type { MauIn } from '../../app/mau-in'
 import { dongCua, tongDong, ttNghiepVu, type Dong } from '../generic/gen'
 import { docSoTien, money, pad, rng, k } from '../format'
+import { giaVonBq, tienVon } from '../../modules/kho/tinh-gia-von/giaVonBq'
 
 export interface DuLieuIn {
   so: string
@@ -56,7 +57,8 @@ function noCoCuaMau(mauId: string, ds: NoCo): { no: string[]; co: string[] } {
     case 'phieu-thu-nh': return loc(x => dau(x[0], '112'), ['1121', noKhac('112') ?? '131'])
     case 'uy-nhiem-chi': return loc(x => dau(x[1], '112'), [coKhac('112') ?? '331', '1121'])
     case 'phieu-nhap-kho': return loc(x => dau(x[0], '152', '153', '155', '156'), ['152', ds.some(x => dau(x[0], '511')) ? '632' : '331'])
-    case 'phieu-xuat-kho': return loc(x => dau(x[1], '152', '153', '155', '156'), ['632', '152'])
+    case 'phieu-xuat-kho':
+    case 'phieu-xuat-kho-ban': return loc(x => dau(x[1], '152', '153', '155', '156'), ['632', '152'])
     default: return { no: duyNhat(ds.map(x => x[0])), co: duyNhat(ds.map(x => x[1])) }
   }
 }
@@ -80,7 +82,9 @@ export function duLieuIn(
 
   const so = String(row.so ?? '')
   const ngay = String(row.ngay ?? '07/10/2026')
-  const ngayChu = dinhDangNgayChu(ngay)
+  // Mẫu in từ chứng từ bán hàng gói Plus chỉ ghi ngày, không ghi giờ phút
+  const boGio = mau.id === 'hoa-don-ban-hang' || mau.id === 'phieu-xuat-kho-ban'
+  const ngayChu = dinhDangNgayChu(boGio ? ngay.split(' ')[0] : ngay)
 
   const idSeed = `${seedPrefix ?? cfg.prefix ?? 'ct'}-${row.id ?? '0'}`
   // Dòng chi tiết: dòng đã lưu của phiếu nếu có, không thì sinh theo cùng hạt giống với form chứng từ
@@ -91,7 +95,7 @@ export function duLieuIn(
   // Một nguồn cho số tiền in trên phiếu: mẫu có bảng lấy đúng tổng các dòng in ra (cột Thành tiền, hoặc Tổng thanh toán khi mẫu có dòng tổng),
   // mẫu không bảng (phiếu thu, chi) lấy tổng của phiếu. Số tiền, số bằng chữ, dòng tổng cùng đọc từ đây
   const coBang = !!mau.bang && mau.id !== 'bien-ban-doi-chieu'
-  const tongSoTien = coBang
+  let tongSoTien = coBang
     ? (mau.tongCong?.some(t => t.k === 'tong') ? td.tong : td.tien)
     : row.tong != null ? Number(row.tong) : td.tong
 
@@ -162,14 +166,27 @@ export function duLieuIn(
     }))
   }
 
-  const bangChu = docSoTien(tongSoTien)
+  // Phiếu xuất kho in từ chứng từ bán hàng: đơn giá, thành tiền theo giá vốn bình quân của tháng bán (Tính giá vốn 5.1.7).
+  // Tháng chưa tính giá vốn thì để trống đơn giá, thành tiền, tổng số tiền
+  let chuaTinhGv = false
+  if (mau.id === 'phieu-xuat-kho-ban') {
+    dong = dong.map(d => {
+      const gia = giaVonBq(String(d.ma ?? ''), ngay)
+      const tien = tienVon(gia, Number(d.sl) || 0)
+      return { ...d, gia: gia ?? '', tien: tien ?? '' }
+    })
+    chuaTinhGv = dong.every(d => d.tien === '')
+    tongSoTien = dong.reduce((a, d) => a + (Number(d.tien) || 0), 0)
+  }
+
+  const bangChu = chuaTinhGv ? '' : docSoTien(tongSoTien)
 
   // Khối thông tin chung
   const tt: Record<string, string> = {
     nguoi: nv.nguoi,
     doiTuong: String(row.doiTuong ?? nv.nguoi),
-    diaChi: nv.dc,
-    mst: nv.mst,
+    diaChi: String(row._diaChi ?? nv.dc),   // địa chỉ, mã số thuế đang ghi trên form chứng từ (form lưu _diaChi, _mst)
+    mst: String(row._mst ?? nv.mst),
     lyDo: String(row.dienGiai ?? 'Thu chi theo chứng từ'),
     soTien: money(tongSoTien) + ' đ',
     bangChu,
@@ -191,7 +208,7 @@ export function duLieuIn(
     nganHang: 'Vietcombank - CN TP.HCM (0071001234567)',
     boPhan: String(row.cn ?? 'Cửa hàng 1'),
     cn: String(row.cn ?? 'Cửa hàng 1'),
-    ngayBan: ngay,
+    ngayBan: boGio ? ngay.split(' ')[0] : ngay,
     nguon: String(row.nguon ?? 'FABi POS'),
     thoiDiem: `${ngay} 18:00`,
     banKiemKe: 'Ông Nguyễn Văn An (Trưởng ban), Bà Trần Thị Mai (Thủ kho)',

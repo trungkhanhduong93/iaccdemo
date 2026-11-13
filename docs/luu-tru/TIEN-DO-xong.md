@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T813 | Chứng từ bán hàng gói Plus (DNSN, HKD): in Phiếu xuất kho 02-VT khổ A4 ngang theo giá vốn và Hoá đơn bán hàng (thêm khách hàng, địa chỉ, MST, bỏ giờ phút), bỏ Bảng kê bán hàng theo ngày, Hoá đơn GTGT; bảng Hàng bán (gõ tay, Xuất bán POS) thêm cột Giá vốn, Tiền vốn lấy đơn giá bình quân từ Tính giá vốn 5.1.7; bút toán 632 POS theo Tiền vốn | dinhlanphuongipacc | 13/11/2026 | `2026-11-13-dinhlanphuongipacc-in-phieu-ban-hang-gia-von.md` |
 | T812 | Bảng giá mua, bán: đầu form gọn 2 hàng thẳng cột (Loại, Tên, Cửa hàng; Áp dụng cho mọi hoặc một nhà cung cấp/khách hàng), góc phải Số bảng giá (khi xem, sửa) và Thời gian áp dụng gõ được; nhiều ĐVT cho một mặt hàng; ô chọn hàng có tìm như phiếu mua; nền, chân form như phiếu thu chi; danh sách lọc thời gian bằng Từ ngày, Đến ngày (`ThemBangGia.tsx`, `CatalogScreen.tsx`, `danh-muc/index.ts`, `types.ts`, `app.css`) | dinhlanphuongipacc | 13/11/2026 | `2026-11-13-dinhlanphuongipacc-bang-gia-mua-ban.md` |
 | T811 | Điện thoại, danh sách Người sử dụng: thẻ tách hai dòng "Quyền: <chức vụ>" và "Cửa hàng: <cửa hàng>" (`MHeThong.tsx`) | dinhlanphuongipacc | 12/11/2026 | `2026-11-12-dinhlanphuongipacc-the-nguoi-su-dung-dien-thoai.md` |
 | T810 | Người sử dụng: bỏ ô phân quyền Kho; panel chi tiết bỏ Người tạo, Ngày tạo, Người cập nhật, Ngày cập nhật, bốn cột này hiện sẵn ở danh sách (QD110) | Trum | 12/11/2026 | `2026-11-12-trum-nguoi-su-dung-bo-kho.md` |

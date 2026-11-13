@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom'
 import type { LoaiCT, Row, ScreenDef, VoucherCfg } from '../../modules/types'
 import { doiTrangMau, mauChoCheDo, mauCuaChungTu, mauIn, rongVungIn, type KhoiInK, type MauIn } from '../../app/mau-in'
 import { canCu, type CheDo, type CheDoDef } from '../../app/che-do'
-import { coTrongGoi, kieuGhiSo } from '../../app/plan'
+import { coTrongGoi, kieuGhiSo, type Goi } from '../../app/plan'
 import { cheDoHienTai, donViHienTai, useSession } from '../../app/session'
 import { tkTheoCheDo } from '../../modules/tong-hop/so-cai'
 import { Icon } from '../Icon'
@@ -272,8 +272,8 @@ export function tenMauMoi(cungGoc: MauRieng[]): string {
   return `Mẫu riêng ${Math.max(n, cungGoc.length) + 1}`
 }
 
-const dsMauCua = (p: PhieuIn, cdMa?: CheDo) => {
-  const ds = mauCuaChungTu(p.sc.code ?? '', p.loai?.k, cdMa)
+const dsMauCua = (p: PhieuIn, cdMa?: CheDo, goi?: Goi) => {
+  const ds = mauCuaChungTu(p.sc.code ?? '', p.loai?.k, cdMa, goi)
   return ds.length ? ds : [mauChoCheDo(mauIn('phieu-ke-toan')!, cdMa ?? 'TT133')]
 }
 
@@ -283,7 +283,7 @@ export function HopInChungTu({ ds, onDong }: { ds: PhieuIn[]; onDong: () => void
   const cd = cheDoHienTai(s)
   const donVi = donViHienTai(s)
   const dv: DonViIn = { ten: donVi.ten, diaChi: donVi.diaChi, mst: donVi.mst }
-  const dsMau = useMemo(() => (ds[0] ? dsMauCua(ds[0], cd.ma) : [mauChoCheDo(mauIn('phieu-ke-toan')!, cd.ma)]), [ds, cd.ma])
+  const dsMau = useMemo(() => (ds[0] ? dsMauCua(ds[0], cd.ma, s.goi) : [mauChoCheDo(mauIn('phieu-ke-toan')!, cd.ma)]), [ds, cd.ma, s.goi])
   const [rev, setRev] = useState(0)          // tăng khi lưu mẫu riêng ngay trong hộp in, để đọc lại kho
   // Mẫu chuẩn của chứng từ và mẫu riêng của từng mẫu đó; giá trị ô chọn là id mẫu chuẩn hoặc id mẫu riêng
   const luaChon = useMemo(() => dsMau.flatMap(m => [
@@ -304,11 +304,11 @@ export function HopInChungTu({ ds, onDong }: { ds: PhieuIn[]; onDong: () => void
 
   // Phiếu khác loại trong In hàng loạt (phiếu thu lẫn phiếu chi): mẫu đang chọn không thuộc phiếu đó thì dùng mẫu mặc định của phiếu
   const than = useMemo(() => ds.map((p, i) => {
-    const cua = dsMauCua(p, cd.ma)
+    const cua = dsMauCua(p, cd.ma, s.goi)
     const m = kyTheoDonVi(cua.some(x => x.id === mau.id) ? mau : mauDungIn(donVi.id, cd.ma, cua[0].id), nguoiKy)
     const du = duLieuIn(m, p.cfg, p.row, p.loai, dv, p.sc.code ?? p.sc.slug, p.dong)
     return <Fragment key={i}>{i > 0 && <NgatTrang />}{boLien(m, veMauIn(m, du, cd, dv))}</Fragment>
-  }), [ds, mau, nguoiKy, cd, donVi.id, dv.ten, dv.diaChi, dv.mst])
+  }), [ds, mau, nguoiKy, cd, donVi.id, dv.ten, dv.diaChi, dv.mst, s.goi])
 
   const giay = giayIn(mau)
   const kyHieu = mau.kyHieu[cd.ma]

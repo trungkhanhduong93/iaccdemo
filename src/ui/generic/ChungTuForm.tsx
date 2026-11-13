@@ -725,7 +725,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
   function moIn() {
     setPhieuIn([{
       sc, cfg, loai,
-      row: { ...row, id: row?.id ?? 'moi', so: soCt, ngay: ngayCt, cn: cuaHang, doiTuong, dienGiai, loai: loai?.k, tien: tongTien, thue: tongThue, tong: tongThanhToan },
+      row: { ...row, id: row?.id ?? 'moi', so: soCt, ngay: ngayCt, cn: cuaHang, doiTuong, dienGiai, _diaChi: diaChi, _mst: mst, loai: loai?.k, tien: tongTien, thue: tongThue, tong: tongThanhToan },
     }])
   }
 
@@ -1577,7 +1577,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
             <BangTraNoNcc ncc={doiTuong} ds={dsTraNo} chon={traNo} onChange={setTraNo} cheDo={dangSua ? 'sua' : 'xem'} />
           )}
           {tab === 'ct' && cfg.dongPos && (
-            <BangHangBan dong={dsDong} onChange={doiDong} cheDo={dangSua ? 'sua' : 'xem'} tyLe={Boolean(giamGtgt)} giamThue={giamThueHang} an={[...anCot, ...boCotBan]} choAm={loaiCt === 'HDDIEUCHINH'} />
+            <BangHangBan dong={dsDong} onChange={doiDong} cheDo={dangSua ? 'sua' : 'xem'} tyLe={Boolean(giamGtgt)} giamThue={giamThueHang} an={[...anCot, ...boCotBan]} choAm={loaiCt === 'HDDIEUCHINH'} ngay={ngayCt} />
           )}
           {tab === 'ct' && !cfg.dongPos && !laKk && !laSx && !laDcn && !hienTraNo && (
             <BangSua
