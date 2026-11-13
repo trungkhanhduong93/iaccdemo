@@ -946,7 +946,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
             trai={coXuatHd ? <NhomTienHd tam={tienHdTam} hd={hdDaXuat} mau2={(hdDaXuat?.mau ?? kyHieuHd[0]) === '2'} /> : undefined} />
           : <DaiTong tong={tongThanhToan}
             trai={cpCo ? <OChiPhiMua tien={cpMua} onTien={setCpMua} dong={dsDong} onPhanBo={setDsDong} sua={dangSua} /> : undefined}
-            muc={chiTien || truocThue || laDc || laSx || laDcn || khoGon || (nhom === 'mua' && traLai) ? [] : [
+            muc={chiTien || truocThue || cfg.khongKho || laDc || laSx || laDcn || khoGon || (nhom === 'mua' && traLai) ? [] : [
             ['Tiền hàng', tongTien] as [string, number],
             ...(bo.ck ? [['Chiết khấu', tongCk ? -tongCk : 0] as [string, number]] : []),
             giamGtgt ? ['Giảm thuế GTGT', tongGiam ? -tongGiam : 0] : ['Tiền thuế GTGT', tongThue],
@@ -1362,6 +1362,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
               {!muaBan && oNguoi}
               {!tcGiua && oDiaChi}
               {oXuatHd}
+              {lyDuoi && oLyDo}   {/* Hoá đơn mua hàng: Lý do dưới Địa chỉ, trong cột cho đều khoảng cách (T821) */}
               </>)}
             </div>}
 
@@ -1439,6 +1440,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
                 )}
               </div>}
               {muaBan && oNguoi}
+              {lyDuoi && oGhiChu}   {/* Hoá đơn mua hàng: Ghi chú dưới Người giao dịch, rộng một cột (T821) */}
               {hdDienTu && (
                 <div className="f">
                   <label>Kênh bán <em>*</em></label>
@@ -1524,8 +1526,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
                 </div>
               )}
             </div>
-            {lyDuoi && oLyDo}
-            {keoGc && oGhiChu}
+            {keoGc && !lyDuoi && oGhiChu}
             {/* Hàng cuối hoá đơn thay thế, điều chỉnh (T787): Lý do bắt buộc qua hai cột trái; Email nhận hoá đơn qua hai cột phải, sửa được khi lập, sửa */}
             {laHdMoi && (
               <div className={`f ct-ly-do-hd${thuLuuHd && !lyDoHd.trim() ? ' loi' : ''}`} style={{ gridColumn: '1 / 3', marginTop: 0 }}>
