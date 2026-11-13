@@ -17,7 +17,7 @@ import { ChonHaiCot, type MucHaiCot } from '../../ui/ChonHaiCot'
 import { OChonMot } from '../../ui/OChonMot'
 import { Dropdown } from '../../ui/Dropdown'
 import { PhanTrang } from '../../ui/PhanTrang'
-import { useDaXoa } from '../../ui/generic/daXoa'
+import { dsTraBanCon, useDaXoa } from '../../ui/generic/daXoa'
 import { ChonKhoangNgay, docNgay, thangMacDinh, trongKhoang, type KhoangNgay } from '../../ui/ChonNgay'
 import { NutDongBo, NutExcel, NutThemMoiSplit } from '../../ui/CongCuDs'
 import { HopDongBo } from '../../ui/HopDongBo'
@@ -153,7 +153,7 @@ export function hangTay(r: Row, tyLe: boolean): Row {
     // Loại chứng từ, trạng thái xuất HĐĐT, tham chiếu của hoá đơn thay thế, huỷ bán, hoá đơn điều chỉnh (T787)
     ttPh: loaiCtCua(r) === 'HUYBAN' ? 'Không xuất HĐ' : hdCua(r) ? 'Đã xuất' : laHdMoiCua(r) ? 'Dự thảo' : 'Chưa xuất',
     tenLoaiCt: TEN_LOAI_CT[loaiCtCua(r)],
-    thamChieu: [hdGocCua(r)?.so, (r._huyBan as CtLq | undefined)?.so, (r._hdTt as CtLq | undefined)?.so, ...dsHdMoiCon(MAN_BAN, r).map(c => c.so)].filter(Boolean).join(', '),
+    thamChieu: [hdGocCua(r)?.so, (r._huyBan as CtLq | undefined)?.so, (r._hdTt as CtLq | undefined)?.so, ...dsHdMoiCon(MAN_BAN, r).map(c => c.so), ...dsTraBanCon(r).map(c => c.so)].filter(Boolean).join(', '),   // hàng bán trả lại (T815)
     ngayTao: r.ngayTao ?? r._ngayTao, nguoiTao: r.nguoiTao ?? r._nguoiTao }
 }
 

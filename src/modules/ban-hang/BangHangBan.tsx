@@ -150,8 +150,9 @@ export const COT_BHB: [string, string][] = [
   ['dtTruocThue', 'Doanh thu tính thuế'], ['ts', 'Thuế suất'], ['thue', 'Tiền thuế'], ['giaVon', 'Giá vốn'], ['tienVon', 'Tiền vốn'], ['tonKho', 'Theo dõi tồn kho'],
 ]
 
-export function BangHangBan({ dong, onChange, cheDo, tyLe, giamThue, an = [], choAm, ngay }: {
+export function BangHangBan({ dong, onChange, cheDo, tyLe, giamThue, an = [], choAm, ngay, chiDongCo }: {
   dong: Dong[]
+  chiDongCo?: boolean                    // hàng bán trả lại lập từ chứng từ bán (T815): không thêm hàng, chỉ sửa số lượng (tối đa slMax của dòng), xoá dòng
   ngay?: string                          // ngày chứng từ: lấy đơn giá vốn bình quân của tháng đó; tháng chưa tính giá vốn thì cột trống
   choAm?: boolean                        // hoá đơn điều chỉnh (T787): gõ được số âm ở số lượng, đơn giá, các ô tiền
   onChange?: (d: Dong[]) => void
@@ -179,18 +180,18 @@ export function BangHangBan({ dong, onChange, cheDo, tyLe, giamThue, an = [], ch
   const tv = (d: Dong) => tienVon(gv(d), d.sl)
   const soTrong = (v?: number) => (v === undefined ? '' : money(v))
 
-  const o = (v: number, f: (x: number) => void, laPt = false) => sua
-    ? <OSoGo val={v} onChange={f} hien={laPt ? String : money} max={laPt ? 100 : undefined} am={choAm && !laPt} />
+  const o = (v: number, f: (x: number) => void, laPt = false, laSl = false, toiDa?: number) => sua && (!chiDongCo || laSl)
+    ? <OSoGo val={v} onChange={f} hien={laPt ? String : money} max={laPt ? 100 : toiDa} am={choAm && !laPt} />
     : <span className="num">{laPt ? phanTram(v) : money(v)}</span>
   const tong = (f: (d: Dong) => number) => dong.reduce((a, d) => a + f(d), 0)
   const hien = (k: string) => !an.includes(k)
   const cot: { k: string; t: string; w: number; o: (d: Dong, i: number) => ReactNode; tong?: (d: Dong) => number }[] = ([
-    { k: 'ma', t: 'Mã hàng', w: 110, o: (d: Dong, i: number) => sua ? (
+    { k: 'ma', t: 'Mã hàng', w: 110, o: (d: Dong, i: number) => sua && !chiDongCo ? (
       <ChonDanhMuc dm="hang" nhan="hàng hoá" coMa chiMa className="inp sm" trong="Chọn" value={d.ma}
         onChange={v => chonHang(i, v)} ds={HANG.map(h => ({ v: h.ma, t: `${h.ma} - ${h.ten}` }))} />
     ) : d.ma },
     { k: 'dvt', t: 'ĐVT', w: 65, o: (d: Dong) => d.dvt },
-    { k: 'sl', t: 'Số lượng', w: 85, o: (d: Dong, i: number) => o(d.sl, sl => dat(i, { sl })), tong: (d: Dong) => d.sl || 0 },
+    { k: 'sl', t: 'Số lượng', w: 85, o: (d: Dong, i: number) => o(d.sl, sl => dat(i, { sl }), false, true, chiDongCo ? d.slMax : undefined), tong: (d: Dong) => d.sl || 0 },
     { k: 'gia', t: 'Đơn giá', w: 105, o: (d: Dong, i: number) => o(d.gia, gia => dat(i, { gia })) },
     { k: 'thanh', t: 'Thành tiền', w: 115, o: (d: Dong) => money(d.tien), tong: (d: Dong) => d.tien || 0 },
     { k: 'pt', t: 'Giảm giá (%)', w: 90, o: (d: Dong, i: number) => o(d.pt || 0, pt => dat(i, { pt }), true) },
@@ -230,7 +231,7 @@ export function BangHangBan({ dong, onChange, cheDo, tyLe, giamThue, an = [], ch
               <tr key={i}>
                 <td className="dim c">{i + 1}</td>
                 {cot.filter(c => c.k === 'ma').map(c => <td key={c.k} className="code">{c.o(d, i)}</td>)}
-                <td>{sua ? <input className="inp sm" value={d.ten} placeholder="Tên hàng" onChange={e => dat(i, { ten: e.target.value })} /> : d.ten}</td>
+                <td>{sua && !chiDongCo ? <input className="inp sm" value={d.ten} placeholder="Tên hàng" onChange={e => dat(i, { ten: e.target.value })} /> : d.ten}</td>
                 {cot.filter(c => c.k !== 'ma').map(c => <td key={c.k} className={c.k === 'tonKho' ? 'c' : c.k === 'dvt' ? undefined : 'num'}>{c.o(d, i)}</td>)}
                 {sua && (
                   <td className="c">
@@ -251,8 +252,8 @@ export function BangHangBan({ dong, onChange, cheDo, tyLe, giamThue, an = [], ch
       </div>
       {sua && (
         <div className="row" style={{ padding: '8px 12px', gap: 10 }}>
-          <button type="button" className="btn sm ghost" onClick={them}><Icon n="plus" className="ic sm" />Thêm dòng</button>
-          <button type="button" className="btn sm ghost" onClick={() => setMoHangLoat(true)}><Icon n="plus" className="ic sm" />Thêm hàng loạt</button>
+          {!chiDongCo && <button type="button" className="btn sm ghost" onClick={them}><Icon n="plus" className="ic sm" />Thêm dòng</button>}
+          {!chiDongCo && <button type="button" className="btn sm ghost" onClick={() => setMoHangLoat(true)}><Icon n="plus" className="ic sm" />Thêm hàng loạt</button>}
           {moHangLoat && (
             <ThemHangLoat ds={HANG.map(h => ({ ma: h.ma, ten: h.ten, dvt: h.dvt, nhom: h.nhom, loai: 'Hàng hoá' }))} daCo={dong.map(d => d.ma ?? '')}
               onDong={() => setMoHangLoat(false)} onXacNhan={ds => themHangLoat(ds.map(h => h.ma))} />

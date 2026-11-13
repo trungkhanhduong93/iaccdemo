@@ -44,6 +44,7 @@ export interface Dong {
   ptPhiDv?: number
   phiDv?: number
   phiVc?: number                // phí vận chuyển của dòng, bảng Hàng bán gõ tay (T758)
+  slMax?: number                // hàng bán trả lại lập từ chứng từ bán (T815): số lượng tối đa, bằng số lượng trên chứng từ bán
   kho?: string
   tkNo?: string
   tkCo?: string

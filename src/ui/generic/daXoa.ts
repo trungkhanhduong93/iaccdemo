@@ -57,9 +57,14 @@ export const MAN_TRA_MUA = 'mua-hang/4-1-4'
 export function dsTraCon(r: Row | undefined): CtTt[] {
   return ((r?._dsTra as CtTt[] | undefined) ?? []).filter(c => !daXoa.has(`${MAN_TRA_MUA}|${c.id}`))
 }
-/** Phiếu thu, chi, phiếu trả lại hàng mua tham chiếu còn: còn thì chưa xoá được phiếu gốc (T85, T91, T727) */
+/** Hàng bán trả lại lập từ Tiện ích Trả hàng của chứng từ bán hàng lập tay (T815), còn chưa xoá */
+export const MAN_TRA_BAN = 'ban-hang/3-1-4'
+export function dsTraBanCon(r: Row | undefined): CtTt[] {
+  return ((r?._dsTraBan as CtTt[] | undefined) ?? []).filter(c => !daXoa.has(`${MAN_TRA_BAN}|${c.id}`))
+}
+/** Phiếu thu, chi, phiếu trả lại hàng mua, hàng bán trả lại tham chiếu còn: còn thì chưa xoá được phiếu gốc (T85, T91, T727, T815) */
 export function ttThamChieu(r: Row | undefined): CtTt | undefined {
-  return ctTtCon(r) ?? dsTtCon(r)[0] ?? dsTraCon(r)[0]
+  return ctTtCon(r) ?? dsTtCon(r)[0] ?? dsTraCon(r)[0] ?? dsTraBanCon(r)[0]
 }
 /** Số đã trả, đã thu của phiếu mua, bán (T91). Phiếu mẫu Thanh toán một phần chưa có số liệu: tạm coi đã trả 40% */
 export function soDaTra(r: Row): number {

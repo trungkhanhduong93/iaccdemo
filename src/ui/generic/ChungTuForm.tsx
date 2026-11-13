@@ -13,7 +13,7 @@ import { CUA_HANG, HANG, HOM_NAY, KHACH, KHO, LY_CAN_DOI_TUONG, LY_DO, NCC, NHAN
 import { laLyChiPhi, laLyPhanBo } from './danhMucStore'
 import { DS_PTTT } from '../../modules/danh-muc/data'
 import { HopXacNhan } from '../LocNangCao'
-import { bayGio, ctTtCon, dsDcCon, dsTraCon, dsTtCon, MAN_TRA_MUA, ghiNhatKy, laDaXoa, soDaTra, soKeTiep, suaPhieu, themPhieu, ttThamChieu, ttTienTheoTra, useBanPhieu, useNhatKy, xoaPhieu, type CtTt, type PhieuTt } from './daXoa'
+import { bayGio, ctTtCon, dsDcCon, dsTraBanCon, dsTraCon, dsTtCon, MAN_TRA_BAN, MAN_TRA_MUA, ghiNhatKy, laDaXoa, soDaTra, soKeTiep, suaPhieu, themPhieu, ttThamChieu, ttTienTheoTra, useBanPhieu, useNhatKy, xoaPhieu, type CtTt, type PhieuTt } from './daXoa'
 import { Icon } from '../Icon'
 import { HopPhimTat, phimDong } from '../BangPhimTat'
 import { Card, Note } from '../Page'
@@ -46,7 +46,7 @@ import { xongViecHuongDan } from '../../modules/home/HuongDan'
 import { KENH_BAN } from '../../modules/bao-cao/tt152'
 import {
   HopNguoiMua, HopXemHd, OKyHieu, TEN_LOAI_CT, TIEN_TO_CT, cauHinhHddt, dauDong, dsHdMoiCon, hdCua, hdGocCua, huyBanTu, khachTheoTen, kyHieuDung, kyHieuTheoCh,
-  laKhachCty, loaiCtCua, phatHanhHd, soCtMoi, thieuKhach, type CtLq, type TtKhach,
+  laKhachCty, loaiCtCua, phatHanhHd, soCtMoi, thieuKhach, ttHdGoc, type CtLq, type TtKhach,
 } from '../../modules/ban-hang/hddt'
 
 export interface ChungTuFormProps extends ScreenProps {
@@ -127,6 +127,9 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
   const nv = useMemo(() => (r0 ? ttNghiepVu(r0) : null), [r0])
   // Phiếu trả lại hàng mua lập từ Tiện ích Trả hàng của phiếu mua (T727): điền sẵn nhà cung cấp, kho, dòng hàng, tham chiếu phiếu mua
   const traTu = moi ? (loc.state as { traTu?: TraTu } | null)?.traTu : undefined
+  // Hàng bán trả lại lập từ Tiện ích Trả hàng của chứng từ bán hàng lập tay (T815): không thêm hàng, chỉ sửa số lượng (không quá số đã bán), xoá dòng
+  const traBan = Boolean(traTu?.ban) || Boolean(row?._traTuBan)
+  const nhanTra = traTu?.ban ? `Hàng bán trả lại theo ${traTu.so}` : `Trả lại hàng mua theo ${traTu?.so}`
 
   const path = duongDan(mod, sc)
   const dongForm = useDong(path)
@@ -142,9 +145,9 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
 
   // Trạng thái thanh toán cho mua/bán
   const [hinhThucTt, setHinhThucTt] = useState<'congno' | 'tienmat' | 'chuyenkhoan'>(
-    (r0?._httt as 'congno' | 'tienmat' | 'chuyenkhoan' | undefined) ?? (nv?.ttTien === 'da' ? 'tienmat' : 'congno')
+    (r0?._httt as 'congno' | 'tienmat' | 'chuyenkhoan' | undefined) ?? traTu?.httt ?? (nv?.ttTien === 'da' ? 'tienmat' : 'congno')
   )
-  const [pttt, setPttt] = useState<string>((r0?._pttt as string | undefined) ?? 'Tiền mặt')
+  const [pttt, setPttt] = useState<string>((r0?._pttt as string | undefined) ?? traTu?.pttt ?? 'Tiền mặt')
   // Phiếu đã lưu trong phiên giữ đủ các ô đầu phiếu ở row._xxx (T69), không lấy lại dữ liệu mẫu
   const luuCu = (k: string) => (r0?.[`_${k}`] as string | undefined)
   const [nhanKemHd, setNhanKemHd] = useState(row?._nhanKemHd !== undefined ? Boolean(row._nhanKemHd) : nv?.ttHd === 'da' || row?.nguon === 'HĐ')
@@ -186,7 +189,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
   const canChonCn = moi && !cnChon && !lapHd
   // Thêm mới có ?dt=tên đối tượng (vd Thanh toán ngay ở báo cáo công nợ, T304) thì điền sẵn đối tượng đó
   const [doiTuong, setDoiTuong] = useState(r0?.doiTuong ? String(r0.doiTuong) : traTu?.doiTuong || (moi && sp.get('dt')) || (cfg.doiTuong === 'ncc' ? NCC[0].ten : cfg.doiTuong === 'kh' ? KHACH[0].ten : ''))
-  const [dienGiai, setDienGiai] = useState(r0?.dienGiai ? String(r0.dienGiai) : traTu ? `Trả lại hàng mua theo ${traTu.so}` : cfg.dienGiai[0])
+  const [dienGiai, setDienGiai] = useState(r0?.dienGiai ? String(r0.dienGiai) : traTu ? nhanTra : cfg.dienGiai[0])
   const [nguoiGiao, setNguoiGiao] = useState(luuCu('nguoiGiao') ?? nv?.nguoi ?? NHAN_VIEN[0].ten)
   const [nhanVien, setNhanVien] = useState(luuCu('nhanVien') ?? NHAN_VIEN[0].ten)
   const [diaChi, setDiaChi] = useState(luuCu('diaChi') ?? traTu?.diaChi ?? nv?.dc ?? '45 Lê Thánh Tôn, Bến Nghé, Quận 1, TP.HCM')
@@ -292,7 +295,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
   }
   // Chọn lý do: diễn giải và lý do mọi dòng theo lý do, vẫn sửa lại được
   // Mọi phiếu không có ô Diễn giải ở đầu phiếu, Ghi chú chép sang diễn giải (T77, T78). Phiếu có ô lý do: Ghi chú mặc định theo lý do; phiếu khác: mặc định là diễn giải
-  const ghiChuGoc = () => r0?._ghiChu ? String(r0._ghiChu) : traTu ? `Trả lại hàng mua theo ${traTu.so}` : !oLy ? (r0?.dienGiai ? String(r0.dienGiai) : cfg.dienGiai[0]) : r0?._lyDo ? String(r0._lyDo) : lyGoc(r0?.dienGiai ? String(r0.dienGiai) : cfg.dienGiai[0])
+  const ghiChuGoc = () => r0?._ghiChu ? String(r0._ghiChu) : traTu ? nhanTra : !oLy ? (r0?.dienGiai ? String(r0.dienGiai) : cfg.dienGiai[0]) : r0?._lyDo ? String(r0._lyDo) : lyGoc(r0?.dienGiai ? String(r0.dienGiai) : cfg.dienGiai[0])
   const [ghiChu, setGhiChu] = useState(ghiChuGoc)
   // Kênh bán của chứng từ bán hàng lập tay (T785), bắt buộc: sau này là điều kiện lên kê khai thuế
   const [kenh, setKenh] = useState(String(r0?.kenh ?? (hdDienTu && moi ? KENH_BAN[0] : '')))
@@ -468,7 +471,8 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
     ...(laKk ? dsDcCon(row).map(c => ({ so: c.so, to: `/app/${MAN_DC}/${c.id}`, ten: 'Phiếu điều chỉnh' })) : []),
     ...(((laSx && !sxNhap) || dcn === 'xdc') && row._phieuNhap ? [(pn => ({ so: pn.so, to: `/app/${sx ? manDoi : DCN.ndc.man}/${pn.id}`, ten: 'Phiếu nhập' }))(row._phieuNhap as { id: string; so: string })] : []),
     ...dsTraCon(row).map(c => ({ so: c.so, to: `/app/${MAN_TRA_MUA}/${c.id}`, ten: 'Phiếu trả lại hàng mua' })),   // T727
-    ...(row._thamChieu && row._thamChieuDi && !sxNhap && dcn !== 'ndc' ? [{ so: String(row._thamChieu), to: String(row._thamChieuDi), ten: row._traTuMua ? 'Phiếu mua hàng' : 'Chứng từ gốc' }] : []),
+    ...dsTraBanCon(row).map(c => ({ so: c.so, to: `/app/${MAN_TRA_BAN}/${c.id}`, ten: 'Hàng bán trả lại' })),   // T815
+    ...(row._thamChieu && row._thamChieuDi && !sxNhap && dcn !== 'ndc' ? [{ so: String(row._thamChieu), to: String(row._thamChieuDi), ten: row._traTuMua ? 'Phiếu mua hàng' : row._traTuBan ? 'Chứng từ bán hàng' : 'Chứng từ gốc' }] : []),
     // Chứng từ gốc, hoá đơn thay thế, huỷ bán, hoá đơn điều chỉnh tham chiếu lẫn nhau (QD107, T787)
     ...(hdGoc ? [{ so: hdGoc.so, to: `${path}/${hdGoc.id}`, ten: 'Chứng từ gốc' }] : []),
     ...([row._huyBan, row._hdTt] as (CtLq | undefined)[]).filter((c): c is CtLq => Boolean(c) && !laDaXoa(`${mod.key}/${sc.slug}`, c!.id))
@@ -478,13 +482,19 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
   // Tiện ích Trả hàng ở phiếu mua có dòng hàng (T727): mở Thêm phiếu trả lại hàng mua điền sẵn từ phiếu này
   const manTra = timMan('mua-hang', '4-1-4').sc
   const coTraHang = Boolean(row) && nhom === 'mua' && !traLai && cfg.dong === 'nvl' && Boolean(manTra) && moDuoc(manTra!, s.goi)
+  // Chứng từ bán hàng lập tay (T815): Trả hàng mở Thêm hàng bán trả lại; trừ huỷ bán, hoá đơn điều chỉnh, hoá đơn đã bị thay thế
+  const manTraBan = timMan('ban-hang', '3-1-4').sc
+  const coTraBan = Boolean(row) && Boolean(hdDienTu) && (loaiCt === 'XBAN' || loaiCt === 'HDTHAYTHE') && row?.nguon !== 'FABi'
+    && ttHdGoc(`${mod.key}/${sc.slug}`, row!) !== 'Bị thay thế' && Boolean(manTraBan) && moDuoc(manTraBan!, s.goi)
   function moTraHang() {
     if (!row) return
+    // Hàng bán trả lại chép mọi thông tin trừ ngày, số chứng từ, số hoá đơn; số lượng tối đa mỗi dòng là số lượng đã bán
     const tu: TraTu = {
       id: String(row.id), so: soCt, man: `${mod.key}/${sc.slug}`, di: `${path}/${row.id}`, cn: cuaHang,
-      doiTuong, mst, diaChi, kho, dong: dsDong.map(d => ({ ...d })), dsTra: dsTraCon(row),
+      doiTuong, mst, diaChi, kho, dong: coTraBan ? dsDong.filter(d => d.sl > 0).map(d => ({ ...d, slMax: d.sl })) : dsDong.map(d => ({ ...d })),
+      dsTra: coTraBan ? dsTraBanCon(row) : dsTraCon(row), ...(coTraBan ? { ban: true, httt: hinhThucTt, pttt } : {}),
     }
-    nav(`/app/${MAN_TRA_MUA}/moi`, { state: { traTu: tu } })
+    nav(`/app/${coTraBan ? MAN_TRA_BAN : MAN_TRA_MUA}/moi`, { state: { traTu: tu } })
   }
   const tongGoc = Number(row?.tong) || 0
   const daTra = row ? soDaTra(row) : 0
@@ -534,6 +544,12 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
           : dcn === 'ck' && khoNhan === kho ? 'Kho nhận phải khác kho xuất' : !dsDong.length ? 'Phiếu chưa có dòng hàng nào' : ''
       if (thieu) { toast(thieu); return }
     }
+    // Hàng bán trả lại từ chứng từ bán (T815): phải còn dòng, số lượng trả lớn hơn 0 và không quá số đã bán
+    if (traBan) {
+      const sai = dsDong.find(d => !(d.sl > 0) || (d.slMax !== undefined && d.sl > d.slMax))
+      if (!dsDong.length) { toast('Chứng từ chưa có dòng hàng nào'); return }
+      if (sai) { toast(sai.sl > 0 ? `Số lượng trả lại của ${sai.ten} không được quá ${sai.slMax} (số lượng đã bán)` : `Nhập số lượng trả lại của ${sai.ten}`); return }
+    }
     // Hoá đơn thay thế, điều chỉnh (T787): bắt buộc lý do; Lưu dự thảo chưa phát hành, Lưu và phát hành thì phát hành luôn
     if (laHdMoi && !lyDoHd.trim()) { setThuLuuHd(true); toast(`Nhập lý do ${loaiCt === 'HDTHAYTHE' ? 'thay thế' : 'điều chỉnh'}`); return }
     // Lưu và phát hành (T785): kiểm ngày, ký hiệu hoá đơn, người mua trước khi lưu
@@ -562,7 +578,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
       ...(laHdMoi ? { tt: 'ghi', _loaiCt: loaiCt, _hdGoc: hdGoc, _lyDoHd: lyDoHd.trim(), _tienHd: tienHdTam, ...(loaiCt === 'HDDIEUCHINH' ? { _dcLoai: dcLoai } : {}) } : {}),
       ...(dsDc ? { _dsDc: dsDc } : {}),
       ...(coCpMua ? { _cpMua: cpCo ? cpMua : 0 } : {}),
-      ...(traTu ? { _thamChieu: traTu.so, _thamChieuDi: traTu.di, _traTuMua: traTu.id } : {}),   // T727
+      ...(traTu ? { _thamChieu: traTu.so, _thamChieuDi: traTu.di, ...(traTu.ban ? { _traTuBan: traTu.id } : { _traTuMua: traTu.id }) } : {}),   // T727, T815
       ...(laTien ? { _traNo: traNoNcc ? traNo : undefined } : {}),
       // Phiếu sản xuất (T152): tham chiếu phiếu xuất, người cập nhật; phiếu xuất mới chờ nhập, phiếu nhập lưu là đã nhập
       ...(laSx ? {
@@ -590,7 +606,8 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
       ghiNhatKy(man, idMoi, soCt, s.ten, traTu ? `Thêm mới chứng từ, trả lại hàng của ${traTu.so}` : 'Thêm mới chứng từ')
       // Phiếu mua ghi lại phiếu trả lại này để hiện ở Tham chiếu và chặn xoá phiếu mua khi còn phiếu trả (T727)
       if (traTu) {
-        suaPhieu(traTu.man, traTu.id, { _dsTra: [...traTu.dsTra, { id: idMoi, so: soCt, loai: 'tra' }] })
+        const dsMoi = [...traTu.dsTra, { id: idMoi, so: soCt, loai: 'tra' }]
+        suaPhieu(traTu.man, traTu.id, traTu.ban ? { _dsTraBan: dsMoi } : { _dsTra: dsMoi })
         ghiNhatKy(traTu.man, traTu.id, traTu.so, s.ten, `Trả lại hàng bằng ${soCt}`)
       }
     } else if (row) {
@@ -1045,7 +1062,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
                         Sao chép
                       </MenuItem>
                     )}
-                    {coTraHang && (
+                    {(coTraHang || coTraBan) && (
                       <MenuItem icon="back" onClick={() => { dong(); moTraHang() }}>
                         Trả hàng
                       </MenuItem>
@@ -1577,7 +1594,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
             <BangTraNoNcc ncc={doiTuong} ds={dsTraNo} chon={traNo} onChange={setTraNo} cheDo={dangSua ? 'sua' : 'xem'} />
           )}
           {tab === 'ct' && cfg.dongPos && (
-            <BangHangBan dong={dsDong} onChange={doiDong} cheDo={dangSua ? 'sua' : 'xem'} tyLe={Boolean(giamGtgt)} giamThue={giamThueHang} an={[...anCot, ...boCotBan]} choAm={loaiCt === 'HDDIEUCHINH'} ngay={ngayCt} />
+            <BangHangBan dong={dsDong} onChange={doiDong} cheDo={dangSua ? 'sua' : 'xem'} tyLe={Boolean(giamGtgt)} giamThue={giamThueHang} an={[...anCot, ...boCotBan]} choAm={loaiCt === 'HDDIEUCHINH'} ngay={ngayCt} chiDongCo={traBan} />
           )}
           {tab === 'ct' && !cfg.dongPos && !laKk && !laSx && !laDcn && !hienTraNo && (
             <BangSua
@@ -1705,8 +1722,11 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
 }
 
 /** Các quỹ chuyển qua lại trên phiếu chuyển quỹ: quỹ tiền mặt từng cửa hàng, rồi tài khoản ngân hàng */
-/** Phiếu mua gửi sang Thêm phiếu trả lại hàng mua (T727) */
-interface TraTu { id: string; so: string; man: string; di: string; cn: string; doiTuong: string; mst: string; diaChi: string; kho: string; dong: Dong[]; dsTra: CtTt[] }
+/** Phiếu mua gửi sang Thêm phiếu trả lại hàng mua (T727); chứng từ bán hàng lập tay gửi sang Thêm hàng bán trả lại (ban, T815) */
+interface TraTu {
+  id: string; so: string; man: string; di: string; cn: string; doiTuong: string; mst: string; diaChi: string; kho: string; dong: Dong[]; dsTra: CtTt[]
+  ban?: boolean; httt?: 'congno' | 'tienmat' | 'chuyenkhoan'; pttt?: string
+}
 
 export const QUY_TIEN = [
   ...CUA_HANG.map(c => `Quỹ tiền mặt ${c.ngan}`),

@@ -225,7 +225,7 @@ export const dauDong = (ds: Dong[], dau: 1 | -1): Dong[] => ds.map(d => {
 })
 /** Bỏ các trường riêng của chứng từ gốc khi chép sang chứng từ mới */
 function chepGoc(goc: Row): Row {
-  const bo = ['id', 'so', '_hd', '_soHd', '_dsHdMoi', '_ctTt', '_dsTt', '_dsTra', '_huyBan', '_hdTt', '_hdGoc', '_loaiCt', '_lyDoHd', '_dcLoai', '_tienHd',
+  const bo = ['id', 'so', '_hd', '_soHd', '_dsHdMoi', '_ctTt', '_dsTt', '_dsTra', '_dsTraBan', '_huyBan', '_hdTt', '_hdGoc', '_loaiCt', '_lyDoHd', '_dcLoai', '_tienHd',
     '_ngayTao', '_nguoiTao', 'ngayTao', 'nguoiTao', 'hddt', 'ttPh', 'tenLoaiCt', 'thamChieu', 'stt']
   return Object.fromEntries(Object.entries(goc).filter(([k]) => !bo.includes(k))) as Row
 }
