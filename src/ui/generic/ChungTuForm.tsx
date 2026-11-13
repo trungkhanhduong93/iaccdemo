@@ -1608,6 +1608,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
               coKho={Boolean(bo.kho) && !khoDau && !laDc && !khoGon}   // phiếu điều chỉnh, nhập khác, xuất huỷ: kho ở đầu phiếu (T126, T737, T741)
               giaVon={giaVon}
               coCpMua={cpCo}
+              onTongCp={setCpMua}   // gõ chi phí ở dòng thì ô tổng ở dải đáy bằng tổng các dòng
               khoMacDinh={khoMotCn || 'Kho tổng'}
               coNhapKho={nhom === 'mua' && Boolean(bo.tongNhap)}
               xuatKho={nhom === 'mua' && traLai}   // T728

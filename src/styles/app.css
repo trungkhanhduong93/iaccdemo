@@ -44481,7 +44481,6 @@ a.hdn-chip:hover { border-color: var(--blue); color: var(--blue); }
 .ct-cpm > small { font-size: 12px; color: var(--muted); }
 .ct-cpm > b { font-size: 13.5px; font-variant-numeric: tabular-nums; color: var(--ink); }
 .ct-cpm .ct-cpm-o { width: 130px; }
-.ct-cpm-tt { font-size: 12px; color: var(--red); }
 
 /* ── Công thức chế biến điện thoại theo app IVT (T756) ── */
 .m-ct-khung {

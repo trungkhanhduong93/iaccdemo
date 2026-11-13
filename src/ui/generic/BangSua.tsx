@@ -51,6 +51,7 @@ export interface BangSuaProps {
   giaVon?: boolean             // phiếu xuất huỷ: cột Đơn giá, Thành tiền gọi là Giá vốn, Tiền vốn (T741)
   coCpMua?: boolean            // phiếu mua hàng: cột Chi phí mua hàng trước Giá trị nhập kho, cộng vào giá trị nhập kho (T757)
   chiDongCo?: boolean          // trả lại hàng mua lập từ phiếu mua (T816): không thêm hàng, chỉ sửa số lượng (tối đa slMax của dòng), xoá dòng
+  onTongCp?: (tong: number) => void   // phiếu mua hàng: gõ chi phí mua hàng ở dòng thì báo tổng mới cho ô ở dải đáy
 }
 
 /** Các cột ẩn hiện được của bảng chi tiết, theo loại phiếu (T49). Mỗi cột trên bảng là một mục, theo thứ tự trên bảng (T86) */
@@ -115,6 +116,7 @@ export function BangSua({
   giaVon = false,
   coCpMua = false,
   chiDongCo = false,
+  onTongCp,
 }: BangSuaProps) {
   const nhanGia = giaVon ? 'Giá vốn' : 'Đơn giá', nhanTien = giaVon ? 'Tiền vốn' : 'Thành tiền'
   const hang = cfg.dong === 'hang' || cfg.dong === 'nvl'
@@ -654,7 +656,14 @@ export function BangSua({
                       ds={NHOM_HHDV.map(v => ({ v, t: v }))} />
                   </td>
                 )}
-                {cpCot && <td className="num">{money(d.cpMua || 0)}</td>}
+                {cpCot && (
+                  <td className="num">
+                    <OSo val={d.cpMua || 0} disabled={chiDongCo} onChange={cpMua => {
+                      capNhat(i, { cpMua })
+                      onTongCp?.(dong.reduce((t, x, j) => t + (j === i ? cpMua : x.cpMua || 0), 0))
+                    }} />
+                  </td>
+                )}
                 {gtnkCot && <td className="num">{money((d.tien || 0) - (d.ck || 0) + (d.cpMua || 0) + (gtnkCoThue ? d.thue || 0 : 0))}</td>}
                 {tongTienCot && <td className="num">{money((d.tien || 0) - (d.ck || 0) + (d.thue || 0))}</td>}
                 <td className="c">

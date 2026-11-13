@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T817 | Phiếu mua hàng: ô Chi phí mua hàng ở từng dòng gõ được, ô tổng ở dải đáy tự bằng tổng các dòng; gõ tổng rồi bấm Phân bổ vẫn chia như cũ; bỏ chữ "Chưa phân bổ" (tiếp T757) | dinhlanphuongipacc | 13/11/2026 | `2026-11-13-dinhlanphuongipacc-go-chi-phi-mua-tung-dong.md` |
 | T816 | Trả lại hàng mua lập từ Tiện ích Trả hàng của phiếu mua (T727): như T815, không thêm hàng, chỉ sửa số lượng (không quá số đã mua) và xoá dòng | dinhlanphuongipacc | 13/11/2026 | `2026-11-13-dinhlanphuongipacc-khoa-dong-tra-hang-mua.md` |
 | T815 | Chứng từ bán hàng lập tay: Tiện ích Trả hàng mở Thêm hàng bán trả lại chép từ chứng từ bán (trừ ngày, số chứng từ, số hoá đơn), chỉ sửa số lượng (không quá số đã bán) và xoá dòng, không thêm hàng; hai chứng từ tham chiếu lẫn nhau | dinhlanphuongipacc | 13/11/2026 | `2026-11-13-dinhlanphuongipacc-tra-hang-tu-chung-tu-ban.md` |
 | T814 | Tổng hợp bán hàng 3.2.7: mã hàng là liên kết, bấm mở Bảng kê chi tiết bán hàng 3.2.8 ở tab trình duyệt mới, cùng kỳ, bộ lọc đang xem, thêm lọc Hàng hoá theo mặt hàng bấm (kỳ, bộ lọc gửi qua đường dẫn, `linkBaoCaoTabMoi` ở `tuyChinhBC.ts`) | dinhlanphuongipacc | 13/11/2026 | `2026-11-13-dinhlanphuongipacc-tong-hop-ban-hang-link-ma-hang.md` |

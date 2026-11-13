@@ -23,8 +23,6 @@ export function OChiPhiMua({ tien, onTien, dong, onPhanBo, sua }: {
   onPhanBo: (dong: Dong[]) => void
   sua: boolean
 }) {
-  // So số đang có trên dòng với số chia lại: khác nhau là tiền hoặc hàng đã đổi sau lần phân bổ trước
-  const khop = phanBoCp(dong, tien).every((d, i) => d.cpMua === (dong[i].cpMua || 0))
   return (
     <span className="ct-cpm">
       <small>Chi phí mua hàng</small>
@@ -32,7 +30,6 @@ export function OChiPhiMua({ tien, onTien, dong, onPhanBo, sua }: {
       {sua && (
         <button type="button" className="btn sm pri" disabled={!dong.length} onClick={() => onPhanBo(phanBoCp(dong, tien))}>Phân bổ</button>
       )}
-      {sua && !khop && <span className="ct-cpm-tt">Chưa phân bổ</span>}
     </span>
   )
 }

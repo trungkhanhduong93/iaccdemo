@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 13/11/2026
+- T817: Phiếu mua hàng, Chi phí mua hàng: ô chi phí ở từng dòng gõ được, ô tổng ở dưới tự bằng tổng các dòng; vẫn gõ được tổng rồi bấm Phân bổ để chia theo giá trị hàng. Bỏ chữ "Chưa phân bổ" cạnh nút Phân bổ.
 - T816: Phiếu mua hàng, Tiện ích Trả hàng: phiếu trả lại hàng mua lập ra không thêm được hàng, chỉ gõ lại số lượng (không quá số lượng đã mua) hoặc xoá dòng, như hàng bán trả lại.
 - T815: Gói Plus, chứng từ bán hàng lập thủ công: menu Tiện ích có Trả hàng, bấm mở Thêm hàng bán trả lại chép sẵn khách hàng, cửa hàng, kho, thanh toán và các dòng hàng của chứng từ bán (ngày chứng từ là hôm nay, số chứng từ tự sinh, số hoá đơn để trống). Phiếu trả lại không thêm được hàng, chỉ gõ lại số lượng (không quá số lượng đã bán) hoặc xoá dòng. Phiếu trả lại và chứng từ bán hiện số của nhau ở dòng Tham chiếu, bấm mở được; chứng từ bán còn phiếu trả lại thì phải xoá phiếu trả trước.
 - T814: Báo cáo Tổng hợp bán hàng: mã hàng là liên kết, bấm mở Bảng kê chi tiết bán hàng ở tab trình duyệt mới, cùng kỳ và bộ lọc đang xem, lọc sẵn theo mặt hàng vừa bấm.
