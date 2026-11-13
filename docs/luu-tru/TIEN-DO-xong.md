@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T816 | Trả lại hàng mua lập từ Tiện ích Trả hàng của phiếu mua (T727): như T815, không thêm hàng, chỉ sửa số lượng (không quá số đã mua) và xoá dòng | dinhlanphuongipacc | 13/11/2026 | `2026-11-13-dinhlanphuongipacc-khoa-dong-tra-hang-mua.md` |
 | T815 | Chứng từ bán hàng lập tay: Tiện ích Trả hàng mở Thêm hàng bán trả lại chép từ chứng từ bán (trừ ngày, số chứng từ, số hoá đơn), chỉ sửa số lượng (không quá số đã bán) và xoá dòng, không thêm hàng; hai chứng từ tham chiếu lẫn nhau | dinhlanphuongipacc | 13/11/2026 | `2026-11-13-dinhlanphuongipacc-tra-hang-tu-chung-tu-ban.md` |
 | T814 | Tổng hợp bán hàng 3.2.7: mã hàng là liên kết, bấm mở Bảng kê chi tiết bán hàng 3.2.8 ở tab trình duyệt mới, cùng kỳ, bộ lọc đang xem, thêm lọc Hàng hoá theo mặt hàng bấm (kỳ, bộ lọc gửi qua đường dẫn, `linkBaoCaoTabMoi` ở `tuyChinhBC.ts`) | dinhlanphuongipacc | 13/11/2026 | `2026-11-13-dinhlanphuongipacc-tong-hop-ban-hang-link-ma-hang.md` |
 | T813 | Chứng từ bán hàng gói Plus (DNSN, HKD): in Phiếu xuất kho 02-VT khổ A4 ngang theo giá vốn và Hoá đơn bán hàng (thêm khách hàng, địa chỉ, MST, bỏ giờ phút), bỏ Bảng kê bán hàng theo ngày, Hoá đơn GTGT; bảng Hàng bán (gõ tay, Xuất bán POS) thêm cột Giá vốn, Tiền vốn lấy đơn giá bình quân từ Tính giá vốn 5.1.7; bút toán 632 POS theo Tiền vốn | dinhlanphuongipacc | 13/11/2026 | `2026-11-13-dinhlanphuongipacc-in-phieu-ban-hang-gia-von.md` |

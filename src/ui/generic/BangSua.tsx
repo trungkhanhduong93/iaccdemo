@@ -50,6 +50,7 @@ export interface BangSuaProps {
   doRong?: DoRong              // kéo mép phải tiêu đề để giãn cột, chung cho chế độ xem và sửa (T618)
   giaVon?: boolean             // phiếu xuất huỷ: cột Đơn giá, Thành tiền gọi là Giá vốn, Tiền vốn (T741)
   coCpMua?: boolean            // phiếu mua hàng: cột Chi phí mua hàng trước Giá trị nhập kho, cộng vào giá trị nhập kho (T757)
+  chiDongCo?: boolean          // trả lại hàng mua lập từ phiếu mua (T816): không thêm hàng, chỉ sửa số lượng (tối đa slMax của dòng), xoá dòng
 }
 
 /** Các cột ẩn hiện được của bảng chi tiết, theo loại phiếu (T49). Mỗi cột trên bảng là một mục, theo thứ tự trên bảng (T86) */
@@ -71,15 +72,16 @@ export function cotTuyChon(cfg: VoucherCfg, o: { coKho?: boolean; coLo?: boolean
 }
 
 /** Ô nhập số ở bảng chi tiết: đang gõ đã có chấm ngăn nghìn, báo số ngay để tổng tiền đổi theo; rời ô hiện định dạng có dấu chấm (T284) */
-function OSo({ val, onChange, disabled, placeholder = '0', className = 'inp sm num' }: {
+function OSo({ val, onChange, disabled, placeholder = '0', className = 'inp sm num', max }: {
   val: number
+  max?: number
   onChange?: (v: number) => void
   disabled?: boolean
   placeholder?: string
   className?: string
 }) {
   if (disabled) return <span className="num">{money(val)}</span>
-  return <OSoGo val={val} onChange={onChange} hien={money} placeholder={placeholder} className={className} />
+  return <OSoGo val={val} onChange={onChange} hien={money} placeholder={placeholder} className={className} max={max} />
 }
 
 export function BangSua({
@@ -112,6 +114,7 @@ export function BangSua({
   doRong,
   giaVon = false,
   coCpMua = false,
+  chiDongCo = false,
 }: BangSuaProps) {
   const nhanGia = giaVon ? 'Giá vốn' : 'Đơn giá', nhanTien = giaVon ? 'Tiền vốn' : 'Thành tiền'
   const hang = cfg.dong === 'hang' || cfg.dong === 'nvl'
@@ -479,13 +482,13 @@ export function BangSua({
             {dong.map((d, i) => khop(d) && (
               <tr key={i}>
                 <td className="dim c">{i + 1}</td>
-                {maCot && (
+                {maCot && (chiDongCo ? <td className="code">{d.ma}</td> :
                   <td>
                     <ChonDanhMuc dm={dmHang} nhan={cfg.dong === 'nvl' ? 'nguyên vật liệu' : 'hàng hoá'} coMa chiMa className="inp sm" trong="Chọn" value={d.ma} gon={themGon}
                       onChange={(v, muc) => chonMaHang(i, v, muc)} ds={danhMucHang.map(x => ({ v: x.ma, t: `${x.ma} - ${x.ten}` }))} tabs={tabHang} />
                   </td>
                 )}
-                <td>
+                {chiDongCo ? <td>{d.ten}</td> : <td>
                   <input
                     type="text"
                     className="inp sm"
@@ -493,13 +496,13 @@ export function BangSua({
                     placeholder={hang ? 'Tên hàng' : 'Diễn giải'}
                     onChange={e => capNhat(i, { ten: e.target.value })}
                   />
-                </td>
-                {coKho && (
+                </td>}
+                {coKho && (chiDongCo ? <td>{d.kho || khoMacDinh}</td> :
                   <td>
                     <ChonDanhMuc dm="kho" nhan="kho" className="inp sm" value={d.kho || khoMacDinh} onChange={v => capNhat(i, { kho: v })} ds={KHO} />
                   </td>
                 )}
-                {dvtCot && (
+                {dvtCot && (chiDongCo ? <td>{d.dvt}</td> :
                   <td>
                     {!d.ma ? (
                       <Select className="inp sm" disabled value="" ds={[{ v: '', t: '—' }]} aria-label="Đơn vị tính" />
@@ -525,7 +528,7 @@ export function BangSua({
                     })()}
                   </td>
                 )}
-                {loCot && (
+                {loCot && (chiDongCo ? <td>{d.lo}</td> :
                   <td>
                     <input
                       type="text"
@@ -536,7 +539,7 @@ export function BangSua({
                     />
                   </td>
                 )}
-                {hsdCot && (
+                {hsdCot && (chiDongCo ? <td>{d.hsd}</td> :
                   <td>
                     <input
                       type="text"
@@ -601,31 +604,31 @@ export function BangSua({
                 )}
                 {slCot && (
                   <td className="num">
-                    <OSo val={d.sl} onChange={sl => capNhat(i, { sl })} />
+                    <OSo val={d.sl} onChange={sl => capNhat(i, { sl })} max={chiDongCo ? d.slMax : undefined} />
                   </td>
                 )}
                 {giaCot && (
                   <td className="num">
-                    <OSo val={d.gia} onChange={gia => capNhat(i, { gia })} />
+                    <OSo val={d.gia} onChange={gia => capNhat(i, { gia })} disabled={chiDongCo} />
                   </td>
                 )}
                 {tienCot && (
                   <td className="num">
-                    <OSo val={d.tien} onChange={tien => capNhat(i, { tien })} />
+                    <OSo val={d.tien} onChange={tien => capNhat(i, { tien })} disabled={chiDongCo} />
                   </td>
                 )}
                 {ptCkCot && (
                   <td className="num">
-                    <OSo val={d.ptCk ?? 0} onChange={ptCk => capNhat(i, { ptCk })} />
+                    <OSo val={d.ptCk ?? 0} onChange={ptCk => capNhat(i, { ptCk })} disabled={chiDongCo} />
                   </td>
                 )}
                 {ckCot && (
                   <td className="num">
-                    <OSo val={d.ck ?? 0} onChange={ck => capNhat(i, { ck })} />
+                    <OSo val={d.ck ?? 0} onChange={ck => capNhat(i, { ck })} disabled={chiDongCo} />
                   </td>
                 )}
                 {truocThueCot && <td className="num">{money((d.tien || 0) - (d.ck || 0))}</td>}
-                {tsCot && (
+                {tsCot && (chiDongCo ? <td>{d.ts ?? 0}%</td> :
                   <td>
                     <Select
                       className="inp sm"
@@ -641,11 +644,11 @@ export function BangSua({
                 )}
                 {thueCot && (
                   <td className="num">
-                    <OSo val={d.thue} onChange={thue => capNhat(i, { thue })} />
+                    <OSo val={d.thue} onChange={thue => capNhat(i, { thue })} disabled={chiDongCo} />
                   </td>
                 )}
                 {giamCot && <td className="num">{money(giamDong(d))}</td>}
-                {nhomCot && (
+                {nhomCot && (chiDongCo ? <td>{d.nhomHhdv || NHOM_HHDV[0]}</td> :
                   <td>
                     <Select className="inp sm" value={d.nhomHhdv || NHOM_HHDV[0]} aria-label="Nhóm HHDV mua vào" onChange={e => capNhat(i, { nhomHhdv: e.target.value })}
                       ds={NHOM_HHDV.map(v => ({ v, t: v }))} />
@@ -689,10 +692,10 @@ export function BangSua({
         </table>
       </div>
       <div className="row" style={{ padding: '8px 12px', gap: 10 }}>
-        <button type="button" className="btn sm ghost" onClick={themDong}>
+        {!chiDongCo && <button type="button" className="btn sm ghost" onClick={themDong}>
           <Icon n="plus" className="ic sm" />Thêm dòng
-        </button>
-        {coThemHangLoat && hang && (
+        </button>}
+        {coThemHangLoat && hang && !chiDongCo && (
           <button type="button" className="btn sm ghost" onClick={() => setMoHangLoat(true)}>
             <Icon n="plus" className="ic sm" />Thêm hàng loạt
           </button>

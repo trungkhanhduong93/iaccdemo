@@ -127,8 +127,8 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
   const nv = useMemo(() => (r0 ? ttNghiepVu(r0) : null), [r0])
   // Phiếu trả lại hàng mua lập từ Tiện ích Trả hàng của phiếu mua (T727): điền sẵn nhà cung cấp, kho, dòng hàng, tham chiếu phiếu mua
   const traTu = moi ? (loc.state as { traTu?: TraTu } | null)?.traTu : undefined
-  // Hàng bán trả lại lập từ Tiện ích Trả hàng của chứng từ bán hàng lập tay (T815): không thêm hàng, chỉ sửa số lượng (không quá số đã bán), xoá dòng
-  const traBan = Boolean(traTu?.ban) || Boolean(row?._traTuBan)
+  // Hàng bán trả lại (T815), trả lại hàng mua (T816) lập từ Tiện ích Trả hàng: không thêm hàng, chỉ sửa số lượng (không quá số trên chứng từ gốc), xoá dòng
+  const traBan = Boolean(traTu) || Boolean(row?._traTuBan) || Boolean(row?._traTuMua)
   const nhanTra = traTu?.ban ? `Hàng bán trả lại theo ${traTu.so}` : `Trả lại hàng mua theo ${traTu?.so}`
 
   const path = duongDan(mod, sc)
@@ -491,7 +491,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
     // Hàng bán trả lại chép mọi thông tin trừ ngày, số chứng từ, số hoá đơn; số lượng tối đa mỗi dòng là số lượng đã bán
     const tu: TraTu = {
       id: String(row.id), so: soCt, man: `${mod.key}/${sc.slug}`, di: `${path}/${row.id}`, cn: cuaHang,
-      doiTuong, mst, diaChi, kho, dong: coTraBan ? dsDong.filter(d => d.sl > 0).map(d => ({ ...d, slMax: d.sl })) : dsDong.map(d => ({ ...d })),
+      doiTuong, mst, diaChi, kho, dong: dsDong.filter(d => d.sl > 0).map(d => ({ ...d, slMax: d.sl })),
       dsTra: coTraBan ? dsTraBanCon(row) : dsTraCon(row), ...(coTraBan ? { ban: true, httt: hinhThucTt, pttt } : {}),
     }
     nav(`/app/${coTraBan ? MAN_TRA_BAN : MAN_TRA_MUA}/moi`, { state: { traTu: tu } })
@@ -544,11 +544,11 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
           : dcn === 'ck' && khoNhan === kho ? 'Kho nhận phải khác kho xuất' : !dsDong.length ? 'Phiếu chưa có dòng hàng nào' : ''
       if (thieu) { toast(thieu); return }
     }
-    // Hàng bán trả lại từ chứng từ bán (T815): phải còn dòng, số lượng trả lớn hơn 0 và không quá số đã bán
+    // Hàng bán trả lại (T815), trả lại hàng mua (T816): phải còn dòng, số lượng trả lớn hơn 0 và không quá số trên chứng từ gốc
     if (traBan) {
       const sai = dsDong.find(d => !(d.sl > 0) || (d.slMax !== undefined && d.sl > d.slMax))
       if (!dsDong.length) { toast('Chứng từ chưa có dòng hàng nào'); return }
-      if (sai) { toast(sai.sl > 0 ? `Số lượng trả lại của ${sai.ten} không được quá ${sai.slMax} (số lượng đã bán)` : `Nhập số lượng trả lại của ${sai.ten}`); return }
+      if (sai) { toast(sai.sl > 0 ? `Số lượng trả lại của ${sai.ten} không được quá ${sai.slMax} (số lượng đã ${nhom === 'mua' ? 'mua' : 'bán'})` : `Nhập số lượng trả lại của ${sai.ten}`); return }
     }
     // Hoá đơn thay thế, điều chỉnh (T787): bắt buộc lý do; Lưu dự thảo chưa phát hành, Lưu và phát hành thì phát hành luôn
     if (laHdMoi && !lyDoHd.trim()) { setThuLuuHd(true); toast(`Nhập lý do ${loaiCt === 'HDTHAYTHE' ? 'thay thế' : 'điều chỉnh'}`); return }
@@ -1611,6 +1611,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
               khoMacDinh={khoMotCn || 'Kho tổng'}
               coNhapKho={nhom === 'mua' && Boolean(bo.tongNhap)}
               xuatKho={nhom === 'mua' && traLai}   // T728
+              chiDongCo={traBan}   // T816
               themGon={nhom === 'mua'}
               coThemHangLoat={nhom === 'mua'}   // Thêm hàng loạt ở phiếu mua hàng (T465)
               gtnkCoThue={hkd}
