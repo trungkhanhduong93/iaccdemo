@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T828 | Thẻ chi phí phân bổ, Ghi tăng bổ sung (web) và Tạo thẻ bổ sung (điện thoại): mỗi chứng từ gốc một thẻ, mỗi dòng chứng từ một mục chi tiết của thẻ (kể cả phiếu chi nhiều dòng) | dinhlanphuongipacc | 13/11/2026 | Xem [nhật ký](../nhat-ky/2026-11-13-dinhlanphuongipacc-mot-chung-tu-mot-the.md) |
 | T827 | Điện thoại, danh sách thẻ chi phí phân bổ: dải cảnh báo khoản chờ tạo thẻ ở khu tổng hợp, nút Tạo thẻ bổ sung mở màn tạo thẻ hàng loạt; hoá đơn mua hàng nhiều dòng thành một thẻ nhiều mục, phiếu chi mỗi dòng một thẻ | dinhlanphuongipacc | 13/11/2026 | Xem [nhật ký](../nhat-ky/2026-11-13-dinhlanphuongipacc-tao-the-bo-sung-dien-thoai.md) |
 | T826 | Điện thoại, màn Hoá đơn mua hàng (mua hàng không qua kho) gói Plus, Pro như web T821: danh sách có Lý do; lập, xem, sửa hoá đơn có ô Lý do nghiệp vụ thay kho, dòng diễn giải gõ tự do, chỉ Tổng tiền, không Trả hàng; lý do phân bổ nhắc và lưu xong mở tạo thẻ chi phí phân bổ | dinhlanphuongipacc | 13/11/2026 | Xem [nhật ký](../nhat-ky/2026-11-13-dinhlanphuongipacc-hoa-don-mua-dien-thoai.md) |
 | T825 | Chỉ gói Pro có ghi sổ: `kieuGhiSoDv` trả về không ghi sổ cho gói Standard, Plus (cả doanh nghiệp TT58), web và điện thoại. Sửa QD81. Trum chốt 13/11/2026 qua dinhlanphuongipacc | dinhlanphuongipacc | 13/11/2026 | [2026-11-13-dinhlanphuongipacc-nhap-kho-dien-thoai](../nhat-ky/2026-11-13-dinhlanphuongipacc-nhap-kho-dien-thoai.md) |

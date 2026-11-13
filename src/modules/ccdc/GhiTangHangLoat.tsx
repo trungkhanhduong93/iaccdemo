@@ -69,6 +69,9 @@ export function useDongCho(): DongGoc[] {
   ].filter(d => !daTao.has(d.key))
 }
 
+/** Thẻ của dòng chờ: mỗi chứng từ gốc một thẻ, mỗi dòng chứng từ một mục chi tiết của thẻ (T828, web và điện thoại) */
+export const theCuaDong = (d: { _goc?: string; soCt: string }) => d._goc || `ct:${d.soCt}`
+
 /** Đánh dấu dòng chờ đã tạo thẻ, dùng ở màn Tạo thẻ bổ sung trên điện thoại (T827) */
 export function danhDauDaTao(keys: string[]) { keys.forEach(k => daTao.add(k)) }
 
@@ -115,21 +118,39 @@ export function useCanhBaoCho(ky: number) {
 export function GhiTangHangLoat({ rows: daCo, onDong }: { soDong: number; rows: Row[]; onDong: () => void }) {
   const { s, toast } = useSession()
   const dongCho = useDongCho()
-  const goc = useMemo((): DongCho[] => dongCho.map(d => ({ ...d, chon: true, loai: d.loai ?? 'Chi phí trả trước', ngayPb: d.ngayCt, ky: '' })), [])
+  // Loại thẻ chung cho cả chứng từ: mọi dòng là công cụ dụng cụ thì CCDC, còn lại Chi phí trả trước (T828)
+  const goc = useMemo((): DongCho[] => dongCho.map(d => {
+    const cung = dongCho.filter(x => theCuaDong(x) === theCuaDong(d))
+    return { ...d, chon: true, loai: cung.every(x => x.loai === CCDC) ? CCDC : 'Chi phí trả trước', ngayPb: d.ngayCt, ky: '' }
+  }), [])
   const [ds, setDs] = useState(goc)
   const [loi, setLoi] = useState<Set<string>>(new Set())
-  const sua = (key: string, p: Partial<DongCho>) => { setDs(x => x.map(d => d.key === key ? { ...d, ...p } : d)); setLoi(l => { const n = new Set(l); n.delete(key); return n }) }
+  // Đổi loại thẻ ở một dòng thì đổi cả các dòng cùng chứng từ (cùng một thẻ, T828); chuyển sang CCDC thì số lượng mặc định 1
+  const sua = (key: string, p: Partial<DongCho>) => {
+    setDs(x => {
+      const g = x.find(d => d.key === key)
+      return x.map(d => d.key === key ? { ...d, ...p }
+        : p.loai !== undefined && g && theCuaDong(d) === theCuaDong(g) ? { ...d, loai: p.loai, ...(p.loai === CCDC && !d.sl ? { sl: '1' } : {}) } : d)
+    })
+    setLoi(l => { const n = new Set(l); n.delete(key); return n })
+  }
 
   // Số thẻ theo Cấu hình kế toán TPB{YY}{MM}-{0000}, tháng theo ngày chứng từ, nối tiếp số đã có cùng tháng (gồm cả số vừa đánh cho dòng trên);
-  // chỉ đánh cho dòng được chọn; số tiền mỗi kỳ = số tiền / số kỳ, làm tròn tới đồng (T284)
+  // chỉ đánh cho dòng được chọn; các dòng cùng chứng từ chung một số thẻ (T828); số tiền mỗi kỳ = số tiền / số kỳ, làm tròn tới đồng (T284)
   const daDanh: unknown[] = daCo.map(r => r.soThe)
+  const soTheNhom = new Map<string, string>()
   const rows = ds.map(d => {
     const ky = docSoQT(d.ky)
-    const soThe = d.chon ? soTheKeTiep(daDanh, 'the', d.ngayCt) : ''
-    if (soThe) daDanh.push(soThe)
+    const g = theCuaDong(d)
+    let soThe = ''
+    if (d.chon) {
+      soThe = soTheNhom.get(g) ?? soTheKeTiep(daDanh, 'the', d.ngayCt)
+      if (!soTheNhom.has(g)) { soTheNhom.set(g, soThe); daDanh.push(soThe) }
+    }
     return { ...d, soThe, tienKy: ky > 0 ? Math.round(d.gt / ky) : 0 }
   })
   const chon = rows.filter(r => r.chon)
+  const soTheChon = soTheNhom.size
   const coCcdc = ds.some(d => d.loai === CCDC)
   const tatCa = ds.length > 0 && ds.every(d => d.chon)
 
@@ -148,20 +169,20 @@ export function GhiTangHangLoat({ rows: daCo, onDong }: { soDong: number; rows: 
     chon.forEach(r => daTao.add(r.key))
     // Ghi số thẻ vào phiếu chi gốc để phiếu hiện dòng Thẻ chi phí (T168, T421)
     const theoPhieu = new Map<string, string[]>()
-    chon.forEach(r => { if (r._goc) theoPhieu.set(r._goc, [...(theoPhieu.get(r._goc) ?? []), r.soThe]) })
+    chon.forEach(r => { if (r._goc && !theoPhieu.get(r._goc)?.includes(r.soThe)) theoPhieu.set(r._goc, [...(theoPhieu.get(r._goc) ?? []), r.soThe]) })
     theoPhieu.forEach((so, goc) => { const m = goc.match(/^\/app\/(.+)\/([^/]+)$/); if (m) suaPhieu(m[1], m[2], { _theCp: so }) })
-    toast(`Đã ghi tăng ${chon.length} thẻ chi phí phân bổ`)
+    toast(`Đã ghi tăng ${soTheChon} thẻ chi phí phân bổ`)
     onDong()
   }
 
   return (
     <FormToanMan icon="phanbo" iconNet title="Ghi tăng thẻ chi phí phân bổ" onClose={onDong}
-      meta={<span className="muted">Danh sách lấy từ các phiếu chi{coTrongGoi('4.1.2', s.goi) ? ', hoá đơn mua hàng' : ''} có lý do chi phí chờ phân bổ chưa tạo thẻ.</span>}
+      meta={<span className="muted">Danh sách lấy từ các phiếu chi{coTrongGoi('4.1.2', s.goi) ? ', hoá đơn mua hàng' : ''} có lý do chi phí chờ phân bổ chưa tạo thẻ. Mỗi chứng từ một thẻ, mỗi dòng một mục chi tiết của thẻ.</span>}
       foot={(
         <>
           <button type="button" className="btn" onClick={onDong}>Huỷ</button>
           <span className="grow" />
-          <button type="button" className="btn pri" onClick={tao}>Tạo ({chon.length} thẻ)</button>
+          <button type="button" className="btn pri" onClick={tao}>Tạo ({soTheChon} thẻ)</button>
         </>
       )}>
       <section className="card bang-sua gt-hl">

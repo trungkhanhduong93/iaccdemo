@@ -1,9 +1,9 @@
 // Tạo thẻ bổ sung trên điện thoại (T827), như Ghi tăng bổ sung trên web: các khoản chi phí chờ phân bổ chưa có thẻ
-// (phiếu chi, hoá đơn mua hàng lý do Chi phí phân bổ nhiều kỳ, tới hết kỳ đang xem). Phiếu chi mỗi dòng một thẻ;
-// hoá đơn mua hàng nhiều dòng thành một thẻ nhiều mục (Loại thẻ, ngày phân bổ chung, mỗi mục một số tháng), như lưu hoá đơn rồi tạo thẻ.
+// (phiếu chi, hoá đơn mua hàng lý do Chi phí phân bổ nhiều kỳ, tới hết kỳ đang xem). Mỗi chứng từ gốc một thẻ, mỗi dòng một mục
+// (Loại thẻ, ngày phân bổ chung, mỗi mục một số tháng), như web (T828).
 import { useMemo, useState, type FC } from 'react'
 import { useSession } from '../../app/session'
-import { danhDauDaTao, useDongCho, type DongGoc } from '../../modules/ccdc/GhiTangHangLoat'
+import { danhDauDaTao, theCuaDong, useDongCho, type DongGoc } from '../../modules/ccdc/GhiTangHangLoat'
 import { loaiTheTheoGoi, soTheKeTiep } from '../../modules/ccdc/the-phan-bo'
 import { MAN_HDM } from '../../modules/mua-hang/hoa-don-mua'
 import { suaPhieu } from '../generic/daXoa'
@@ -25,12 +25,12 @@ export function useKhoanCho(ky: number): DongGoc[] {
   return ds.filter(d => thangCua(d.ngayCt) <= ky)
 }
 
-/** Gom khoản chờ thành thẻ: dòng của cùng một hoá đơn mua hàng chung một thẻ, còn lại mỗi dòng một thẻ */
+/** Gom khoản chờ thành thẻ: các dòng của cùng một chứng từ gốc chung một thẻ (T828) */
 function gomNhom(ds: DongGoc[], cnMacDinh: string, loaiCo: string[]): Nhom[] {
   const map = new Map<string, Nhom>()
   for (const d of ds) {
     const laHd = Boolean(d._goc?.startsWith(`/app/${MAN_HDM}/`))
-    const k = laHd ? d._goc! : d.key
+    const k = theCuaDong(d)
     const muc: Muc = { key: d.key, ten: d.tenCc || d.ten, gt: d.gt, ma: d.ma, dvt: d.dvt, sl: d.sl, ky: '' }
     const n = map.get(k)
     if (n) { n.muc.push(muc); continue }
@@ -129,7 +129,7 @@ export const MTaoTheBoSung: FC<{ ky: number; cnMacDinh: string; dsSoThe: string[
                 </button>
                 <div className="m-t825-ten">
                   {nhieu ? (
-                    <><b>{n.soCt}</b><span>Hoá đơn mua hàng · {n.ngayCt} · {n.muc.length} dòng</span></>
+                    <><b>{n.soCt}</b><span>{n.laHd ? 'Hoá đơn mua hàng · ' : ''}{n.ngayCt} · {n.muc.length} dòng</span></>
                   ) : (
                     <><b>{n.muc[0].ten}</b><span>{n.soCt} · {n.ngayCt}{n.muc[0].ma ? ` · Mã ${n.muc[0].ma}` : ''}</span></>
                   )}
