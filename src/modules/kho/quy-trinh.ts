@@ -4,7 +4,7 @@ import type { QuyTrinhDef } from '../types'
 export const quyTrinh: QuyTrinhDef = {
   ten: 'Nghiệp vụ kho',
   buoc: [
-    { ten: 'Nhập kho', chinh: { ten: 'Nhập khác', icon: 'filein', di: 'kho/5-1-1/moi' },
+    { ten: 'Nhập kho', chinh: { ten: 'Phiếu nhập kho', icon: 'filein', di: 'kho/5-1-1/moi' },
       tren: [{ ten: 'Phiếu mua hàng', icon: 'truck', di: 'mua-hang/4-1-1/moi' }],
       // Điều chuyển tách ba phiếu (T155): nhập từ cửa hàng khác, chuyển giữa các kho cùng cửa hàng; xuất sang cửa hàng khác ở bước Xuất kho
       // Nhập điều chuyển chỉ sinh từ phiếu xuất nên mở danh sách, không mở phiếu mới (T748)

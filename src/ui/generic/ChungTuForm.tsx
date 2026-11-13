@@ -25,7 +25,7 @@ import { ChonDanhMuc } from '../ChonDanhMuc'
 import { heSoZoom } from '../zoom'
 import { BaoCaoDoRongCtx, St, Table, useDoRongCot } from '../Table'
 import { chuanKyHieuHd, chuanSoHd, dmy, fold, money, moneyD } from '../format'
-import { NGUON, dongCua, tkTheoLyDo, ttNghiepVu, type Dong } from './gen'
+import { NGUON, dongCua, nguoiTaoMau, tkTheoLyDo, ttNghiepVu, type Dong } from './gen'
 import { boO, nhomCua, theoLoai, TT_TIEN } from './nhom'
 import { BangKiemKe, COT_KK } from './BangKiemKe'
 import { MAN_DC, phieuDieuChinh, type LoaiDc } from '../../modules/kho/dieu-chinh'
@@ -119,7 +119,8 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
   const coTtXn = laSx || dcn === 'xdc' || dcn === 'ndc'   // có trạng thái Chờ nhập, Đã nhập, Đã huỷ
   const laNk = sc.code === '5.1.1'   // phiếu nhập khác: bỏ đối tượng, kho nhập ở đầu phiếu, chi tiết chỉ số lượng, đơn giá, thành tiền (T737)
   const laXh = sc.code === '5.1.2-3' || sc.code === '5.1.2-4'   // phiếu xuất huỷ (T741), xuất khác (T745) như nhập khác, kho xuất ở đầu phiếu, chi tiết Giá vốn, Tiền vốn
-  const khoGon = laNk || laXh   // một kho ở đầu phiếu, bỏ đối tượng, bỏ thuế
+  const nhanNv = laNk ? 'Người thực hiện' : 'Nhân viên thực hiện'   // Nhập kho ghi Người thực hiện (T818)
+  const khoGon = laNk || laXh  // một kho ở đầu phiếu, bỏ đối tượng, bỏ thuế
   const giaVon = laXh || laDc   // xuất huỷ, xuất khác, xuất và nhập điều chỉnh: Đơn giá, Thành tiền gọi là Giá vốn, Tiền vốn (T741, T747)
   const gonDau = laKk || laDc || laSx || laDcn || khoGon    // đầu phiếu gọn: Kho, Nhân viên thực hiện; Ghi chú
   // Phiếu điều chỉnh (T131), nhập khác (T737), xuất huỷ (T741): không có thuế; gói Free không hiện giá trị phiếu điều chỉnh (đơn giá, thành tiền, tổng tiền)
@@ -196,7 +197,8 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
   const [doiTuong, setDoiTuong] = useState(r0?.doiTuong ? String(r0.doiTuong) : traTu?.doiTuong || (moi && sp.get('dt')) || (cfg.doiTuong === 'ncc' ? NCC[0].ten : cfg.doiTuong === 'kh' ? KHACH[0].ten : ''))
   const [dienGiai, setDienGiai] = useState(r0?.dienGiai ? String(r0.dienGiai) : traTu ? nhanTra : cfg.dienGiai[0])
   const [nguoiGiao, setNguoiGiao] = useState(luuCu('nguoiGiao') ?? nv?.nguoi ?? NHAN_VIEN[0].ten)
-  const [nhanVien, setNhanVien] = useState(luuCu('nhanVien') ?? NHAN_VIEN[0].ten)
+  // Nhập kho (T818): phiếu mẫu lấy người tạo làm Người thực hiện, khớp cột danh sách
+  const [nhanVien, setNhanVien] = useState(luuCu('nhanVien') ?? (laNk && r0?.so ? nguoiTaoMau(r0.so) : NHAN_VIEN[0].ten))
   const [diaChi, setDiaChi] = useState(luuCu('diaChi') ?? traTu?.diaChi ?? nv?.dc ?? '45 Lê Thánh Tôn, Bến Nghé, Quận 1, TP.HCM')
   const [mst, setMst] = useState(luuCu('mst') ?? traTu?.mst ?? nv?.mst ?? '0319880101')
   const [soHd, setSoHd] = useState(luuCu('soHd') ?? nv?.soHd ?? '0012345')
@@ -831,7 +833,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
   const hienChan = (k: string) => !anCot.includes(`chan:${k}`)
   const muaBan = nhom === 'mua' || nhom === 'ban'
   const nhanNguoi = nhom === 'cq' ? 'Người thực hiện' : laTien || muaBan ? 'Người giao dịch' : 'Người giao / nhận'   // mua, bán ghi Người giao dịch (T90)
-  const dsDau: [string, string][] = gonDau ? [...(laDcn ? [] : [['nhanVien', 'Nhân viên thực hiện'] as [string, string]]), ['ghiChu', 'Ghi chú']] : [
+  const dsDau: [string, string][] = gonDau ? [...(laDcn ? [] : [['nhanVien', nhanNv] as [string, string]]), ['ghiChu', 'Ghi chú']] : [
     ['nguoi', nhanNguoi],
     ...(nhom !== 'cq' ? [['diaChi', 'Địa chỉ'] as [string, string]] : []),
     ...(!laTien && !muaBan ? [['nhanVien', 'Nhân viên thực hiện'] as [string, string]] : []),
@@ -1394,7 +1396,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
                   </div>
                   {hienDau('nhanVien') && (
                     <div className="f" style={{ flex: 1 }}>
-                      <label>Nhân viên thực hiện</label>
+                      <label>{nhanNv}</label>
                       {suaTtc ? (
                         <ChonDanhMuc dm="nv" nhan="nhân viên" value={nhanVien} onChange={setNhanVien}
                           ds={NHAN_VIEN.map(n => ({ v: n.ten, t: `${n.ten} (${n.bp})` }))} />

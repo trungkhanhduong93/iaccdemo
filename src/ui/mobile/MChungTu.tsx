@@ -508,7 +508,7 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
             className={`m-tc-tab-btn${isNk ? ' on' : ''}`}
             onClick={() => nav('/app/kho/5-1-1')}
           >
-            Nhập khác
+            Nhập kho
           </button>
           <button
             type="button"

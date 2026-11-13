@@ -3,6 +3,13 @@ import type { Row, VoucherCfg } from '../../modules/types'
 import { CUA_HANG, HANG, HOM_NAY, KHACH, KHOAN_MUC, NCC, NHAN_VIEN, NVL } from '../../data/mock'
 import { between, dmy, fold, k, pad, pick, rng } from '../format'
 
+/** Nhân viên tạo phiếu mẫu nhập tay (T132): lượt rng thứ hai của `tao-<số phiếu>`, lượt đầu là số phút sau giờ chứng từ.
+ *  Phiếu Nhập kho dùng làm Người thực hiện ở danh sách và form (T818) */
+export function nguoiTaoMau(so: unknown, x = rng(`tao-${so}`)): string {
+  const ds = NHAN_VIEN.slice(0, 4).map(n => n.ten)
+  return ds[Math.floor(x() * ds.length)]
+}
+
 export function doiTuongDs(kind: VoucherCfg['doiTuong']): { ma: string; ten: string }[] {
   if (kind === 'kh') return KHACH
   if (kind === 'ncc') return NCC
