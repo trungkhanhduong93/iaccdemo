@@ -121,8 +121,8 @@ export function BangSua({
   const nhanGia = giaVon ? 'Giá vốn' : 'Đơn giá', nhanTien = giaVon ? 'Tiền vốn' : 'Thành tiền'
   const hang = cfg.dong === 'hang' || cfg.dong === 'nvl'
   const tienDong = cfg.dong === 'tien'
-  // Hoá đơn mua hàng không qua kho (T821): dòng chọn mã hàng hoặc bỏ trống, gõ tên hàng hoá hoặc diễn giải
-  const nhanTen = cfg.khongKho ? 'Tên hàng hoá/Diễn giải' : hang ? 'Tên hàng hoá, dịch vụ' : 'Diễn giải'
+  // Hoá đơn mua hàng không qua kho (T821): dòng chọn mã hàng hoặc bỏ trống, gõ diễn giải
+  const nhanTen = cfg.khongKho ? 'Diễn giải' : hang ? 'Tên hàng hoá, dịch vụ' : 'Diễn giải'
   // Cột người dùng đã ẩn qua Tuỳ chỉnh giao diện phiếu
   const hien = (k: string) => !an.includes(k)
   coKho = coKho && hien('kho')
@@ -497,7 +497,7 @@ export function BangSua({
                     type="text"
                     className="inp sm"
                     value={d.ten}
-                    placeholder={cfg.khongKho ? 'Tên hàng hoá hoặc diễn giải' : hang ? 'Tên hàng' : 'Diễn giải'}
+                    placeholder={cfg.khongKho ? 'Diễn giải' : hang ? 'Tên hàng' : 'Diễn giải'}
                     onChange={e => capNhat(i, { ten: e.target.value })}
                   />
                 </td>}
