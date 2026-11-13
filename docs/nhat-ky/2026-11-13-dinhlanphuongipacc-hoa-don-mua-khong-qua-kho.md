@@ -6,7 +6,7 @@
 
 ## Đã làm
 
-- `app/plan.ts`: mở mã 4.1.2 Hoá đơn mua hàng cho cả 3 gói (trước chỉ gói Pro).
+- `app/plan.ts`: mở mã 4.1.2 Hoá đơn mua hàng cho gói Plus, Pro (trước chỉ gói Pro), dinhlanphuongipacc chốt.
 - `mua-hang/hoa-don-mua.ts` (mới): cấu hình phiếu HDM (`khongKho: true`), 8 kiểu hoá đơn mẫu (tiền điện, sửa chữa, nồi inox chờ phân bổ...), dòng không mã hàng, nhà cung cấp hợp khoản chi; hàm `hoaDonMuaChiPhiThang` lấy hoá đơn có lý do Là chi phí trong tháng.
 - `mua-hang/index.ts`: màn 4.1.2 dùng cấu hình mới, tiêu đề phụ `phu: 'Mua hàng không qua kho'`.
 - `modules/types.ts`: thêm `ScreenDef.phu` (tiêu đề phụ), `VoucherCfg.khongKho`.
@@ -21,7 +21,7 @@
 ## Đã kiểm
 
 - `npm run typecheck`, `npm run build`: không lỗi.
-- Trình duyệt gói Standard: tab "Hoá đơn mua hàng · Mua hàng không qua kho"; danh sách có cột Lý do, không cột Kho; form có ô Lý do nghiệp vụ, không có kho; chọn "Chi phí chờ phân bổ" hiện nhắc, lưu xong hộp báo rồi mở Thẻ chi phí phân bổ điền sẵn số HDM.
+- Trình duyệt gói Standard (trước khi đổi sang chỉ Plus, Pro): tab "Hoá đơn mua hàng · Mua hàng không qua kho"; danh sách có cột Lý do, không cột Kho; form có ô Lý do nghiệp vụ, không có kho; chọn "Chi phí chờ phân bổ" hiện nhắc, lưu xong hộp báo rồi mở Thẻ chi phí phân bổ điền sẵn số HDM.
 - Sổ chi phí tháng 10 và chi phí trang chủ cộng 3 hoá đơn mẫu có lý do Là chi phí, bỏ hoá đơn chờ phân bổ.
 - `python tools/kiem_tra.py --nhanh` sau khi xong: `Không có lỗi.`
 - `python tools/kiem_tra.py` bản đầy đủ chạy trước khi xong việc báo 2 lỗi không dính việc này: "[PL] thanh tab ... chỉ có 84 màn" (ngưỡng 110 cũ) và tour Sổ quỹ quá thời gian bấm.
@@ -30,7 +30,7 @@
 ## Dở dang, việc tiếp theo
 
 - Không.
-- Chưa hỏi Trum: hoá đơn mua mở cho cả gói Standard (gói Standard chưa có Trả lại hàng mua). Muốn chỉ Plus, Pro thì sửa dòng `'4.1.2'` trong `THEO_ROADMAP` của `app/plan.ts`; phần cộng chi phí tự theo gói.
+- Gói mở màn ở dòng `'4.1.2'` trong `THEO_ROADMAP` của `app/plan.ts`; phần cộng chi phí (trang chủ, KQKD) tự theo gói.
 - Chi phí lấy tiền trước thuế GTGT (thuế coi như được khấu trừ). Hộ kinh doanh không khấu trừ thì có thể phải cộng cả thuế, cần Trum chốt.
 - Điện thoại chưa có màn lập Hoá đơn mua hàng riêng (người dùng chỉ yêu cầu web).
 - `python tools/xuat_bao_cao_he_thong.py` lỗi `No module named 'build_present'` như các phiên trước, chưa làm mới file Excel.
