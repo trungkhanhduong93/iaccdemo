@@ -9,6 +9,7 @@ import { datLocDaXem } from '../../ui/bao-cao/tuyChinhBC'
 import { tenQuyTm, tenTkNh } from './danh-sach'
 import { between, pad, rng } from '../../ui/format'
 import { DS_TSCD } from '../tscd/data'
+import { hoaDonMuaChiPhiThang } from '../mua-hang/hoa-don-mua'
 
 // ── 2.2.6 Sổ chi tiết tiền vay (TK 341) ──
 const cols226: Col[] = [
@@ -749,6 +750,12 @@ function rows1043(thang: number): Row[] {
       nhomCp: x.nhomCp,
       cp: x.cp,
     }
+  })
+  // Hoá đơn mua hàng không qua kho có lý do là chi phí (T821): số tiền trước thuế, lý do của hoá đơn
+  hoaDonMuaChiPhiThang(thang).forEach(r => {
+    const cp = Number(r.tien ?? 0)
+    tongCp += cp
+    rows.push({ so: String(r.so), ngay: String(r.ngay).split(' ')[0], nd: String(r.dienGiai ?? ''), lyDo: String(r._lyDo), kmcp: String(r.dienGiai ?? ''), nhomCp: 'Hoá đơn mua hàng', cp })
   })
   // Lý do Chi phí phân bổ nhiều kỳ không lấy phiếu chi, lấy số phân bổ từng tháng của thẻ chi phí, ghi ngày cuối tháng (T700)
   const cuoi = `${pad(new Date(2026, thang, 0).getDate())}/${pad(thang)}/2026`

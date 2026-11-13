@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import type { Col, Row, ScreenProps } from '../types'
 import { tenMan } from '../../app/registry'
 import { useSession } from '../../app/session'
-import { kieuGhiSo, type Goi } from '../../app/plan'
+import { coTrongGoi, kieuGhiSo, type Goi } from '../../app/plan'
 import type { CheDo } from '../../app/che-do'
 import { CUA_HANG, chiPhiTheoLyDo, chiPhiThang, daysOf, kqkd, phanBoTheoLoai, tongKy } from '../../data/mock'
 import { Note, PageHead } from '../../ui/Page'
@@ -16,6 +16,7 @@ import { dongB01, dongB02 } from '../bao-cao/tt58'
 import type { Session } from '../../app/session'
 import { nvlKy } from '../home/chi-phi-nvl'
 import { chiaTheo, theoDon } from '../ban-hang/ChungTuBanHang'
+import { hoaDonMuaChiPhiThang } from '../mua-hang/hoa-don-mua'
 
 // Tháng ngoài ô chọn kỳ (vd tháng 7 mở từ trang chủ Free, T617) ghi theo mẫu chung
 const kyTen = (ky: string) => KY_CHON.find(x => x[0] === ky)?.[1] ?? `Tháng ${ky}/2026`
@@ -50,7 +51,12 @@ export function dongKqkd(cd: CheDo, thang: number, goi?: Goi, s?: Session) {
   // bỏ thu nhập, chi phí khác khỏi bảng và lợi nhuận, nên lợi nhuận lệch Tổng quan đúng bằng khoản khác (PhuongXT chốt 14/10/2026)
   if (goi === 'S') {   // doanh nghiệp gói Standard chạy TT58 cũng dùng bản này (T632)
     const pb = q.cp.ccdc + q.cp.khauHao
-    const cpThang = q.cpQlkd + q.cpTc - q.dtTc - pb
+    // Hoá đơn mua hàng không qua kho có lý do là chi phí (T821) cộng vào Chi phí trong tháng, mỗi lý do một dòng con như phiếu chi
+    const hdm = new Map<string, number>()
+    if (coTrongGoi('4.1.2', goi)) hoaDonMuaChiPhiThang(thang).forEach(r => hdm.set(String(r._lyDo), (hdm.get(String(r._lyDo)) ?? 0) + Number(r.tien ?? 0)))
+    const cpLy = new Map(chiPhiTheoLyDo(thang, 2026))
+    hdm.forEach((v, ly) => cpLy.set(ly, (cpLy.get(ly) ?? 0) + v))
+    const cpThang = q.cpQlkd + q.cpTc - q.dtTc - pb + [...hdm.values()].reduce((a, v) => a + v, 0)
     // T318: dạng chi tiết, mỗi kênh bán, lý do chi, loại phân bổ một dòng con; dòng con không phát sinh ẩn ở KetQuaKinhDoanh
     // Chi phí NVL cộng từng cửa hàng theo cách tính của cửa hàng (T232); chưa có phiên thì theo giá vốn
     const nvl = s ? nvlKy(s, [], thang).tien : q.gv
@@ -61,7 +67,7 @@ export function dongKqkd(cd: CheDo, thang: number, goi?: Goi, s?: Session) {
       ...dongCon('dt', dtTheoKenh(thang, q.dtThuan), '/app/ban-hang/3-1-1'),
       { ct: 'Chi phí NVL', v: nvl, _b: 1, _drill: `/app/trang-chu/chi-phi-nvl?thang=${thang}` },
       { ct: 'Lãi gộp', v: lnGop, _b: 1 },
-      { ct: 'Chi phí trong tháng', v: cpThang, _b: 1 }, ...dongCon('cp', chiPhiTheoLyDo(thang, 2026), '/app/tien/2-1-1'),
+      { ct: 'Chi phí trong tháng', v: cpThang, _b: 1 }, ...dongCon('cp', [...cpLy], '/app/tien/2-1-1'),
       { ct: 'Chi phí phân bổ hàng tháng', v: pb, _b: 1 }, ...dongCon('pb', phanBoTheoLoai(thang, 2026), '/app/ccdc/8-1-1'),
       { ct: 'Lợi nhuận trước thuế', v: lnGop - cpThang - pb, _t: 1 },
     ]

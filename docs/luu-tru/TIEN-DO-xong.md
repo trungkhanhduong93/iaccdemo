@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T821 | Mua hàng, tab Hoá đơn mua hàng (Mua hàng không qua kho) mở mọi gói: như phiếu mua nhưng không có kho, có ô Lý do nghiệp vụ lấy từ lý do chi; lý do là chi phí vào Sổ chi phí, KQKD; lý do phân bổ nhiều kỳ lưu xong báo tạo thẻ; dòng chọn mã hàng hoặc gõ tên tự do; không có Trả hàng | dinhlanphuongipacc | Xong | Web xong. Mở cả gói Standard, chưa hỏi Trum. Xem [nhật ký](nhat-ky/2026-11-13-dinhlanphuongipacc-hoa-don-mua-khong-qua-kho.md) |
 | T819 | Điện thoại, xem phiếu mua hàng: menu ba chấm có Trả hàng, mở lập phiếu trả lại hàng mua điền sẵn từ phiếu mua, không thêm hàng, số lượng không quá số đã mua, như web (T727, T816) | dinhlanphuongipacc | Xong | Sửa `MXemPhieu.tsx`, `MLapPhieu.tsx`, export `TraTu` ở `ChungTuForm.tsx`. Phiếu trả lại chọn Đã thanh toán vẫn lập phiếu chi như phiếu mua (có từ trước, chưa sửa) |
 | T820 | Điện thoại, xem phiếu mua hàng: tab Hạch toán chỉ hiện ở gói Pro (chế độ Nợ/Có) như bản web, gói Plus và thấp hơn ẩn | dinhlanphuongipacc | Xong | Đổi điều kiện tab ở `MXemPhieu.tsx` thành chỉ chế độ Nợ/Có. Phiếu thu chi điện thoại gói Plus còn tab Bút toán, khối Hạch toán: thuộc T734 |
 | T817 | Phiếu mua hàng: ô Chi phí mua hàng ở từng dòng gõ được, ô tổng ở dải đáy tự bằng tổng các dòng; gõ tổng rồi bấm Phân bổ vẫn chia như cũ; bỏ chữ "Chưa phân bổ" (tiếp T757) | dinhlanphuongipacc | 13/11/2026 | `2026-11-13-dinhlanphuongipacc-go-chi-phi-mua-tung-dong.md` |

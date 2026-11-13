@@ -11,7 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T821 | Mua hàng, tab Hoá đơn mua hàng (Mua hàng không qua kho) mở mọi gói: như phiếu mua nhưng không có kho, có ô Lý do nghiệp vụ lấy từ lý do chi; lý do là chi phí vào Sổ chi phí, KQKD; lý do phân bổ nhiều kỳ lưu xong báo tạo thẻ; dòng chọn mã hàng hoặc gõ tên tự do; không có Trả hàng | dinhlanphuongipacc | Đang làm | `plan.ts`, `mua-hang/index.ts`, `nhom.ts`, `ChungTuForm.tsx`, `BangSua.tsx`, `home/chiPhiPhieu.ts`, `so-bo-sung.ts`, `BaoCaoTaiChinh.tsx`, `app.css` |
 | T818 | Kho, màn Nhập khác đổi tên Nhập kho (phiếu nhập kho thêm tay); cột Người tạo thành Người thực hiện; bỏ phiếu nhập thừa do kiểm kê khỏi danh sách, phiếu đó chỉ ở tab Kiểm kê, Nhập điều chỉnh | dinhlanphuongipacc | Đang làm | `kho/index.ts`, `kho/quy-trinh.ts`, `SidebarFlyout.tsx`, có thể `VoucherScreen.tsx` (cột Người thực hiện) |
 | T781 | Giảm thuế GTGT xét hiệu lực nghị quyết theo ngày của từng chứng từ, không theo ngày làm việc (`ptGiamHienHanh` dùng `HOM_NAY`) | | Chờ | Thấy lúc soát T780, `giam-thue.ts` |
 | T776 | Màn Tính giá vốn: sang trang 2 thì dòng "Cộng 51 dòng" mất đường kẻ dưới, dưới dòng tổng còn khoảng trống trong bảng, dưới khung bảng còn khoảng trống xám | | Chờ | Trum báo lúc làm T774, ảnh chụp ở trang 2, tháng 10/2026 |

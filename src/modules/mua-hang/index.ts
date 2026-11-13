@@ -4,6 +4,7 @@ import { tuExcel } from '../types'
 import { quyTrinh } from './quy-trinh'
 import { phieuGocCoTt } from '../tien/tt-mau'
 import { colsCongNo, rowsCongNoNhom } from '../bao-cao/cong-no'
+import { HOA_DON_MUA, hoaDonMuaMau } from './hoa-don-mua'
 import { PHIEU_MUA, bangKeMuaTheoHang, chiTietMua, chiTietNhap, muaHangTheoNgay, tongHopMua, tongHopNhap } from './bao-cao'
 
 const MUA = PHIEU_MUA.dienGiai
@@ -17,8 +18,8 @@ const muaHang: ModuleDef = {
   quyTrinh,
   screens: tuExcel(3, {
     '4.1.1': { voucher: { ...PHIEU_MUA, rowsMau: () => phieuGocCoTt('4.1.1') } },   // phiếu mẫu đã trả có phiếu chi tham chiếu (T586)
-    '4.1.2': { voucher: { prefix: 'HDM', doiTuong: 'ncc', nhan: 'Nhà cung cấp', them: 'Thêm hoá đơn mua hàng', dong: 'nvl', tien: [0, 0], nguon: 'HĐ', dienGiai: MUA,
-      noCo: [['152', '331', 'Giá trị hàng mua'], ['1331', '331', 'Thuế GTGT được khấu trừ']] } },
+    // Hoá đơn mua hàng, mua hàng không qua kho (T821): dòng chọn mã hàng hoặc gõ diễn giải, Lý do nghiệp vụ thay kho, không có Trả hàng
+    '4.1.2': { phu: 'Mua hàng không qua kho', voucher: { ...HOA_DON_MUA, rowsMau: hoaDonMuaMau } },
     '4.1.3': { voucher: { prefix: 'MSC', doiTuong: 'ncc', nhan: 'Nhà cung cấp', them: 'Thêm phiếu mua qua sơ chế', dong: 'nvl', tien: [0, 0], nguon: 'excel',
       dienGiai: ['Mua thịt bò nguyên tảng, sơ chế thành thịt tái', 'Mua tôm sú, sơ chế bóc vỏ'], noCo: [['152', '331', 'Nhập kho nguyên liệu đã sơ chế'], ['1331', '331', 'Thuế GTGT được khấu trừ']] } },
     '4.1.4': { voucher: { prefix: 'TLN', doiTuong: 'ncc', nhan: 'Nhà cung cấp', them: 'Thêm phiếu trả lại hàng mua', dong: 'nvl', tien: [0, 0], nguon: 'excel',

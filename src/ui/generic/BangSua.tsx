@@ -121,6 +121,8 @@ export function BangSua({
   const nhanGia = giaVon ? 'Giá vốn' : 'Đơn giá', nhanTien = giaVon ? 'Tiền vốn' : 'Thành tiền'
   const hang = cfg.dong === 'hang' || cfg.dong === 'nvl'
   const tienDong = cfg.dong === 'tien'
+  // Hoá đơn mua hàng không qua kho (T821): dòng chọn mã hàng hoặc bỏ trống, gõ tên hàng hoá hoặc diễn giải
+  const nhanTen = cfg.khongKho ? 'Tên hàng hoá/Diễn giải' : hang ? 'Tên hàng hoá, dịch vụ' : 'Diễn giải'
   // Cột người dùng đã ẩn qua Tuỳ chỉnh giao diện phiếu
   const hien = (k: string) => !an.includes(k)
   coKho = coKho && hien('kho')
@@ -226,7 +228,7 @@ export function BangSua({
     if (!onChange) return
     const mauHang = danhMucHang[0]
     const tkMoi = tkTheoLy && lyDo?.macDinh ? tkTheoLy(lyDo.macDinh) : undefined
-    const dongMoi: Dong = hang && mauHang ? {
+    const dongMoi: Dong = hang && mauHang && !cfg.khongKho ? {   // hoá đơn mua không qua kho thêm dòng trống mã, gõ diễn giải (T821)
       ma: mauHang.ma,
       ten: mauHang.ten,
       dvt: mauHang.dvt,
@@ -292,7 +294,7 @@ export function BangSua({
   const giamDong = (d: Dong) => giamThue ? giamThue(tienSauCk(d), d.ma) : 0
   // [khoá, tên cột, có hiện, chữ của dòng, số của dòng (cột số)]
   const cotLoc: [string, string, boolean, (d: Dong) => string, ((d: Dong) => number)?][] = [
-    ['ma', 'Mã hàng', maCot, d => d.ma ?? ''], ['ten', hang ? 'Tên hàng hoá, dịch vụ' : 'Diễn giải', true, d => d.ten ?? ''],
+    ['ma', 'Mã hàng', maCot, d => d.ma ?? ''], ['ten', nhanTen, true, d => d.ten ?? ''],
     ['kho', 'Kho', coKho, d => d.kho || khoMacDinh], ['dvt', 'ĐVT', dvtCot, d => d.dvt ?? ''],
     ['lo', 'Số lô', loCot, d => d.lo ?? ''], ['hsd', 'Hạn dùng', hsdCot, d => d.hsd ?? ''],
     ['tkNo', nhanTk[0], coTk, d => d.tkNo ?? ''], ['tkCo', nhanTk[1], coTk, d => d.tkCo ?? ''],
@@ -336,7 +338,7 @@ export function BangSua({
             <tr>
               <th className="dim" style={{ width: 40 }}>#</th>
               {maCot && <ThKeo k="ma" className="code" w={90} doRong={doRong}>Mã hàng</ThKeo>}
-              <ThKeo k="ten" doRong={doRong}>{hang ? 'Tên hàng hoá, dịch vụ' : 'Diễn giải'}</ThKeo>
+              <ThKeo k="ten" doRong={doRong}>{nhanTen}</ThKeo>
               {coKho && <ThKeo k="kho" w={140} doRong={doRong}>Kho</ThKeo>}
               {dvtCot && <ThKeo k="dvt" w={60} doRong={doRong}>ĐVT</ThKeo>}
               {loCot && <ThKeo k="lo" w={100} doRong={doRong}>Số lô</ThKeo>}
@@ -443,7 +445,7 @@ export function BangSua({
             <tr>
               <th className="dim" style={{ width: 36 }}>#</th>
               {maCot && <ThKeo k="ma" w={120} doRong={doRong}>Mã hàng</ThKeo>}
-              <ThKeo k="ten" minW={180} doRong={doRong}>{hang ? 'Tên hàng hoá, dịch vụ' : 'Diễn giải'}</ThKeo>
+              <ThKeo k="ten" minW={180} doRong={doRong}>{nhanTen}</ThKeo>
               {coKho && <ThKeo k="kho" w={140} doRong={doRong}>Kho</ThKeo>}
               {dvtCot && <ThKeo k="dvt" w={65} doRong={doRong}>ĐVT</ThKeo>}
               {loCot && <ThKeo k="lo" w={100} doRong={doRong}>Số lô</ThKeo>}
@@ -495,7 +497,7 @@ export function BangSua({
                     type="text"
                     className="inp sm"
                     value={d.ten}
-                    placeholder={hang ? 'Tên hàng' : 'Diễn giải'}
+                    placeholder={cfg.khongKho ? 'Tên hàng hoá hoặc diễn giải' : hang ? 'Tên hàng' : 'Diễn giải'}
                     onChange={e => capNhat(i, { ten: e.target.value })}
                   />
                 </td>}

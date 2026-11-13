@@ -55,10 +55,10 @@ export function MChiPhiThang(_: ScreenProps) {
               {dangMo && (
                 <div className="m-standard-cpt-phieu">
                   {x.phieu.map(p => (
-                    <div key={p.id} className="m-standard-cpt-phieu-dong">
+                    <div key={`${p.man ?? ''}${p.id}`} className="m-standard-cpt-phieu-dong">
                       <div className="m-standard-cpt-phieu-trai">
                         <b>{p.so}</b>
-                        <span>{p.ngay} · {p.nhom === 'nh' ? 'Ngân hàng' : 'Tiền mặt'}{cn ? '' : ` · ${p.cn}`}</span>
+                        <span>{p.ngay} · {p.nhom === 'cn' ? 'Hoá đơn mua' : p.nhom === 'nh' ? 'Ngân hàng' : 'Tiền mặt'}{cn ? '' : ` · ${p.cn}`}</span>
                         <span>{p.dienGiai}</span>
                       </div>
                       <b className="m-standard-cpt-phieu-tien">{moneyD(p.tien)}</b>

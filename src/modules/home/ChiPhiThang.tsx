@@ -60,8 +60,8 @@ export function ChiPhiThang(_: ScreenProps) {
                     </tr></thead>
                     <tbody>
                       {x.phieu.map(p => (
-                        <tr key={p.id}>
-                          <td>{p.ngay}</td><td className="code"><Link className="ds-link-so" to={`/app/tien/2-1-1/${p.id}`} title="Mở chứng từ">{p.so}</Link></td><td>{p.nhom === 'nh' ? 'Chi ngân hàng' : 'Chi tiền mặt'}</td>
+                        <tr key={`${p.man ?? ''}${p.id}`}>
+                          <td>{p.ngay}</td><td className="code"><Link className="ds-link-so" to={`/app/${p.man ?? 'tien/2-1-1'}/${p.id}`} title="Mở chứng từ">{p.so}</Link></td><td>{p.nhom === 'cn' ? 'Hoá đơn mua hàng' : p.nhom === 'nh' ? 'Chi ngân hàng' : 'Chi tiền mặt'}</td>
                           {!cn && <td>{p.cn}</td>}<td>{p.doiTuong}</td><td>{p.dienGiai}</td><td className="num">{moneyD(p.tien)}</td>
                         </tr>
                       ))}

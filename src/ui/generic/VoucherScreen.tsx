@@ -325,7 +325,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
       ...r,
       kyHieuHd: coHd ? String(r._kyHieuHd ?? nv.kyHieuHd) : '', soHd: coHd ? String(r._soHd ?? nv.soHd) : '', ngayHd: coHd ? String(r._ngayHd ?? nv.ngayHd) : '',
       hanTt: String(r._hanTt ?? nv.hanTt), daTra, conNo: Math.max(0, (Number(r.tong) || 0) - daTra),
-      kho: coKhoDs && !khoDong ? khoDau : '', _khoDs, _maHang: dsDong.map(d => d.ma).filter(Boolean),
+      kho: coKhoDs && !khoDong ? khoDau : '', _khoDs, ...(cfg.khongKho ? { lyDo: String(r._lyDo ?? '') } : {}),   // Hoá đơn mua hàng có Lý do nghiệp vụ (T821) _maHang: dsDong.map(d => d.ma).filter(Boolean),
       tenHang: tomTatTenHang(dsDong.map(d => d.ten)), _tenHangDu: [...new Set(dsDong.map(d => d.ten).filter(Boolean))].join(', '),   // T286
     }
   }), [rowsGoc, nhom, cfg, sc, coKhoDs, khoDong, mod.key, laNk])
@@ -381,7 +381,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
     <OChonMot ds={ds} value={nhap[k]} onChange={v => dat(k, v)} nhan={ten} goiY={`Chọn ${ten.toLowerCase()}`} />
   )
   // Lọc Lý do nghiệp vụ ở danh sách Thu, chi tiền (T283): lựa chọn lấy từ lý do của chính các phiếu; chuyển quỹ không có lý do
-  const dsLyDo = useMemo(() => mod.key === 'tien' ? [...new Set(rows.map(r => String(r.lyDo ?? '')).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'vi')) : [], [rows, mod.key])
+  const dsLyDo = useMemo(() => mod.key === 'tien' || cfg.khongKho ? [...new Set(rows.map(r => String(r.lyDo ?? '')).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'vi')) : [], [rows, mod.key, cfg.khongKho])
   const coLyDo = dsLyDo.length > 0
   const oLoc: OLocDef[] = [
     { k: 'thoiGian', ten: 'Thời gian', o: <ChonKhoangNgay value={nhap.thoiGian} onChange={k => dat('thoiGian', k)} /> },
@@ -497,7 +497,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
     // Mua, bán (T286): Diễn giải là tên hàng trong phiếu, diễn giải đầu phiếu đổi tên Ghi chú
     ...(muaBan ? [{ k: 'tenHang', t: 'Diễn giải', w: 260, r: (r: Row) => <span title={String(r._tenHangDu ?? '')}>{r.tenHang}</span> } as Col] : []),
     { k: 'dienGiai', t: cfg.kiemKe || cfg.dieuChinh || muaBan || laNk ? 'Ghi chú' : 'Diễn giải' },   // phiếu kiểm kê, nhập khác ghi Ghi chú như đầu phiếu (T124, T740)
-    ...(mod.key === 'tien' ? [{ k: 'lyDo', t: 'Lý do', w: 170 } as Col] : []),   // T96; tên cột ngắn Lý do (T168)
+    ...(mod.key === 'tien' || cfg.khongKho ? [{ k: 'lyDo', t: 'Lý do', w: 170 } as Col] : []),   // Hoá đơn mua hàng cũng có cột Lý do (T821)   // T96; tên cột ngắn Lý do (T168)
     ...(cfg.doiTuong !== 'none' && !laNk ? [{ k: 'doiTuong', t: cfg.nhan ?? 'Đối tượng' } as Col] : []),
     // Đang chọn một cửa hàng trên thanh trên thì cột cửa hàng thừa
     ...(cnChon ? [] : [{ k: 'cn', t: 'Cửa hàng', cls: 'dim', w: 130 } as Col]),

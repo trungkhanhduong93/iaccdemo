@@ -175,6 +175,7 @@ export function tkTheoLyDo(loai: string, ly: string): { tkNo?: string; tkCo?: st
   if (loai === 'chi') return { tkNo: du, tkCo: '1111' }
   if (loai === 'bc' || loai === 'nhthu') return { tkNo: '1121', tkCo: du }
   if (loai === 'unc' || loai === 'nhchi') return { tkNo: du, tkCo: '1121' }
+  if (loai === 'mua') return { tkNo: du, tkCo: '331' }   // Hoá đơn mua hàng không qua kho: Nợ TK theo lý do, Có công nợ nhà cung cấp (T821)
   return {}
 }
 

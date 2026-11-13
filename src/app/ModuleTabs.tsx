@@ -80,6 +80,7 @@ export function ModuleTabs({ mod }: { mod: ModuleDef }) {
         title={ok ? undefined : `Có ở gói ${GOI[minGoi(ma!)].ten}`}>
         {sc.kind === 'quytrinh' && <Icon n="flow" className="ic sm" />}
         {nhanTab(sc, s.goi)}
+        {sc.phu && <small className="mtabs-phu">{sc.phu}</small>}   {/* tiêu đề phụ, vd Hoá đơn mua hàng (T821) */}
         {!ok && ma && <Pk g={minGoi(ma)} o />}
       </Link>
     )
@@ -98,7 +99,7 @@ export function ModuleTabs({ mod }: { mod: ModuleDef }) {
               const iconName = sc.icon ?? (sc.kind === 'voucher' ? 'doc' : sc.kind === 'catalog' ? 'folder' : sc.kind === 'tool' ? 'play' : mod.icon)
               return (
                 <MenuItem key={sc.slug} to={duongDan(mod, sc)} icon={<ONen n={iconName} kieu="nhat" co="sm" />}
-                  lock={!ok} right={!ok && ma ? <Pk g={minGoi(ma)} o /> : undefined}>{nhanTab(sc, s.goi)}</MenuItem>
+                  lock={!ok} right={!ok && ma ? <Pk g={minGoi(ma)} o /> : undefined}>{nhanTab(sc, s.goi)}{sc.phu && <small className="mtabs-phu">{sc.phu}</small>}</MenuItem>
               )
             })}
           </Dropdown>
@@ -112,7 +113,7 @@ export function ModuleTabs({ mod }: { mod: ModuleDef }) {
         {[...giua, ...(bc ? [bc] : [])].map(sc => {
           const ma = maKhoa(sc)
           return (
-            <span key={sc.slug}>{sc.kind === 'quytrinh' && <Icon n="flow" className="ic sm" />}{nhanTab(sc, s.goi)}{!moDuoc(sc, s.goi) && ma && <Pk g={minGoi(ma)} o />}</span>
+            <span key={sc.slug}>{sc.kind === 'quytrinh' && <Icon n="flow" className="ic sm" />}{nhanTab(sc, s.goi)}{sc.phu && <small className="mtabs-phu">{sc.phu}</small>}{!moDuoc(sc, s.goi) && ma && <Pk g={minGoi(ma)} o />}</span>
           )
         })}
       </div>

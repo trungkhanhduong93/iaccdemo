@@ -156,7 +156,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
   const idSeed = row ? `${sc.code ?? sc.slug}-${row.id}` : 'moi'
   const dongGoc = useMemo(() => (
     lapHd ? dauDong((lapHd._dong as Dong[] | undefined) ?? [], loaiCt === 'HDDIEUCHINH' ? -1 : 1)   // điều chỉnh mặc định giảm, ghi âm (T787)
-    : moi ? traTu ? traTu.dong : (laSx || laDcn ? [] : cfg.dongPos ? [dongTuHang(HANG[0])] : dongCua(cfg, `mau-${loai?.k ?? ''}`).slice(0, 1)) : (row?._dong as Dong[] | undefined) ?? dongCua(cfg, idSeed)   // phiếu sản xuất mới chưa có dòng tới khi chọn kho, tham chiếu (T152)
+    : moi ? traTu ? traTu.dong : (laSx || laDcn ? [] : cfg.khongKho ? [{ ma: '', ten: '', dvt: '', sl: 1, gia: 0, tien: 0, ts: 8, thue: 0, ptCk: 0, ck: 0 }] : cfg.dongPos ? [dongTuHang(HANG[0])] : dongCua(cfg, `mau-${loai?.k ?? ''}`).slice(0, 1)) : (row?._dong as Dong[] | undefined) ?? dongCua(cfg, idSeed)   // phiếu sản xuất mới chưa có dòng tới khi chọn kho, tham chiếu (T152)
   ), [idSeed, loai?.k, moi])
 
   const [dsDong, setDsDong] = useState<Dong[]>(dongGoc)
@@ -211,8 +211,8 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
     setNgayHd(c => (r0?._hd || r0?._khachHd ? c : dmy(HOM_NAY)))
     setKyHieuHd(c => (r0?._khachHd ? c : kyHieuTheoCh(s, cuaHang)))
   }, [hdDienTu])   // eslint-disable-line react-hooks/exhaustive-deps
-  // Lý do thu, chi ở đầu phiếu (danh mục 1.16), chỉ có ở phân hệ tiền
-  const oLy = mod.key === 'tien' ? bo.a.find(o => o.k === 'ly') : undefined
+  // Lý do thu, chi ở đầu phiếu (danh mục 1.16): phân hệ tiền, Hoá đơn mua hàng không qua kho (Lý do nghiệp vụ, T821)
+  const oLy = mod.key === 'tien' || cfg.khongKho ? bo.a.find(o => o.k === 'ly') : undefined
   // Lý do mặc định khi thêm mới: theo mã lý do trên đường dẫn (?ly=mã lý do Chi phí chờ phân bổ, vd mở từ sơ đồ Chi phí phân bổ), không có thì đoán từ diễn giải
   const lyUrl = moi ? LY_DO.find(x => x.ma === sp.get('ly'))?.ten : undefined
   const lyGoc = (dg: string) => lyUrl && oLy?.ds?.includes(lyUrl) ? lyUrl : lyMacDinh(oLy?.ds ?? [], dg)
@@ -481,7 +481,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
   ]
   // Tiện ích Trả hàng ở phiếu mua có dòng hàng (T727): mở Thêm phiếu trả lại hàng mua điền sẵn từ phiếu này
   const manTra = timMan('mua-hang', '4-1-4').sc
-  const coTraHang = Boolean(row) && nhom === 'mua' && !traLai && cfg.dong === 'nvl' && Boolean(manTra) && moDuoc(manTra!, s.goi)
+  const coTraHang = Boolean(row) && nhom === 'mua' && !traLai && cfg.dong === 'nvl' && !cfg.khongKho && Boolean(manTra) && moDuoc(manTra!, s.goi)   // hoá đơn mua không qua kho không có Trả hàng (T821)
   // Chứng từ bán hàng lập tay (T815): Trả hàng mở Thêm hàng bán trả lại; trừ huỷ bán, hoá đơn điều chỉnh, hoá đơn đã bị thay thế
   const manTraBan = timMan('ban-hang', '3-1-4').sc
   const coTraBan = Boolean(row) && Boolean(hdDienTu) && (loaiCt === 'XBAN' || loaiCt === 'HDTHAYTHE') && row?.nguon !== 'FABi'
@@ -935,7 +935,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
           : dangSua ? <span className="fsf-tt sua">Đang chỉnh sửa <b>{soCt}</b></span>
             : <span className="fsf-tt xem">Chi tiết phiếu <b>{soCt}</b>{laHuyBan && ' · Do thay thế hoá đơn'}</span>
       )}
-      title={tenPhieu}
+      title={sc.phu ? <>{tenPhieu}<small className="fsf-phu">{sc.phu}</small></> : tenPhieu}   // tiêu đề phụ của màn (T821)
       trai={
         !moi && (
           <button

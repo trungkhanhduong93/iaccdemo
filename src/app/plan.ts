@@ -46,6 +46,7 @@ const THEO_ROADMAP: Record<string, Goi[]> = {
   // Kho chỉ còn Kiểm kê 5.1.10 và Báo cáo xuất nhập tồn 5.2.3; mở Mua hàng. PhuongXT chốt 09/10/2026 (T52)
   '5.2.4': ['PL', 'PR'],
   '4.1.1': ['S', 'PL', 'PR'],
+  '4.1.2': ['S', 'PL', 'PR'],   // Hoá đơn mua hàng (mua hàng không qua kho) mở mọi gói, dinhlanphuongipacc 13/11/2026 (T821)
   '4.2.1': ['S', 'PL', 'PR'],    // Chi tiết mua hàng mở cho gói Standard, PhuongXT chốt (T63)
   '4.2.2': ['PL', 'PR'],    // Tổng hợp mua hàng mở cho gói Standard (T63); gói Standard ẩn tạm, PhuongXT chốt 15/10/2026 (T251)
   // Bộ báo cáo hộ kinh doanh theo iFaster, Trum chốt 10/10/2026 (T97)

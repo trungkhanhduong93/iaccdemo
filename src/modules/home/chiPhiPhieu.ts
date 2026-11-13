@@ -3,16 +3,19 @@
 // (trừ Chi phí chờ phân bổ). Bấm từng lý do ở màn Chi phí hoạt động hiện ngay danh sách phiếu của lý do đó nên số luôn khớp
 import { useMemo } from 'react'
 import type { Session } from '../../app/session'
+import { coTrongGoi } from '../../app/plan'
 import tien from '../tien'
 import { CUA_HANG, LY_CHI_PHI } from '../../data/mock'
 import { gopLoai, lyDoThuChi } from '../../ui/generic/VoucherScreen'
 import { apKhoPhieu, useBanPhieu } from '../../ui/generic/daXoa'
+import { MAN_HDM, hoaDonMuaMau } from '../mua-hang/hoa-don-mua'
 
 export interface PhieuChiPhi {
   id: string; so: string; ngay: string; thang: number; nam: number; cn: string; doiTuong: string; dienGiai: string
-  ly: string; tien: number; nhom: 'tm' | 'nh'
+  ly: string; tien: number; nhom: 'tm' | 'nh' | 'cn'   // cn: Hoá đơn mua hàng không qua kho, ghi công nợ (T821)
+  man?: string                 // màn của phiếu khi không phải Thu chi, vd 'mua-hang/4-1-2'
 }
-export interface DongChiPhi { ly: string; v: number; so: number; tm: number; nh: number; phieu: PhieuChiPhi[] }
+export interface DongChiPhi { ly: string; v: number; so: number; tm: number; nh: number; cn: number; phieu: PhieuChiPhi[] }
 
 /** Phiếu chi có lý do là chi phí của Thu chi, như danh sách đang thấy */
 export function phieuChiPhi(s: Session): PhieuChiPhi[] {
@@ -22,7 +25,7 @@ export function phieuChiPhi(s: Session): PhieuChiPhi[] {
   const goc = [...(cfg.phieuThem?.(s) ?? []), ...gopLoai(cfg, sc.code ?? sc.slug)]
   return apKhoPhieu(`${tien.key}/${sc.slug}`, goc)
     .filter(r => r.loai === 'chi' || r.loai === 'unc')
-    .map(r => {
+    .map((r): PhieuChiPhi => {
       const ngay = String(r.ngay ?? '').split(' ')[0]
       const [, thang, nam] = ngay.split('/').map(Number)
       return {
@@ -30,8 +33,22 @@ export function phieuChiPhi(s: Session): PhieuChiPhi[] {
         ly: lyDoThuChi(cfg, r), tien: Number(r.tong ?? r.tien ?? 0), nhom: r.loai === 'unc' ? 'nh' as const : 'tm' as const,
       }
     })
+    .concat(coTrongGoi('4.1.2', s.goi) ? hoaDonMuaChiPhi() : [])   // gói có màn Hoá đơn mua hàng (T821)
     // Chi phí chờ phân bổ là khoản trả trước, vào chi phí dần qua dòng Chi phí phân bổ, khấu hao nên không cộng ở đây
     .filter(p => LY_CHI_PHI.includes(p.ly) && p.ly !== 'Chi phí chờ phân bổ')
+}
+
+/** Hoá đơn mua hàng không qua kho (T821): lý do nghiệp vụ được tích là chi phí cũng vào chi phí trong tháng, số tiền trước thuế GTGT */
+function hoaDonMuaChiPhi(): PhieuChiPhi[] {
+  const man = MAN_HDM
+  return apKhoPhieu(man, hoaDonMuaMau()).map(r => {
+    const ngay = String(r.ngay ?? '').split(' ')[0]
+    const [, thang, nam] = ngay.split('/').map(Number)
+    return {
+      id: String(r.id), so: String(r.so ?? ''), ngay, thang, nam, cn: String(r.cn ?? ''), doiTuong: String(r.doiTuong ?? ''), dienGiai: String(r.dienGiai ?? ''),
+      ly: String(r._lyDo ?? ''), tien: Number(r.tien ?? 0), nhom: 'cn' as const, man,
+    }
+  })
 }
 
 /** Chi phí hoạt động một tháng của các cửa hàng (id), chia theo lý do, lý do lớn nhất ở đầu */
@@ -40,7 +57,7 @@ export function chiPhiThangTuPhieu(ds: PhieuChiPhi[], thang: number, cnIds: stri
   const theoLy = new Map<string, DongChiPhi>()
   for (const p of ds) {
     if (p.thang !== thang || p.nam !== nam || !ten.has(p.cn)) continue
-    const d = theoLy.get(p.ly) ?? { ly: p.ly, v: 0, so: 0, tm: 0, nh: 0, phieu: [] }
+    const d = theoLy.get(p.ly) ?? { ly: p.ly, v: 0, so: 0, tm: 0, nh: 0, cn: 0, phieu: [] }
     d.v += p.tien; d.so++; d[p.nhom] += p.tien; d.phieu.push(p)
     theoLy.set(p.ly, d)
   }
@@ -61,4 +78,4 @@ const MO_TA: Record<string, [string, string]> = {
   'Chi tiền thuê nhà': ['cuahang', 'Thuê mặt bằng các cửa hàng'],
 }
 /** Biểu tượng, dòng phụ của một lý do chi phí: mô tả (nếu có) và số phiếu chi */
-export const moTaChiPhi = (d: DongChiPhi) => ({ icon: MO_TA[d.ly]?.[0] ?? 'cashout', phu: [MO_TA[d.ly]?.[1], `${d.so} phiếu chi`].filter(Boolean).join(' · ') })
+export const moTaChiPhi = (d: DongChiPhi) => ({ icon: MO_TA[d.ly]?.[0] ?? 'cashout', phu: [MO_TA[d.ly]?.[1], d.cn && d.so > d.phieu.filter(p => p.nhom === 'cn').length ? `${d.so} chứng từ` : d.cn ? `${d.so} hoá đơn mua` : `${d.so} phiếu chi`].filter(Boolean).join(' · ') })

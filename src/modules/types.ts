@@ -89,6 +89,7 @@ export interface VoucherCfg {
   rowsMau?: () => Row[]                  // phiếu mẫu riêng thay phiếu sinh ngẫu nhiên (T126)
   phieuThem?: (s?: Session) => Row[]     // phiếu mẫu cố định thêm vào đầu danh sách phiếu sinh ngẫu nhiên (T168); s: phiên, vd phiếu thu chi đồng bộ từ FABi (T264)
   sanXuat?: 'xsc' | 'nsc' | 'xcb' | 'ncb' // phiếu sản xuất theo iPOS Inventory: xuất, nhập sơ chế; xuất, nhập chế biến. Bảng dòng riêng, phiếu nhập có tham chiếu phiếu xuất (T152)
+  khongKho?: boolean                     // hoá đơn mua hàng không qua kho (T821): không có kho, có ô Lý do nghiệp vụ lấy từ lý do chi, không có Trả hàng
   dieuChuyen?: 'xdc' | 'ndc' | 'ck'     // xuất, nhập điều chuyển giữa cửa hàng; chuyển kho trong cửa hàng, không hạch toán. Phiếu nhập tham chiếu phiếu xuất như sản xuất (T155)
 }
 
@@ -136,6 +137,7 @@ export interface ScreenDef {
   cheDo?: CheDo[]          // màn chỉ áp dụng cho các thông tư này (T147)
   ten?: string
   ngan?: string            // nhãn ngắn trên thanh tab
+  phu?: string             // tiêu đề phụ: chữ nhỏ cạnh nhãn tab và dưới tiêu đề form, vd Hoá đơn mua hàng "Mua hàng không qua kho" (T821)
   tabChaGoi?: Partial<Record<Goi, string>>   // như tabCha nhưng chỉ ở gói này, vd Nhập điều chuyển nằm trong tab Điều chuyển gói Plus (T721)
   nganGoi?: Partial<Record<Goi, string>>     // nhãn tab riêng theo gói, vd Xuất điều chuyển gói Plus gọi Điều chuyển (T721)
   tabCha?: string          // màn con không có tab riêng trên thanh tab; mở màn này thì tab có slug này sáng (T167)

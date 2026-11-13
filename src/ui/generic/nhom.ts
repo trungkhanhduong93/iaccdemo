@@ -30,6 +30,9 @@ export interface BoO {
 export const LY_THU = LY_DO.filter(x => x.dung === 'Thu tiền').map(x => x.ten)
 // "Chi phí khác" luôn đứng cuối: form lấy lý do cuối danh sách khi không đoán được từ diễn giải
 export const LY_CHI = LY_DO.filter(x => x.dung === 'Chi tiền' && x.ten !== 'Chi phí khác').map(x => x.ten).concat('Chi phí khác')
+/** Lý do nghiệp vụ của Hoá đơn mua hàng không qua kho (T821): lý do chi, bỏ các lý do chỉ là chuyển tiền (trả nợ, tạm ứng, cho vay...) vì hoá đơn ghi nhận khoản phải trả */
+const LY_CHI_TIEN_THUAN = ['CHI02', 'CHI10', 'CHI16', 'CHI23', 'CHI32', 'CHI33', 'CHI34']
+export const LY_HD_MUA = LY_CHI.filter(t => !LY_DO.some(x => x.ten === t && LY_CHI_TIEN_THUAN.includes(x.ma)))
 export const LY_XUAT = ['Xuất bán', 'Xuất huỷ', 'Xuất dùng nội bộ', 'Xuất khác']
 
 export function nhomCua(mod: string, cfg: VoucherCfg, loai?: string): Nhom {
@@ -63,7 +66,14 @@ export function boO(nhom: Nhom, cfg: VoucherCfg): BoO {
   const tc: O = { k: 'tc', nhan: 'Tham chiếu' }
   const tkNo: [string, string] = ['TK Nợ', 'TK Có']
   switch (nhom) {
-    case 'mua': return {
+    // Hoá đơn mua hàng không qua kho (T821): như phiếu mua, bỏ kho, thêm Lý do nghiệp vụ; TK Nợ theo lý do, TK Có công nợ
+    case 'mua': if (cfg.khongKho) return {
+      a: [...dt, { k: 'nguoi', nhan: 'Người giao hàng' }, { k: 'ly', nhan: 'Lý do nghiệp vụ', ds: LY_HD_MUA }, { k: 'nv', nhan: 'Nhân viên mua hàng' }, kem],
+      b: [...tenDt, { k: 'dc', nhan: 'Địa chỉ' }, dg, tc],
+      so: 'Số chứng từ', tt: 'mua', hd: true, tabDau: 'Chứng từ', ck: true,
+      tk: ['TK chi phí', 'TK công nợ'], inMau: ['Chứng từ mua hàng không qua kho'],
+    }
+    return {
       a: [...dt, { k: 'nguoi', nhan: 'Người giao hàng' }, { k: 'nv', nhan: 'Nhân viên mua hàng' }, kem],
       b: [...tenDt, { k: 'dc', nhan: 'Địa chỉ' }, dg, tc],
       so: cfg.prefix === 'TLN' ? 'Số phiếu xuất' : hang ? 'Số phiếu nhập' : 'Số chứng từ',
