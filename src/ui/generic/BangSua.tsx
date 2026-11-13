@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import type { VoucherCfg } from '../../modules/types'
-import { CONG_VIEC, HANG, KHACH, KHO, KHOAN_MUC, NCC, NHAN_VIEN, NVL } from '../../data/mock'
+import { CCDC_HANG, CONG_VIEC, HANG, KHACH, KHO, KHOAN_MUC, NCC, NHAN_VIEN, NVL } from '../../data/mock'
 import { Select } from '../Dropdown'
 import { ChonDanhMuc, useMucDaThem, type TabDm } from '../ChonDanhMuc'
 import { Icon } from '../Icon'
@@ -156,6 +156,8 @@ export function BangSua({
   const tabHang: TabDm[] | undefined = cfg.dong === 'nvl' ? [
     { k: 'td', t: 'Thực đơn', ds: HANG.map(x => ({ v: x.ma, t: `${x.ma} - ${x.ten}` })), khongThem: true },
     { k: 'nvl', t: 'NVL', ds: NVL.map(x => ({ v: x.ma, t: `${x.ma} - ${x.ten}` })), dm: 'nvl', macDinh: true },
+    // Hoá đơn mua hàng không qua kho (T822): chọn được công cụ dụng cụ, lưu xong tạo thẻ mặc định loại Công cụ dụng cụ
+    ...(cfg.khongKho ? [{ k: 'ccdc', t: 'CCDC', ds: CCDC_HANG.map(x => ({ v: x.ma, t: `${x.ma} - ${x.ten}`, dvt: x.dvt })), dm: 'ccdc' }] : []),
   ] : undefined
   // Hàng hoá thêm mới ngay tại form (T65): đơn vị tính tạm "cái", giá 0, sửa trên dòng
   const dmHang = cfg.dong === 'nvl' ? 'nvl' : 'hang'

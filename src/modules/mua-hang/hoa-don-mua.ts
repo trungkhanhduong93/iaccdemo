@@ -4,14 +4,15 @@
 import type { Row, VoucherCfg } from '../types'
 import { chungTu, type Dong } from '../../ui/generic/gen'
 import { apKhoPhieu } from '../../ui/generic/daXoa'
-import { LY_CHI_PHI, NCC } from '../../data/mock'
+import { CCDC_HANG, LY_CHI_PHI, NCC } from '../../data/mock'
 
 export const MAN_HDM = 'mua-hang/4-1-2'
 
-const MAU: { dg: string; ly: string; dong: [string, number, number][] }[] = [
+/** Dòng mẫu: [diễn giải, tiền, thuế suất, mã hàng]; dòng có mã công cụ dụng cụ thì tạo thẻ mặc định loại CCDC (T822) */
+const MAU: { dg: string; ly: string; dong: [string, number, number, string?][] }[] = [
   { dg: 'Hoá đơn tiền điện tháng 9', ly: 'Thanh toán tiền điện', dong: [['Tiền điện kỳ tháng 9', 6_850_000, 8]] },
   { dg: 'Sửa chữa hệ thống hút khói bếp', ly: 'Chi phí sửa chữa', dong: [['Thay quạt hút khói', 3_200_000, 8], ['Vệ sinh đường ống hút khói', 1_500_000, 8]] },
-  { dg: 'Mua bộ nồi inox, dao thớt cho bếp', ly: 'Chi phí chờ phân bổ', dong: [['Bộ nồi inox công nghiệp 5 chiếc', 9_600_000, 10], ['Dao thớt bếp Nhật', 2_400_000, 10]] },
+  { dg: 'Mua bộ nồi inox, dao thớt cho bếp', ly: 'Chi phí chờ phân bổ', dong: [['Bộ nồi inox 50 lít', 9_600_000, 10, 'CCDC0001'], ['Dao thớt bếp trọn bộ', 2_400_000, 10, 'CCDC0005']] },
   { dg: 'Dịch vụ giặt khăn bàn tháng 9', ly: 'Chi phí giặt là', dong: [['Giặt khăn bàn, khăn ăn', 1_850_000, 8]] },
   { dg: 'Quảng cáo Facebook món mới', ly: 'Chi tiền quảng cáo, marketing', dong: [['Chạy quảng cáo Facebook 2 tuần', 5_000_000, 10]] },
   { dg: 'Hoá đơn tiền nước tháng 9', ly: 'Thanh toán tiền nước', dong: [['Tiền nước sinh hoạt kỳ tháng 9', 1_240_000, 5]] },
@@ -29,9 +30,9 @@ export function hoaDonMuaMau(): Row[] {
   return chungTu(HOA_DON_MUA, '4.1.2').map((r, i) => {
     const m = MAU[i % MAU.length]
     const he = 1 + (Math.floor(i / MAU.length) % 3) / 10
-    const dong: Dong[] = m.dong.map(([ten, t, ts]) => {
+    const dong: Dong[] = m.dong.map(([ten, t, ts, ma = '']) => {
       const tien = Math.round(t * he / 1000) * 1000
-      return { ma: '', ten, dvt: '', sl: 1, gia: tien, tien, ts, thue: Math.round(tien * ts / 100), ptCk: 0, ck: 0, ly: m.ly }
+      return { ma, ten, dvt: CCDC_HANG.find(h => h.ma === ma)?.dvt ?? '', sl: 1, gia: tien, tien, ts, thue: Math.round(tien * ts / 100), ptCk: 0, ck: 0, ly: m.ly }
     })
     const tien = dong.reduce((a, d) => a + d.tien, 0), thue = dong.reduce((a, d) => a + d.thue, 0)
     // Nhà cung cấp hợp với khoản chi: điện, nước, internet của Điện lực; còn lại của Thiết bị bếp Gia Phát (danh mục mẫu chỉ có 7 nhà cung cấp)

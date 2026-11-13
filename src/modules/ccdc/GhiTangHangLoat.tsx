@@ -1,4 +1,4 @@
-// Ghi tăng thẻ chi phí phân bổ (nút Ghi tăng, trước là Ghi tăng hàng loạt): các dòng phiếu chi lý do Chi phí chờ phân bổ chưa thành thẻ (sau bổ sung hoá đơn mua hàng).
+// Ghi tăng thẻ chi phí phân bổ (nút Ghi tăng, trước là Ghi tăng hàng loạt): các dòng phiếu chi, hoá đơn mua hàng (T822) lý do Chi phí phân bổ nhiều kỳ chưa thành thẻ.
 // Mỗi dòng thành một thẻ: chọn loại thẻ, ngày bắt đầu phân bổ, số kỳ; số thẻ tự sinh, số tiền mỗi kỳ tự tính. Bấm Tạo để ghi tăng.
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -8,11 +8,13 @@ import { FormToanMan } from '../../ui/FormToanMan'
 import { Table } from '../../ui/Table'
 import { Select } from '../../ui/Dropdown'
 import { docSoQT, money, short, soQT } from '../../ui/format'
-import { suaPhieu, useDaXoa } from '../../ui/generic/daXoa'
+import { apKhoPhieu, suaPhieu, useDaXoa } from '../../ui/generic/daXoa'
 import { ONhap, loaiTheTheoGoi, soTheKeTiep } from './the-phan-bo'
 import { ChonDanhMuc } from '../../ui/ChonDanhMuc'
 import { CCDC_HANG, MA_LY_CHO_PHAN_BO } from '../../data/mock'
-import { laLyPhanBo } from '../../ui/generic/danhMucStore'
+import { laLyPhanBo, laMaCcdc } from '../../ui/generic/danhMucStore'
+import { coTrongGoi } from '../../app/plan'
+import { MAN_HDM, hoaDonMuaMau } from '../mua-hang/hoa-don-mua'
 
 const MAN_THU_CHI = 'tien/2-1-1'
 
@@ -35,19 +37,35 @@ interface DongCho {
 }
 const CCDC = 'Công cụ dụng cụ'
 
-type DongGoc = Pick<DongCho, 'key' | 'soCt' | 'ngayCt' | 'ten' | 'gt' | '_goc'>
+type DongGoc = Pick<DongCho, 'key' | 'soCt' | 'ngayCt' | 'ten' | 'gt' | '_goc'> & Partial<Pick<DongCho, 'loai' | 'ma' | 'tenCc' | 'dvt' | 'sl'>>
+
+/** Hoá đơn mua hàng mẫu, sinh một lần */
+let hdmMau: Row[] | undefined
+
+/** Dòng chờ phân bổ của các chứng từ chưa có thẻ: dòng lý do tích Chi phí phân bổ nhiều kỳ (T700).
+ *  Dòng hàng loại Công cụ dụng cụ (hoá đơn mua hàng) thì mặc định thẻ CCDC, mang Mã, Tên, ĐVT, Số lượng (T822) */
+function dongChoCua(man: string, phieu: Row[], s: Parameters<typeof laLyPhanBo>[1]): DongGoc[] {
+  return phieu.filter(p => !(Array.isArray(p._theCp) && p._theCp.length)).flatMap(p => ((p._dong as Row[] | undefined) ?? []).map((d, i) => ({ d, i }))
+    .filter(({ d }) => laLyPhanBo(String(d.ly ?? p._lyDo ?? ''), s))
+    .map(({ d, i }) => ({
+      key: `${man}|${p.id}-${i}`, soCt: String(p.so), ngayCt: String(p.ngay).split(' ')[0], ten: String(d.ten ?? ''), gt: Number(d.tien) || 0, _goc: `/app/${man}/${p.id}`,
+      ...(laMaCcdc(d.ma) ? { loai: CCDC, ma: String(d.ma), tenCc: String(d.ten ?? ''), dvt: String(d.dvt ?? ''), sl: String(d.sl || 1) } : {}),
+    })))
+}
 
 /** Dòng chờ: mẫu cộng các phiếu chi lưu trong phiên có dòng lý do tích Chi phí phân bổ nhiều kỳ (T700), bỏ dòng đã tạo thẻ.
  *  Dùng chung cho form Ghi tăng và cảnh báo ở danh sách thẻ (T287); tính lại mỗi lần vẽ vì daTao đổi khi tạo thẻ */
 function useDongCho(): DongGoc[] {
   const { s } = useSession()
   const { phieuMoi: moi, apSua } = useDaXoa(MAN_THU_CHI)
+  useDaXoa(MAN_HDM)   // tính lại khi lập, sửa, xoá hoá đơn mua hàng
   // Phiếu đã có thẻ (tạo ngay khi lưu phiếu, T419) thì không còn là khoản chờ
-  const phieuMoi = moi.map(apSua).filter(p => !(Array.isArray(p._theCp) && p._theCp.length))
+  // Hoá đơn mua hàng (mẫu, lập thêm, đã sửa, bỏ đã xoá) chỉ ở gói có màn này (T822)
+  const hoaDon = coTrongGoi('4.1.2', s.goi) ? apKhoPhieu(MAN_HDM, hdmMau ??= hoaDonMuaMau()) : []
   return [
-    ...CHO_MAU.map(([soCt, ngayCt, ten, gt], i) => ({ key: `mau-${i}`, soCt, ngayCt, ten, gt })),
-    ...phieuMoi.flatMap(p => ((p._dong as Row[] | undefined) ?? []).map((d, i) => ({ d, i })).filter(({ d }) => laLyPhanBo(String(d.ly ?? p._lyDo ?? ''), s))
-      .map(({ d, i }) => ({ key: `${p.id}-${i}`, soCt: String(p.so), ngayCt: String(p.ngay).split(' ')[0], ten: String(d.ten ?? ''), gt: Number(d.tien) || 0, _goc: `/app/${MAN_THU_CHI}/${p.id}` }))),
+    ...CHO_MAU.map(([soCt, ngayCt, ten, gt], i): DongGoc => ({ key: `mau-${i}`, soCt, ngayCt, ten, gt })),
+    ...dongChoCua(MAN_THU_CHI, moi.map(apSua), s),
+    ...dongChoCua(MAN_HDM, hoaDon, s),
   ].filter(d => !daTao.has(d.key))
 }
 
@@ -94,7 +112,7 @@ export function useCanhBaoCho(ky: number) {
 export function GhiTangHangLoat({ rows: daCo, onDong }: { soDong: number; rows: Row[]; onDong: () => void }) {
   const { s, toast } = useSession()
   const dongCho = useDongCho()
-  const goc = useMemo((): DongCho[] => dongCho.map(d => ({ ...d, chon: true, loai: 'Chi phí trả trước', ngayPb: d.ngayCt, ky: '' })), [])
+  const goc = useMemo((): DongCho[] => dongCho.map(d => ({ ...d, chon: true, loai: d.loai ?? 'Chi phí trả trước', ngayPb: d.ngayCt, ky: '' })), [])
   const [ds, setDs] = useState(goc)
   const [loi, setLoi] = useState<Set<string>>(new Set())
   const sua = (key: string, p: Partial<DongCho>) => { setDs(x => x.map(d => d.key === key ? { ...d, ...p } : d)); setLoi(l => { const n = new Set(l); n.delete(key); return n }) }
@@ -135,7 +153,7 @@ export function GhiTangHangLoat({ rows: daCo, onDong }: { soDong: number; rows: 
 
   return (
     <FormToanMan icon="phanbo" iconNet title="Ghi tăng thẻ chi phí phân bổ" onClose={onDong}
-      meta={<span className="muted">Danh sách lấy từ các phiếu chi có lý do "Chi phí chờ phân bổ" chưa tạo thẻ.</span>}
+      meta={<span className="muted">Danh sách lấy từ các phiếu chi{coTrongGoi('4.1.2', s.goi) ? ', hoá đơn mua hàng' : ''} có lý do chi phí chờ phân bổ chưa tạo thẻ.</span>}
       foot={(
         <>
           <button type="button" className="btn" onClick={onDong}>Huỷ</button>

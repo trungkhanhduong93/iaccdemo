@@ -97,6 +97,11 @@ export function laLyChiPhi(ten: string | undefined, s: Pick<Session, 'donVi' | '
   return tichLyChi(ten, s, 'chiPhi')
 }
 
+/** Mã hàng thuộc loại Công cụ dụng cụ: danh mục CCDC mẫu hoặc hàng thêm trong phiên có loại Khác (Công cụ dụng cụ) (T822) */
+export function laMaCcdc(ma?: unknown): boolean {
+  return Boolean(ma) && (CCDC_HANG.some(h => h.ma === ma) || getAllCatalogRows('1.2').some(r => r.ma === ma && String(r.loai ?? '').includes('Công cụ')))
+}
+
 /** Thêm một dòng mới vào danh mục trong phiên */
 export function addCatalogRow(dm: string, row: Row) {
   const normKey = chieuKhoa(dm)

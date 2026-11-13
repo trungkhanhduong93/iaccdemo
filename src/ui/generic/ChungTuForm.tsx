@@ -10,7 +10,7 @@ import { kieuGhiSo, type Goi, kieuGhiSoDv, tcNhuStandard } from '../../app/plan'
 import { CHE_DO, type CheDo } from '../../app/che-do'
 import { tkTheoCheDo } from '../../modules/tong-hop/so-cai'
 import { CUA_HANG, HANG, HOM_NAY, KHACH, KHO, LY_CAN_DOI_TUONG, LY_DO, NCC, NHAN_VIEN, TK_NGAN_HANG, daKhoaSo, khoaSoDenCua } from '../../data/mock'
-import { laLyChiPhi, laLyPhanBo } from './danhMucStore'
+import { laLyChiPhi, laLyPhanBo, laMaCcdc } from './danhMucStore'
 import { DS_PTTT } from '../../modules/danh-muc/data'
 import { HopXacNhan } from '../LocNangCao'
 import { bayGio, ctTtCon, dsDcCon, dsTraBanCon, dsTraCon, dsTtCon, MAN_TRA_BAN, MAN_TRA_MUA, ghiNhatKy, laDaXoa, soDaTra, soKeTiep, suaPhieu, themPhieu, ttThamChieu, ttTienTheoTra, useBanPhieu, useNhatKy, xoaPhieu, type CtTt, type PhieuTt } from './daXoa'
@@ -681,8 +681,14 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
     const dongCho = oLy ? dsDong.filter(d => laLyPhanBo(d.ly ?? lyDo, s)) : []
     const idPhieu = moi ? idMoi : String(row!.id)
     if (dongCho.length && (moi || !theCuaPhieu(row).length)) {
+      // Hoá đơn mua hàng (T822): mọi dòng chờ phân bổ là hàng loại Công cụ dụng cụ thì thẻ mặc định loại CCDC,
+      // mang Mã, Tên, ĐVT, Số lượng sang thẻ; người dùng vẫn đổi được loại thẻ khác (đổi loại thì mã sinh lại theo loại mới)
+      const theCcdc = dongCho.every(d => laMaCcdc(d.ma))
       setHoiThe({ moMoi, idMoi: idPhieu, tu: {
-        dong: dongCho.map(d => ({ ten: d.ten, gt: String(d.tien), sl: 1 })),
+        ...(theCcdc ? { loai: 'Công cụ dụng cụ' } : {}),
+        dong: dongCho.map(d => theCcdc
+          ? { ma: d.ma, ten: d.ten, dvt: d.dvt, gt: String(d.tien), sl: d.sl || 1, _maTay: true }
+          : { ten: d.ten, gt: String(d.tien), sl: 1 }),
         soCt, ngayCt, ghiChuCt: ghiChu, ngay: ngayCt, ngayPb: ngayCt, _goc: `${path}/${idPhieu}`,
       } })
       return
