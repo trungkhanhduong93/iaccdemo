@@ -15,7 +15,7 @@
   - Khối tổng chỉ còn Tổng tiền. Không có Trả hàng. Tiêu đề "Lập hoá đơn mua hàng", "Sửa hoá đơn ...".
   - Lưu kiểm lý do và diễn giải từng dòng, lưu `_lyDo`, `_kho` rỗng. Lý do phân bổ nhiều kỳ: lưu xong (kể cả khi tích Đã thanh toán) hiện hộp Tạo thẻ chi phí phân bổ, Tiếp tục mở form thẻ điền sẵn số tiền trước thuế, các dòng, loại CCDC khi mọi dòng là công cụ dụng cụ (như web T821, T822).
 - `src/ui/mobile/MXemPhieu.tsx`: tiêu đề "Hoá đơn mua hàng ...", dòng Lý do (kèm nhãn Chi phí) thay Kho nhập, menu không có Trả hàng, Tham chiếu có thẻ chi phí phân bổ của hoá đơn (`theCuaPhieu`).
-- `src/styles/app.css`: mục T826 cuối file.
+- `src/styles/app.css`: mục T826 cuối file. Mã hàng của dòng nằm dưới ô Diễn giải (dòng "Mã: ..."), ô Diễn giải rộng hết hàng.
 - Hộp thêm hàng trên điện thoại dùng form danh mục đầy đủ (`MFormDm`), gói Plus, Pro đã chọn được Loại, Nhóm hàng hoá, không cần sửa.
 
 ## Đã kiểm

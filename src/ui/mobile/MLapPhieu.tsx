@@ -592,15 +592,18 @@ function TheHangMua({
         {dienGiai ? (
           <div className="m-t824-dg">
             <span className="m-t824-stt">{stt}.</span>
-            <input
-              type="text"
-              className="m-t824-dg-o"
-              aria-label={`Diễn giải dòng ${stt}`}
-              placeholder="Diễn giải"
-              value={dong.ten}
-              onChange={e => onDoiDong({ ten: e.target.value })}
-            />
-            {dong.ma && <span className="m-t824-ma">{dong.ma}</span>}
+            {/* Mã hàng nằm dưới ô Diễn giải để ô rộng hết hàng */}
+            <div className="m-t824-dg-cot">
+              <input
+                type="text"
+                className="m-t824-dg-o"
+                aria-label={`Diễn giải dòng ${stt}`}
+                placeholder="Diễn giải"
+                value={dong.ten}
+                onChange={e => onDoiDong({ ten: e.target.value })}
+              />
+              {dong.ma && <span className="m-t824-ma">Mã: {dong.ma}</span>}
+            </div>
           </div>
         ) : (
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
