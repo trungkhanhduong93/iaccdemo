@@ -11,6 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T825 | Gói Plus doanh nghiệp: bỏ trạng thái Chưa ghi sổ, Đã ghi sổ và nút Ghi sổ ở chứng từ kho (người dùng thấy ở Nhập kho trên điện thoại), như thu chi gói Plus T733 | | Chờ | dinhlanphuongipacc đề nghị 13/11/2026 lúc làm T824. Trái QD81 (Plus doanh nghiệp có ghi sổ), chờ Trum chốt. Nếu đồng ý: sửa `kieuGhiSoDv` trong `src/app/plan.ts` cho phân hệ kho, ghi bổ sung QD81 |
 | T781 | Giảm thuế GTGT xét hiệu lực nghị quyết theo ngày của từng chứng từ, không theo ngày làm việc (`ptGiamHienHanh` dùng `HOM_NAY`) | | Chờ | Thấy lúc soát T780, `giam-thue.ts` |
 | T776 | Màn Tính giá vốn: sang trang 2 thì dòng "Cộng 51 dòng" mất đường kẻ dưới, dưới dòng tổng còn khoảng trống trong bảng, dưới khung bảng còn khoảng trống xám | | Chờ | Trum báo lúc làm T774, ảnh chụp ở trang 2, tháng 10/2026 |
 | T771 | `tools/kiem_tra.py` ca đăng nhập đợt 8 (hàm `kiem_tra_dang_nhap_dot_8`) báo "Nghiệp vụ: không tìm thấy phân hệ Thu chi" ở màn 390px | | Chờ | Thấy lúc làm T769, bản trước T769 cũng báo. Ca này không nằm trong `--nhanh` |
