@@ -10,6 +10,7 @@
 - `src/ui/generic/VoucherScreen.tsx`: màn Nhập kho đổi cột Người tạo thành Người thực hiện, lấy nhân viên thực hiện đã lưu trên phiếu.
 - `src/ui/generic/ChungTuForm.tsx`: form Nhập kho ghi Người thực hiện thay Nhân viên thực hiện. Phiếu mẫu lấy cùng người với cột danh sách.
 - `src/ui/generic/gen.ts`: thêm hàm `nguoiTaoMau` dùng chung cho danh sách và form.
+- `src/ui/bao-cao/duLieuIn.ts`: bản in Phiếu nhập kho 01-VT của màn Nhập kho (cùng mẫu với phiếu mua hàng) lấy dữ liệu của phiếu: Họ tên người giao hàng là Người thực hiện, Nhập tại kho là kho nhập ở đầu phiếu, Địa điểm là cửa hàng, Theo số hoá đơn/lệnh nhập để trống (trước đây bịa số hoá đơn, người giao, địa chỉ).
 - `src/modules/kho/quy-trinh.ts`, `src/app/SidebarFlyout.tsx`, `src/ui/mobile/MChungTu.tsx`: chữ Nhập khác, Phiếu nhập khác đổi thành Phiếu nhập kho, Nhập kho.
 
 ## Đã kiểm
@@ -19,7 +20,7 @@
 - `python tools/kiem_tra.py --nhanh`: Không có lỗi.
 - `python tools/kiem_van.py` cho 4 file sửa: 0 ĐỎ.
 - `python tools/xuat_bao_cao_he_thong.py` lỗi `No module named 'build_present'` (máy thiếu thư mục `Present/tools` cạnh repo), chưa làm mới file Excel.
-- Mở màn Nhập kho gói Plus: 6 phiếu đều Thủ công, cột Người thực hiện; mở phiếu NK2610-0260 thấy Người thực hiện khớp danh sách.
+- Mở màn Nhập kho gói Plus: 6 phiếu đều Thủ công, cột Người thực hiện; mở phiếu NK2610-0260 thấy Người thực hiện khớp danh sách. Bấm In phiếu: mẫu 01-VT, người giao, kho, địa điểm đúng theo phiếu, ô số hoá đơn trống.
 
 ## Dở dang, việc tiếp theo
 

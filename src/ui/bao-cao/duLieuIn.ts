@@ -1,7 +1,8 @@
 // Dựng dữ liệu in từ một phiếu trong danh sách chứng từ (dữ liệu giả của gen.ts)
 import type { Row, VoucherCfg, LoaiCT } from '../../modules/types'
 import type { MauIn } from '../../app/mau-in'
-import { dongCua, tongDong, ttNghiepVu, type Dong } from '../generic/gen'
+import { dongCua, nguoiTaoMau, tongDong, ttNghiepVu, type Dong } from '../generic/gen'
+import { CUA_HANG } from '../../data/mock'
 import { docSoTien, money, pad, rng, k } from '../format'
 import { giaVonBq, tienVon } from '../../modules/kho/tinh-gia-von/giaVonBq'
 
@@ -238,9 +239,19 @@ export function duLieuIn(
     kyDoiChieu: 'Từ ngày 01/09/2026 đến ngày 30/09/2026',
   }
 
+  // Nhập kho thêm tay (T818): người giao là Người thực hiện, kho nhập ở đầu phiếu, địa điểm là cửa hàng; không có hoá đơn nên Theo chứng từ để trống
+  const deTrong = new Set<string>()
+  if (seedPrefix === '5.1.1') {
+    tt.nguoi = String(row._nhanVien ?? nguoiTaoMau(row.so))
+    tt.kho = String(row._kho || dsGoc.find(d => d.kho)?.kho || CUA_HANG.find(c => c.ten === row.cn)?.kho[0] || 'Kho tổng')
+    tt.diaDiem = String(row.cn ?? '')
+    tt.theoCt = ''
+    deTrong.add('theoCt')
+  }
+
   // Điền bù các trường thông tin trong mẫu nếu còn thiếu để không để trống trường bắt buộc
   for (const tr of mau.thongTin) {
-    if (!tt[tr.k]) {
+    if (!tt[tr.k] && !deTrong.has(tr.k)) {
       tt[tr.k] = `Thông tin ${tr.nhan.toLowerCase()}`
     }
   }
