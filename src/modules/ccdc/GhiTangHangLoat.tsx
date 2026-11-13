@@ -191,10 +191,12 @@ export function GhiTangHangLoat({ rows: daCo, onDong }: { soDong: number; rows: 
         {rows.length ? (
           <Table motDong rows={rows} rowCls={r => [loi.has(r.key) ? 'gt-hl-loi' : '', dauThe.has(r.key) ? 'gt-hl-dau' : ''].join(' ')}
             gopO={r => r.key === undefined ? undefined : theCuaDong(r as DongCho)}   // thông tin chung của một thẻ gộp một ô cho các dòng của thẻ (T828)
-            sum={{ ten: `Cộng ${chon.length} dòng chọn`, gt: soQT(chon.reduce((s, r) => s + r.gt, 0)), tienKy: soQT(chon.reduce((s, r) => s + r.tienKy, 0)) }}
+            sum={{ ten: `Cộng ${soTheChon} thẻ chọn (${chon.length} dòng)`, gt: soQT(chon.reduce((s, r) => s + r.gt, 0)), tienKy: soQT(chon.reduce((s, r) => s + r.tienKy, 0)) }}
             cols={[
-              { k: 'chon', t: '', w: 36, c: true, r: r => r.key === undefined ? null
-                : <input type="checkbox" aria-label={`Chọn ${r.soCt} ${r.ten}`} checked={r.chon} onChange={e => sua(r.key, { chon: e.target.checked })} /> },
+              // Tích theo thẻ (T828): một ô gộp cho các dòng của thẻ, chọn hoặc bỏ cả thẻ
+              { k: 'chon', t: '', w: 36, c: true, gop: true, r: r => r.key === undefined ? null
+                : <input type="checkbox" aria-label={`Chọn thẻ của ${r.soCt}`} checked={r.chon}
+                  onChange={e => { const g = theCuaDong(r as DongCho), on = e.target.checked; setDs(x => x.map(d => theCuaDong(d) === g ? { ...d, chon: on } : d)) }} /> },
               { k: 'soCt', t: 'Số chứng từ', w: 120, gop: true, r: r => r._goc ? <Link className="tt-mua-so" to={r._goc}>{r.soCt}</Link> : r.soCt },
               { k: 'ngayCt', t: 'Ngày chứng từ', w: 110, gop: true },
               { k: 'ten', t: 'Nội dung chi tiết', r: r => r.key === undefined ? <b>{r.ten}</b> : r.ten },
@@ -231,7 +233,7 @@ export function GhiTangHangLoat({ rows: daCo, onDong }: { soDong: number; rows: 
         {rows.length > 0 && (
           <label className="row gt-hl-chon">
             <input type="checkbox" checked={tatCa} onChange={e => setDs(x => x.map(d => ({ ...d, chon: e.target.checked })))} />
-            <span>Chọn tất cả ({ds.length} dòng)</span>
+            <span>Chọn tất cả ({new Set(ds.map(theCuaDong)).size} thẻ)</span>
           </label>
         )}
       </section>
