@@ -310,7 +310,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
       ]
     }
     if (nhomMb === 'mua') {
-      if (kieu !== 'noco') {   // chỉ chế độ Nợ/Có (gói Pro) có tab Hạch toán, như bản web (T726, T818)
+      if (kieu !== 'noco') {   // chỉ chế độ Nợ/Có (gói Pro) có tab Hạch toán, như bản web (T726, T820)
         return [
           { k: 'chitiet' as TabKey, ten: 'Chi tiết' },
           { k: 'lichsu' as TabKey, ten: 'Lịch sử' },

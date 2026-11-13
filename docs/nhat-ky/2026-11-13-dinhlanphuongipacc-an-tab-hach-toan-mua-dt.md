@@ -1,4 +1,4 @@
-# Ẩn tab Hạch toán phiếu mua điện thoại ở gói dưới Pro (T818)
+# Ẩn tab Hạch toán phiếu mua điện thoại ở gói dưới Pro (T820)
 
 - Ngày: 13/11/2026
 - Người: dinhlanphuongipacc, agent: Claude Code
