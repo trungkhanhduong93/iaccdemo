@@ -11,6 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T837 | Điện thoại, danh sách mục Bán hàng lập tay: bỏ tên cửa hàng ở dòng chứng từ, dòng nào cũng ghi loại chứng từ (Xuất bán, Huỷ bán, Hoá đơn thay thế, Hoá đơn điều chỉnh), bộ lọc thêm Loại chứng từ | dinhlanphuongipacc | Đang làm | `MBanHangTay.tsx` |
 | T832 | Điện thoại: Xuất bán POS bỏ tab Báo cáo theo dõi; màn mua hàng bỏ tab Hoá đơn mua hàng, Trả lại hàng mua (đã là mục riêng ở menu Nghiệp vụ) | dinhlanphuongipacc | Đang làm | `MDsChungTuChuan.tsx`, `MChungTu.tsx` |
 | T781 | Giảm thuế GTGT xét hiệu lực nghị quyết theo ngày của từng chứng từ, không theo ngày làm việc (`ptGiamHienHanh` dùng `HOM_NAY`) | | Chờ | Thấy lúc soát T780, `giam-thue.ts` |
 | T776 | Màn Tính giá vốn: sang trang 2 thì dòng "Cộng 51 dòng" mất đường kẻ dưới, dưới dòng tổng còn khoảng trống trong bảng, dưới khung bảng còn khoảng trống xám | | Chờ | Trum báo lúc làm T774, ảnh chụp ở trang 2, tháng 10/2026 |
