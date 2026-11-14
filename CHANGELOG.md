@@ -16,16 +16,12 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 - T839: Hoá đơn thay thế, điều chỉnh chưa phát hành có nhãn đỏ Dự thảo cạnh số chứng từ ở danh sách Bán hàng (web và điện thoại), cùng chỗ nhãn VAT; chữ Dự thảo màu đỏ ở chip loại hoá đơn trên form web, thẻ tổng tiền và hộp xem hoá đơn trên điện thoại.
 
 ## 14/11/2026
-<<<<<<< HEAD
-- T832: Điện thoại: Mua hàng bỏ tab Hoá đơn mua hàng, Trả lại hàng mua (hai mục này đã có riêng ở menu Nghiệp vụ).
+- T832: Điện thoại: Mua hàng bỏ tab Hoá đơn mua hàng, Trả lại hàng mua (hai mục này đã có riêng ở menu Nghiệp vụ); tab Chi phí mua hàng chỉ còn ở gói Pro. Các màn bán hàng (Xuất bán POS, Bán hàng, Hàng bán trả lại) có lại tab Báo cáo theo dõi như màn mua hàng.
 - T838: Điện thoại, mục Bán hàng: chi tiết chứng từ chỉ ghi ngày, không giờ. Thông tin hoá đơn lần lượt Số hoá đơn (hoá đơn mới; chưa phát hành thì Dự thảo, bấm xem), Ngày hoá đơn, Ký hiệu, Loại điều chỉnh, Hoá đơn gốc (bấm số để xem) cho hoá đơn thay thế, điều chỉnh, huỷ bán.
 - T836: Điện thoại, mục Bán hàng: chứng từ đã xuất hoá đơn điện tử chỉ còn nhãn VAT trên số chứng từ, bỏ dòng "Đã xuất HĐ ..." bên dưới; chứng từ chưa xuất vẫn ghi trạng thái.
 - T835: Điện thoại, Bán hàng và Xuất bán POS: chứng từ đã xuất hoá đơn điện tử có nhãn VAT trên số chứng từ ở danh sách như web; ở chi tiết bấm số hoá đơn mở xem hoá đơn điện tử vừa màn điện thoại (chụm ngón để phóng to), trạng thái Hợp lệ ở tiêu đề, chỉ có Chia sẻ (mở bảng chia sẻ của máy kèm file PDF hoá đơn như chia sẻ file, ảnh) và Đóng.
 - T834: Điện thoại, mục Bán hàng: chi tiết chứng từ đổi theo giao diện xem phiếu nhập mua (thẻ tổng tiền, Thông tin chung, Thông tin hoá đơn, thẻ hàng hoá, chân hai nút Trả lại, Xuất HĐĐT). Thẻ đầu: tổng tiền bên trái, nhãn Đã xuất HĐĐT kèm mã tra cứu bên phải, dưới là tình trạng thanh toán (đã thu / tổng) như phiếu mua; Thông tin chung bỏ mã số thuế, địa chỉ, thanh toán. Trả lại điền sẵn đơn giá đã trừ giảm giá, chiết khấu nên tổng trả không vượt số đã bán.
 - T833: Điện thoại, menu Bán hàng bỏ tab Báo cáo theo dõi. Mục Bán hàng (gói Plus, Pro): danh sách chứng từ bán hàng lập tay như Xuất bán POS, nút lập chứng từ mới; mở chứng từ có Trả lại (lập Hàng bán trả lại điền sẵn, chỉ sửa số lượng, không quá số đã bán) và Xuất HĐĐT như web.
-=======
-- T832: Điện thoại: Mua hàng bỏ tab Hoá đơn mua hàng, Trả lại hàng mua (hai mục này đã có riêng ở menu Nghiệp vụ); tab Chi phí mua hàng chỉ còn ở gói Pro.
->>>>>>> 6fa56538 (T832: điện thoại, tab Chi phí mua hàng chỉ hiện ở gói Pro)
 - T831: Điện thoại, gói Plus: menu Nghiệp vụ có mục Bán hàng ngay dưới Xuất bán POS, mở danh sách chứng từ bán hàng lập tay, nhập Excel (xem, lập mới); Xuất bán POS giữ chứng từ đồng bộ từ FABi.
 - T830: Điện thoại, Hàng bán trả lại: lập phiếu có đủ ô như web (địa chỉ, mã số thuế, người giao dịch, kho nhập, đã thanh toán kèm phiếu chi, lập kèm hoá đơn, ghi chú), xem phiếu bỏ dòng diễn giải ở đầu. Thanh tab bán hàng bỏ tab Hàng bán trả lại, Bán hàng; gói Pro có mục Bán hàng riêng trong menu Nghiệp vụ, dưới Xuất bán POS.
 - T829: Favicon và dấu logo vuông mới (hoá đơn và máy tính); thêm vào màn hình chính điện thoại thì hiện logo app có dải iPOS.vn.

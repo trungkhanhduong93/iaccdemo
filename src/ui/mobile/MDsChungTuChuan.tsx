@@ -7,6 +7,7 @@ import { docNgay } from '../ChonNgay'
 import { money, soLuong } from '../format'
 import { KHACH } from '../../data/mock'
 import { MNutHuongDan } from './MHuongDanNhanh'
+import { MBaoCaoTheoDoi } from './MBaoCaoTheoDoi'
 
 /** Lấy mã khách hàng, nếu là khách lẻ không mã thì ghi 'Khách lẻ' (T628) */
 export function layMaKh(doiTuong?: unknown, kh?: unknown): string {
@@ -65,8 +66,11 @@ export function HangTabsBanHang({
   // Bán hàng, Hàng bán trả lại là mục riêng trong menu Nghiệp vụ (T830): không là tab của màn khác, màn của mình chỉ một tab
   const RIENG = ['3.1.7', '3.1.4']
   const manRieng = is317 ? '3.1.7' : is314 ? '3.1.4' : tay311 ? '3.1.1-tay' : ''
+  // Tab Báo cáo theo dõi giữ ở mọi màn bán hàng như màn mua hàng (T832, người dùng chốt sau T833); tấm báo cáo mở ngay tại đây
+  const [moTheoDoi, setMoTheoDoi] = useState(false)
 
   return (
+    <>
     <div className="m-tc-tabs" role="tablist" data-hd="tab">
       {/* Phiếu ngoài gói ẩn như web, gói Free chỉ còn Xuất bán POS (T622) */}
       {([['3.1.1', is311, 'Xuất bán POS'], ['3.1.7', is317, 'Bán hàng'], ['3.1.2', is312, 'Hoá đơn bán hàng'],
@@ -109,7 +113,12 @@ export function HangTabsBanHang({
           Điều chỉnh hoá đơn
         </button>
       )}
+      <button type="button" role="tab" aria-selected={false} className="m-tc-tab-btn" onClick={() => setMoTheoDoi(true)}>
+        Báo cáo theo dõi
+      </button>
     </div>
+    <MBaoCaoTheoDoi mo={moTheoDoi} onDong={() => setMoTheoDoi(false)} modKey="ban-hang" />
+    </>
   )
 }
 

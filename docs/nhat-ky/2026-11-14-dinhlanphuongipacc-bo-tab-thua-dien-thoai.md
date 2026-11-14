@@ -7,7 +7,7 @@
 ## Đã làm
 
 - `src/ui/mobile/MChungTu.tsx`: tab Chi phí mua hàng (4.1.5) chỉ hiện ở gói mở được màn này (gói Pro), trước đây hiện ở mọi gói.
-- Xuất bán POS giữ tab Báo cáo theo dõi như màn mua hàng cho đồng nhất (người dùng đổi ý giữa chừng), `MDsChungTuChuan.tsx` không đổi.
+- Xuất bán POS giữ tab Báo cáo theo dõi như màn mua hàng cho đồng nhất. T833 (phiên khác, push trước) đã bỏ tab này ở mọi màn bán hàng; người dùng chốt giữ tab. Lúc gộp, `HangTabsBanHang` (`MDsChungTuChuan.tsx`) tự giữ trạng thái và tự mở tấm `MBaoCaoTheoDoi`, nên mọi màn bán hàng (Xuất bán POS, Bán hàng lập tay `MBanHangTay`, Hàng bán trả lại) có lại tab mà không sửa từng màn.
 - `src/ui/mobile/MChungTu.tsx`: thanh tab mua hàng (gói trên Standard) bỏ tab Hoá đơn mua hàng, Trả lại hàng mua khỏi màn Chứng từ mua hàng, Chi phí mua hàng. Màn Hoá đơn mua hàng, Trả lại hàng mua chỉ còn tab của mình và Báo cáo theo dõi, giống Hàng bán trả lại ở T830.
 
 ## Đã kiểm
