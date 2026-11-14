@@ -27,6 +27,7 @@
 
 - `MBanHangTay.tsx`: chi tiết hoá đơn thay thế, điều chỉnh, huỷ bán trước đây chỉ có Thông tin hoá đơn khi chính chứng từ đã xuất. Nay theo web T787, T798: dòng "Thay thế cho / Điều chỉnh cho / Huỷ bán do thay thế" là hoá đơn gốc (`hdGocCua`) kèm nhãn Đã xuất HĐĐT, bấm số mở `HopXemHd` hoá đơn gốc; Ký hiệu hoá đơn gốc; Chứng từ gốc (mở chi tiết chứng từ đó); Loại điều chỉnh; khối "Hoá đơn mới" kèm nhãn khi đã phát hành; chưa phát hành có "Xem dự thảo" (`HopXemHd nhap`, số 00000000). `xemHd` đổi thành hoá đơn đang xem `{ r, hd, nhap }`.
 - Kiểm 375px gói Plus: HDTT2610-0001, HDDC2610-0001, HDTT2610-0002, HBH2610-0001 hiện đúng; bấm 00000125 xem hoá đơn gốc (Hợp lệ), Xem dự thảo (Dự thảo), BH2610-0012 mở chứng từ gốc. Typecheck, build, `kiem_tra --nhanh`, `kiem_van` sạch.
+- Theo góp ý sau đó: Ngày chứng từ bỏ giờ; Thông tin hoá đơn gộp một thẻ, thứ tự Số hoá đơn (hoá đơn mới, dự thảo thì "Dự thảo" bấm xem), Ngày hoá đơn, Ký hiệu, Loại điều chỉnh, Hoá đơn gốc (chỉ số, bấm xem); bỏ Mã tra cứu (đã ở thẻ tổng tiền), Ký hiệu hoá đơn gốc, Chứng từ gốc, nhãn Đã xuất HĐĐT ở hoá đơn gốc; bỏ CSS `m-t838-*`.
 - Chưa làm: phát hành hoá đơn dự thảo từ điện thoại (web có nút Phát hành ở form, màn Hoá đơn điện tử).
 
 ## Dở dang, việc tiếp theo

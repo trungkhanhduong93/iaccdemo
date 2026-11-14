@@ -48259,11 +48259,3 @@ textarea.m-tpb-inp { height: auto; padding: 8px 12px; }
 @media (min-width: 500px) and (max-width: 767px) { .hdx-xem-ban .hdx-giay { zoom: .6; } }
 @media (min-width: 600px) and (max-width: 767px) { .hdx-xem-ban .hdx-giay { zoom: .72; } }
 @media (min-width: 700px) and (max-width: 767px) { .hdx-xem-ban .hdx-giay { zoom: .85; } }
-
-/* ── Điện thoại, chi tiết hoá đơn thay thế, điều chỉnh: hoá đơn gốc kèm nhãn Đã xuất HĐĐT, hoá đơn mới, dự thảo (T838) ── */
-.m-t838-goc { display: inline-flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 6px; }
-.m-t838-da { display: inline-block; padding: 0 5px; border-radius: 4px; background: var(--green-t); color: var(--green); font-size: 10px; font-weight: 700; line-height: 16px; letter-spacing: .2px; white-space: nowrap; }
-.m-t838-tiep { margin-top: 8px; }
-.m-t838-tieu { display: flex; align-items: center; gap: 6px; padding: 10px 0 4px; font-size: 13px; font-weight: 600; color: var(--muted); }
-/* Danh sách Bán hàng điện thoại: nhãn Dự thảo cạnh số chứng từ, cùng khuôn nhãn VAT (T838) */
-.m-mh-dong-so .m-t838-du-thao { display: inline-block; vertical-align: super; margin-left: 3px; padding: 0 4px; border-radius: 4px; background: var(--orange-t); color: var(--orange-d); font-size: 9.5px; font-weight: 700; line-height: 14px; letter-spacing: .3px; }

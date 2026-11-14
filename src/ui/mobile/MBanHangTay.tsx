@@ -324,7 +324,7 @@ export const MBanHangTay: FC<MBanHangTayProps> = ({ sc, mod, rows, duong, tabTay
                 <div className="m-pb-the m-pb-the-gon m-t655-gon">
                   <Dg nhan="Khách hàng" dam>{ct.doiTuong || 'Khách lẻ'}</Dg>
                   {/* Gọn như phiếu mua: bỏ Mã số thuế, Địa chỉ (có ở Xuất HĐĐT), Thanh toán (đã ở thẻ đầu) */}
-                  <Dg nhan="Ngày chứng từ">{ct.ngay}</Dg>
+                  <Dg nhan="Ngày chứng từ">{String(ct.ngay ?? '').split(' ')[0]}</Dg>
                   <Dg nhan="Kho xuất">{ct._kho}</Dg>
                   <Dg nhan="Kênh bán hàng">{ct.kenh}</Dg>
                   <Dg nhan="Ghi chú">{ct.dienGiai}</Dg>
@@ -345,37 +345,20 @@ export const MBanHangTay: FC<MBanHangTayProps> = ({ sc, mod, rows, duong, tabTay
                 {(hd || hdGoc || hdNhap) && (
                   <>
                     <div className="m-pb-nhom">THÔNG TIN HOÁ ĐƠN</div>
+                    {/* Thứ tự: Số hoá đơn (hoá đơn mới của chứng từ này), Ngày hoá đơn, Ký hiệu, Loại điều chỉnh, Hoá đơn gốc (chỉ số, bấm xem).
+                        Không ghi Mã tra cứu: đã có ở thẻ tổng tiền (T838) */}
                     <div className="m-pb-the m-pb-the-gon m-t655-gon">
-                      {/* Hoá đơn thay thế, điều chỉnh, huỷ bán: hoá đơn gốc kèm nhãn Đã xuất HĐĐT, bấm số xem hoá đơn gốc; dòng Chứng từ gốc mở chứng từ đó (như web T787) */}
+                      {hd && <Dg nhan="Số hoá đơn"><button type="button" className="m-t835-so-hd" onClick={() => setXemHd({ r: ct, hd })}>{hd.so}<Icon n="chevr" className="ic sm" /></button></Dg>}
+                      {/* Hoá đơn thay thế, điều chỉnh chưa phát hành: xem bản dự thảo như web T798 */}
+                      {hdNhap && <Dg nhan="Số hoá đơn"><button type="button" className="m-t835-so-hd" onClick={() => setXemHd({ r: ct, hd: hdNhap, nhap: true })}>Dự thảo<Icon n="chevr" className="ic sm" /></button></Dg>}
+                      {(hd ?? hdNhap) && <Dg nhan="Ngày hoá đơn">{(hd ?? hdNhap)!.ngay}</Dg>}
+                      {(hd ?? hdNhap) && <Dg nhan="Ký hiệu">{`${(hd ?? hdNhap)!.mau}${(hd ?? hdNhap)!.kyHieu}`}</Dg>}
+                      {loaiCt === 'HDDIEUCHINH' && <Dg nhan="Loại điều chỉnh">{ct._dcLoai === 'tang' ? 'Điều chỉnh tăng' : 'Điều chỉnh giảm'}</Dg>}
                       {hdGoc && (
-                        <Dg nhan={loaiCt === 'HDDIEUCHINH' ? 'Điều chỉnh cho' : loaiCt === 'HUYBAN' ? 'Huỷ bán do thay thế' : 'Thay thế cho'}>
-                          <span className="m-t838-goc">
-                            <span className="m-t838-da">Đã xuất HĐĐT</span>
-                            <button type="button" className="m-t835-so-hd" onClick={() => setXemHd({ r: rows.find(x => String(x.id) === hdGoc.id) ?? ct, hd: hdGoc.hd })}>{hdGoc.hd.so}<Icon n="chevr" className="ic sm" /></button>
-                          </span>
+                        <Dg nhan="Hoá đơn gốc">
+                          <button type="button" className="m-t835-so-hd" onClick={() => setXemHd({ r: rows.find(x => String(x.id) === hdGoc.id) ?? ct, hd: hdGoc.hd })}>{hdGoc.hd.so}<Icon n="chevr" className="ic sm" /></button>
                         </Dg>
                       )}
-                      {hdGoc && <Dg nhan="Ký hiệu hoá đơn gốc">{`${hdGoc.hd.mau}${hdGoc.hd.kyHieu}`}</Dg>}
-                      {hdGoc && rows.some(x => String(x.id) === hdGoc.id) && (
-                        <Dg nhan="Chứng từ gốc"><button type="button" className="m-t835-so-hd" onClick={() => setIdXem(hdGoc.id)}>{hdGoc.so}<Icon n="chevr" className="ic sm" /></button></Dg>
-                      )}
-                      {loaiCt === 'HDDIEUCHINH' && <Dg nhan="Loại điều chỉnh">{ct._dcLoai === 'tang' ? 'Điều chỉnh tăng' : 'Điều chỉnh giảm'}</Dg>}
-                      {/* Hoá đơn thay thế, điều chỉnh chưa phát hành: xem bản dự thảo như web T798 */}
-                      {hdNhap && (
-                        <Dg nhan="Hoá đơn mới"><button type="button" className="m-t835-so-hd" onClick={() => setXemHd({ r: ct, hd: hdNhap, nhap: true })}>Xem dự thảo<Icon n="chevr" className="ic sm" /></button></Dg>
-                      )}
-                    </div>
-                  </>
-                )}
-                {hd && (
-                  <>
-                    {!hdGoc && <div className="m-pb-nhom">THÔNG TIN HOÁ ĐƠN</div>}
-                    <div className={`m-pb-the m-pb-the-gon m-t655-gon${hdGoc ? ' m-t838-tiep' : ''}`}>
-                      {hdGoc && <div className="m-t838-tieu">Hoá đơn mới <span className="m-t838-da">Đã xuất HĐĐT</span></div>}
-                      <Dg nhan="Số hoá đơn"><button type="button" className="m-t835-so-hd" onClick={() => setXemHd({ r: ct, hd })}>{hd.so}<Icon n="chevr" className="ic sm" /></button></Dg>
-                      <Dg nhan="Ký hiệu">{`${hd.mau}${hd.kyHieu}`}</Dg>
-                      <Dg nhan="Ngày hoá đơn">{hd.ngay}</Dg>
-                      <Dg nhan="Mã tra cứu">{hd.traCuu ?? hd.ma}</Dg>
                     </div>
                   </>
                 )}
