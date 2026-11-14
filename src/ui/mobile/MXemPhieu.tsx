@@ -113,6 +113,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
   const laKk = Boolean(cfg.kiemKe)
   const laDc = Boolean(cfg.dieuChinh)
   const laNk = sc.code === '5.1.1'   // phiếu Nhập kho (T824, như web T818)
+  const laTraBan = sc.code === '3.1.4'   // Hàng bán trả lại (T830): bỏ diễn giải ở đầu phiếu, Chi tiết đủ ô như web
   const sx = cfg.sanXuat
   const laSx = Boolean(sx)
   const sxNhap = sx ? SX[sx].nhap : false
@@ -721,7 +722,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
             {chipTt && <span className={`m-pb-chip-tt ${chipTt.kieu}`}>{chipTt.ten}</span>}
           </div>}
 
-          {!laNk && <div className="m-pb-ten-the">{tenChinhThe}</div>}
+          {!laNk && !laTraBan && <div className="m-pb-ten-the">{tenChinhThe}</div>}
 
           {!laNk && <div className="m-pb-dong-cn">
             <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="1.8" fill="none">
@@ -1117,7 +1118,64 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
                   </div>
                 </div>
               </>
-            ) : (
+            ) : laTraBan ? (() => {
+              // Hàng bán trả lại (T830): ô như đầu phiếu web; trả tiền ngay thì kèm phiếu chi ở Tham chiếu
+              const httt = String(row._httt ?? (nv?.ttTien === 'da' ? 'tienmat' : 'congno'))
+              const ctTt = ctTtCon(row)
+              const dsTc = [...(ctTt && !danhSachThamChieu.some(x => x.so === ctTt.so) ? [{ so: ctTt.so, url: `/app/tien/2-1-1/${ctTt.id}` }] : []), ...danhSachThamChieu]
+              const dongTt = (n: string, g: string) => g ? <div className="m-pb-dong"><span className="n">{n}</span><span className="g">{g}</span></div> : null
+              return (
+                <>
+                  <div className="m-pb-nhom">THÔNG TIN CHUNG</div>
+                  <div className="m-pb-the m-pb-the-gon m-t655-gon">
+                    <div className="m-pb-dong">
+                      <span className="n">Khách hàng</span>
+                      <span className="g bold">{String(row.doiTuong || '')}</span>
+                    </div>
+                    {dongTt('Địa chỉ', String(row._diaChi ?? nv?.dc ?? ''))}
+                    {dongTt('Mã số thuế', mst)}
+                    {dongTt('Người giao dịch', String(row._nguoiGiao ?? row._nguoi ?? nv?.nguoi ?? ''))}
+                    {dongTt('Kho nhập', kho)}
+                    {dongTt('Ngày chứng từ', String(row.ngay ?? '').split(' ')[0])}
+                    {dongTt('Thanh toán', httt === 'tienmat' ? 'Tiền mặt ngay' : httt === 'chuyenkhoan' ? 'Chuyển khoản ngay' : 'Chưa thanh toán')}
+                    {httt !== 'congno' && dongTt('Quỹ', String(row._quy ?? ''))}
+                    {httt !== 'congno' && dongTt('Phương thức', String(row._pttt ?? ''))}
+                    {httt === 'congno' && dongTt('Hạn thanh toán', hanTt)}
+                    {dongTt('Ghi chú', String(row._ghiChu ?? row.dienGiai ?? ''))}
+                    {dsTc.length > 0 && (
+                      <div className="m-pb-dong">
+                        <span className="n">Tham chiếu</span>
+                        <span className="g link" style={{ display: 'flex', flexWrap: 'wrap', gap: 6, justifyContent: 'flex-end' }}>
+                          {dsTc.map(tc => <Link key={tc.so} to={tc.url} style={{ color: 'var(--blue)', textDecoration: 'none', fontWeight: 600 }}>{tc.so}</Link>)}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                  {coHd && (
+                    <>
+                      <div className="m-pb-nhom">HOÁ ĐƠN</div>
+                      <div className="m-pb-the m-pb-the-gon">
+                        {dongTt('Số hoá đơn', soHd)}
+                        {dongTt('Ký hiệu', kyHieuHd)}
+                        {dongTt('Ngày hoá đơn', ngayHd)}
+                      </div>
+                    </>
+                  )}
+                  <div className="m-pb-nhom">DANH SÁCH CHI TIẾT ({dsDong.length})</div>
+                  {dsDong.map((d, idx) => (
+                    <div key={idx} className="m-pb-the m-pb-muc-dong">
+                      <div className="m-pb-muc-hang1">
+                        <span className="m-pb-muc-ten">{d.ten || 'Mặt hàng'}</span>
+                        <b className="m-pb-muc-tong">{money(d.tien || 0)} đ</b>
+                      </div>
+                      <div className="m-pb-muc-hang2">
+                        <span>{d.sl ?? 0} {d.dvt || ''} × {money(d.gia ?? 0)}</span>
+                      </div>
+                    </div>
+                  ))}
+                </>
+              )
+            })() : (
               <>
                 <div className="m-pb-nhom">THÔNG TIN CHỨNG TỪ</div>
                 <div className="m-pb-the m-pb-the-gon">

@@ -62,13 +62,16 @@ export function HangTabsBanHang({
   const is314 = sc.code === '3.1.4' || sc.slug === '3-1-4'
   const is315 = sc.code === '3.1.5' || sc.slug === '3-1-5'
   const is316 = sc.code === '3.1.6' || sc.slug === '3-1-6'
+  // Bán hàng, Hàng bán trả lại là mục riêng trong menu Nghiệp vụ (T830): không là tab của màn khác, màn của mình chỉ một tab
+  const RIENG = ['3.1.7', '3.1.4']
+  const manRieng = is317 ? '3.1.7' : is314 ? '3.1.4' : ''
 
   return (
     <div className="m-tc-tabs" role="tablist" data-hd="tab">
       {/* Phiếu ngoài gói ẩn như web, gói Free chỉ còn Xuất bán POS (T622) */}
       {([['3.1.1', is311, 'Xuất bán POS'], ['3.1.7', is317, 'Bán hàng'], ['3.1.2', is312, 'Hoá đơn bán hàng'],
         ['3.1.3', is313, 'Bán nội bộ'], ['3.1.4', is314, 'Hàng bán trả lại']] as const)
-        .filter(([ma]) => coTrongGoi(ma, s.goi))
+        .filter(([ma]) => coTrongGoi(ma, s.goi) && (manRieng ? ma === manRieng : !RIENG.includes(ma)))
         .map(([ma, on, nhan]) => (
           <button
             key={ma}

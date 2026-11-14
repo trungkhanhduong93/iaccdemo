@@ -26,8 +26,9 @@ export function MNghiepVu() {
   const modKey = params.get('m')
 
   // Chỉ hiện màn mà gói Free hoặc Standard mở được trên điện thoại, áp cho mọi gói (Trum chốt 13/10/2026, T194; gói Free ẩn màn ngoài gói, T299)
+  // Bán hàng 3.1.7 chỉ gói Pro: gói đang dùng mở được thì là mục riêng dưới Xuất bán POS, trên Hàng bán trả lại, không còn là tab (T830)
   const manMoTrenMobile = (sc: ScreenDef) =>
-    hienMan(sc, s.goi, s.cheDo, s) && (anNgoaiGoi(s.goi) ? moDuoc(sc, s.goi) : (moDuoc(sc, 'S') || moDuoc(sc, 'PL')))
+    hienMan(sc, s.goi, s.cheDo, s) && (anNgoaiGoi(s.goi) ? moDuoc(sc, s.goi) : (moDuoc(sc, 'S') || moDuoc(sc, 'PL') || (sc.code === '3.1.7' && moDuoc(sc, s.goi))))
 
   const dsPhanHe = MODULES.filter(
     m =>
