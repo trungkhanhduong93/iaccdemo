@@ -4,7 +4,7 @@ import { Navigate, useLocation, useNavigate, useParams, useSearchParams } from '
 import type { Row, ScreenProps } from '../../modules/types'
 import { duongDan } from '../../app/registry'
 import { cuaHangHienTai, useSession } from '../../app/session'
-import { kieuGhiSoDv, tcNhuStandard } from '../../app/plan'
+import { coTrongGoi, kieuGhiSoDv, tcNhuStandard } from '../../app/plan'
 import { docNgay, khoangThang, trongKhoang } from '../ChonNgay'
 import { money, rutGonSo } from '../format'
 import { dsChipTT, khopChipTT } from '../LocNangCao'
@@ -643,7 +643,8 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
               Trả lại hàng mua
             </button>
           )}
-          {!rieng && (
+          {/* Chi phí mua hàng 4.1.5 chỉ hiện ở gói mở được màn này (gói Pro, T832) */}
+          {!rieng && (is415 || coTrongGoi('4.1.5', s.goi)) && (
             <button
               type="button"
               role="tab"
