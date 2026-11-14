@@ -1,0 +1,12 @@
+{
+  "name": "iPOS Accounting",
+  "short_name": "iPOS Accounting",
+  "lang": "vi",
+  "start_url": "/",
+  "background_color": "#ffffff",
+  "theme_color": "#0560a6",
+  "icons": [
+    { "src": "/app-icon.png?v=1", "sizes": "300x301", "type": "image/png", "purpose": "any" },
+    { "src": "/favicon.png?v=6", "sizes": "200x201", "type": "image/png", "purpose": "any" }
+  ]
+}

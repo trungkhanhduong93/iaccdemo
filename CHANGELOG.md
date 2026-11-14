@@ -2,6 +2,9 @@
 
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
+## 14/11/2026
+- T829: Favicon và dấu logo vuông mới (hoá đơn và máy tính); thêm vào màn hình chính điện thoại thì hiện logo app có dải iPOS.vn.
+
 ## 13/11/2026
 - T828: Ghi tăng bổ sung thẻ chi phí phân bổ (web) và Tạo thẻ bổ sung (điện thoại): mỗi chứng từ gốc một thẻ, mỗi dòng chứng từ một mục của thẻ, kể cả phiếu chi nhiều dòng. Web: các dòng cùng chứng từ gộp chung một ô Số chứng từ, Ngày chứng từ, Loại thẻ, Số thẻ, Ngày ghi tăng và một ô tích cho cả thẻ; nút Tạo đếm theo thẻ. Kéo giãn được độ rộng cột của form, phần mềm nhớ độ rộng đã kéo.
 - T827: Điện thoại, danh sách thẻ chi phí phân bổ: khu tổng hợp có dải cảnh báo số khoản chi phí chờ tạo thẻ và tổng tiền (từ phiếu chi, hoá đơn mua hàng), nút Tạo thẻ bổ sung mở màn tạo thẻ hàng loạt như web. Hoá đơn mua hàng nhiều dòng thành một thẻ nhiều mục phân bổ (Loại thẻ, ngày phân bổ chung, mỗi mục một số tháng); phiếu chi mỗi dòng một thẻ.
