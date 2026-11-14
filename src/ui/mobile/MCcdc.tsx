@@ -464,7 +464,7 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
               <b>{money(ds.reduce((a, t) => a + (t.con ?? 0), 0))} đ</b>
               {/* Dải cảnh báo khoản chờ tạo thẻ ở khu tổng hợp, bấm mở Tạo thẻ bổ sung (T827, như web T287) */}
               {khoanCho.length > 0 ? (
-                <button type="button" className="m-t825-canh" onClick={() => setMoBoSung(true)}>
+                <button type="button" className="m-t827-canh" onClick={() => setMoBoSung(true)}>
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 3l9.5 17h-19z" /><path d="M12 10v4M12 17.5v.01" /></svg>
                   <span className="nd">
                     <b>{khoanCho.length} khoản chờ tạo thẻ</b> · {money(khoanCho.reduce((a, d) => a + d.gt, 0))} đ
@@ -473,7 +473,7 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
                   <span className="nut">Tạo thẻ bổ sung</span>
                 </button>
               ) : (
-                <div className="m-t825-goi-y">Có khoản chi cần phân bổ nhiều kỳ? Lập phiếu chi lý do Chi phí chờ phân bổ, lưu xong phần mềm mở tạo thẻ.</div>
+                <div className="m-t827-goi-y">Có khoản chi cần phân bổ nhiều kỳ? Lập phiếu chi lý do Chi phí chờ phân bổ, lưu xong phần mềm mở tạo thẻ.</div>
               )}
             </div>
           )

@@ -111,42 +111,42 @@ export const MTaoTheBoSung: FC<{ ky: number; cnMacDinh: string; dsSoThe: string[
       </header>
 
       <div className="m-pb-noi-dung">
-        <div className="m-t825-dau">
+        <div className="m-t827-dau">
           <span>{khoan.length} khoản chờ tạo thẻ</span>
           {ds.length > 0 && (
             <button type="button" onClick={() => setDs(x => x.map(n => ({ ...n, chon: !tatCa })))}>{tatCa ? 'Bỏ chọn tất cả' : 'Chọn tất cả'}</button>
           )}
         </div>
-        {!ds.length && <div className="m-t825-trong">Chưa có khoản chi phí chờ phân bổ nào</div>}
+        {!ds.length && <div className="m-t827-trong">Chưa có khoản chi phí chờ phân bổ nào</div>}
         {ds.map(n => {
           const tong = n.muc.reduce((a, m) => a + m.gt, 0)
           const nhieu = n.muc.length > 1
           return (
-            <div key={n.key} className={`m-t825-the${n.chon ? ' chon' : ''}${loi.has(n.key) ? ' loi' : ''}`}>
-              <div className={`m-t825-the-dau${nhieu ? ' nhom' : ''}`}>
-                <button type="button" role="checkbox" aria-checked={n.chon} aria-label={`Chọn ${n.soCt}`} className={`m-t825-tich${n.chon ? ' on' : ''}`} onClick={() => sua(n.key, { chon: !n.chon })}>
+            <div key={n.key} className={`m-t827-the${n.chon ? ' chon' : ''}${loi.has(n.key) ? ' loi' : ''}`}>
+              <div className={`m-t827-the-dau${nhieu ? ' nhom' : ''}`}>
+                <button type="button" role="checkbox" aria-checked={n.chon} aria-label={`Chọn ${n.soCt}`} className={`m-t827-tich${n.chon ? ' on' : ''}`} onClick={() => sua(n.key, { chon: !n.chon })}>
                   {n.chon && <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" aria-hidden="true"><path d="M5 12l5 5L20 7" /></svg>}
                 </button>
-                <div className="m-t825-ten">
+                <div className="m-t827-ten">
                   {nhieu ? (
                     <><b>{n.soCt}</b><span>{n.laHd ? 'Hoá đơn mua hàng · ' : ''}{n.ngayCt} · {n.muc.length} dòng</span></>
                   ) : (
                     <><b>{n.muc[0].ten}</b><span>{n.soCt} · {n.ngayCt}{n.muc[0].ma ? ` · Mã ${n.muc[0].ma}` : ''}</span></>
                   )}
                 </div>
-                <b className="m-t825-tien">{money(tong)}</b>
+                <b className="m-t827-tien">{money(tong)}</b>
               </div>
               {n.chon && (
-                <div className="m-t825-than">
-                  {nhieu && <div className="m-t825-mot">Một thẻ, {n.muc.length} mục phân bổ <span>· {soThe.get(n.key)}</span></div>}
-                  <div className="m-t825-luoi">
+                <div className="m-t827-than">
+                  {nhieu && <div className="m-t827-mot">Một thẻ, {n.muc.length} mục phân bổ <span>· {soThe.get(n.key)}</span></div>}
+                  <div className="m-t827-luoi">
                     <div><span>Loại thẻ</span><button type="button" onClick={() => setChonLoai(n.key)}>{n.loai}</button></div>
                     <div><span>Phân bổ từ ngày</span><button type="button" onClick={() => setLichPb(n.key)}>{n.ngayPb}</button></div>
                   </div>
                   {n.muc.map((m, i) => (
-                    <div key={m.key} className="m-t825-muc">
-                      {nhieu && <div className="m-t825-muc-ten"><span><b>Mục {i + 1}</b> · {m.ten}</span><b>{money(m.gt)}</b></div>}
-                      <div className="m-t825-muc-ky">
+                    <div key={m.key} className="m-t827-muc">
+                      {nhieu && <div className="m-t827-muc-ten"><span><b>Mục {i + 1}</b> · {m.ten}</span><b>{money(m.gt)}</b></div>}
+                      <div className="m-t827-muc-ky">
                         <span>{nhieu && m.ma ? `${m.ma} · ` : ''}{Number(m.ky) > 0 ? `Mỗi tháng ${money(Math.round(m.gt / Number(m.ky)))} đ` : 'Số tháng phân bổ *'}</span>
                         <label className={!(Number(m.ky) > 0) && loi.has(n.key) ? 'loi' : ''}>
                           <input type="text" inputMode="numeric" aria-label={`Số tháng phân bổ ${m.ten}`} placeholder="Nhập" value={m.ky} onChange={e => suaKy(n.key, m.key, e.target.value)} />
@@ -155,7 +155,7 @@ export const MTaoTheBoSung: FC<{ ky: number; cnMacDinh: string; dsSoThe: string[
                       </div>
                     </div>
                   ))}
-                  {!nhieu && <div className="m-t825-so">{soThe.get(n.key)}</div>}
+                  {!nhieu && <div className="m-t827-so">{soThe.get(n.key)}</div>}
                 </div>
               )}
             </div>
@@ -163,7 +163,7 @@ export const MTaoTheBoSung: FC<{ ky: number; cnMacDinh: string; dsSoThe: string[
         })}
       </div>
 
-      <div className="m-t825-tong"><span>Đã chọn {soKhoanChon} khoản · {chon.length} thẻ</span><b>{money(tongChon)} đ</b></div>
+      <div className="m-t827-tong"><span>Đã chọn {soKhoanChon} khoản · {chon.length} thẻ</span><b>{money(tongChon)} đ</b></div>
       <div className="m-pb-day">
         <button type="button" className="m-pb-btn-huy" onClick={onDong}>Huỷ</button>
         <button type="button" className="m-pb-btn-luu" onClick={tao}>Tạo {chon.length} thẻ</button>

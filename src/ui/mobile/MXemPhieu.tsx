@@ -933,7 +933,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
                       <span className="n">Lý do</span>
                       <span className="g">
                         {String(row._lyDo ?? dsDong[0]?.ly ?? '')}
-                        {laLyChiPhi(String(row._lyDo ?? dsDong[0]?.ly ?? ''), s) && <span className="m-t824-cp">Chi phí</span>}
+                        {laLyChiPhi(String(row._lyDo ?? dsDong[0]?.ly ?? ''), s) && <span className="m-t826-cp">Chi phí</span>}
                       </span>
                     </div>
                   ) : (

@@ -590,19 +590,19 @@ function TheHangMua({
     <div id={`m-hang-${dong.id ?? stt}`} className={`m-t601-hang-row ${dong.moi ? 'moi' : ''}`}>
       <div className="m-t601-hang-row-dau">
         {dienGiai ? (
-          <div className="m-t824-dg">
-            <span className="m-t824-stt">{stt}.</span>
+          <div className="m-t826-dg">
+            <span className="m-t826-stt">{stt}.</span>
             {/* Mã hàng nằm dưới ô Diễn giải để ô rộng hết hàng */}
-            <div className="m-t824-dg-cot">
+            <div className="m-t826-dg-cot">
               <input
                 type="text"
-                className="m-t824-dg-o"
+                className="m-t826-dg-o"
                 aria-label={`Diễn giải dòng ${stt}`}
                 placeholder="Diễn giải"
                 value={dong.ten}
                 onChange={e => onDoiDong({ ten: e.target.value })}
               />
-              {dong.ma && <span className="m-t824-ma">Mã: {dong.ma}</span>}
+              {dong.ma && <span className="m-t826-ma">Mã: {dong.ma}</span>}
             </div>
           </div>
         ) : (
@@ -2226,13 +2226,13 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                           <span className="m-t655-nhan">Lý do nghiệp vụ <em>*</em></span>
                           <button type="button" className="m-t655-o" id="m-lp-o-lyDo" onClick={() => setMoChonLyHd(true)}>
                             <span className={lyHd ? 'chu' : 'goi'}>{lyHd || 'Chọn lý do'}</span>
-                            {laLyChiPhi(lyHd, s) && <span className="m-t824-cp">Chi phí</span>}
+                            {laLyChiPhi(lyHd, s) && <span className="m-t826-cp">Chi phí</span>}
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
                           </button>
                         </div>
                         {loiO.lyDo && <div className="m-lp-loi-o m-t655-loi">{loiO.lyDo}</div>}
                         {!dangSua && laLyPhanBo(lyHd, s) && (
-                          <div className="m-t824-nhac-the">Lưu hoá đơn xong sẽ tạo Thẻ chi phí phân bổ</div>
+                          <div className="m-t826-nhac-the">Lưu hoá đơn xong sẽ tạo Thẻ chi phí phân bổ</div>
                         )}
                       </>
                     ) : (
@@ -2399,7 +2399,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
 
                     {khongKho && (
                       /* Hoá đơn mua hàng: Thêm dòng là dòng trống mã gõ diễn giải; Chọn hàng hoá lấy theo mã (T826, như web T821) */
-                      <div className="m-t824-them">
+                      <div className="m-t826-them">
                         <button
                           type="button"
                           className="m-t601-btn-them-dong"
