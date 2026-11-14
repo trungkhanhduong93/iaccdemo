@@ -30,6 +30,12 @@
 - Theo góp ý sau đó: Ngày chứng từ bỏ giờ; Thông tin hoá đơn gộp một thẻ, thứ tự Số hoá đơn (hoá đơn mới, dự thảo thì "Dự thảo" bấm xem), Ngày hoá đơn, Ký hiệu, Loại điều chỉnh, Hoá đơn gốc (chỉ số, bấm xem); bỏ Mã tra cứu (đã ở thẻ tổng tiền), Ký hiệu hoá đơn gốc, Chứng từ gốc, nhãn Đã xuất HĐĐT ở hoá đơn gốc; bỏ CSS `m-t838-*`.
 - Chưa làm: phát hành hoá đơn dự thảo từ điện thoại (web có nút Phát hành ở form, màn Hoá đơn điện tử).
 
+## T839 (15/11/2026)
+
+- Nhãn Dự thảo màu đỏ (`--red`, `--red-t`): danh sách Bán hàng web (`ChungTuBanHang.tsx`, `.ds-so-vat.nhap` cạnh nhãn VAT), danh sách điện thoại (`MDsDongPhieu` prop `duThao`, `.m-t835-vat.nhap`), chip thẻ tổng tiền điện thoại (`.m-t600-chip-tt.nhap`), nhãn tiêu đề hộp xem hoá đơn điện thoại, chữ Dự thảo trên chip loại hoá đơn ở form web (`ChungTuForm.tsx`, `.ct-hd-nhap`).
+- Sự cố: phiên khác (T837) làm cùng thư mục này. Commit T838 đầu (`317b282f`, đã push) cuốn theo phần sửa dở của phiên đó trong `MBanHangTay.tsx` (dòng danh sách khách hàng, loại chứng từ, lọc Loại chứng từ, `duThao`), còn khai báo `duThao` trong `MDsChungTuChuan.tsx` chưa commit nên main `4ccf8f19` không qua typecheck. Commit T839 kèm khai báo đó để main build lại được.
+- Kiểm: 375px gói Plus, nhãn Dự thảo đỏ ở HDDC2610-0002, HDTT2610-0002, VAT vẫn xanh; web 1024px cùng hai chứng từ; form web HDDC2610-0002 chữ Dự thảo đỏ. Typecheck, build, `kiem_tra --nhanh`, `kiem_van` sạch.
+
 ## Dở dang, việc tiếp theo
 
 - Không.

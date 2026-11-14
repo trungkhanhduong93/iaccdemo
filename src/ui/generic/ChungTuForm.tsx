@@ -1297,7 +1297,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
               {/* Bán hàng lập tay (T785): công tắc Phát hành HĐĐT cùng chỗ ô tích Lập kèm hoá đơn; đã xuất thì nhãn chữ kèm mã tra cứu, không bấm */}
               {hdDaXuat ? <span className="ct-hd-nhan" title={`Mã cơ quan thuế ${hdDaXuat.ma}`}>Đã xuất HĐĐT · Mã tra cứu <b className="code">{hdDaXuat.traCuu ?? hdDaXuat.ma}</b></span>
                 // Hoá đơn thay thế, điều chỉnh luôn có hoá đơn: nhãn thay công tắc; huỷ bán không xuất hoá đơn (T787)
-                : laHdMoi ? <span className="ct-hd-nhan">{TEN_LOAI_CT[loaiCt]}{row ? ' · Dự thảo' : ''}</span>
+                : laHdMoi ? <span className="ct-hd-nhan">{TEN_LOAI_CT[loaiCt]}{row && <> · <span className="ct-hd-nhap">Dự thảo</span></>}</span>
                 : laHuyBan ? <span className="ct-hd-nhan">Huỷ bán · không xuất hoá đơn</span>
                 : hdDienTu && dangSua && <label className="row" style={{ gap: 6, cursor: 'pointer', fontSize: 13 }}>
                   <input type="checkbox" className="bat-tat" checked={phatHd}

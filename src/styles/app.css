@@ -48246,7 +48246,7 @@ textarea.m-tpb-inp { height: auto; padding: 8px 12px; }
   .hdx-dt .ds-hop-dau > b { flex: 1; min-width: 0; display: flex; align-items: center; gap: 6px; }
   .hdx-dt .ds-hop-dau > .grow { display: none; }
   .hdx-dt .hdx-dt-tt { margin-left: auto; padding: 0 5px; border-radius: 4px; background: var(--green-t); color: var(--green); font-size: 10px; font-weight: 700; line-height: 16px; letter-spacing: .3px; }
-  .hdx-dt .hdx-dt-tt.nhap { background: var(--orange-t); color: var(--orange-d); }
+  .hdx-dt .hdx-dt-tt.nhap { background: var(--red-t); color: var(--red); }
   /* Hai nút chân cỡ như chân xem phiếu mua (m-pb-day): cao 44px, bo 12px, chữ 14px nút phụ, 15px nút chính */
   .hdx-dt .hddt-chan { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; padding: 10px 14px calc(12px + env(safe-area-inset-bottom, 0px)); }
   .hdx-dt .hddt-chan > button { width: 100%; height: 44px; padding: 0 12px; justify-content: center; white-space: nowrap; border-radius: 12px; font-size: 14px; font-weight: 600; }
@@ -48262,3 +48262,8 @@ textarea.m-tpb-inp { height: auto; padding: 8px 12px; }
 
 /* ── Điện thoại, Thông tin hoá đơn: số hoá đơn Dự thảo chữ đỏ (T838) ── */
 .m-t835-so-hd.m-t838-nhap { color: var(--red); }
+
+/* ── Nhãn Dự thảo màu đỏ cho hoá đơn thay thế, điều chỉnh chưa phát hành, web và điện thoại (T839) ── */
+.m-mh-dong-so .m-t835-vat.nhap, .m-t600-chip-tt.nhap { background: var(--red-t); color: var(--red); }   /* nhãn Dự thảo màu đỏ: danh sách, thẻ tổng tiền */
+.ds-link-so .ds-so-vat.nhap { background: var(--red-t); color: var(--red); }   /* web: nhãn Dự thảo ở số chứng từ danh sách Bán hàng */
+.ct-hd-nhan .ct-hd-nhap { margin-left: .3em; color: var(--red); font-weight: 600; }   /* web: chữ Dự thảo trên chip loại hoá đơn ở form chứng từ */

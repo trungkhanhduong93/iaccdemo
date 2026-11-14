@@ -595,6 +595,8 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
           {r.nguon === 'FABi' ? `...${String(r.so).slice(-5)}` : r.so}
           {/* Đã xuất hoá đơn điện tử: nhãn VAT trên số chứng từ, thay cột Trạng thái xuất HĐĐT (T802) */}
           {hdDong(r) && <span className="ds-so-vat" title={`Đã xuất hoá đơn ${tenHd(hdDong(r)!)}`}>VAT</span>}
+          {/* Hoá đơn thay thế, điều chỉnh chưa phát hành: nhãn đỏ Dự thảo cùng chỗ nhãn VAT (T839) */}
+          {!hdDong(r) && laHdMoiCua(r) && <span className="ds-so-vat nhap" title="Hoá đơn điện tử dự thảo, chưa phát hành">Dự thảo</span>}
         </button>
       ),
     },

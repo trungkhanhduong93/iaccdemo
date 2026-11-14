@@ -295,7 +295,7 @@ export const MBanHangTay: FC<MBanHangTayProps> = ({ sc, mod, rows, duong, tabTay
                   <div className="m-t600-tong-tien-so xanh">{money(tongCt)} đ</div>
                 </div>
                 <div className="m-t834-hd">
-                  <span className={`m-t600-chip-tt ${hd ? 'da' : 'chua'}`}>{hd ? 'Đã xuất HĐĐT' : ttHoaDon(ct)}</span>
+                  <span className={`m-t600-chip-tt ${hd ? 'da' : laHdMoiCua(ct) && loaiCtCua(ct) !== 'HUYBAN' ? 'nhap' : 'chua'}`}>{hd ? 'Đã xuất HĐĐT' : ttHoaDon(ct)}</span>
                   {hd && <small className="m-t834-tra-cuu">Mã tra cứu <b className="code">{hd.traCuu ?? hd.ma}</b></small>}
                 </div>
               </div>

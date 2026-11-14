@@ -127,6 +127,8 @@ export interface MDsDongPhieuProps {
   lyDo?: string
   /** Đã xuất hoá đơn điện tử: nhãn VAT trên số chứng từ như danh sách web (T802, T835) */
   vat?: boolean
+  /** Hoá đơn thay thế, điều chỉnh chưa phát hành: nhãn Dự thảo cùng chỗ, cùng kiểu nhãn VAT (T837) */
+  duThao?: boolean
 }
 
 export function MDsDongPhieu({
@@ -142,6 +144,7 @@ export function MDsDongPhieu({
   dvt,
   lyDo,
   vat,
+  duThao,
 }: MDsDongPhieuProps) {
   const coSl = slProp !== undefined
   return (
@@ -152,7 +155,7 @@ export function MDsDongPhieu({
     >
       <div className="m-mh-dong-trai">
         <div className="m-mh-dong-hang1">
-          <span className="m-mh-dong-so">{tieuDe ?? so}{vat && <span className="m-t835-vat" title="Đã xuất hoá đơn điện tử">VAT</span>}</span>
+          <span className="m-mh-dong-so">{tieuDe ?? so}{vat && <span className="m-t835-vat" title="Đã xuất hoá đơn điện tử">VAT</span>}{duThao && <span className="m-t835-vat nhap" title="Hoá đơn điện tử dự thảo, chưa phát hành">Dự thảo</span>}</span>
           {soDongHang > 0 && <span className="m-mh-dong-hh">{soDongHang} hàng hoá</span>}
         </div>
         {dongPhu && <span className="m-mh-dong-ncc" title={dongPhu}>{dongPhu}</span>}
