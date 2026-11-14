@@ -498,7 +498,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
 
   // Chip trạng thái thẻ tổng quan
   let chipTt: { kieu: string; ten: string } | null = null
-  if (nhomMb === 'mua') {
+  if (nhomMb === 'mua' || laTraBan) {   // Hàng bán trả lại: tình trạng trả tiền khách như phiếu mua (T841)
     if (daTra >= tongGoc && tongGoc > 0) {
       chipTt = { kieu: 'da', ten: 'Đã thanh toán' }
     } else if (daTra > 0 && conLai > 0) {
@@ -657,7 +657,8 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
         )}
 
         {/* 1. THẺ TỔNG QUAN (A2) */}
-        {nhomMb === 'mua' ? (
+        {/* Hàng bán trả lại dùng thẻ đầu như phiếu mua: cửa hàng, nguồn, tổng tiền, khung thanh toán (T841) */}
+        {nhomMb === 'mua' || laTraBan ? (
           <div className="m-t600-the-dau m-t655-dau">
             {/* Hàng đầu như chi tiết thu chi: cửa hàng bên trái, nguồn bên phải; bỏ chip trạng thái và tên nhà cung cấp (T655) */}
             <div className="m-tc-xem-dong-cn">
@@ -667,7 +668,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
               </svg>
               <span>{cuaHangTen}</span>
               <span className="m-tc-badge-nguon m-tc-xem-nguon">
-                {row.nguon === 'excel' ? 'Excel' : row.nguon === 'pos' ? 'POS' : 'Thủ công'}
+                {laTraBan ? (NGUON[row.nguon]?.[1] ?? 'Thủ công') : row.nguon === 'excel' ? 'Excel' : row.nguon === 'pos' ? 'POS' : 'Thủ công'}
               </span>
             </div>
 
@@ -1132,12 +1133,9 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
                       <span className="n">Khách hàng</span>
                       <span className="g bold">{String(row.doiTuong || '')}</span>
                     </div>
-                    {dongTt('Địa chỉ', String(row._diaChi ?? nv?.dc ?? ''))}
-                    {dongTt('Mã số thuế', mst)}
-                    {dongTt('Người giao dịch', String(row._nguoiGiao ?? row._nguoi ?? nv?.nguoi ?? ''))}
+                    {/* Gọn như phiếu mua: bỏ Địa chỉ, Mã số thuế, Người giao dịch; Thanh toán đã ở thẻ đầu (T841) */}
                     {dongTt('Kho nhập', kho)}
                     {dongTt('Ngày chứng từ', String(row.ngay ?? '').split(' ')[0])}
-                    {dongTt('Thanh toán', httt === 'tienmat' ? 'Tiền mặt ngay' : httt === 'chuyenkhoan' ? 'Chuyển khoản ngay' : 'Chưa thanh toán')}
                     {httt !== 'congno' && dongTt('Quỹ', String(row._quy ?? ''))}
                     {httt !== 'congno' && dongTt('Phương thức', String(row._pttt ?? ''))}
                     {httt === 'congno' && dongTt('Hạn thanh toán', hanTt)}

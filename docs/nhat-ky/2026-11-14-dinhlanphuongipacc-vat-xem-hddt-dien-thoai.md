@@ -41,6 +41,11 @@
 - `MBanHangTay.tsx`: huỷ bán không hiện Thông tin hoá đơn (hoá đơn gốc). Dòng Tham chiếu ở Thông tin chung dựng như `ChungTuForm.tsx` web (QD107, T787, T815): `_hdGoc` (Chứng từ gốc), `_huyBan`, `_hdTt`, `dsHdMoiCon`, `dsTraBanCon`; chỉ hiện chứng từ còn trong danh sách; bấm mở chi tiết (hàng bán trả lại mở màn 3.1.4).
 - Kiểm 375px gói Plus: HBH2610-0001 tham chiếu BH2610-0010, HDTT2610-0001; HDTT2610-0001 tham chiếu BH2610-0010, HBH2610-0001; BH2610-0010 tham chiếu HDTT2610-0001, HBH2610-0001; HDDC2610-0001 với BH2610-0011 hai chiều; bấm HDTT2610-0001 từ huỷ bán mở đúng chứng từ. Build, `kiem_tra --nhanh`, `kiem_van` sạch.
 
+## T841 (15/11/2026)
+
+- `MXemPhieu.tsx` (phần Hàng bán trả lại `laTraBan` của T830): thẻ đầu dùng khuôn phiếu mua (`m-t600-the-dau m-t655-dau`): cửa hàng, nguồn (`NGUON`), Tổng tiền theo `row.tong` (khớp danh sách; thẻ cũ tính lại từ dòng hàng có cộng VAT nên lệch, vd TL2610-0259 9.713.440 thay vì 8.933.078), khung thanh toán chip, Đã trả / tổng (`soDaTra`). Bỏ ô Cửa hàng, Nguồn chứng từ; Thông tin chung bỏ Địa chỉ, Mã số thuế, Người giao dịch, Thanh toán.
+- Kiểm 375px gói Plus: TL2610-0259, TL2610-0255 đúng; build, `kiem_tra --nhanh`, `kiem_van` sạch.
+
 ## Dở dang, việc tiếp theo
 
 - Không.
