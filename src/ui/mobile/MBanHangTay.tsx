@@ -350,7 +350,7 @@ export const MBanHangTay: FC<MBanHangTayProps> = ({ sc, mod, rows, duong, tabTay
                     <div className="m-pb-the m-pb-the-gon m-t655-gon">
                       {hd && <Dg nhan="Số hoá đơn"><button type="button" className="m-t835-so-hd" onClick={() => setXemHd({ r: ct, hd })}>{hd.so}<Icon n="chevr" className="ic sm" /></button></Dg>}
                       {/* Hoá đơn thay thế, điều chỉnh chưa phát hành: xem bản dự thảo như web T798 */}
-                      {hdNhap && <Dg nhan="Số hoá đơn"><button type="button" className="m-t835-so-hd" onClick={() => setXemHd({ r: ct, hd: hdNhap, nhap: true })}>Dự thảo<Icon n="chevr" className="ic sm" /></button></Dg>}
+                      {hdNhap && <Dg nhan="Số hoá đơn"><button type="button" className="m-t835-so-hd m-t838-nhap" onClick={() => setXemHd({ r: ct, hd: hdNhap, nhap: true })}>Dự thảo<Icon n="chevr" className="ic sm" /></button></Dg>}
                       {(hd ?? hdNhap) && <Dg nhan="Ngày hoá đơn">{(hd ?? hdNhap)!.ngay}</Dg>}
                       {(hd ?? hdNhap) && <Dg nhan="Ký hiệu">{`${(hd ?? hdNhap)!.mau}${(hd ?? hdNhap)!.kyHieu}`}</Dg>}
                       {loaiCt === 'HDDIEUCHINH' && <Dg nhan="Loại điều chỉnh">{ct._dcLoai === 'tang' ? 'Điều chỉnh tăng' : 'Điều chỉnh giảm'}</Dg>}

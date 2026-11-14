@@ -48259,3 +48259,6 @@ textarea.m-tpb-inp { height: auto; padding: 8px 12px; }
 @media (min-width: 500px) and (max-width: 767px) { .hdx-xem-ban .hdx-giay { zoom: .6; } }
 @media (min-width: 600px) and (max-width: 767px) { .hdx-xem-ban .hdx-giay { zoom: .72; } }
 @media (min-width: 700px) and (max-width: 767px) { .hdx-xem-ban .hdx-giay { zoom: .85; } }
+
+/* ── Điện thoại, Thông tin hoá đơn: số hoá đơn Dự thảo chữ đỏ (T838) ── */
+.m-t835-so-hd.m-t838-nhap { color: var(--red); }
