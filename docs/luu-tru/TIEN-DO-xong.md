@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T840 | Điện thoại, chi tiết Bán hàng: huỷ bán bỏ hoá đơn gốc; Tham chiếu như web (chứng từ gốc, huỷ bán, hoá đơn thay thế, điều chỉnh, hàng bán trả lại) | dinhlanphuongipacc | 15/11/2026 | Xem [nhật ký](../nhat-ky/2026-11-14-dinhlanphuongipacc-vat-xem-hddt-dien-thoai.md) |
 | T839 | Nhãn đỏ Dự thảo cho hoá đơn thay thế, điều chỉnh chưa phát hành: danh sách Bán hàng web, điện thoại (cạnh số chứng từ), chip form web, thẻ tổng tiền, hộp xem hoá đơn điện thoại | dinhlanphuongipacc | 15/11/2026 | Xem [nhật ký](../nhat-ky/2026-11-14-dinhlanphuongipacc-vat-xem-hddt-dien-thoai.md) |
 | T838 | Điện thoại, chi tiết hoá đơn thay thế, điều chỉnh, huỷ bán: Thông tin hoá đơn có hoá đơn gốc (nhãn Đã xuất HĐĐT, xem được), chứng từ gốc, loại điều chỉnh, hoá đơn mới đã xuất hoặc xem dự thảo | dinhlanphuongipacc | 14/11/2026 | Xem [nhật ký](../nhat-ky/2026-11-14-dinhlanphuongipacc-vat-xem-hddt-dien-thoai.md) |
 | T836 | Điện thoại, danh sách mục Bán hàng: chứng từ đã xuất HĐĐT bỏ dòng trạng thái "Đã xuất HĐ ...", chỉ còn nhãn VAT | dinhlanphuongipacc | 14/11/2026 | Xem [nhật ký](../nhat-ky/2026-11-14-dinhlanphuongipacc-vat-xem-hddt-dien-thoai.md) |

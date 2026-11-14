@@ -36,6 +36,11 @@
 - Sự cố: phiên khác (T837) làm cùng thư mục này. Commit T838 đầu (`317b282f`, đã push) cuốn theo phần sửa dở của phiên đó trong `MBanHangTay.tsx` (dòng danh sách khách hàng, loại chứng từ, lọc Loại chứng từ, `duThao`), còn khai báo `duThao` trong `MDsChungTuChuan.tsx` chưa commit nên main `4ccf8f19` không qua typecheck. Commit T839 kèm khai báo đó để main build lại được.
 - Kiểm: 375px gói Plus, nhãn Dự thảo đỏ ở HDDC2610-0002, HDTT2610-0002, VAT vẫn xanh; web 1024px cùng hai chứng từ; form web HDDC2610-0002 chữ Dự thảo đỏ. Typecheck, build, `kiem_tra --nhanh`, `kiem_van` sạch.
 
+## T840 (15/11/2026)
+
+- `MBanHangTay.tsx`: huỷ bán không hiện Thông tin hoá đơn (hoá đơn gốc). Dòng Tham chiếu ở Thông tin chung dựng như `ChungTuForm.tsx` web (QD107, T787, T815): `_hdGoc` (Chứng từ gốc), `_huyBan`, `_hdTt`, `dsHdMoiCon`, `dsTraBanCon`; chỉ hiện chứng từ còn trong danh sách; bấm mở chi tiết (hàng bán trả lại mở màn 3.1.4).
+- Kiểm 375px gói Plus: HBH2610-0001 tham chiếu BH2610-0010, HDTT2610-0001; HDTT2610-0001 tham chiếu BH2610-0010, HBH2610-0001; BH2610-0010 tham chiếu HDTT2610-0001, HBH2610-0001; HDDC2610-0001 với BH2610-0011 hai chiều; bấm HDTT2610-0001 từ huỷ bán mở đúng chứng từ. Build, `kiem_tra --nhanh`, `kiem_van` sạch.
+
 ## Dở dang, việc tiếp theo
 
 - Không.

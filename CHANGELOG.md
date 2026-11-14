@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 15/11/2026
+- T840: Điện thoại, mục Bán hàng: chứng từ huỷ bán không còn hiện hoá đơn gốc; Thông tin chung có dòng Tham chiếu như web: huỷ bán, hoá đơn thay thế trỏ tới chứng từ bán bị thay thế và ngược lại, hoá đơn điều chỉnh với chứng từ gốc, hàng bán trả lại; bấm số để mở.
 - T839: Hoá đơn thay thế, điều chỉnh chưa phát hành có nhãn đỏ Dự thảo cạnh số chứng từ ở danh sách Bán hàng (web và điện thoại), cùng chỗ nhãn VAT; chữ Dự thảo màu đỏ ở chip loại hoá đơn trên form web, thẻ tổng tiền và hộp xem hoá đơn trên điện thoại.
 
 ## 14/11/2026

@@ -14,7 +14,7 @@ import { dsTraBanCon, MAN_TRA_BAN, soDaTra } from '../generic/daXoa'
 import type { TraTu } from '../generic/ChungTuForm'
 import { dtDong } from '../../modules/ban-hang/BangHangBan'
 import { giamThueHang } from '../../modules/ban-hang/giam-thue'
-import { HopXemHd, HopXuatHddt, TEN_LOAI_CT, hdCua, hdGocCua, type HdDaXuat, type LoaiCt, laHdMoiCua, loaiCtCua, ttHdGoc } from '../../modules/ban-hang/hddt'
+import { HopXemHd, HopXuatHddt, TEN_LOAI_CT, dsHdMoiCon, hdCua, hdGocCua, type CtLq, type HdDaXuat, type LoaiCt, laHdMoiCua, loaiCtCua, ttHdGoc } from '../../modules/ban-hang/hddt'
 import { MChon } from './MChon'
 import { MChonKhoangNgay } from './MChonKhoangNgay'
 import { MDsChungTuChuan, MDsDongPhieu, HangTabsBanHang } from './MDsChungTuChuan'
@@ -138,6 +138,15 @@ export const MBanHangTay: FC<MBanHangTayProps> = ({ sc, mod, rows, duong, tabTay
   const httt = String(ct?._httt ?? (nv?.ttTien === 'da' ? 'tienmat' : 'congno')) as 'congno' | 'tienmat' | 'chuyenkhoan'
   const traLai = ct ? dsTraBanCon(ct) : []
   const hdGoc = ct ? hdGocCua(ct) : undefined
+  // Tham chiếu như web (QD107, T787, T815): chứng từ gốc, huỷ bán, hoá đơn thay thế, điều chỉnh lập từ chứng từ này, hàng bán trả lại (T840)
+  const coCt = (id: string) => rows.some(x => String(x.id) === id)
+  const dsThamChieu: { so: string; ten: string; mo: () => void }[] = !ct ? [] : [
+    ...(hdGoc && coCt(hdGoc.id) ? [{ so: hdGoc.so, ten: 'Chứng từ gốc', mo: () => setIdXem(hdGoc.id) }] : []),
+    ...([ct._huyBan, ct._hdTt] as (CtLq | undefined)[]).filter((c): c is CtLq => Boolean(c) && coCt(c!.id))
+      .map(c => ({ so: c.so, ten: TEN_LOAI_CT[c.loai], mo: () => setIdXem(c.id) })),
+    ...dsHdMoiCon(man, ct).filter(c => coCt(c.id)).map(c => ({ so: c.so, ten: TEN_LOAI_CT[c.loai], mo: () => setIdXem(c.id) })),
+    ...traLai.map(c => ({ so: c.so, ten: 'Hàng bán trả lại', mo: () => nav(`/app/${MAN_TRA_BAN}/${c.id}`) })),
+  ].filter((c, i, ds) => ds.findIndex(x => x.so === c.so) === i)
   // Hoá đơn thay thế, điều chỉnh chưa phát hành: bản dự thảo dựng từ ký hiệu, ngày, tiền đã lưu, số 00000000 (như web T798)
   const hdNhap: HdDaXuat | undefined = ct && !hd && laHdMoiCua(ct) ? (() => {
     const kh = String(ct._kyHieuHd ?? ''), tien = (ct._tienHd as Partial<HdDaXuat> | undefined) ?? {}
@@ -328,12 +337,12 @@ export const MBanHangTay: FC<MBanHangTayProps> = ({ sc, mod, rows, duong, tabTay
                   <Dg nhan="Kho xuất">{ct._kho}</Dg>
                   <Dg nhan="Kênh bán hàng">{ct.kenh}</Dg>
                   <Dg nhan="Ghi chú">{ct.dienGiai}</Dg>
-                  {traLai.length > 0 && (
+                  {dsThamChieu.length > 0 && (
                     <div className="m-pb-dong">
                       <span className="n">Tham chiếu</span>
                       <span className="g link m-t834-tc">
-                        {traLai.map(c => (
-                          <button key={c.id} type="button" onClick={() => nav(`/app/${MAN_TRA_BAN}/${c.id}`)}>
+                        {dsThamChieu.map(c => (
+                          <button key={c.so} type="button" title={c.ten} onClick={c.mo}>
                             <span>{c.so}</span><Icon n="chevr" className="ic sm" />
                           </button>
                         ))}
@@ -342,7 +351,8 @@ export const MBanHangTay: FC<MBanHangTayProps> = ({ sc, mod, rows, duong, tabTay
                   )}
                 </div>
 
-                {(hd || hdGoc || hdNhap) && (
+                {/* Huỷ bán không có hoá đơn: không hiện hoá đơn gốc, xem chứng từ bán, hoá đơn thay thế qua Tham chiếu (T840) */}
+                {(hd || hdNhap || (hdGoc && loaiCt !== 'HUYBAN')) && (
                   <>
                     <div className="m-pb-nhom">THÔNG TIN HOÁ ĐƠN</div>
                     {/* Thứ tự: Số hoá đơn (hoá đơn mới của chứng từ này), Ngày hoá đơn, Ký hiệu, Loại điều chỉnh, Hoá đơn gốc (chỉ số, bấm xem).
@@ -354,7 +364,7 @@ export const MBanHangTay: FC<MBanHangTayProps> = ({ sc, mod, rows, duong, tabTay
                       {(hd ?? hdNhap) && <Dg nhan="Ngày hoá đơn">{(hd ?? hdNhap)!.ngay}</Dg>}
                       {(hd ?? hdNhap) && <Dg nhan="Ký hiệu">{`${(hd ?? hdNhap)!.mau}${(hd ?? hdNhap)!.kyHieu}`}</Dg>}
                       {loaiCt === 'HDDIEUCHINH' && <Dg nhan="Loại điều chỉnh">{ct._dcLoai === 'tang' ? 'Điều chỉnh tăng' : 'Điều chỉnh giảm'}</Dg>}
-                      {hdGoc && (
+                      {hdGoc && loaiCt !== 'HUYBAN' && (
                         <Dg nhan="Hoá đơn gốc">
                           <button type="button" className="m-t835-so-hd" onClick={() => setXemHd({ r: rows.find(x => String(x.id) === hdGoc.id) ?? ct, hd: hdGoc.hd })}>{hdGoc.hd.so}<Icon n="chevr" className="ic sm" /></button>
                         </Dg>
