@@ -337,7 +337,7 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
     }
 
     if (mod.key === 'ban-hang') {
-      return <HangTabsBanHang sc={sc} onMoTheoDoi={() => setMoTheoDoi(true)} />
+      return <HangTabsBanHang sc={sc} />   // bỏ tab Báo cáo theo dõi (T833)
     }
 
     if (mod.key === 'kho') {

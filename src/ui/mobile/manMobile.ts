@@ -16,6 +16,7 @@ import { MCauHinh, MNguoiDung, MNhatKyThaoTac, MPhanQuyen, MThongTinDonVi } from
 import { MTacVu } from './MTacVu'
 import { MQuyTrinh } from './MQuyTrinh'
 import { MXuatBanPos } from './MXuatBanPos'
+import { MBanHangPro } from './MBanHangTay'
 import { MCongThuc } from './MCongThuc'
 import { MSoDuBanDau } from './MSoDuBanDau'
 import { MHoaDonDauVao } from './MHoaDonDauVao'
@@ -77,6 +78,10 @@ export function manMobile(sc: ScreenDef, mod: ModuleDef): ComponentType<ScreenPr
   // T186: Xuất bán POS (3.1.1)
   if (mod.key === 'ban-hang' && (sc.code === '3.1.1' || sc.slug === '3-1-1')) {
     return MXuatBanPos
+  }
+  // T833: Bán hàng lập tay gói Pro (3.1.7) giao diện như Xuất bán POS, chi tiết có Trả lại, Xuất HĐĐT
+  if (mod.key === 'ban-hang' && (sc.code === '3.1.7' || sc.slug === '3-1-7')) {
+    return MBanHangPro
   }
 
   // T188: Công thức sơ chế 5.1.5 và Công thức chế biến 9.1.3 (kể cả Danh mục gói Plus: cong-thuc-che-bien)

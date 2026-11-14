@@ -48,10 +48,8 @@ export function dinhDangThuNgay(chuoiNgay: string): string {
 
 export function HangTabsBanHang({
   sc,
-  onMoTheoDoi,
 }: {
   sc: ScreenProps['sc']
-  onMoTheoDoi?: () => void
 }) {
   const nav = useNavigate()
   const { s } = useSession()
@@ -111,17 +109,6 @@ export function HangTabsBanHang({
           Điều chỉnh hoá đơn
         </button>
       )}
-      {onMoTheoDoi && (
-        <button
-          type="button"
-          role="tab"
-          aria-selected={false}
-          className="m-tc-tab-btn"
-          onClick={onMoTheoDoi}
-        >
-          Báo cáo theo dõi
-        </button>
-      )}
     </div>
   )
 }
@@ -138,6 +125,8 @@ export interface MDsDongPhieuProps {
   soLuong?: number
   dvt?: string
   lyDo?: string
+  /** Đã xuất hoá đơn điện tử: nhãn VAT trên số chứng từ như danh sách web (T802, T835) */
+  vat?: boolean
 }
 
 export function MDsDongPhieu({
@@ -152,6 +141,7 @@ export function MDsDongPhieu({
   soLuong: slProp,
   dvt,
   lyDo,
+  vat,
 }: MDsDongPhieuProps) {
   const coSl = slProp !== undefined
   return (
@@ -162,7 +152,7 @@ export function MDsDongPhieu({
     >
       <div className="m-mh-dong-trai">
         <div className="m-mh-dong-hang1">
-          <span className="m-mh-dong-so">{tieuDe ?? so}</span>
+          <span className="m-mh-dong-so">{tieuDe ?? so}{vat && <span className="m-t835-vat" title="Đã xuất hoá đơn điện tử">VAT</span>}</span>
           {soDongHang > 0 && <span className="m-mh-dong-hh">{soDongHang} hàng hoá</span>}
         </div>
         {dongPhu && <span className="m-mh-dong-ncc" title={dongPhu}>{dongPhu}</span>}

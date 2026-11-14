@@ -1,4 +1,4 @@
-import { useMemo, useState, type FC, type ReactNode } from 'react'
+import { useEffect, useMemo, useState, type FC, type ReactNode } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import type { Row, ScreenProps } from '../../modules/types'
 import { cuaHangHienTai, gtgtTyLe, useSession } from '../../app/session'
@@ -14,6 +14,7 @@ import {
   dongCuaPhieu,
   donPosCua,
   giamThuePhieu,
+  hdFabi,
   ptttCua,
   soFabi,
   theoDon,
@@ -27,23 +28,41 @@ import {
 } from '../../modules/ban-hang/ChungTuBanHang'
 import { MChungTu } from './MChungTu'
 import { giamThueHang } from '../../modules/ban-hang/giam-thue'
+import { HopXemHd, type HdDaXuat } from '../../modules/ban-hang/hddt'
 import { useDaXoa } from '../generic/daXoa'
 import { MDsChungTuChuan, MDsDongPhieu, HangTabsBanHang, layMaKh } from './MDsChungTuChuan'
 import { quayLaiMobile } from './quayLai'
-import { MBaoCaoTheoDoi } from './MBaoCaoTheoDoi'
+import { MBanHangTay, layVeTabTay } from './MBanHangTay'
 
 type KhoaLoc = 'cn' | 'kh' | 'kenh' | 'pttt' | 'hang' | 'tonKho' | 'trangThai' | 'monBan' | 'nguyenNhan'
 const LOC_TRONG: Record<KhoaLoc, string> = { cn: '', kh: '', kenh: '', pttt: '', hang: '', tonKho: '', trangThai: '', monBan: '', nguyenNhan: '' }
 
 /** Gói Plus (T831): web gộp chứng từ FABi và lập tay vào màn 3.1.1 Bán hàng (T753). Điện thoại tách 2 mục: Xuất bán POS giữ chứng từ FABi,
- *  mục Bán hàng (?tay=1, xem, lập, sửa theo mã chứng từ) mở chứng từ lập tay, nhập Excel của 3.1.1, chung dữ liệu với web */
+ *  mục Bán hàng (?tay=1) mở chứng từ lập tay, nhập Excel của 3.1.1, chung dữ liệu với web.
+ *  Danh sách, chi tiết của mục Bán hàng theo khuôn xem phiếu mua, có Trả lại, Xuất HĐĐT (T833); lập, sửa theo form chung */
 export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
   const { id } = useParams()
   const [sp] = useSearchParams()
   const { s } = useSession()
   const scTay = useMemo(() => ({ ...sc, ten: 'Bán hàng', voucher: { ...BAN_TAY, rowsMau: () => mauTay().map(r => hangTay(r, false)) } }), [sc])
-  if (s.goi === 'PL' && (id !== undefined || sp.get('tay') === '1')) return <MChungTu sc={scTay} mod={mod} />
+  if (s.goi === 'PL') {
+    if (id === 'moi' || sp.get('sua') === '1') return <MChungTu sc={scTay} mod={mod} />
+    if (id !== undefined || sp.get('tay') === '1') return <BanTayPlus sc={sc} mod={mod} idMo={id} />
+  }
   return <MXuatBanPosFabi sc={sc} mod={mod} />
+}
+
+/** Chứng từ bán hàng lập tay gói Plus: cùng nguồn với web (phiếu lập thêm, mẫu, nhập Excel), mới nhất trước */
+const BanTayPlus: FC<ScreenProps & { idMo?: string }> = ({ sc, mod, idMo }) => {
+  const { s } = useSession()
+  const tyLe = gtgtTyLe(s)
+  const { ban, laDaXoa, phieuMoi, apSua } = useDaXoa(`${mod.key}/${sc.slug}`)
+  const rows = useMemo(() => {
+    const t = (r: Row) => { const [d, g = ''] = String(r.ngay).split(' '); return docNgay(d).getTime() + (Number(g.slice(0, 2)) * 60 + Number(g.slice(3, 5)) || 0) * 60000 }
+    return [...phieuMoi, ...mauTay()].map(apSua).map(r => hangTay(r, tyLe)).filter(r => !laDaXoa(r.id))
+      .map((r, i) => ({ r, i, t: t(r) })).sort((a, b) => b.t - a.t || a.i - b.i).map(x => x.r)
+  }, [ban, tyLe])   // eslint-disable-line react-hooks/exhaustive-deps
+  return <MBanHangTay sc={{ ...sc, ten: 'Bán hàng', voucher: BAN_TAY }} mod={mod} rows={rows} duong={`/app/${mod.key}/${sc.slug}`} tabTay idMo={idMo} />
 }
 
 const MXuatBanPosFabi: FC<ScreenProps> = ({ sc, mod }) => {
@@ -62,10 +81,12 @@ const MXuatBanPosFabi: FC<ScreenProps> = ({ sc, mod }) => {
   const [loc, setLoc] = useState<Record<KhoaLoc, string>>(LOC_TRONG)
   const [moLoc, setMoLoc] = useState(false)
   const [moChon, setMoChon] = useState<KhoaLoc | null>(null)
-  const [moTheoDoi, setMoTheoDoi] = useState(false)
+  // Lập chứng từ ở tab Bán hàng xong bấm Đóng thì về lại tab Bán hàng (T833)
+  useEffect(() => { if (layVeTabTay()) nav('?tay=1', { replace: true }) }, [])   // eslint-disable-line react-hooks/exhaustive-deps
   // Tấm chi tiết đơn
   const [donDangXem, setDonDangXem] = useState<Row | null>(null)
   const [timHang, setTimHang] = useState('')   // ô tìm hàng hoá trong chi tiết đơn (T573)
+  const [xemHd, setXemHd] = useState(false)   // xem hoá đơn điện tử FABi như web (T835, theo T802)
   const [daChep, setDaChep] = useState(false)   // nút chép mã tra cứu vừa bấm (T651)
 
   // Danh sách chứng từ theo cách đồng bộ FABi
@@ -241,6 +262,7 @@ const MXuatBanPosFabi: FC<ScreenProps> = ({ sc, mod }) => {
   const xemDon = (r: Row) => {
     setDonDangXem(r)
     setTimHang('')
+    setXemHd(false)
   }
 
   // Dòng món của đơn đang xem (T780)
@@ -276,6 +298,9 @@ const MXuatBanPosFabi: FC<ScreenProps> = ({ sc, mod }) => {
 
   // Đơn hàng POS, khách lấy hoá đơn GTGT, hoá đơn điện tử: cùng nguồn với chi tiết web (T651)
   const dp = useMemo(() => (donDangXem?.x ? donPosCua(donDangXem.x as XPos) : null), [donDangXem])
+  // Chứng từ kèm hoá đơn FABi như dòng danh sách web (hdFabi): mở được hộp Xem hoá đơn của web
+  const ctHd = useMemo(() => (donDangXem?.x ? { ...donDangXem, ...hdFabi(donDangXem.x as XPos, tyLe) } : null), [donDangXem, tyLe])
+  const hdPos = ctHd?._hdPos as HdDaXuat | undefined
   const chepMa = (ma: string) => {
     navigator.clipboard?.writeText(ma).then(() => toast('Đã chép mã tra cứu'), () => toast('Trình duyệt chặn sao chép, chọn mã rồi chép tay'))
     setDaChep(true)
@@ -295,6 +320,7 @@ const MXuatBanPosFabi: FC<ScreenProps> = ({ sc, mod }) => {
         phieu: r,
         dongPhu: `${khach} · ${r.cn}`,   // ngày đã ở đầu thẻ ngày (T653)
         dongPhu2: `Thành tiền ${money(Number(r.tien) || 0)} đ`,
+        vat: Boolean(dp?.hoaDon),   // đã xuất HĐĐT tại máy POS: nhãn VAT trên số đơn như web (T802)
         laDongMon: false,
       }
     })
@@ -384,7 +410,7 @@ const MXuatBanPosFabi: FC<ScreenProps> = ({ sc, mod }) => {
     <>
       <MDsChungTuChuan
         tieuDe="Bán hàng"
-        hangTabs={<HangTabsBanHang sc={sc} onMoTheoDoi={() => setMoTheoDoi(true)} />}
+        hangTabs={<HangTabsBanHang sc={sc} />}
         onQuayLai={() => quayLaiMobile(nav, '/app/nghiep-vu')}
         tuKhoa={tim}
         onTuKhoaChange={setTim}
@@ -421,6 +447,7 @@ const MXuatBanPosFabi: FC<ScreenProps> = ({ sc, mod }) => {
               dongPhu2={r.dongPhu2}
               tien={Number(r.tong ?? 0)}
               hienTien={true}
+              vat={Boolean(r.vat)}
               onClick={() => xemDon(r.phieu ?? r)}
             />
           )
@@ -575,7 +602,7 @@ const MXuatBanPosFabi: FC<ScreenProps> = ({ sc, mod }) => {
               <div className="m-xb651-luoi">
                 {dp?.hoaDon && (
                   <>
-                    <O nhan="Số hoá đơn" ma>{dp.hoaDon.so}</O>
+                    <O nhan="Số hoá đơn" ma>{hdPos ? <button type="button" className="m-t835-so-hd" onClick={() => setXemHd(true)}>{dp.hoaDon.so}<Icon n="chevr" className="ic sm" /></button> : dp.hoaDon.so}</O>
                     <O nhan="Ký hiệu" ma>{dp.hoaDon.kyHieu}</O>
                     <O nhan="Ngày hoá đơn">{dp.hoaDon.ngay}</O>
                     <O nhan="Mã đơn POS" ma>{donDangXem.so}</O>
@@ -654,15 +681,9 @@ const MXuatBanPosFabi: FC<ScreenProps> = ({ sc, mod }) => {
               Đóng
             </button>
           </div>
+          {xemHd && ctHd && hdPos && <HopXemHd s={s} r={ctHd} hd={hdPos} toast={toast} dienThoai onDong={() => setXemHd(false)} />}
         </div>
       )}
-
-      {/* Báo cáo theo dõi */}
-      <MBaoCaoTheoDoi
-        mo={moTheoDoi}
-        onDong={() => setMoTheoDoi(false)}
-        modKey="ban-hang"
-      />
     </>
   )
 }

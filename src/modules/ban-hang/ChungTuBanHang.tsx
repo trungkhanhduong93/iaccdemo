@@ -284,7 +284,7 @@ export function donPosCua(x: XPos) {
 }
 /** Hoá đơn FABi đã xuất tại máy POS (T802): nhãn VAT, cột Số hoá đơn bấm xem như chứng từ lập tay.
  *  Giữ ở _hdPos, không phải _hd, để menu Hoá đơn điện tử, tờ khai không đếm hoá đơn FABi */
-function hdFabi(x: XPos, tyLe: boolean): Row {
+export function hdFabi(x: XPos, tyLe: boolean): Row {
   const { khach, hoaDon } = donPosCua(x)
   if (!hoaDon) return {}
   const giam = tyLe ? giamThuePhieu(x) : 0

@@ -12,7 +12,7 @@ import { useDongEsc } from '../../ui/LocNangCao'
 import { ONgay } from '../../ui/ChonNgay'
 import { apKhoPhieu, laDaXoa, suaPhieu, xoaPhieu } from '../../ui/generic/daXoa'
 import { ttNghiepVu, type Dong } from '../../ui/generic/gen'
-import { luuFile } from '../../ui/luuFile'
+import { chiaSeFile, luuFile } from '../../ui/luuFile'
 import { HopChiaSeHd } from './HopChiaSeHd'
 import { pdfHd, tenFileHd, xmlHd } from './hddtFile'
 
@@ -627,9 +627,11 @@ function BanHd({ hd, t }: { hd: HdDaXuat; t: TtXem }) {
 
 /** Popup xem hoá đơn đã xuất (T785, T789): mở từ ô Số hoá đơn trên form, cột Trạng thái xuất HĐĐT ở danh sách, menu Hoá đơn điện tử.
  *  Mở thẳng bản hoá đơn nhà cung cấp trả về; nút quay lại sang Thông tin hoá đơn điện tử (số, ký hiệu, ngày, thông tin VAT, tiền) */
-export function HopXemHd({ s, r, hd, onDong, toast, nhap }: { s: Session; r: Row; hd: HdDaXuat; onDong: () => void; toast: (m: string) => void
+export function HopXemHd({ s, r, hd, onDong, toast, nhap, dienThoai }: { s: Session; r: Row; hd: HdDaXuat; onDong: () => void; toast: (m: string) => void
   /** Hoá đơn dự thảo: xem mẫu dựng từ chứng từ, không lấy từ nhà cung cấp, số 00000000 (T798) */
-  nhap?: boolean }) {
+  nhap?: boolean
+  /** Mở từ điện thoại (T835): chỉ xem bản hoá đơn, chân chỉ có Chia sẻ PDF, Đóng; không quay về thông tin, không tải PDF, XML, không in */
+  dienThoai?: boolean }) {
   // Bấm số hoá đơn, mắt xem: mở thẳng bản hoá đơn điện tử; lấy không được từ nhà cung cấp thì mở thông tin hoá đơn (T789)
   const [xemBan, setXemBan] = useState(() => nhap || !loiLayHd(s, hd))
   const [dangIn, setDangIn] = useState(false)
@@ -658,11 +660,25 @@ export function HopXemHd({ s, r, hd, onDong, toast, nhap }: { s: Session; r: Row
   })
   const [moChiaSe, setMoChiaSe] = useState(false)
   const chiaSe = layNcc(() => setMoChiaSe(true))
+  const chiaSeMay = layNcc(() => { void chiaSeFile(pdfHd(hd, t), tenFileHd(hd, 'pdf'), `Hoá đơn điện tử số ${hd.so}`).then(m => m && toast(m)) })
   const nutTai = <>
     <button type="button" className="xp-btn-outline" onClick={taiFile('pdf')}><Icon n="download" className="ic sm" />Tải PDF</button>
     <button type="button" className="xp-btn-outline" onClick={taiFile('xml')}><Icon n="download" className="ic sm" />Tải XML</button>
   </>
 
+  if (xemBan && dienThoai) return (
+    <Vo lop="hdx hdx-xem-ban hdx-dt" tieuDe={<>Hoá đơn điện tử số <span className="code hdx-do">{hd.so}</span><span className={`hdx-dt-tt${nhap ? ' nhap' : ''}`}>{nhap ? 'Dự thảo' : 'Hợp lệ'}</span></>} onDong={onDong} chan={<>
+      {/* Điện thoại: mở thẳng bảng chia sẻ của máy với file PDF hoá đơn như chia sẻ file, ảnh trong app; không qua hộp chọn ứng dụng của web */}
+      <button type="button" className="xp-btn-outline" onClick={chiaSeMay}>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 3v12M7 8l5-5 5 5" /><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7" /></svg>
+        Chia sẻ
+      </button>
+      <button type="button" className="xp-btn-sua" onClick={onDong}>Đóng</button>
+    </>}>
+      {/* Trạng thái là nhãn nhỏ kiểu nhãn VAT ở hàng tiêu đề, cạnh nút đóng */}
+      <div className="hdx-nen-giay"><BanHd hd={hd} t={t} /></div>
+    </Vo>
+  )
   if (xemBan) return (
     <Vo lop="hdx hdx-xem-ban" tieuDe={<><button type="button" className="xp-btn-outline xp-btn-ic" title="Quay lại thông tin hoá đơn" aria-label="Quay lại thông tin hoá đơn"
       onClick={() => setXemBan(false)}><Icon n="chevl" className="ic sm" /></button>{tieuDe(true)}</>} onDong={onDong} chan={<>

@@ -48215,3 +48215,47 @@ textarea.m-tpb-inp { height: auto; padding: 8px 12px; }
 /* ── Ghi tăng bổ sung: ô thông tin chung của một thẻ gộp cho các dòng của thẻ (T828) ── */
 .tbl td.o-gop { vertical-align: middle; background: var(--white); border-right: 1px solid var(--line-2); }
 .gt-hl .tbl tr.gt-hl-dau td { border-top: 2px solid var(--line); }
+
+/* ── Điện thoại, Bán hàng lập tay (T833) ── */
+/* Hộp Xuất HĐĐT của web mở trên điện thoại: vừa bề ngang màn, cuộn trong hộp */
+@media (max-width: 767px) {
+  .ds-hop-nen .ds-hop.hddt-hop { width: calc(100vw - 16px); max-width: calc(100vw - 16px); max-height: calc(100dvh - 32px); }
+}
+
+/* ── Điện thoại, chi tiết bán hàng lập tay theo khuôn xem phiếu nhập mua: nhãn HĐĐT kèm mã tra cứu ở thẻ đầu (T834) ── */
+.m-t834-hang-tong { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+.m-t834-hang-tong > div:first-child { min-width: 0; }
+.m-t834-hd { flex: none; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+.m-t834-tra-cuu { font-size: 11px; color: var(--muted); white-space: nowrap; }
+.m-t834-tra-cuu b { margin-left: 2px; color: var(--body); font-weight: 600; }
+.m-t834-nhom-hang { display: flex; justify-content: space-between; align-items: center; }
+.m-t834-nhom-hang small { color: var(--muted); font-weight: 400; text-transform: none; font-size: 13px; }
+.m-t834-tc { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; }
+.m-t834-tc button { display: inline-flex; align-items: center; gap: 2px; border: 0; background: none; padding: 0; font: inherit; font-weight: 600; color: var(--blue); cursor: pointer; }
+.m-pb-man .m-pb-day .m-t834-nut { display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+.m-pb-man .m-pb-day .m-t834-nut { flex: 1 1 0 !important; min-width: 0; padding: 0 8px; }
+.m-pb-man .m-pb-day .m-pb-btn-sua.m-t834-nut { border: 1px solid var(--blue); }
+
+/* ── Điện thoại, Bán hàng và Xuất bán POS: nhãn VAT trên số chứng từ đã xuất HĐĐT, số hoá đơn bấm xem hoá đơn (T835, như web T802) ── */
+.m-mh-dong-so .m-t835-vat { display: inline-block; vertical-align: super; margin-left: 3px; padding: 0 4px; border-radius: 4px; background: var(--green-t); color: var(--green); font-size: 9.5px; font-weight: 700; line-height: 14px; letter-spacing: .3px; }
+.m-t835-so-hd { display: inline-flex; align-items: center; gap: 2px; border: 0; background: none; padding: 0; font: inherit; font-weight: 600; color: var(--blue); cursor: pointer; }
+/* Hộp Xem hoá đơn của web trên điện thoại: tờ hoá đơn khổ 794px thu nhỏ vừa bề ngang màn (chụm ngón để phóng to), mở từ điện thoại (hdx-dt) chân chỉ hai nút Chia sẻ PDF, Đóng chia đôi */
+@media (max-width: 767px) {
+  .hdx-xem-ban .hdx-nen-giay { justify-content: flex-start; padding: 12px; }
+  .hdx-xem-ban .hdx-giay { flex: none; zoom: .42; }
+  .hdx-dt .ds-hop-dau > b { flex: 1; min-width: 0; display: flex; align-items: center; gap: 6px; }
+  .hdx-dt .ds-hop-dau > .grow { display: none; }
+  .hdx-dt .hdx-dt-tt { margin-left: auto; padding: 0 5px; border-radius: 4px; background: var(--green-t); color: var(--green); font-size: 10px; font-weight: 700; line-height: 16px; letter-spacing: .3px; }
+  .hdx-dt .hdx-dt-tt.nhap { background: var(--orange-t); color: var(--orange-d); }
+  /* Hai nút chân cỡ như chân xem phiếu mua (m-pb-day): cao 44px, bo 12px, chữ 14px nút phụ, 15px nút chính */
+  .hdx-dt .hddt-chan { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; padding: 10px 14px calc(12px + env(safe-area-inset-bottom, 0px)); }
+  .hdx-dt .hddt-chan > button { width: 100%; height: 44px; padding: 0 12px; justify-content: center; white-space: nowrap; border-radius: 12px; font-size: 14px; font-weight: 600; }
+  .hdx-dt .hddt-chan > .xp-btn-sua { font-size: 15px; }
+}
+@media (min-width: 375px) and (max-width: 767px) { .hdx-xem-ban .hdx-giay { zoom: .44; } }
+@media (min-width: 390px) and (max-width: 767px) { .hdx-xem-ban .hdx-giay { zoom: .46; } }
+@media (min-width: 412px) and (max-width: 767px) { .hdx-xem-ban .hdx-giay { zoom: .49; } }
+@media (min-width: 428px) and (max-width: 767px) { .hdx-xem-ban .hdx-giay { zoom: .51; } }
+@media (min-width: 500px) and (max-width: 767px) { .hdx-xem-ban .hdx-giay { zoom: .6; } }
+@media (min-width: 600px) and (max-width: 767px) { .hdx-xem-ban .hdx-giay { zoom: .72; } }
+@media (min-width: 700px) and (max-width: 767px) { .hdx-xem-ban .hdx-giay { zoom: .85; } }

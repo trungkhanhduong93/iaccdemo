@@ -397,6 +397,7 @@ interface TheHangMuaProps {
   chiSl?: boolean   // trả lại hàng mua lập từ phiếu mua (T819, như web T816): chỉ sửa số lượng (tối đa dong.slMax), xoá dòng
   dienGiai?: boolean   // Hoá đơn mua hàng (T826, như web T821): dòng có mã hoặc trống mã, tên dòng là ô Diễn giải gõ tự do
   gon?: boolean   // phiếu Nhập kho (T824): Số lượng gộp ĐVT như phiếu mua, bỏ Chiết khấu, VAT
+  ban?: boolean   // hàng bán trả lại (T833): ghi Đã bán thay Đã mua
 }
 
 function TheHangMua({
@@ -410,6 +411,7 @@ function TheHangMua({
   chiSl,
   dienGiai,
   gon,
+  ban,
 }: TheHangMuaProps) {
   const kieuGiam = dong.kieuGiam ?? (dong?.ck && !dong?.ptCk ? 'đ' : '%')
 
@@ -575,7 +577,7 @@ function TheHangMua({
             <span className="m-t601-dvt">{dvt}</span>
           </div>
           {slMax !== undefined && (
-            <span className="m-t601-tra-max" style={{ gridColumn: '2 / -1' }}>Đã mua {slMax} {dvt}</span>
+            <span className="m-t601-tra-max" style={{ gridColumn: '2 / -1' }}>{ban ? 'Đã bán' : 'Đã mua'} {slMax} {dvt}</span>
           )}
           <span className="m-t601-grid-lbl">Đơn giá</span>
           <div className="m-t601-amt" style={{ gridColumn: '2 / -1' }}><span>{money(gia)} đ</span></div>
@@ -901,13 +903,15 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
   const saoChep = (loc.state as { saoChep?: Row } | null)?.saoChep
   // Trả hàng ở phiếu mua (T819, như web T727, T816): điền sẵn nhà cung cấp, kho, dòng hàng; chỉ sửa số lượng, không quá số đã mua
   const traTu = row ? undefined : (loc.state as { traTu?: TraTu } | null)?.traTu
-  const nhanTra = traTu ? `Trả lại hàng mua theo ${traTu.so}` : ''
+  // Hàng bán trả lại lập từ chứng từ bán ở tab Bán hàng (T833, như web T815): chép hình thức thanh toán của chứng từ bán
+  const nhanTra = traTu ? (traTu.ban ? `Hàng bán trả lại theo ${traTu.so}` : `Trả lại hàng mua theo ${traTu.so}`) : ''
   const gocTra: Row | undefined = traTu ? {
     id: traTu.id, cn: traTu.cn, doiTuong: traTu.doiTuong, _mst: traTu.mst, _diaChi: traTu.diaChi, _kho: traTu.kho,
-    _dong: traTu.dong, _ghiChu: nhanTra, dienGiai: nhanTra, _httt: 'congno',
+    _dong: traTu.dong, _ghiChu: nhanTra, dienGiai: nhanTra, _httt: traTu.ban ? (traTu.httt ?? 'congno') : 'congno',
+    ...(traTu.ban && traTu.pttt ? { _pttt: traTu.pttt } : {}),
   } : undefined
   const gocData = row ?? saoChep ?? gocTra
-  const chiSl = Boolean(traTu) || Boolean(row?._traTuMua)
+  const chiSl = Boolean(traTu) || Boolean(row?._traTuMua) || Boolean(row?._traTuBan)
   const dangSua = Boolean(row)
 
   const loaiKey = gocData?.loai ?? sp.get('loai') ?? cfgMan.loai?.[0]?.k
@@ -1859,6 +1863,11 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
       if (dsDongLuu.length === 0) {
         loiMoi.hang = 'Vui lòng chọn ít nhất một mặt hàng'
       }
+      // Hàng bán trả lại từ chứng từ bán (T833): số lượng không quá số đã bán
+      const saiBan = chiSl ? dsDongLuu.find(d => !(Number(d.sl) > 0) || (d.slMax !== undefined && Number(d.sl) > d.slMax)) : undefined
+      if (saiBan) {
+        loiMoi.hang = Number(saiBan.sl) > 0 ? `Số lượng trả lại của ${saiBan.ten} không được quá ${saiBan.slMax} (số lượng đã bán)` : `Nhập số lượng trả lại của ${saiBan.ten}`
+      }
     }
 
     if (!thoiGian.trim()) {
@@ -1960,9 +1969,10 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
     }
 
     // Phiếu trả lại lập từ phiếu mua (T819): hai phiếu hiện số của nhau ở dòng Tham chiếu như web (T727)
-    const thamChieuTra = traTu ? { _thamChieu: traTu.so, _thamChieuDi: traTu.di, _traTuMua: traTu.id } : {}
+    const thamChieuTra = traTu ? { _thamChieu: traTu.so, _thamChieuDi: traTu.di, ...(traTu.ban ? { _traTuBan: traTu.id } : { _traTuMua: traTu.id }) } : {}
     const ganTraVaoPhieuMua = (idTra: string, soTra: string) => {
-      if (traTu) suaPhieu(traTu.man, traTu.id, { _dsTra: [...traTu.dsTra, { id: idTra, so: soTra, loai: 'tra' }] })
+      const ds = traTu ? [...traTu.dsTra, { id: idTra, so: soTra, loai: 'tra' }] : []
+      if (traTu) suaPhieu(traTu.man, traTu.id, traTu.ban ? { _dsTraBan: ds } : { _dsTra: ds })   // T833: hàng bán trả lại như web T815
     }
 
     // Lưu phiếu mua kèm tự động tạo phiếu chi nếu thanh toán ngay (T629)
@@ -2794,7 +2804,21 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                   gon
                 />
               ))}
-              {!laNk && dsDong.map((d, i) => (
+              {/* Hàng bán trả lại từ chứng từ bán (T833): chỉ sửa số lượng, xoá dòng như trả lại hàng mua */}
+              {!laNk && chiSl && dsDong.map((d, i) => (
+                <TheHangMua
+                  key={d.id ?? i}
+                  stt={i + 1}
+                  dong={d}
+                  onDoiDong={patch => doiDong(i, patch)}
+                  onDoiDvt={dvMoi => doiDvt(i, dvMoi)}
+                  onNhanBan={() => nhanBanDong(i)}
+                  onXoa={() => xoaDong(i)}
+                  chiSl
+                  ban
+                />
+              ))}
+              {!laNk && !chiSl && dsDong.map((d, i) => (
                 <TheHangMoi
                   key={i}
                   idx={i}
@@ -2816,9 +2840,9 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
               ))}
             </div>
 
-            <button type="button" className="f-them" onClick={() => setMoChonHang(true)}>
+            {!chiSl && <button type="button" className="f-them" onClick={() => setMoChonHang(true)}>
               + Thêm mặt hàng
-            </button>
+            </button>}
             {loiO.hang && <div className="m-lp-loi-o">{loiO.hang}</div>}
           </>
         )}
