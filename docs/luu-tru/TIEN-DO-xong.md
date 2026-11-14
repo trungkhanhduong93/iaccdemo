@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T831 | Điện thoại gói Plus: menu Nghiệp vụ thêm mục Bán hàng (chứng từ lập tay, nhập Excel của 3.1.1) dưới Xuất bán POS, trên Hàng bán trả lại; Xuất bán POS giữ chứng từ FABi | dinhlanphuongipacc | 14/11/2026 | [nhật ký](../nhat-ky/2026-11-14-dinhlanphuongipacc-ban-hang-plus-dien-thoai.md) |
 | T830 | Điện thoại, Hàng bán trả lại đủ trường như web (khách hàng, địa chỉ, MST, người giao dịch, kho nhập, thanh toán, hoá đơn, ghi chú), bỏ diễn giải ở đầu chứng từ; bỏ tab Hàng bán trả lại, Bán hàng ở thanh tab bán hàng; Bán hàng thành mục riêng trong menu Nghiệp vụ | dinhlanphuongipacc | 14/11/2026 | [nhật ký](../nhat-ky/2026-11-14-dinhlanphuongipacc-tra-ban-dien-thoai.md) |
 | T829 | Favicon và logo app mới (người dùng gửi): favicon, dấu vuông trong app, biểu tượng app khi thêm vào màn hình chính điện thoại | dinhlanphuongipacc | 14/11/2026 | Xem [nhật ký](../nhat-ky/2026-11-14-dinhlanphuongipacc-favicon-logo-app.md) |
 | T828 | Thẻ chi phí phân bổ, Ghi tăng bổ sung (web) và Tạo thẻ bổ sung (điện thoại): mỗi chứng từ gốc một thẻ, mỗi dòng chứng từ một mục chi tiết của thẻ (kể cả phiếu chi nhiều dòng) | dinhlanphuongipacc | 13/11/2026 | Xem [nhật ký](../nhat-ky/2026-11-13-dinhlanphuongipacc-mot-chung-tu-mot-the.md) |

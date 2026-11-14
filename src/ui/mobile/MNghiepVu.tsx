@@ -71,7 +71,17 @@ export function MNghiepVu() {
     )
 
     if (screens.length > 0) {
-      return screens.map(sc => ({
+      // Gói Plus (T831): 3.1.1 web gộp FABi và lập tay; điện thoại thêm mục Bán hàng (chứng từ lập tay) ngay dưới Xuất bán POS
+      const banTay = m.key === 'ban-hang' && s.goi === 'PL'
+      const icon317 = m.screens.find(x => x.code === '3.1.7')?.icon
+      return screens.flatMap(sc => [sc, ...(banTay && sc.code === '3.1.1' ? [{ ...sc, ten: 'Bán hàng', tay: true }] : [])]).map(sc => 'tay' in sc ? {
+        ten: 'Bán hàng',
+        to: `${duongDan(m, sc)}?tay=1`,
+        icon: icon317 || sc.icon || m.icon || 'doc',
+        code: sc.code,
+        slug: sc.slug,
+        khoa: false,
+      } : {
         ten: nhanTab(sc),
         to: duongDan(m, sc),
         icon: sc.icon || m.icon || 'doc',
@@ -79,7 +89,7 @@ export function MNghiepVu() {
         slug: sc.slug,
         khoa: !anNgoaiGoi(s.goi) && !moDuoc(sc, s.goi),
         goiMin: sc.code ? minGoi(sc.code) : undefined,
-      }))
+      })
     }
 
     // Màn đầu điện thoại nếu không có màn nào trong tabCua

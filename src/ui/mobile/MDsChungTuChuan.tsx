@@ -55,7 +55,9 @@ export function HangTabsBanHang({
 }) {
   const nav = useNavigate()
   const { s } = useSession()
-  const is311 = sc.code === '3.1.1' || sc.slug === '3-1-1'
+  // 3.1.1 có cấu hình phiếu là chứng từ lập tay gói Plus, mục Bán hàng riêng (T831); màn FABi 3.1.1 không có voucher
+  const tay311 = (sc.code === '3.1.1' || sc.slug === '3-1-1') && !!sc.voucher
+  const is311 = (sc.code === '3.1.1' || sc.slug === '3-1-1') && !tay311
   const is317 = sc.code === '3.1.7' || sc.slug === '3-1-7'
   const is312 = sc.code === '3.1.2' || sc.slug === '3-1-2'
   const is313 = sc.code === '3.1.3' || sc.slug === '3-1-3'
@@ -64,7 +66,7 @@ export function HangTabsBanHang({
   const is316 = sc.code === '3.1.6' || sc.slug === '3-1-6'
   // Bán hàng, Hàng bán trả lại là mục riêng trong menu Nghiệp vụ (T830): không là tab của màn khác, màn của mình chỉ một tab
   const RIENG = ['3.1.7', '3.1.4']
-  const manRieng = is317 ? '3.1.7' : is314 ? '3.1.4' : ''
+  const manRieng = is317 ? '3.1.7' : is314 ? '3.1.4' : tay311 ? '3.1.1-tay' : ''
 
   return (
     <div className="m-tc-tabs" role="tablist" data-hd="tab">
@@ -84,6 +86,11 @@ export function HangTabsBanHang({
             {nhan}
           </button>
         ))}
+      {tay311 && (
+        <button type="button" role="tab" aria-selected={true} className="m-tc-tab-btn on" onClick={() => nav('/app/ban-hang/3-1-1?tay=1')}>
+          Bán hàng
+        </button>
+      )}
       {is315 && (
         <button
           type="button"

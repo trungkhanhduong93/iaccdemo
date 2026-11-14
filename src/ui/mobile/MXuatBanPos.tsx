@@ -1,5 +1,5 @@
 import { useMemo, useState, type FC, type ReactNode } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import type { Row, ScreenProps } from '../../modules/types'
 import { cuaHangHienTai, gtgtTyLe, useSession } from '../../app/session'
 import { kieuGhiSoDv } from '../../app/plan'
@@ -21,7 +21,11 @@ import {
   POS_LOI_MAU,
   MON_POS,
   type XPos,
+  BAN_TAY,
+  hangTay,
+  mauTay,
 } from '../../modules/ban-hang/ChungTuBanHang'
+import { MChungTu } from './MChungTu'
 import { giamThueHang } from '../../modules/ban-hang/giam-thue'
 import { useDaXoa } from '../generic/daXoa'
 import { MDsChungTuChuan, MDsDongPhieu, HangTabsBanHang, layMaKh } from './MDsChungTuChuan'
@@ -31,7 +35,18 @@ import { MBaoCaoTheoDoi } from './MBaoCaoTheoDoi'
 type KhoaLoc = 'cn' | 'kh' | 'kenh' | 'pttt' | 'hang' | 'tonKho' | 'trangThai' | 'monBan' | 'nguyenNhan'
 const LOC_TRONG: Record<KhoaLoc, string> = { cn: '', kh: '', kenh: '', pttt: '', hang: '', tonKho: '', trangThai: '', monBan: '', nguyenNhan: '' }
 
+/** Gói Plus (T831): web gộp chứng từ FABi và lập tay vào màn 3.1.1 Bán hàng (T753). Điện thoại tách 2 mục: Xuất bán POS giữ chứng từ FABi,
+ *  mục Bán hàng (?tay=1, xem, lập, sửa theo mã chứng từ) mở chứng từ lập tay, nhập Excel của 3.1.1, chung dữ liệu với web */
 export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
+  const { id } = useParams()
+  const [sp] = useSearchParams()
+  const { s } = useSession()
+  const scTay = useMemo(() => ({ ...sc, ten: 'Bán hàng', voucher: { ...BAN_TAY, rowsMau: () => mauTay().map(r => hangTay(r, false)) } }), [sc])
+  if (s.goi === 'PL' && (id !== undefined || sp.get('tay') === '1')) return <MChungTu sc={scTay} mod={mod} />
+  return <MXuatBanPosFabi sc={sc} mod={mod} />
+}
+
+const MXuatBanPosFabi: FC<ScreenProps> = ({ sc, mod }) => {
   const { s, toast } = useSession()
   const nav = useNavigate()
   const { ban, laDaXoa } = useDaXoa(`${mod.key}/${sc.slug}`)

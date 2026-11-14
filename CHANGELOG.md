@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 14/11/2026
+- T831: Điện thoại, gói Plus: menu Nghiệp vụ có mục Bán hàng ngay dưới Xuất bán POS, mở danh sách chứng từ bán hàng lập tay, nhập Excel (xem, lập mới); Xuất bán POS giữ chứng từ đồng bộ từ FABi.
 - T830: Điện thoại, Hàng bán trả lại: lập phiếu có đủ ô như web (địa chỉ, mã số thuế, người giao dịch, kho nhập, đã thanh toán kèm phiếu chi, lập kèm hoá đơn, ghi chú), xem phiếu bỏ dòng diễn giải ở đầu. Thanh tab bán hàng bỏ tab Hàng bán trả lại, Bán hàng; gói Pro có mục Bán hàng riêng trong menu Nghiệp vụ, dưới Xuất bán POS.
 - T829: Favicon và dấu logo vuông mới (hoá đơn và máy tính); thêm vào màn hình chính điện thoại thì hiện logo app có dải iPOS.vn.
 
