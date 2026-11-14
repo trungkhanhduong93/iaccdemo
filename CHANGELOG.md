@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 15/11/2026
+- T843: Điện thoại, lập Hàng bán trả lại và Trả lại hàng mua: mỗi mặt hàng có đủ Số lượng, Đơn giá, Chiết khấu, VAT, Tổng tiền cùng khuôn với lập phiếu mua; chỉ sửa số lượng, các ô khác giữ theo chứng từ gốc.
 - T842: Điện thoại, lập Hàng bán trả lại: ẩn địa chỉ, mã số thuế, người giao dịch, phương thức thanh toán và khối Tổng thanh toán ở đầu phiếu; tổng cộng nằm dưới danh sách mặt hàng và dòng Tổng tiền ghim ở đáy như lập phiếu mua.
 - T841: Điện thoại, xem Hàng bán trả lại: thẻ đầu như phiếu mua (cửa hàng, nguồn chứng từ, tổng tiền khớp danh sách, khung thanh toán Đã trả / tổng); Thông tin chung bỏ địa chỉ, mã số thuế, người giao dịch, thanh toán.
 - T840: Điện thoại, mục Bán hàng: chứng từ huỷ bán không còn hiện hoá đơn gốc; Thông tin chung có dòng Tham chiếu như web: huỷ bán, hoá đơn thay thế trỏ tới chứng từ bán bị thay thế và ngược lại, hoá đơn điều chỉnh với chứng từ gốc, hàng bán trả lại; bấm số để mở.

@@ -48267,3 +48267,7 @@ textarea.m-tpb-inp { height: auto; padding: 8px 12px; }
 .m-mh-dong-so .m-t835-vat.nhap, .m-t600-chip-tt.nhap { background: var(--red-t); color: var(--red); }   /* nhãn Dự thảo màu đỏ: danh sách, thẻ tổng tiền */
 .ds-link-so .ds-so-vat.nhap { background: var(--red-t); color: var(--red); }   /* web: nhãn Dự thảo ở số chứng từ danh sách Bán hàng */
 .ct-hd-nhan .ct-hd-nhap { margin-left: .3em; color: var(--red); font-weight: 600; }   /* web: chữ Dự thảo trên chip loại hoá đơn ở form chứng từ */
+
+/* ── Điện thoại, dòng mặt hàng phiếu trả lại cùng khuôn lập phiếu mua: ô chỉ xem (T843) ── */
+.m-t601-box.khoa { justify-content: space-between; background: var(--hdb-chan, #f6f7f9); color: var(--body); }
+.m-t601-box.khoa .m-t843-dv { font-size: 12px; color: #9ca3af; }

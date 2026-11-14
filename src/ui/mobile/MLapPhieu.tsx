@@ -579,8 +579,17 @@ function TheHangMua({
           {slMax !== undefined && (
             <span className="m-t601-tra-max" style={{ gridColumn: '2 / -1' }}>{ban ? 'Đã bán' : 'Đã mua'} {slMax} {dvt}</span>
           )}
+          {/* Cùng khuôn dòng như lập phiếu mua (T843): Đơn giá, Chiết khấu, VAT, Tổng tiền; giữ theo chứng từ gốc nên chỉ xem, không sửa */}
           <span className="m-t601-grid-lbl">Đơn giá</span>
-          <div className="m-t601-amt" style={{ gridColumn: '2 / -1' }}><span>{money(gia)} đ</span></div>
+          <div className="m-t601-box khoa" style={{ gridColumn: '2 / -1' }}><span>{money(gia)}</span><span className="m-t843-dv">đ</span></div>
+          {!gon && (<>
+            <span className="m-t601-grid-lbl">Chiết khấu</span>
+            <div className="m-t601-box khoa"><span>{kieuGiam === '%' ? soLuong(ptCk) : money(ck)}</span><span className="m-t843-dv">{kieuGiam}</span></div>
+            <div className="m-t601-amt"><span>{money(ck)} đ</span></div>
+            <span className="m-t601-grid-lbl">VAT</span>
+            <div className="m-t601-box khoa"><span>{soLuong(ts)}</span><span className="m-t843-dv">%</span></div>
+            <div className="m-t601-amt"><span>{money(thue)} đ</span></div>
+          </>)}
           <span className="m-t601-grid-lbl tg">Tổng tiền</span>
           <div className="m-t601-amt tg" style={{ gridColumn: '2 / -1' }}><span>{money(tongHienTai)} đ</span></div>
         </div>

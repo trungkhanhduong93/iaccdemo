@@ -51,6 +51,11 @@
 - `MLapPhieu.tsx` (form Hàng bán trả lại `laTraBan` của T830): ẩn ô Địa chỉ, Mã số thuế, Người giao dịch, Phương thức (giá trị vẫn lưu theo khách hàng, chứng từ gốc, mặc định Tiền mặt), bỏ khối Tổng thanh toán (tự tính) ở thẻ đầu; thêm khối Tổng cộng dưới danh sách mặt hàng (`m-t601-tong-khu`) và chân ghim kiểu phiếu mua có dòng Tổng tiền (n dòng) (`m-t656-tong`).
 - Kiểm 375px gói Plus: Trả lại từ BH2610-0009, form không còn các ô trên, Tổng cộng 2.200.000, chân ghim Tổng tiền (2 dòng) 2.200.000 đ, lưu được. Build, `kiem_tra --nhanh`, `kiem_van` sạch.
 
+## T843 (15/11/2026)
+
+- `MLapPhieu.tsx` (`TheHangMua`, nhánh `chiSl` dùng cho Hàng bán trả lại và Trả lại hàng mua): thêm Chiết khấu (ô %/đ chỉ xem kèm tiền), VAT (ô % chỉ xem kèm tiền thuế), Đơn giá thành ô chỉ xem, cùng lưới `m-t601-grid` với dòng lập phiếu mua; chỉ ô Số lượng sửa được. CSS `.m-t601-box.khoa` (T843).
+- Kiểm 375px: trả lại từ BH2610-0009, trả hàng từ MH2610-0021 hiện đủ dòng, không tràn ngang. Build, `kiem_tra --nhanh` sạch.
+
 ## Dở dang, việc tiếp theo
 
 - Phiên đã dài: việc tiếp theo nên mở phiên mới, mỗi phiên một bản clone riêng (QD21).

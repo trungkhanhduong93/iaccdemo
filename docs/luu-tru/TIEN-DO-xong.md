@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T843 | Điện thoại, dòng mặt hàng phiếu trả lại (bán, mua) cùng khuôn lập phiếu mua: Số lượng, Đơn giá, Chiết khấu, VAT, Tổng tiền; chỉ sửa số lượng | dinhlanphuongipacc | 15/11/2026 | Xem [nhật ký](../nhat-ky/2026-11-14-dinhlanphuongipacc-vat-xem-hddt-dien-thoai.md) |
 | T842 | Điện thoại, lập Hàng bán trả lại gọn như phiếu mua: ẩn địa chỉ, MST, người giao dịch, phương thức, tổng ở đầu phiếu; tổng cộng dưới mặt hàng, Tổng tiền ghim đáy | dinhlanphuongipacc | 15/11/2026 | Xem [nhật ký](../nhat-ky/2026-11-14-dinhlanphuongipacc-vat-xem-hddt-dien-thoai.md) |
 | T841 | Điện thoại, xem Hàng bán trả lại: thẻ đầu như phiếu mua (nguồn lên dòng cửa hàng, khung thanh toán), bỏ địa chỉ, MST, người giao dịch, thanh toán ở Thông tin chung | dinhlanphuongipacc | 15/11/2026 | Xem [nhật ký](../nhat-ky/2026-11-14-dinhlanphuongipacc-vat-xem-hddt-dien-thoai.md) |
 | T840 | Điện thoại, chi tiết Bán hàng: huỷ bán bỏ hoá đơn gốc; Tham chiếu như web (chứng từ gốc, huỷ bán, hoá đơn thay thế, điều chỉnh, hàng bán trả lại) | dinhlanphuongipacc | 15/11/2026 | Xem [nhật ký](../nhat-ky/2026-11-14-dinhlanphuongipacc-vat-xem-hddt-dien-thoai.md) |
