@@ -2593,18 +2593,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                   </button>
                 </div>
                 {loiO.doiTuong && <div className="m-lp-loi-o m-t655-loi">{loiO.doiTuong}</div>}
-                <div className="m-t655-hang">
-                  <span className="m-t655-nhan">Địa chỉ</span>
-                  <input type="text" aria-label="Địa chỉ" className="m-t655-o go" placeholder="Nhập địa chỉ" value={diaChi} onChange={e => setDiaChi(e.target.value)} />
-                </div>
-                <div className="m-t655-hang">
-                  <span className="m-t655-nhan">Mã số thuế</span>
-                  <input type="text" aria-label="Mã số thuế" className="m-t655-o go" placeholder="Nhập mã số thuế" inputMode="numeric" value={mst} onChange={e => setMst(e.target.value)} />
-                </div>
-                <div className="m-t655-hang">
-                  <span className="m-t655-nhan">Người giao dịch</span>
-                  <input type="text" aria-label="Người giao dịch" className="m-t655-o go" placeholder="Nhập người giao dịch" value={nguoiGiaoDich} onChange={e => setNguoiGiaoDich(e.target.value)} />
-                </div>
+                {/* Gọn (T842): ẩn Địa chỉ, Mã số thuế, Người giao dịch; vẫn lưu theo khách hàng, chứng từ gốc */}
                 <div className="m-t655-hang">
                   <span className="m-t655-nhan">Kho nhập <em>*</em></span>
                   <button type="button" className="m-t655-o" id="m-lp-o-kho" onClick={() => setMoChonKho(true)}>
@@ -2669,13 +2658,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                       </button>
                     </div>
                     {loiO.quy && <div className="m-lp-loi-o m-t655-loi">{loiO.quy}</div>}
-                    <div className="m-t655-hang">
-                      <span className="m-t655-nhan">Phương thức</span>
-                      <button type="button" className="m-t655-o" onClick={() => setMoChonPttt(true)}>
-                        <span className="chu">{pttt}</span>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
-                      </button>
-                    </div>
+                    {/* Ẩn Phương thức (T842): giữ phương thức của chứng từ gốc, mặc định Tiền mặt */}
                   </>
                 ) : s.goi === 'PR' && (
                   <div className="m-t655-hang">
@@ -2715,11 +2698,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                     {loiO.ngayHd && <div className="m-lp-loi-o m-t655-loi">{loiO.ngayHd}</div>}
                   </>
                 )}
-                <div className="m-t655-ke" />
-                <div>
-                  <div className="m-pb-nhan-gt">Tổng thanh toán (tự tính)</div>
-                  <div className="m-pb-so-gt cam">{money(tongThanhToan)} đ</div>
-                </div>
+                {/* Ẩn Tổng thanh toán (tự tính) ở thẻ đầu (T842): tổng nằm dưới danh sách mặt hàng như phiếu mua */}
               </div>
             ) : (<>
             <div className="m-pb-the m-pb-the-tong-quan">
@@ -2818,6 +2797,16 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                   ban
                 />
               ))}
+              {/* Hàng bán trả lại (T842): tổng dưới danh sách mặt hàng như phiếu mua, thay khối Tổng thanh toán ở thẻ đầu */}
+              {laTraBan && (
+                <div className="m-t601-tong-khu">
+                  <div style={{ fontSize: 15, fontWeight: 600, marginBottom: 6, color: 'var(--ink)' }}>Tổng cộng ({dsDong.length} dòng)</div>
+                  <div className="m-t601-tong-dong"><span className="lb">Thành tiền</span><span>{money(tongTien)}</span></div>
+                  {tongCk > 0 && <div className="m-t601-tong-dong"><span className="lb">Tiền chiết khấu</span><span>{money(tongCk)}</span></div>}
+                  {tongThue > 0 && <div className="m-t601-tong-dong"><span className="lb">Tiền thuế</span><span>{money(tongThue)}</span></div>}
+                  <div className="m-t601-tong-dong"><span className="lb">Tổng tiền</span><b>{money(tongThanhToan)} đ</b></div>
+                </div>
+              )}
               {!laNk && !chiSl && dsDong.map((d, i) => (
                 <TheHangMoi
                   key={i}
@@ -2893,9 +2882,9 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
       </div>
 
       {/* ── CHÂN GHIM ĐÁY ── */}
-      <div className={nhom === 'mua' ? 'm-t600-chan-day m-t656-chan' : 'm-pb-day'}>
-        {/* Tổng tiền ghim ở chân khi tạo mới, sửa phiếu mua (T656) */}
-        {nhom === 'mua' && (
+      <div className={(nhom === 'mua' || laTraBan) ? 'm-t600-chan-day m-t656-chan' : 'm-pb-day'}>
+        {/* Tổng tiền ghim ở chân khi tạo mới, sửa phiếu mua (T656); Hàng bán trả lại cũng vậy (T842) */}
+        {(nhom === 'mua' || laTraBan) && (
           <div className="m-t656-tong">
             <span>Tổng tiền <small>({dsDong.length} dòng)</small></span>
             <b>{money(tongThanhToan)} đ</b>
@@ -2903,18 +2892,18 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
         )}
         <button
           type="button"
-          className={nhom === 'mua' ? 'm-t600-btn-huy' : 'm-pb-btn-phu'}
+          className={(nhom === 'mua' || laTraBan) ? 'm-t600-btn-huy' : 'm-pb-btn-phu'}
           onClick={handleQuayLai}
         >
-          {nhom === 'mua' ? (dangSua ? 'Huỷ thay đổi' : 'Huỷ') : 'Huỷ'}
+          {(nhom === 'mua' || laTraBan) ? (dangSua ? 'Huỷ thay đổi' : 'Huỷ') : 'Huỷ'}
         </button>
         <button
           type="button"
-          className={nhom === 'mua' ? 'm-t600-btn-luu' : 'm-pb-btn-sua'}
+          className={(nhom === 'mua' || laTraBan) ? 'm-t600-btn-luu' : 'm-pb-btn-sua'}
           onClick={() => thucHienLuu(false)}
           data-hd="luu"
         >
-          {nhom === 'mua' ? 'Lưu phiếu' : (dangSua ? 'Lưu thay đổi' : 'Lưu phiếu')}
+          {(nhom === 'mua' || laTraBan) ? 'Lưu phiếu' : (dangSua ? 'Lưu thay đổi' : 'Lưu phiếu')}
         </button>
       </div>
 

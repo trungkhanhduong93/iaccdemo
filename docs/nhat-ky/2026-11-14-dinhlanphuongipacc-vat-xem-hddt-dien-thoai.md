@@ -46,7 +46,14 @@
 - `MXemPhieu.tsx` (phần Hàng bán trả lại `laTraBan` của T830): thẻ đầu dùng khuôn phiếu mua (`m-t600-the-dau m-t655-dau`): cửa hàng, nguồn (`NGUON`), Tổng tiền theo `row.tong` (khớp danh sách; thẻ cũ tính lại từ dòng hàng có cộng VAT nên lệch, vd TL2610-0259 9.713.440 thay vì 8.933.078), khung thanh toán chip, Đã trả / tổng (`soDaTra`). Bỏ ô Cửa hàng, Nguồn chứng từ; Thông tin chung bỏ Địa chỉ, Mã số thuế, Người giao dịch, Thanh toán.
 - Kiểm 375px gói Plus: TL2610-0259, TL2610-0255 đúng; build, `kiem_tra --nhanh`, `kiem_van` sạch.
 
+## T842 (15/11/2026)
+
+- `MLapPhieu.tsx` (form Hàng bán trả lại `laTraBan` của T830): ẩn ô Địa chỉ, Mã số thuế, Người giao dịch, Phương thức (giá trị vẫn lưu theo khách hàng, chứng từ gốc, mặc định Tiền mặt), bỏ khối Tổng thanh toán (tự tính) ở thẻ đầu; thêm khối Tổng cộng dưới danh sách mặt hàng (`m-t601-tong-khu`) và chân ghim kiểu phiếu mua có dòng Tổng tiền (n dòng) (`m-t656-tong`).
+- Kiểm 375px gói Plus: Trả lại từ BH2610-0009, form không còn các ô trên, Tổng cộng 2.200.000, chân ghim Tổng tiền (2 dòng) 2.200.000 đ, lưu được. Build, `kiem_tra --nhanh`, `kiem_van` sạch.
+
 ## Dở dang, việc tiếp theo
+
+- Phiên đã dài: việc tiếp theo nên mở phiên mới, mỗi phiên một bản clone riêng (QD21).
 
 - Không.
 
