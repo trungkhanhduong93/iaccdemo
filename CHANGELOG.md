@@ -16,7 +16,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 - T839: Hoá đơn thay thế, điều chỉnh chưa phát hành có nhãn đỏ Dự thảo cạnh số chứng từ ở danh sách Bán hàng (web và điện thoại), cùng chỗ nhãn VAT; chữ Dự thảo màu đỏ ở chip loại hoá đơn trên form web, thẻ tổng tiền và hộp xem hoá đơn trên điện thoại.
 
 ## 14/11/2026
-- T832: Điện thoại: Xuất bán POS bỏ tab Báo cáo theo dõi; Mua hàng bỏ tab Hoá đơn mua hàng, Trả lại hàng mua (hai mục này đã có riêng ở menu Nghiệp vụ).
+- T832: Điện thoại: Mua hàng bỏ tab Hoá đơn mua hàng, Trả lại hàng mua (hai mục này đã có riêng ở menu Nghiệp vụ).
 - T838: Điện thoại, mục Bán hàng: chi tiết chứng từ chỉ ghi ngày, không giờ. Thông tin hoá đơn lần lượt Số hoá đơn (hoá đơn mới; chưa phát hành thì Dự thảo, bấm xem), Ngày hoá đơn, Ký hiệu, Loại điều chỉnh, Hoá đơn gốc (bấm số để xem) cho hoá đơn thay thế, điều chỉnh, huỷ bán.
 - T836: Điện thoại, mục Bán hàng: chứng từ đã xuất hoá đơn điện tử chỉ còn nhãn VAT trên số chứng từ, bỏ dòng "Đã xuất HĐ ..." bên dưới; chứng từ chưa xuất vẫn ghi trạng thái.
 - T835: Điện thoại, Bán hàng và Xuất bán POS: chứng từ đã xuất hoá đơn điện tử có nhãn VAT trên số chứng từ ở danh sách như web; ở chi tiết bấm số hoá đơn mở xem hoá đơn điện tử vừa màn điện thoại (chụm ngón để phóng to), trạng thái Hợp lệ ở tiêu đề, chỉ có Chia sẻ (mở bảng chia sẻ của máy kèm file PDF hoá đơn như chia sẻ file, ảnh) và Đóng.
