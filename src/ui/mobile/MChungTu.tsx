@@ -618,44 +618,42 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
       const is412 = sc.code === '4.1.2' || sc.slug === '4-1-2'
       const is414 = sc.code === '4.1.4' || sc.slug === '4-1-4'
       const is415 = sc.code === '4.1.5' || sc.slug === '4-1-5'
+      // Hoá đơn mua hàng, Trả lại hàng mua là mục riêng ở menu Nghiệp vụ (T832): không là tab của màn khác, màn của mình chỉ một tab
+      const rieng = is412 || is414
       return (
         <div className="m-tc-tabs" role="tablist">
-          <button
-            type="button"
-            role="tab"
-            aria-selected={is411}
-            className={`m-tc-tab-btn${is411 ? ' on' : ''}`}
-            onClick={() => nav('/app/mua-hang/4-1-1')}
-          >
-            Chứng từ mua hàng
-          </button>
-          <button
-            type="button"
-            role="tab"
-            aria-selected={is412}
-            className={`m-tc-tab-btn${is412 ? ' on' : ''}`}
-            onClick={() => nav('/app/mua-hang/4-1-2')}
-          >
-            Hoá đơn mua hàng
-          </button>
-          <button
-            type="button"
-            role="tab"
-            aria-selected={is414}
-            className={`m-tc-tab-btn${is414 ? ' on' : ''}`}
-            onClick={() => nav('/app/mua-hang/4-1-4')}
-          >
-            Trả lại hàng mua
-          </button>
-          <button
-            type="button"
-            role="tab"
-            aria-selected={is415}
-            className={`m-tc-tab-btn${is415 ? ' on' : ''}`}
-            onClick={() => nav('/app/mua-hang/4-1-5')}
-          >
-            Chi phí mua hàng
-          </button>
+          {!rieng && (
+            <button
+              type="button"
+              role="tab"
+              aria-selected={is411}
+              className={`m-tc-tab-btn${is411 ? ' on' : ''}`}
+              onClick={() => nav('/app/mua-hang/4-1-1')}
+            >
+              Chứng từ mua hàng
+            </button>
+          )}
+          {is412 && (
+            <button type="button" role="tab" aria-selected={true} className="m-tc-tab-btn on">
+              Hoá đơn mua hàng
+            </button>
+          )}
+          {is414 && (
+            <button type="button" role="tab" aria-selected={true} className="m-tc-tab-btn on">
+              Trả lại hàng mua
+            </button>
+          )}
+          {!rieng && (
+            <button
+              type="button"
+              role="tab"
+              aria-selected={is415}
+              className={`m-tc-tab-btn${is415 ? ' on' : ''}`}
+              onClick={() => nav('/app/mua-hang/4-1-5')}
+            >
+              Chi phí mua hàng
+            </button>
+          )}
           <button
             type="button"
             role="tab"

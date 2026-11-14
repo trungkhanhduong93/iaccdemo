@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T832 | Điện thoại: Xuất bán POS bỏ tab Báo cáo theo dõi; màn mua hàng bỏ tab Hoá đơn mua hàng, Trả lại hàng mua (đã là mục riêng ở menu Nghiệp vụ) | dinhlanphuongipacc | 14/11/2026 | [nhật ký](../nhat-ky/2026-11-14-dinhlanphuongipacc-bo-tab-thua-dien-thoai.md) |
 | T853 | Điện thoại, phiếu trả lại (bán, mua) lập từ chứng từ gốc giống hệt khuôn lập phiếu mua, chỉ khoá giá; Hàng bán trả lại bỏ Phương thức web và điện thoại | dinhlanphuongipacc | 15/11/2026 | [2026-11-15-dinhlanphuongipacc-tra-lai-khuon-mua](../nhat-ky/2026-11-15-dinhlanphuongipacc-tra-lai-khuon-mua.md) |
 | T851 | Mọi icon Excel (nút nhập, xuất Excel, màn Báo cáo) đổi sang logo Microsoft Excel đủ màu | Trum | 15/11/2026 | `2026-11-15-trum-logo-excel-cong-thuc-kho-plus.md` |
 | T850 | Kho gói Plus đổi tab Điều chuyển thành Xuất chuyển kho (phiếu Chuyển kho, mọi kho); Pro có đủ Xuất, Nhập điều chuyển và Xuất chuyển kho | Trum | 15/11/2026 | `2026-11-15-trum-logo-excel-cong-thuc-kho-plus.md` |
