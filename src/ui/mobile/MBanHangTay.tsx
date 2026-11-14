@@ -14,7 +14,7 @@ import { dsTraBanCon, MAN_TRA_BAN, soDaTra } from '../generic/daXoa'
 import type { TraTu } from '../generic/ChungTuForm'
 import { dtDong } from '../../modules/ban-hang/BangHangBan'
 import { giamThueHang } from '../../modules/ban-hang/giam-thue'
-import { HopXemHd, HopXuatHddt, TEN_LOAI_CT, hdCua, laHdMoiCua, loaiCtCua, ttHdGoc } from '../../modules/ban-hang/hddt'
+import { HopXemHd, HopXuatHddt, TEN_LOAI_CT, hdCua, hdGocCua, type HdDaXuat, type LoaiCt, laHdMoiCua, loaiCtCua, ttHdGoc } from '../../modules/ban-hang/hddt'
 import { MChon } from './MChon'
 import { MChonKhoangNgay } from './MChonKhoangNgay'
 import { MDsChungTuChuan, MDsDongPhieu, HangTabsBanHang } from './MDsChungTuChuan'
@@ -22,8 +22,11 @@ import { quayLaiMobile } from './quayLai'
 import { MChungTu } from './MChungTu'
 import { useDongChungTu } from '../generic/VoucherScreen'
 
-type KhoaLoc = 'cn' | 'kh' | 'hd'
-const LOC_TRONG: Record<KhoaLoc, string> = { cn: '', kh: '', hd: '' }
+type KhoaLoc = 'cn' | 'kh' | 'lo' | 'hd'
+const LOC_TRONG: Record<KhoaLoc, string> = { cn: '', kh: '', lo: '', hd: '' }
+/** Loại chứng từ ghi trên dòng danh sách điện thoại: chứng từ bán ghi "Xuất bán" cho khỏi trùng tên mục Bán hàng (T838) */
+const TEN_LOAI_DS: Record<LoaiCt, string> = { ...TEN_LOAI_CT, XBAN: 'Xuất bán' }
+const LOAI_DS: LoaiCt[] = ['XBAN', 'HUYBAN', 'HDTHAYTHE', 'HDDIEUCHINH']
 const TEN_HTTT: Record<string, string> = { congno: 'Công nợ', tienmat: 'Tiền mặt', chuyenkhoan: 'Chuyển khoản' }
 
 /** Tab Bán hàng của gói Plus ghi nhớ một lần: lập chứng từ xong bấm Đóng về đúng tab này, không về Xuất bán POS */
@@ -66,7 +69,8 @@ export const MBanHangTay: FC<MBanHangTayProps> = ({ sc, mod, rows, duong, tabTay
   const [moChon, setMoChon] = useState<KhoaLoc | null>(null)
   const [idXem, setIdXem] = useState<string | null>(idMo ?? null)
   const [moHd, setMoHd] = useState(false)
-  const [xemHd, setXemHd] = useState(false)
+  // Hoá đơn đang xem: của chứng từ này, hoá đơn gốc bị thay thế, điều chỉnh, hoặc bản dự thảo (T838)
+  const [xemHd, setXemHd] = useState<{ r: Row; hd: HdDaXuat; nhap?: boolean } | null>(null)
 
   const list = useMemo(() => {
     const q = fold(tim.trim())
@@ -76,6 +80,7 @@ export const MBanHangTay: FC<MBanHangTayProps> = ({ sc, mod, rows, duong, tabTay
       if (cnChon && r.cn !== cnChon.ten) return false
       if (loc.cn && r.cn !== CUA_HANG.find(c => c.id === loc.cn)?.ten) return false
       if (loc.kh && r.doiTuong !== loc.kh) return false
+      if (loc.lo && loaiCtCua(r) !== loc.lo) return false
       if (loc.hd === 'da' && !hdCua(r)) return false
       if (loc.hd === 'chua' && (hdCua(r) || loaiCtCua(r) === 'HUYBAN')) return false
       if (q && !fold(`${r.so} ${r.dienGiai ?? ''} ${r.doiTuong ?? ''} ${r._tenHangDu ?? r.tenHang ?? ''}`).includes(q)) return false
@@ -87,6 +92,7 @@ export const MBanHangTay: FC<MBanHangTayProps> = ({ sc, mod, rows, duong, tabTay
     const o: { k: KhoaLoc; nhan: string; tieuDe: string; tatCa: string; ds: { k: string; ten: string }[]; tim?: boolean }[] = [
       { k: 'kh', nhan: 'Khách hàng', tieuDe: 'Chọn khách hàng', tatCa: 'Tất cả khách hàng', tim: true,
         ds: [...new Set(rows.map(r => String(r.doiTuong ?? '')).filter(Boolean))].map(v => ({ k: v, ten: v })) },
+      { k: 'lo', nhan: 'Loại chứng từ', tieuDe: 'Chọn loại chứng từ', tatCa: 'Tất cả', ds: LOAI_DS.map(k => ({ k, ten: TEN_LOAI_DS[k] })) },
       { k: 'hd', nhan: 'Hoá đơn điện tử', tieuDe: 'Trạng thái hoá đơn', tatCa: 'Tất cả', ds: [{ k: 'da', ten: 'Đã xuất HĐĐT' }, { k: 'chua', ten: 'Chưa xuất HĐĐT' }] },
     ]
     if (!cnChon) o.unshift({ k: 'cn', nhan: 'Cửa hàng', tieuDe: 'Chọn cửa hàng', tatCa: 'Tất cả cửa hàng', ds: CUA_HANG.map(c => ({ k: c.id, ten: c.ten })) })
@@ -100,14 +106,16 @@ export const MBanHangTay: FC<MBanHangTayProps> = ({ sc, mod, rows, duong, tabTay
   const chuoiKhoangNgay = `${pad(thoiGian.tu.getDate())}/${pad(thoiGian.tu.getMonth() + 1)} – ${pad(thoiGian.den.getDate())}/${pad(thoiGian.den.getMonth() + 1)}/${thoiGian.den.getFullYear()}`
   const chipsLoc: ReactNode[] = [
     <span key="kn" className="m-chip-xem">{chuoiKhoangNgay}</span>,
-    <span key="cn" className="m-chip-xem">{cnChon ? cnChon.ten : `Cửa hàng: ${loc.cn ? CUA_HANG.find(c => c.id === loc.cn)?.ten ?? 'Tất cả' : 'Tất cả'}`}</span>,
+    // Danh sách không ghi cửa hàng (T838): chỉ hiện khi đang lọc theo một cửa hàng
+    ...(loc.cn ? [<span key="cn" className="m-chip-xem">{CUA_HANG.find(c => c.id === loc.cn)?.ten}</span>] : []),
     ...(loc.kh ? [<span key="kh" className="m-chip-xem">Khách: {loc.kh}</span>] : []),
+    ...(loc.lo ? [<span key="lo" className="m-chip-xem">{TEN_LOAI_DS[loc.lo as LoaiCt]}</span>] : []),
     ...(loc.hd ? [<span key="hd" className="m-chip-xem">{loc.hd === 'da' ? 'Đã xuất HĐĐT' : 'Chưa xuất HĐĐT'}</span>] : []),
   ]
 
   // Chứng từ đang xem lấy lại từ danh sách mỗi lần vẽ: phát hành hoá đơn, trả hàng xong là thấy ngay
   const ct = idXem ? rows.find(r => String(r.id) === idXem) : undefined
-  const dongXem = () => { setIdXem(null); setMoHd(false); setXemHd(false); if (idMo) nav(veDs, { replace: true }) }
+  const dongXem = () => { setIdXem(null); setMoHd(false); setXemHd(null); if (idMo) nav(veDs, { replace: true }) }
 
   const dsDong: Dong[] = useMemo(() => (!ct ? [] : ((ct._dong as Dong[] | undefined) ?? dongCua(sc.voucher ?? { prefix: 'BH', doiTuong: 'kh', dienGiai: [], tien: [0, 0] }, `${sc.code ?? sc.slug}-${ct.id}`))), [ct, sc])
   const khoan = useMemo(() => {
@@ -129,6 +137,12 @@ export const MBanHangTay: FC<MBanHangTayProps> = ({ sc, mod, rows, duong, tabTay
   // Chứng từ mẫu chưa ghi hình thức thanh toán: đã thu tiền thì Tiền mặt, chưa thì Công nợ, như form web
   const httt = String(ct?._httt ?? (nv?.ttTien === 'da' ? 'tienmat' : 'congno')) as 'congno' | 'tienmat' | 'chuyenkhoan'
   const traLai = ct ? dsTraBanCon(ct) : []
+  const hdGoc = ct ? hdGocCua(ct) : undefined
+  // Hoá đơn thay thế, điều chỉnh chưa phát hành: bản dự thảo dựng từ ký hiệu, ngày, tiền đã lưu, số 00000000 (như web T798)
+  const hdNhap: HdDaXuat | undefined = ct && !hd && laHdMoiCua(ct) ? (() => {
+    const kh = String(ct._kyHieuHd ?? ''), tien = (ct._tienHd as Partial<HdDaXuat> | undefined) ?? {}
+    return { mau: kh[0] ?? '', kyHieu: kh.slice(1), so: '00000000', ngay: String(ct._ngayHd ?? ''), ma: '', truoc: tien.truoc, thue: tien.thue, tong: tien.tong }
+  })() : undefined
   // Tình trạng thu tiền như phiếu mua: Tiền mặt, Chuyển khoản là thu đủ; Công nợ cộng các phiếu thu đã lập
   const tongCt = Number(ct?.tong ?? 0)
   const daThu = ct ? soDaTra(ct) : 0
@@ -177,12 +191,14 @@ export const MBanHangTay: FC<MBanHangTayProps> = ({ sc, mod, rows, duong, tabTay
           <MDsDongPhieu
             key={r.id ?? i}
             so={String(r.so)}
-            dongPhu={`${r.doiTuong || 'Khách lẻ'} · ${r.cn}`}
-            // Đã xuất HĐĐT thì nhãn VAT trên số chứng từ đã đủ, bỏ dòng "Đã xuất HĐ ..." (T836); chưa xuất vẫn ghi trạng thái
-            dongPhu2={[loaiCtCua(r) === 'XBAN' ? '' : TEN_LOAI_CT[loaiCtCua(r)], hdCua(r) ? '' : ttHoaDon(r)].filter(Boolean).join(' · ') || undefined}
+            dongPhu={r.doiTuong || 'Khách lẻ'}
+            // Dòng phụ chỉ ghi loại chứng từ, bỏ tên cửa hàng và trạng thái hoá đơn (T838): đã phát hành có nhãn VAT trên số chứng từ,
+            // hoá đơn thay thế, điều chỉnh chưa phát hành có nhãn Dự thảo cùng chỗ
+            dongPhu2={TEN_LOAI_DS[loaiCtCua(r)]}
             tien={Number(r.tong ?? 0)}
             hienTien
             vat={Boolean(hdCua(r))}
+            duThao={!hdCua(r) && laHdMoiCua(r)}
             onClick={() => setIdXem(String(r.id))}
           />
         )}
@@ -326,11 +342,37 @@ export const MBanHangTay: FC<MBanHangTayProps> = ({ sc, mod, rows, duong, tabTay
                   )}
                 </div>
 
-                {hd && (
+                {(hd || hdGoc || hdNhap) && (
                   <>
                     <div className="m-pb-nhom">THÔNG TIN HOÁ ĐƠN</div>
                     <div className="m-pb-the m-pb-the-gon m-t655-gon">
-                      <Dg nhan="Số hoá đơn"><button type="button" className="m-t835-so-hd" onClick={() => setXemHd(true)}>{hd.so}<Icon n="chevr" className="ic sm" /></button></Dg>
+                      {/* Hoá đơn thay thế, điều chỉnh, huỷ bán: hoá đơn gốc kèm nhãn Đã xuất HĐĐT, bấm số xem hoá đơn gốc; dòng Chứng từ gốc mở chứng từ đó (như web T787) */}
+                      {hdGoc && (
+                        <Dg nhan={loaiCt === 'HDDIEUCHINH' ? 'Điều chỉnh cho' : loaiCt === 'HUYBAN' ? 'Huỷ bán do thay thế' : 'Thay thế cho'}>
+                          <span className="m-t838-goc">
+                            <span className="m-t838-da">Đã xuất HĐĐT</span>
+                            <button type="button" className="m-t835-so-hd" onClick={() => setXemHd({ r: rows.find(x => String(x.id) === hdGoc.id) ?? ct, hd: hdGoc.hd })}>{hdGoc.hd.so}<Icon n="chevr" className="ic sm" /></button>
+                          </span>
+                        </Dg>
+                      )}
+                      {hdGoc && <Dg nhan="Ký hiệu hoá đơn gốc">{`${hdGoc.hd.mau}${hdGoc.hd.kyHieu}`}</Dg>}
+                      {hdGoc && rows.some(x => String(x.id) === hdGoc.id) && (
+                        <Dg nhan="Chứng từ gốc"><button type="button" className="m-t835-so-hd" onClick={() => setIdXem(hdGoc.id)}>{hdGoc.so}<Icon n="chevr" className="ic sm" /></button></Dg>
+                      )}
+                      {loaiCt === 'HDDIEUCHINH' && <Dg nhan="Loại điều chỉnh">{ct._dcLoai === 'tang' ? 'Điều chỉnh tăng' : 'Điều chỉnh giảm'}</Dg>}
+                      {/* Hoá đơn thay thế, điều chỉnh chưa phát hành: xem bản dự thảo như web T798 */}
+                      {hdNhap && (
+                        <Dg nhan="Hoá đơn mới"><button type="button" className="m-t835-so-hd" onClick={() => setXemHd({ r: ct, hd: hdNhap, nhap: true })}>Xem dự thảo<Icon n="chevr" className="ic sm" /></button></Dg>
+                      )}
+                    </div>
+                  </>
+                )}
+                {hd && (
+                  <>
+                    {!hdGoc && <div className="m-pb-nhom">THÔNG TIN HOÁ ĐƠN</div>}
+                    <div className={`m-pb-the m-pb-the-gon m-t655-gon${hdGoc ? ' m-t838-tiep' : ''}`}>
+                      {hdGoc && <div className="m-t838-tieu">Hoá đơn mới <span className="m-t838-da">Đã xuất HĐĐT</span></div>}
+                      <Dg nhan="Số hoá đơn"><button type="button" className="m-t835-so-hd" onClick={() => setXemHd({ r: ct, hd })}>{hd.so}<Icon n="chevr" className="ic sm" /></button></Dg>
                       <Dg nhan="Ký hiệu">{`${hd.mau}${hd.kyHieu}`}</Dg>
                       <Dg nhan="Ngày hoá đơn">{hd.ngay}</Dg>
                       <Dg nhan="Mã tra cứu">{hd.traCuu ?? hd.ma}</Dg>
@@ -402,7 +444,7 @@ export const MBanHangTay: FC<MBanHangTayProps> = ({ sc, mod, rows, duong, tabTay
               </div>
             </div>
           )}
-          {xemHd && hd && <HopXemHd s={s} r={ct} hd={hd} toast={toast} dienThoai onDong={() => setXemHd(false)} />}
+          {xemHd && <HopXemHd s={s} r={xemHd.r} hd={xemHd.hd} nhap={xemHd.nhap} toast={toast} dienThoai onDong={() => setXemHd(null)} />}
           {moHd && <HopXuatHddt s={s} man={man} ds={[ct]} onDong={() => setMoHd(false)} toast={toast} />}
         </div>
       )}
