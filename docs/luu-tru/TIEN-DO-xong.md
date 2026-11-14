@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T836 | Điện thoại, danh sách mục Bán hàng: chứng từ đã xuất HĐĐT bỏ dòng trạng thái "Đã xuất HĐ ...", chỉ còn nhãn VAT | dinhlanphuongipacc | 14/11/2026 | Xem [nhật ký](../nhat-ky/2026-11-14-dinhlanphuongipacc-vat-xem-hddt-dien-thoai.md) |
 | T835 | Điện thoại, Bán hàng và Xuất bán POS: nhãn VAT trên số chứng từ đã xuất HĐĐT, số hoá đơn bấm xem hoá đơn điện tử vừa màn, chỉ Chia sẻ (bảng chia sẻ của máy kèm PDF), Đóng | dinhlanphuongipacc | 14/11/2026 | Xem [nhật ký](../nhat-ky/2026-11-14-dinhlanphuongipacc-vat-xem-hddt-dien-thoai.md) |
 | T834 | Điện thoại, chi tiết chứng từ bán hàng lập tay theo giao diện xem phiếu nhập mua; đã xuất HĐĐT có nhãn kèm mã tra cứu trên tổng tiền; Trả lại điền đơn giá đã trừ giảm giá | dinhlanphuongipacc | 14/11/2026 | Xem [nhật ký](../nhat-ky/2026-11-14-dinhlanphuongipacc-chi-tiet-ban-hang-nhu-phieu-mua.md) |
 | T833 | Điện thoại, menu Bán hàng: bỏ tab Báo cáo theo dõi; mục Bán hàng (gói Plus, Pro) lập chứng từ bán hàng thủ công như web, giao diện như Xuất bán POS; chi tiết có Trả lại, Xuất HĐĐT như web | dinhlanphuongipacc | 14/11/2026 | Xem [nhật ký](../nhat-ky/2026-11-14-dinhlanphuongipacc-tab-ban-hang-dien-thoai.md). Sửa `MLapPhieu.tsx` (Trum giữ ở T552) phần trả lại hàng bán |

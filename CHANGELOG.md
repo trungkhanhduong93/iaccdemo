@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 14/11/2026
+- T836: Điện thoại, mục Bán hàng: chứng từ đã xuất hoá đơn điện tử chỉ còn nhãn VAT trên số chứng từ, bỏ dòng "Đã xuất HĐ ..." bên dưới; chứng từ chưa xuất vẫn ghi trạng thái.
 - T835: Điện thoại, Bán hàng và Xuất bán POS: chứng từ đã xuất hoá đơn điện tử có nhãn VAT trên số chứng từ ở danh sách như web; ở chi tiết bấm số hoá đơn mở xem hoá đơn điện tử vừa màn điện thoại (chụm ngón để phóng to), trạng thái Hợp lệ ở tiêu đề, chỉ có Chia sẻ (mở bảng chia sẻ của máy kèm file PDF hoá đơn như chia sẻ file, ảnh) và Đóng.
 - T834: Điện thoại, mục Bán hàng: chi tiết chứng từ đổi theo giao diện xem phiếu nhập mua (thẻ tổng tiền, Thông tin chung, Thông tin hoá đơn, thẻ hàng hoá, chân hai nút Trả lại, Xuất HĐĐT). Thẻ đầu: tổng tiền bên trái, nhãn Đã xuất HĐĐT kèm mã tra cứu bên phải, dưới là tình trạng thanh toán (đã thu / tổng) như phiếu mua; Thông tin chung bỏ mã số thuế, địa chỉ, thanh toán. Trả lại điền sẵn đơn giá đã trừ giảm giá, chiết khấu nên tổng trả không vượt số đã bán.
 - T833: Điện thoại, menu Bán hàng bỏ tab Báo cáo theo dõi. Mục Bán hàng (gói Plus, Pro): danh sách chứng từ bán hàng lập tay như Xuất bán POS, nút lập chứng từ mới; mở chứng từ có Trả lại (lập Hàng bán trả lại điền sẵn, chỉ sửa số lượng, không quá số đã bán) và Xuất HĐĐT như web.

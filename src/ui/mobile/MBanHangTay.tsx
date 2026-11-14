@@ -178,7 +178,8 @@ export const MBanHangTay: FC<MBanHangTayProps> = ({ sc, mod, rows, duong, tabTay
             key={r.id ?? i}
             so={String(r.so)}
             dongPhu={`${r.doiTuong || 'Khách lẻ'} · ${r.cn}`}
-            dongPhu2={loaiCtCua(r) === 'XBAN' ? ttHoaDon(r) : `${TEN_LOAI_CT[loaiCtCua(r)]} · ${ttHoaDon(r)}`}
+            // Đã xuất HĐĐT thì nhãn VAT trên số chứng từ đã đủ, bỏ dòng "Đã xuất HĐ ..." (T836); chưa xuất vẫn ghi trạng thái
+            dongPhu2={[loaiCtCua(r) === 'XBAN' ? '' : TEN_LOAI_CT[loaiCtCua(r)], hdCua(r) ? '' : ttHoaDon(r)].filter(Boolean).join(' · ') || undefined}
             tien={Number(r.tong ?? 0)}
             hienTien
             vat={Boolean(hdCua(r))}

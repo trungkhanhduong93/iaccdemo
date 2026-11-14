@@ -19,6 +19,10 @@
 - Trình duyệt 375x812, gói Plus: tab Bán hàng có nhãn VAT đúng các chứng từ web có VAT (HDDC2610-0001, HDTT2610-0001, BH2610-0013...); BH2610-0013 bấm 00000126 mở hoá đơn vừa màn (tờ 12px đến 361px, không tràn ngang), nhãn Hợp lệ cùng hàng tiêu đề; Chia sẻ PDF mở hộp chia sẻ vừa màn; Đóng tắt hộp. Xuất bán POS: 476/1466 đơn có nhãn VAT, mở đơn có hoá đơn, bấm số 00002146 xem được hoá đơn 1C26TPM.
 - Thẻ meta viewport không chặn phóng to.
 
+## T836 (sau khi push)
+
+- `MBanHangTay.tsx`: thẻ danh sách chứng từ đã có hoá đơn (`hdCua`) bỏ dòng "Đã xuất HĐ ...", chỉ còn nhãn VAT; hoá đơn thay thế, điều chỉnh vẫn ghi tên loại; chưa xuất vẫn ghi trạng thái (Chưa xuất HĐĐT, Hoá đơn dự thảo, Không xuất HĐ). Đã kiểm ở 375px gói Plus; typecheck, build, `kiem_tra --nhanh`, `kiem_van` sạch.
+
 ## Dở dang, việc tiếp theo
 
 - Không.
