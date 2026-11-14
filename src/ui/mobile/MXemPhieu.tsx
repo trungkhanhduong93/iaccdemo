@@ -1137,7 +1137,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
                     {dongTt('Kho nhập', kho)}
                     {dongTt('Ngày chứng từ', String(row.ngay ?? '').split(' ')[0])}
                     {httt !== 'congno' && dongTt('Quỹ', String(row._quy ?? ''))}
-                    {httt !== 'congno' && dongTt('Phương thức', String(row._pttt ?? ''))}
+                    {/* Bỏ Phương thức (T841): form lập cũng đã ẩn ô này (T842) */}
                     {httt === 'congno' && dongTt('Hạn thanh toán', hanTt)}
                     {dongTt('Ghi chú', String(row._ghiChu ?? row.dienGiai ?? ''))}
                     {dsTc.length > 0 && (

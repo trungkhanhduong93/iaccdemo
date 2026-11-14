@@ -45,6 +45,7 @@
 
 - `MXemPhieu.tsx` (phần Hàng bán trả lại `laTraBan` của T830): thẻ đầu dùng khuôn phiếu mua (`m-t600-the-dau m-t655-dau`): cửa hàng, nguồn (`NGUON`), Tổng tiền theo `row.tong` (khớp danh sách; thẻ cũ tính lại từ dòng hàng có cộng VAT nên lệch, vd TL2610-0259 9.713.440 thay vì 8.933.078), khung thanh toán chip, Đã trả / tổng (`soDaTra`). Bỏ ô Cửa hàng, Nguồn chứng từ; Thông tin chung bỏ Địa chỉ, Mã số thuế, Người giao dịch, Thanh toán.
 - Kiểm 375px gói Plus: TL2610-0259, TL2610-0255 đúng; build, `kiem_tra --nhanh`, `kiem_van` sạch.
+- Sau đó bỏ thêm dòng Phương thức (phiếu đã trả tiền ngay) ở Thông tin chung; kiểm bằng phiếu trả lại từ BH2610-0009 (Tiền mặt): còn Quỹ, không còn Phương thức.
 
 ## T842 (15/11/2026)
 
