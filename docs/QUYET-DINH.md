@@ -1204,3 +1204,5 @@ Trum chốt 12/11/2026 (T810). Thay một phần QD96.
 
 - Bỏ ô Kho khỏi panel Người sử dụng. Người sử dụng chỉ được phân quyền theo cửa hàng, để trống là xem tất cả.
 - Panel chi tiết không hiện Người tạo, Ngày tạo, Người cập nhật, Ngày cập nhật. Bốn thông tin này hiện sẵn thành cột ở danh sách. Khối Thông tin hệ thống chỉ còn Đăng nhập gần nhất, vẫn chỉ hiện khi xem (T809).
+
+## QD111. Kho gói Plus, Pro: Xuất kho định lượng, Xuất chuyển kho (đang soạn)
