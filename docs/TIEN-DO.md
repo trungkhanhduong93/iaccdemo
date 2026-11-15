@@ -11,7 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T855 | Điện thoại, lập Bán hàng: tích Thanh toán ngay (lập phiếu thu), công tắc Phát hành HĐĐT, ô Kênh bán bắt buộc; Bán hàng và Hàng bán trả lại tính GTGT theo tỷ lệ thì bỏ ô VAT trên thẻ mặt hàng, Tổng cộng hiện Giảm trừ thuế như web | dinhlanphuongipacc | Đang làm | `MLapPhieu.tsx` (Trum giữ ở T552, chỉ sửa nhánh `khuonMua` nhóm bán) |
 | T852 | Phiếu Xuất bán POS hiện tham chiếu ngược sang phiếu Xuất kho định lượng (T849 mới có chiều XDL sang POS) | | Chờ | `ChungTuBanHang.tsx`, dùng `useDsPhieuXdl` ở `kho/xuat-dinh-luong.ts` |
 | T837 | Điện thoại, danh sách mục Bán hàng lập tay: bỏ tên cửa hàng ở dòng chứng từ, dòng nào cũng ghi loại chứng từ (Xuất bán, Huỷ bán, Hoá đơn thay thế, Hoá đơn điều chỉnh), bộ lọc thêm Loại chứng từ | dinhlanphuongipacc | Đang làm | `MBanHangTay.tsx` |
 | T781 | Giảm thuế GTGT xét hiệu lực nghị quyết theo ngày của từng chứng từ, không theo ngày làm việc (`ptGiamHienHanh` dùng `HOM_NAY`) | | Chờ | Thấy lúc soát T780, `giam-thue.ts` |

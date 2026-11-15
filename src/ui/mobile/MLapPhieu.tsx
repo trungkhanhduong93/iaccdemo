@@ -4,9 +4,12 @@ import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import type { Row, ScreenProps } from '../../modules/types'
 import { dongCua, nguoiTaoMau, tkTheoLyDo, ttNghiepVu, type Dong } from '../generic/gen'
 import { duongDan, tenMan } from '../../app/registry'
-import { cuaHangHienTai, ngayDauNam, truocDauNam, useSession } from '../../app/session'
+import { cuaHangHienTai, gtgtTyLe, ngayDauNam, truocDauNam, useSession } from '../../app/session'
+import { giamThueHang } from '../../modules/ban-hang/giam-thue'
+import { cauHinhHddt, hdCua, khachTheoTen, kyHieuDung, kyHieuTheoCh, laKhachCty, phatHanhHd, thieuKhach } from '../../modules/ban-hang/hddt'
+import { KENH_BAN } from '../../modules/bao-cao/tt152'
 import { type Goi, kieuGhiSoDv } from '../../app/plan'
-import { CCDC_HANG, CUA_HANG, HANG, KHACH, KHO, LY_CAN_DOI_TUONG, LY_DO, NCC, NHAN_VIEN, NVL, MA_LY_CHO_PHAN_BO, TK_NGAN_HANG } from '../../data/mock'
+import { CCDC_HANG, CUA_HANG, HANG, HOM_NAY, KHACH, KHO, LY_CAN_DOI_TUONG, LY_DO, NCC, NHAN_VIEN, NVL, MA_LY_CHO_PHAN_BO, TK_NGAN_HANG } from '../../data/mock'
 import { LY_HD_MUA, boO, nhomCua, theoLoai } from '../generic/nhom'
 import { DS_DOI_TUONG } from '../generic/BangSua'
 import { ctTtCon, ghiNhatKy, soKeTiep, suaPhieu, themPhieu, soDaTra, dsTtCon, ttTienTheoTra, type PhieuTt } from '../generic/daXoa'
@@ -16,7 +19,7 @@ import { MThanhToanNgay, lapPhieuChiTraNcc, type ThongTinTt } from './MThanhToan
 import { soLuong } from '../format'
 import { MAN_THU_CHI, QUY_TIEN, TEN_CT_TT, TIEN_TO_CT_TT, lyMacDinh, type TraTu } from '../generic/ChungTuForm'
 import { useDongChungTu } from '../generic/VoucherScreen'
-import { chuanKyHieuHd, chuanSoHd, fold, money } from '../format'
+import { chuanKyHieuHd, chuanSoHd, dmy, fold, money } from '../format'
 import { Icon } from '../Icon'
 import { LichDon } from '../ChonNgay'
 import { MChon, MThanhThem } from './MChon'
@@ -398,6 +401,7 @@ interface TheHangMuaProps {
   dienGiai?: boolean   // Hoá đơn mua hàng (T826, như web T821): dòng có mã hoặc trống mã, tên dòng là ô Diễn giải gõ tự do
   gon?: boolean   // phiếu Nhập kho (T824): Số lượng gộp ĐVT như phiếu mua, bỏ Chiết khấu, VAT
   ban?: boolean   // hàng bán trả lại (T833): ghi Đã bán thay Đã mua
+  khongVat?: boolean   // bán hàng tính GTGT theo % doanh thu (T855): bỏ ô VAT, thuế dòng 0
 }
 
 function TheHangMua({
@@ -412,6 +416,7 @@ function TheHangMua({
   dienGiai,
   gon,
   ban,
+  khongVat,
 }: TheHangMuaProps) {
   const kieuGiam = dong.kieuGiam ?? (dong?.ck && !dong?.ptCk ? 'đ' : '%')
 
@@ -438,8 +443,8 @@ function TheHangMua({
   const gia = dong.gia ?? 0
   const ptCk = dong.ptCk ?? 0
   const ck = dong.ck ?? 0
-  const ts = dong.ts ?? 0
-  const thue = dong.thue ?? 0
+  const ts = khongVat ? 0 : dong.ts ?? 0
+  const thue = khongVat ? 0 : dong.thue ?? 0
   const tuChia = Boolean(dong.tuChia)
   const tongNhap = dong.tongNhap
   const tienHang = Math.round(sl * gia)
@@ -732,7 +737,8 @@ function TheHangMua({
           </div>
         )}
 
-        {/* Hàng VAT */}
+        {/* Hàng VAT: GTGT theo % doanh thu thì bỏ (T855) */}
+        {!khongVat && (<>
         <span className="m-t601-grid-lbl">VAT</span>
         <div className="m-t601-box" style={{ position: 'relative', paddingRight: 24 }}>
           <input
@@ -789,6 +795,7 @@ function TheHangMua({
             </button>}
           </div>
         )}
+        </>)}
 
         </>)}
 
@@ -885,6 +892,14 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
   const laNk = sc.code === '5.1.1'   // phiếu Nhập kho (T824, như web T818): không đối tượng, có Người thực hiện
   const laTraBan = sc.code === '3.1.4'   // Hàng bán trả lại (T830): đủ ô như web, thẻ đầu kiểu phiếu mua, bỏ ô Diễn giải
   const khuonMua = laTraBan || nhom === 'ban'   // mọi phiếu bán lập tay: thẻ đầu, mặt hàng, chân như phiếu mua (T854)
+  // Bán hàng lập tay (T855, như web T785): tích Thanh toán ngay lập phiếu thu, công tắc Phát hành HĐĐT, Kênh bán bắt buộc
+  const laBanTay = khuonMua && !laTraBan
+  // GTGT theo % doanh thu (T855, như web T450): Bán hàng, Hàng bán trả lại không có ô VAT, thuế 0, trừ Giảm trừ thuế
+  const tyLeBan = khuonMua && cfg.thue !== 0 && gtgtTyLe(s)
+  const hdDaXuat = laBanTay && row ? hdCua(row) : undefined
+  const [phatHd, setPhatHd] = useState(() => laBanTay && !row && cauHinhHddt(s).bat)
+  const [kenh, setKenh] = useState(() => String(gocData?.kenh ?? (laBanTay && !row ? KENH_BAN[0] : '')))
+  const [moChonKenh, setMoChonKenh] = useState(false)
   const cnChon = cuaHangHienTai(s)
   const [cuaHang, setCuaHang] = useState(() => (gocData?.cn ? String(gocData.cn) : cnChon?.ten ?? ''))
   const tenLoai = loai?.ten ?? (gocData?.tenLoai ? String(gocData.tenLoai) : tenMan(sc))
@@ -1230,13 +1245,15 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
   // Tính tổng
   const tongTien = useMemo(() => dsDong.reduce((a, d) => a + (Number(d.tien) || 0), 0), [dsDong])
   const tongCk = useMemo(() => dsDong.reduce((a, d) => a + (Number(d.ck) || 0), 0), [dsDong])
-  const tongThue = useMemo(() => dsDong.reduce((a, d) => a + (Number(d.thue) || 0), 0), [dsDong])
+  const tongThue = useMemo(() => tyLeBan ? 0 : dsDong.reduce((a, d) => a + (Number(d.thue) || 0), 0), [dsDong, tyLeBan])
+  // Giảm trừ thuế GTGT theo % doanh thu: tính trên tiền sau chiết khấu từng dòng theo hàng (như web, T855)
+  const tongGiamThue = useMemo(() => tyLeBan ? dsDong.reduce((a, d) => a + giamThueHang((Number(d.tien) || 0) - (Number(d.ck) || 0), d.ma), 0) : 0, [dsDong, tyLeBan])
   const tongThanhToan = useMemo(() => {
     return dsDong.reduce((a, d) => {
       if (d.tongNhap !== undefined) return a + d.tongNhap
-      return a + (Number(d.tien) || 0) - (Number(d.ck) || 0) + (Number(d.thue) || 0)
-    }, 0)
-  }, [dsDong])
+      return a + (Number(d.tien) || 0) - (Number(d.ck) || 0) + (tyLeBan ? 0 : Number(d.thue) || 0)
+    }, 0) - tongGiamThue
+  }, [dsDong, tyLeBan, tongGiamThue])
 
   // Cập nhật số tiền trả khi tổng thanh toán đổi
   useEffect(() => {
@@ -1718,17 +1735,19 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
   // Hàng bán trả lại (T830): quỹ tiền mặt là tiền mặt ngay, quỹ ngân hàng là chuyển khoản ngay
   const htttTra: 'congno' | 'tienmat' | 'chuyenkhoan' = hinhThucTt === 'congno' ? 'congno' : quy.startsWith('Quỹ tiền mặt') ? 'tienmat' : 'chuyenkhoan'
   // Trả tiền khách ngay thì sinh phiếu chi, uỷ nhiệm chi bên Thu chi như web (T85); phiếu đã có chứng từ thanh toán thì giữ
+  // Bán hàng thu tiền ngay (T855): phiếu thu, báo có, lý do Thu tiền bán hàng
   const ctTtTra = (idGoc: string, soGoc: string, ngay: string, dt: string) => {
     if (htttTra === 'congno' || ctTtCon(row)) return {}
-    const loaiTt = htttTra === 'tienmat' ? 'chi' : 'unc'
-    const dg = `Chi tiền trả lại hàng bán theo ${soGoc}`
+    const loaiTt = laBanTay ? (htttTra === 'tienmat' ? 'thu' : 'bc') : (htttTra === 'tienmat' ? 'chi' : 'unc')
+    const ly = laBanTay ? 'Thu tiền bán hàng' : 'Chi phí khác'
+    const dg = laBanTay ? `Thu tiền bán hàng theo ${soGoc}` : `Chi tiền trả lại hàng bán theo ${soGoc}`
     const so = soKeTiep(MAN_THU_CHI, `${TIEN_TO_CT_TT[loaiTt]}2610-`)
     const id = `moi-${Date.now()}-tt`
     themPhieu(MAN_THU_CHI, {
       id, so, cn: cuaHang, nguon: 'tay', tt: kieuGhiSoDv(s) !== 'khong' ? 'nhap' : 'ghi', loai: loaiTt, tenLoai: TEN_CT_TT[loaiTt],
       ngay, thang: Number(ngay.split('/')[1]) || 10, doiTuong: dt, dienGiai: dg, tien: tongThanhToan, thue: 0, tong: tongThanhToan,
-      _quy: quy, _lyDo: 'Chi phí khác', _ghiChu: dg, _thamChieu: soGoc, _thamChieuDi: `${path}/${idGoc}`,
-      _dong: [{ ma: '', ten: dg, dvt: '', sl: 1, gia: tongThanhToan, tien: tongThanhToan, ts: 0, thue: 0, ly: 'Chi phí khác', dt, km: '', cv: '' }],
+      _quy: quy, _lyDo: ly, _ghiChu: dg, _thamChieu: soGoc, _thamChieuDi: `${path}/${idGoc}`,
+      _dong: [{ ma: '', ten: dg, dvt: '', sl: 1, gia: tongThanhToan, tien: tongThanhToan, ts: 0, thue: 0, ly, dt, km: '', cv: '' }],
     }, s.ten)
     ghiNhatKy(MAN_THU_CHI, id, so, s.ten, `Thêm mới chứng từ, sinh từ ${soGoc}`)
     return { _ctTt: { id, so, loai: loaiTt } }
@@ -1812,8 +1831,15 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
       if (cfg.doiTuong !== 'none' && !doiTuongLuu.trim()) {
         loiMoi.doiTuong = `Vui lòng chọn ${nhanDoiTuong.toLowerCase()}`
       }
-      if (laTraBan && hinhThucTt !== 'congno' && !quy.trim()) {
+      if (khuonMua && hinhThucTt !== 'congno' && !quy.trim()) {
         loiMoi.quy = 'Vui lòng chọn quỹ'
+      }
+      if (laBanTay && !kenh) loiMoi.kenh = 'Vui lòng chọn kênh bán'   // T855, như web T785
+      // Phát hành HĐĐT (T855): ký hiệu theo cửa hàng, khách công ty đủ tên đơn vị, địa chỉ trên hoá đơn
+      if (laBanTay && phatHd && !hdDaXuat) {
+        const thieuNm = laKhachCty(doiTuongLuu) ? thieuKhach(khachTheoTen(doiTuongLuu, nguoiGiaoDich)) : null
+        if (!kyHieuDung(kyHieuTheoCh(s, cuaHang))) loiMoi.cuaHang = 'Cửa hàng chưa khai báo ký hiệu hoá đơn ở Cấu hình kế toán'
+        else if (thieuNm) loiMoi.doiTuong = `${thieuNm} của khách hàng trên hoá đơn`
       }
       if (laTraBan && nhanKemHd) {
         if (!soHd.trim()) loiMoi.soHd = 'Vui lòng nhập số hoá đơn'
@@ -1889,6 +1915,22 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
         ...(nhanKemHd ? {} : { _soHd: '', _kyHieuHd: '', _ngayHd: '' }),
         ...(ctTtTra(idLuu, soCt, ngayChiTiet, doiTuongLuu)),
       } : {}),
+      // Bán hàng lập tay (T855, như web T785): thu tiền ngay kèm phiếu thu, báo có ở _ctTt; kênh bán, người mua trên hoá đơn
+      ...(laBanTay ? {
+        _httt: htttTra, _quy: htttTra === 'congno' ? '' : quy, _hanTt: htttTra === 'congno' ? hanTt : '',
+        ...(htttTra !== 'congno' ? { _pttt: htttTra === 'tienmat' ? 'Tiền mặt' : 'Chuyển khoản' } : {}),
+        kenh, _khachHd: khachTheoTen(doiTuongLuu, nguoiGiaoDich), _khongLayHd: !laKhachCty(doiTuongLuu),
+        ...(ctTtTra(idLuu, soCt, ngayChiTiet, doiTuongLuu)),
+      } : {}),
+      // GTGT theo % doanh thu: dòng không tiền thuế (T855)
+      ...(tyLeBan ? { _dong: dsDongLuu.map(d => ({ ...d, thue: 0 })) } : {}),
+    }
+    // Lưu và xuất HĐĐT (T855, như web T785): ngày hoá đơn hôm nay, ký hiệu theo cửa hàng; khách không có mã số thuế thì không lấy hoá đơn
+    const xuatHd = () => {
+      if (!laBanTay || !phatHd || hdDaXuat) return ''
+      const hd = phatHanhHd(s, man, idLuu, kyHieuTheoCh(s, cuaHang), dmy(HOM_NAY), khachTheoTen(doiTuongLuu, nguoiGiaoDich), !laKhachCty(doiTuongLuu),
+        { truoc: tongTien - tongCk, thue: tyLeBan ? tongGiamThue : tongThue, tong: tongThanhToan })
+      return `, đã xuất hoá đơn ${hd.mau}${hd.kyHieu} số ${hd.so}`
     }
 
     if (dangSua) {
@@ -1919,7 +1961,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
         nav(`${path}/${row!.id}`, { replace: true })
         return
       }
-      toast(`Đã lưu thay đổi ${soCt}`)
+      toast(`Đã lưu thay đổi ${soCt}${xuatHd()}`)
       if (window.history.state && window.history.state.idx > 0) {
         nav(-1)
       } else {
@@ -2040,7 +2082,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
     }, s.ten)
     ghiNhatKy(man, idLuu, soCt, s.ten, traTu ? `Thêm mới chứng từ, trả lại hàng của ${traTu.so}` : 'Thêm mới chứng từ')
     ganTraVaoPhieuMua(idLuu, soCt)
-    toast(`Đã lưu ${soCt}`)
+    toast(`Đã lưu ${soCt}${xuatHd()}`)
 
     if (tour) {
       baoDaLuu({ man, id: idLuu, so: soCt })
@@ -2570,11 +2612,22 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                   </button>
                 </div>
                 <textarea className="m-t655-ghi-chu" aria-label="Ghi chú" rows={1} placeholder="Ghi chú" value={ghiChu} onChange={e => setGhiChu(e.target.value)} />
-                {/* Bán hàng (T854) chưa có thu tiền ngay, lập kèm hoá đơn: chỉ Hàng bán trả lại có hai tích dưới */}
-                {laTraBan && (<>
+                {/* Kênh bán bắt buộc ở Bán hàng lập tay (T855, như web T785) */}
+                {laBanTay && (<>
+                  <div className="m-t655-hang">
+                    <span className="m-t655-nhan">Kênh bán <em>*</em></span>
+                    <button type="button" className="m-t655-o" id="m-lp-o-kenh" onClick={() => setMoChonKenh(true)}>
+                      <span className={kenh ? 'chu' : 'goi'}>{kenh || 'Chọn kênh bán'}</span>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
+                    </button>
+                  </div>
+                  {loiO.kenh && <div className="m-lp-loi-o m-t655-loi">{loiO.kenh}</div>}
+                </>)}
+                {khuonMua && (<>
                 <div className="m-t655-ke" />
 
-                {/* Hai tích cùng một hàng như phiếu mua: Đã thanh toán (trả tiền khách ngay), Lập kèm hoá đơn */}
+                {/* Hai tích cùng một hàng như phiếu mua: Đã thanh toán (trả tiền khách ngay), Lập kèm hoá đơn;
+                    Bán hàng (T855): Thanh toán ngay (lập phiếu thu), công tắc Phát hành HĐĐT như web T785 */}
                 <div className="m-t656-tich-hang">
                   <button
                     type="button"
@@ -2592,9 +2645,14 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M5 12l5 5L20 7" /></svg>
                       )}
                     </span>
-                    Đã thanh toán
+                    {laBanTay ? 'Thanh toán ngay' : 'Đã thanh toán'}
                   </button>
-                  <button
+                  {laBanTay ? (hdDaXuat ? <span className="m-t655-tich">Đã xuất HĐĐT</span> : (
+                    <label className="m-t655-tich">
+                      <input type="checkbox" className="bat-tat" checked={phatHd} onChange={e => setPhatHd(e.target.checked)} />
+                      Phát hành HĐĐT
+                    </label>
+                  )) : <button
                     type="button"
                     role="checkbox"
                     aria-checked={nhanKemHd}
@@ -2607,7 +2665,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                       )}
                     </span>
                     Lập kèm hoá đơn
-                  </button>
+                  </button>}
                 </div>
 
                 {hinhThucTt !== 'congno' ? (
@@ -2634,7 +2692,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                     </button>
                   </div>
                 )}
-                {nhanKemHd && (
+                {laTraBan && nhanKemHd && (
                   <>
                     <div className="m-t655-ke" />
                     <div className="m-t655-hang">
@@ -2759,6 +2817,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                   onXoa={() => xoaDong(i)}
                   chiSl
                   ban
+                  khongVat={tyLeBan}
                 />
               ))}
               {/* Bán hàng, Hàng bán trả lại lập tay: thẻ mặt hàng như phiếu mua (T854) */}
@@ -2772,6 +2831,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                   onNhanBan={() => nhanBanDong(i)}
                   onXoa={() => xoaDong(i)}
                   autoFocusSl={d.moi && i === dsDong.length - 1}
+                  khongVat={tyLeBan}
                 />
               ))}
               {!laNk && !chiSl && nhom !== 'ban' && dsDong.map((d, i) => (
@@ -2800,7 +2860,10 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                   <div style={{ fontSize: 15, fontWeight: 600, marginBottom: 6, color: 'var(--ink)' }}>Tổng cộng ({dsDong.length} dòng)</div>
                   <div className="m-t601-tong-dong"><span className="lb">Thành tiền</span><span>{money(tongTien)}</span></div>
                   <div className="m-t601-tong-dong"><span className="lb">Tiền chiết khấu</span><span>{money(tongCk)}</span></div>
-                  <div className="m-t601-tong-dong"><span className="lb">Tiền thuế</span><span>{money(tongThue)}</span></div>
+                  {/* GTGT theo % doanh thu: Giảm trừ thuế thay Tiền thuế như web (T855) */}
+                  {tyLeBan
+                    ? <div className="m-t601-tong-dong"><span className="lb">Giảm trừ thuế</span><span>{money(tongGiamThue)}</span></div>
+                    : <div className="m-t601-tong-dong"><span className="lb">Tiền thuế</span><span>{money(tongThue)}</span></div>}
                 </div>
               )}
             </div>
@@ -3016,6 +3079,19 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
           tim
         />
       )}
+
+      {/* ── SHEET CHỌN KÊNH BÁN (T855) ── */}
+      {laBanTay && <MChon
+        mo={moChonKenh}
+        onDong={() => setMoChonKenh(false)}
+        tieuDe="Chọn kênh bán"
+        ds={(kenh && !KENH_BAN.includes(kenh) ? [kenh, ...KENH_BAN] : KENH_BAN).map(v => ({ k: v, ten: v }))}
+        chon={kenh}
+        onChon={v => {
+          setKenh(v)
+          setLoiO(l => { const n = { ...l }; delete n.kenh; return n })
+        }}
+      />}
 
       {/* ── SHEET CHỌN CỬA HÀNG ── */}
       <MChon
