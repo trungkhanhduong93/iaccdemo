@@ -6,7 +6,8 @@ import type { Session } from '../../app/session'
 import { coTrongGoi } from '../../app/plan'
 import { chungTu, ttNghiepVu } from '../../ui/generic/gen'
 import { PHIEU_MUA } from '../mua-hang/bao-cao'
-import { NGOAI_POS } from '../ban-hang/ChungTuBanHang'
+import { NGOAI_POS, phieuThuTay } from '../ban-hang/ChungTuBanHang'
+import { gtgtTyLe } from '../../app/session'
 
 interface NguonTt { cfg: () => VoucherCfg; seed: string; man: string; chi: boolean; viec: string; ly: string }
 const NGUON: NguonTt[] = [
@@ -83,5 +84,6 @@ export function phieuGocCoTt(seed: string): Row[] {
 
 /** Phiếu thu, chi mẫu bên Thu chi 2.1.1, chỉ của màn mua, bán có trong gói đang dùng */
 export function phieuTtMau(s?: Session): Row[] {
-  return NGUON.filter(n => !s || coTrongGoi(n.seed, s.goi)).flatMap(n => tinh(n).phieu)
+  // Gói Plus: thêm phiếu thu của chứng từ bán hàng lập tay mẫu đã thu (T855)
+  return [...NGUON.filter(n => !s || coTrongGoi(n.seed, s.goi)).flatMap(n => tinh(n).phieu), ...(s?.goi === 'PL' ? phieuThuTay(gtgtTyLe(s)) : [])]
 }

@@ -104,7 +104,9 @@ export function mauTay(): Row[] {
     const ch = CUA_HANG[cn % CUA_HANG.length]
     const dong: Dong[] = ds.map(([h, sl, pt, ptCk, ptPhiDv]) => tinhDong(dongTuHang(HANG[h % HANG.length], sl), { pt, ptCk, ptPhiDv }))
     return { id: `tay-${i}`, so, ngay: `${dmy(ngay)} ${gio}`, cn: ch.ten, doiTuong: KHACH[kh % KHACH.length].ten, dienGiai, nguon, tt: 'ghi', _dong: dong, kenh: ['Tại quán', 'Mang về', 'GrabFood'][i % 3],
-      _httt: i % 2 ? 'congno' : 'tienmat', _kho: ch.kho?.[0] ?? '', _ngayTao: `${dmy(ngay)} ${gio}`, _nguoiTao: nguon === 'excel' ? 'Nhập từ Excel' : 'Hồ Thị Mai' }
+      _httt: i % 2 ? 'congno' : 'tienmat', _kho: ch.kho?.[0] ?? '',
+      // Đã thu tiền mặt thì kèm phiếu thu mẫu bên Thu chi như phiếu mua mẫu (T855); số từ 0801 để khỏi trùng phiếu thu mẫu khác
+      ...(i % 2 ? {} : { _ctTt: { id: `tt-tay-${i}`, so: `PT${dmy(ngay).slice(8)}${dmy(ngay).slice(3, 5)}-${String(801 + i).padStart(4, '0')}`, loai: 'thu' } }), _ngayTao: `${dmy(ngay)} ${gio}`, _nguoiTao: nguon === 'excel' ? 'Nhập từ Excel' : 'Hồ Thị Mai' }
   })
   // Hoá đơn mới lập ngày cuối dữ liệu; hoá đơn gốc ghi mẫu số trống để hdMau điền theo gói (mẫu 1 hoặc 2), ký hiệu theo cửa hàng
   const ngayMoi = dmy(cuoi), them: Row[] = []
@@ -131,6 +133,19 @@ export function mauTay(): Row[] {
   })
   mauTayDa = [...them, ...ds0]
   return mauTayDa
+}
+/** Phiếu thu mẫu của chứng từ bán hàng lập tay mẫu đã thu (T855): số tiền bằng tổng chứng từ theo phương pháp tính thuế, trỏ về chứng từ */
+export function phieuThuTay(tyLe: boolean): Row[] {
+  return mauTay().filter(r => r._ctTt && !r._loaiCt).map(r => {
+    const ct = hangTay(r, tyLe), tt = r._ctTt as { id: string; so: string; loai: string }
+    const ngay = String(ct.ngay).split(' ')[0], tien = Number(ct.tong) || 0
+    const dg = `Thu tiền bán hàng theo ${r.so}`, ly = 'Thu tiền bán hàng'
+    const ch = CUA_HANG.find(c => c.ten === r.cn)
+    return { id: tt.id, so: tt.so, loai: 'thu', tenLoai: 'Thu tiền mặt', ngay, gio: String(ct.ngay).split(' ')[1] ?? '', thang: Number(ngay.split('/')[1]),
+      cn: r.cn, doiTuong: r.doiTuong, dienGiai: dg, tien, thue: 0, tong: tien, nguon: 'tay', tt: 'ghi', _quy: `Quỹ tiền mặt ${ch?.ngan ?? ''}`.trim(),
+      _lyDo: ly, _ghiChu: dg, _thamChieu: r.so, _thamChieuDi: `/app/${MAN_BAN}/${r.id}`,
+      _dong: [{ ma: '', ten: dg, dvt: '', sl: 1, gia: tien, tien, ts: 0, thue: 0, ly, dt: r.doiTuong, km: '', cv: '' }] }
+  })
 }
 // Hoá đơn gốc mẫu xét Bị thay thế, Bị điều chỉnh theo hoá đơn mới mẫu đã phát hành (T795); hangTay gắn hoá đơn có sẵn
 let mauTayHd: Row[] | null = null
