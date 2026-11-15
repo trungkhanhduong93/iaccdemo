@@ -176,7 +176,7 @@ export const MBanHangTay: FC<MBanHangTayProps> = ({ sc, mod, rows, duong, tabTay
         const ts = tyLe ? 0 : Number(d.ts) || 0
         return { ...d, slMax: sl, gia, tien, giam: 0, ck: 0, ptCk: 0, phiDv: 0, ts, thue: Math.round((tien * ts) / 100) }
       }), dsTra: traLai,
-      ban: true, httt, pttt: String(ct._pttt ?? 'Tiền mặt'),
+      ban: true, httt, pttt: String(ct._pttt ?? 'Tiền mặt'), kenh: String(ct.kenh ?? ''),
     }
     // Đang xem Tất cả cửa hàng: lấy luôn cửa hàng của chứng từ bán, không hỏi chọn cửa hàng (như trả hàng mua T819)
     const cn = CUA_HANG.find(c => c.ten === ct.cn)

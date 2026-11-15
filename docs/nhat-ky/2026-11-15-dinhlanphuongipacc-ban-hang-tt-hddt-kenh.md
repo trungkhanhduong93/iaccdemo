@@ -15,6 +15,7 @@
 - `src/ui/mobile/MBanHangTay.tsx` (màn xem Bán hàng điện thoại, không phải `MXemPhieu.tsx`): mục Tham chiếu thêm phiếu thu, báo có lập khi Thanh toán ngay (`ctTtCon`) và phiếu thu lập sau (`dsTtCon`), đứng đầu như phiếu mua, bấm mở bên Thu chi.
 - Phiếu bán lập tay mẫu đã thu tiền mặt (`mauTay` ở `src/modules/ban-hang/ChungTuBanHang.tsx`, `tay-0`, `tay-2`, `tay-4`...) có `_ctTt` tới phiếu thu mẫu số PT2610-08xx. Hàm `phieuThuTay(tyLe)` dựng phiếu thu (số tiền bằng tổng chứng từ theo phương pháp tính thuế), `src/modules/tien/tt-mau.ts` đưa vào danh sách Thu chi ở gói Plus, như phiếu mua mẫu (T586).
 - Commit 901624c4 lọt lỗi typecheck ở `MBanHangTay.tsx` (lệnh kiểm chạy qua `| tail` nên không dừng khi typecheck lỗi), phiên chính đã sửa ở 62a5627d.
+- Hàng bán trả lại điện thoại có ô Kênh bán trước Ngày chứng từ, không bắt buộc vì web 3.1.4 không có ô này (web chỉ có ở Bán hàng lập tay, `hdDienTu`). Lập từ chứng từ bán thì lấy kênh gốc (`TraTu.kenh` thêm ở `ChungTuForm.tsx`, điền ở `MBanHangTay.tsx`). Màn xem `MXemPhieu.tsx` (Trum giữ ở T497, T498) chỉ thêm một dòng Kênh bán hàng sau Kho nhập.
 
 ## Đã kiểm
 
@@ -23,6 +24,7 @@
 - Khung 375x812, gói PL: Bán hàng thêm Phở bò tái, tích Thanh toán ngay, HĐĐT bật: lưu BH2610-0261 64.610 đ, xuất hoá đơn 2C26TAA, màn xem có Đã thu 64.610/64.610, Kênh bán Tại quán, Giảm thuế GTGT 390. Hàng bán trả lại lưu TL2610-0261 28.826 đ, không ô VAT. `?ppGtgt=khauTru`: ô VAT, Tiền thuế vẫn hiện.
 - Màn xem BH2610 vừa lập có Tham chiếu PT2610-0261, bấm mở đúng phiếu thu.
 - Màn xem BH2610-0009 (phiếu mẫu) có Tham chiếu PT2610-0805, bấm mở phiếu thu 2.186.800 đ trỏ về BH2610-0009.
+- Trả lại từ BH2610-0009: form lấy sẵn Kênh bán Mang về, lưu TL2610-0261, màn xem có Kênh bán hàng Mang về.
 
 ## Dở dang, việc tiếp theo
 

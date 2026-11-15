@@ -1135,6 +1135,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
                     </div>
                     {/* Gọn như phiếu mua: bỏ Địa chỉ, Mã số thuế, Người giao dịch; Thanh toán đã ở thẻ đầu (T841) */}
                     {dongTt('Kho nhập', kho)}
+                    {dongTt('Kênh bán hàng', String(row.kenh ?? ''))}   {/* như màn xem Bán hàng (T855) */}
                     {dongTt('Ngày chứng từ', String(row.ngay ?? '').split(' ')[0])}
                     {httt !== 'congno' && dongTt('Quỹ', String(row._quy ?? ''))}
                     {/* Bỏ Phương thức (T841): form lập cũng đã ẩn ô này (T842) */}

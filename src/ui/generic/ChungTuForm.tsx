@@ -1747,6 +1747,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
 export interface TraTu {   // điện thoại dùng chung khi lập trả lại hàng mua (T819)
   id: string; so: string; man: string; di: string; cn: string; doiTuong: string; mst: string; diaChi: string; kho: string; dong: Dong[]; dsTra: CtTt[]
   ban?: boolean; httt?: 'congno' | 'tienmat' | 'chuyenkhoan'; pttt?: string
+  kenh?: string   // hàng bán trả lại lập từ chứng từ bán: kênh bán của chứng từ gốc (T855)
 }
 
 export const QUY_TIEN = [

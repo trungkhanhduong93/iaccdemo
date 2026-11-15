@@ -875,6 +875,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
     id: traTu.id, cn: traTu.cn, doiTuong: traTu.doiTuong, _mst: traTu.mst, _diaChi: traTu.diaChi, _kho: traTu.kho,
     _dong: traTu.dong, _ghiChu: nhanTra, dienGiai: nhanTra, _httt: traTu.ban ? (traTu.httt ?? 'congno') : 'congno',
     ...(traTu.ban && traTu.pttt ? { _pttt: traTu.pttt } : {}),
+    ...(traTu.ban && traTu.kenh ? { kenh: traTu.kenh } : {}),   // T855: kênh bán của chứng từ gốc
   } : undefined
   const gocData = row ?? saoChep ?? gocTra
   const chiSl = Boolean(traTu) || Boolean(row?._traTuMua) || Boolean(row?._traTuBan)
@@ -1910,7 +1911,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
       // Hàng bán trả lại (T830): lưu đủ trường như web; trả tiền ngay thì kèm phiếu chi, uỷ nhiệm chi ở _ctTt
       ...(laTraBan ? {
         _diaChi: diaChi, _mst: mst, _nguoiGiao: nguoiGiaoDich, _nguoi: nguoiGiaoDich, _nhanKemHd: nhanKemHd,
-        _httt: htttTra, _quy: htttTra === 'congno' ? '' : quy, _hanTt: htttTra === 'congno' ? hanTt : '',
+        _httt: htttTra, _quy: htttTra === 'congno' ? '' : quy, _hanTt: htttTra === 'congno' ? hanTt : '', kenh,
         ...(htttTra !== 'congno' ? { _pttt: pttt } : {}),
         ...(nhanKemHd ? {} : { _soHd: '', _kyHieuHd: '', _ngayHd: '' }),
         ...(ctTtTra(idLuu, soCt, ngayChiTiet, doiTuongLuu)),
@@ -2604,10 +2605,10 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                   </button>
                 </div>
                 {loiO.kho && <div className="m-lp-loi-o m-t655-loi">{loiO.kho}</div>}
-                {/* Kênh bán bắt buộc ở Bán hàng lập tay (T855, như web T785): trước Ngày chứng từ */}
-                {laBanTay && (<>
+                {/* Kênh bán trước Ngày chứng từ (T855): Bán hàng bắt buộc như web T785; Hàng bán trả lại không bắt buộc (web không có ô này), lập từ chứng từ bán thì lấy kênh gốc */}
+                {khuonMua && (<>
                   <div className="m-t655-hang">
-                    <span className="m-t655-nhan">Kênh bán <em>*</em></span>
+                    <span className="m-t655-nhan">Kênh bán{laBanTay && <> <em>*</em></>}</span>
                     <button type="button" className="m-t655-o" id="m-lp-o-kenh" onClick={() => setMoChonKenh(true)}>
                       <span className={kenh ? 'chu' : 'goi'}>{kenh || 'Chọn kênh bán'}</span>
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
@@ -3081,7 +3082,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
       )}
 
       {/* ── SHEET CHỌN KÊNH BÁN (T855) ── */}
-      {laBanTay && <MChon
+      {khuonMua && <MChon
         mo={moChonKenh}
         onDong={() => setMoChonKenh(false)}
         tieuDe="Chọn kênh bán"
