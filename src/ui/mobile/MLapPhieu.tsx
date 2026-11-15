@@ -2729,7 +2729,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
 
             <div className="m-pb-nhom">MẶT HÀNG ({dsDong.length})</div>
             {/* Hàng bán trả lại: dòng mặt hàng và Tổng cộng nằm trong thẻ như phiếu mua (T853) */}
-            <div id="m-lp-o-hang" data-hd="chi-tiet" className={laTraBan ? 'm-t601-hang-card m-t853-the' : undefined}>
+            <div id="m-lp-o-hang" data-hd="chi-tiet" className={(laTraBan || nhom === 'ban') ? 'm-t601-hang-card m-t853-the' : undefined}>
               {laNk && dsDong.map((d, i) => (
                 <TheHangMua
                   key={d.id ?? i}
@@ -2757,16 +2757,20 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                   ban
                 />
               ))}
-              {/* Hàng bán trả lại: khối Tổng cộng như phiếu mua (T842, đủ 3 dòng T853); Tổng tiền ghim ở chân */}
-              {laTraBan && (
-                <div className="m-t601-tong-khu">
-                  <div style={{ fontSize: 15, fontWeight: 600, marginBottom: 6, color: 'var(--ink)' }}>Tổng cộng ({dsDong.length} dòng)</div>
-                  <div className="m-t601-tong-dong"><span className="lb">Thành tiền</span><span>{money(tongTien)}</span></div>
-                  <div className="m-t601-tong-dong"><span className="lb">Tiền chiết khấu</span><span>{money(tongCk)}</span></div>
-                  <div className="m-t601-tong-dong"><span className="lb">Tiền thuế</span><span>{money(tongThue)}</span></div>
-                </div>
-              )}
-              {!laNk && !chiSl && dsDong.map((d, i) => (
+              {/* Bán hàng, Hàng bán trả lại lập tay: thẻ mặt hàng như phiếu mua (T854) */}
+              {!laNk && !chiSl && nhom === 'ban' && dsDong.map((d, i) => (
+                <TheHangMua
+                  key={d.id ?? i}
+                  stt={i + 1}
+                  dong={d}
+                  onDoiDong={patch => doiDong(i, patch)}
+                  onDoiDvt={dvMoi => doiDvt(i, dvMoi)}
+                  onNhanBan={() => nhanBanDong(i)}
+                  onXoa={() => xoaDong(i)}
+                  autoFocusSl={d.moi && i === dsDong.length - 1}
+                />
+              ))}
+              {!laNk && !chiSl && nhom !== 'ban' && dsDong.map((d, i) => (
                 <TheHangMoi
                   key={i}
                   idx={i}
@@ -2786,6 +2790,15 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                   onSuaTong={tong => suaTongTien(i, tong)}
                 />
               ))}
+              {/* Bán hàng, Hàng bán trả lại: khối Tổng cộng dưới danh sách như phiếu mua (T842, T853, T854); Tổng tiền ghim ở chân */}
+              {(laTraBan || nhom === 'ban') && (
+                <div className="m-t601-tong-khu">
+                  <div style={{ fontSize: 15, fontWeight: 600, marginBottom: 6, color: 'var(--ink)' }}>Tổng cộng ({dsDong.length} dòng)</div>
+                  <div className="m-t601-tong-dong"><span className="lb">Thành tiền</span><span>{money(tongTien)}</span></div>
+                  <div className="m-t601-tong-dong"><span className="lb">Tiền chiết khấu</span><span>{money(tongCk)}</span></div>
+                  <div className="m-t601-tong-dong"><span className="lb">Tiền thuế</span><span>{money(tongThue)}</span></div>
+                </div>
+              )}
             </div>
 
             {!chiSl && <button type="button" className="f-them" onClick={() => setMoChonHang(true)}>
