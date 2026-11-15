@@ -10,7 +10,7 @@ import { docNgay, thangNay, trongKhoang, type KhoangNgay } from '../ChonNgay'
 import { Icon } from '../Icon'
 import { dmy, fold, money, soLuong } from '../format'
 import { dongCua, ttNghiepVu, type Dong } from '../generic/gen'
-import { dsTraBanCon, MAN_TRA_BAN, soDaTra } from '../generic/daXoa'
+import { ctTtCon, dsTraBanCon, dsTtCon, MAN_TRA_BAN, soDaTra } from '../generic/daXoa'
 import type { TraTu } from '../generic/ChungTuForm'
 import { dtDong } from '../../modules/ban-hang/BangHangBan'
 import { giamThueHang } from '../../modules/ban-hang/giam-thue'
@@ -138,9 +138,12 @@ export const MBanHangTay: FC<MBanHangTayProps> = ({ sc, mod, rows, duong, tabTay
   const httt = String(ct?._httt ?? (nv?.ttTien === 'da' ? 'tienmat' : 'congno')) as 'congno' | 'tienmat' | 'chuyenkhoan'
   const traLai = ct ? dsTraBanCon(ct) : []
   const hdGoc = ct ? hdGocCua(ct) : undefined
-  // Tham chiếu như web (QD107, T787, T815): chứng từ gốc, huỷ bán, hoá đơn thay thế, điều chỉnh lập từ chứng từ này, hàng bán trả lại (T840)
+  // Tham chiếu như web (QD107, T787, T815): chứng từ gốc, huỷ bán, hoá đơn thay thế, điều chỉnh lập từ chứng từ này, hàng bán trả lại (T840), phiếu thu (T855)
   const coCt = (id: string) => rows.some(x => String(x.id) === id)
   const dsThamChieu: { so: string; ten: string; mo: () => void }[] = !ct ? [] : [
+    // Phiếu thu, báo có lập khi Thanh toán ngay (T855) và các phiếu thu lập sau, đứng đầu như phiếu mua; bấm mở bên Thu chi
+    ...[ctTtCon(ct), ...dsTtCon(ct)].filter((c): c is { id: string; so: string } => Boolean(c))
+      .map(c => ({ so: c.so, ten: 'Chứng từ thu tiền', mo: () => nav(`/app/tien/2-1-1/${c.id}`) })),
     ...(hdGoc && coCt(hdGoc.id) ? [{ so: hdGoc.so, ten: 'Chứng từ gốc', mo: () => setIdXem(hdGoc.id) }] : []),
     ...([ct._huyBan, ct._hdTt] as (CtLq | undefined)[]).filter((c): c is CtLq => Boolean(c) && coCt(c!.id))
       .map(c => ({ so: c.so, ten: TEN_LOAI_CT[c.loai], mo: () => setIdXem(c.id) })),
