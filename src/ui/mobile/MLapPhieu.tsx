@@ -521,81 +521,10 @@ function TheHangMua({
   }
 
   const tenClean = dong.ten.replace(/^\d+\.\s*/, '')
-
-  const nutXoa = (
-    <button
-      type="button"
-      aria-label="Xoá dòng"
-      className="m-t601-btn-xoa"
-      onClick={onXoa}
-      title="Xoá dòng"
-    >
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c2362b" strokeWidth="2" aria-hidden="true">
-        <polyline points="3 6 5 6 21 6" />
-        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-      </svg>
-    </button>
-  )
-
-  // Trả lại hàng mua từ phiếu mua (T819): giữ giá, giảm, thuế của phiếu mua, chỉ gõ số lượng không quá số đã mua
-  if (chiSl) {
-    const slMax = dong.slMax
-    return (
-      <div id={`m-hang-${dong.id ?? stt}`} className="m-t601-hang-row">
-        <div className="m-t601-hang-row-dau">
-          <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--ink)', minWidth: 0 }}>
-            {stt}. {tenClean} {dong.ma && <span style={{ fontSize: 12, fontWeight: 400, color: '#9ca3af' }}>{dong.ma}</span>}
-          </span>
-          {nutXoa}
-        </div>
-        <div className="m-t601-grid">
-          <span className="m-t601-grid-lbl">Số lượng</span>
-          <div className="m-t601-box">
-            <input
-              type="text"
-              inputMode="decimal"
-              aria-label={`Số lượng trả lại mặt hàng ${stt}`}
-              style={{ border: 0, outline: 0, flex: 1, minWidth: 0, font: 'inherit', color: 'inherit', background: 'transparent' }}
-              value={focusSl ? strSl : String(sl)}
-              onFocus={() => {
-                setFocusSl(true)
-                setStrSl(String(sl))
-              }}
-              onChange={e => {
-                const s = goSoVN(e.target.value, true)
-                const v = docSoVN(s)
-                if (slMax !== undefined && v > slMax) {
-                  setStrSl(String(slMax))
-                  handleDoiSl(slMax)
-                  return
-                }
-                setStrSl(s)
-                handleDoiSl(v)
-              }}
-              onBlur={() => setFocusSl(false)}
-            />
-            <span className="m-t601-dvt">{dvt}</span>
-          </div>
-          {slMax !== undefined && (
-            <span className="m-t601-tra-max" style={{ gridColumn: '2 / -1' }}>{ban ? 'Đã bán' : 'Đã mua'} {slMax} {dvt}</span>
-          )}
-          {/* Cùng khuôn dòng như lập phiếu mua (T843): Đơn giá, Chiết khấu, VAT, Tổng tiền; giữ theo chứng từ gốc nên chỉ xem, không sửa */}
-          <span className="m-t601-grid-lbl">Đơn giá</span>
-          <div className="m-t601-box khoa" style={{ gridColumn: '2 / -1' }}><span>{money(gia)}</span><span className="m-t843-dv">đ</span></div>
-          {!gon && (<>
-            <span className="m-t601-grid-lbl">Chiết khấu</span>
-            <div className="m-t601-box khoa"><span>{kieuGiam === '%' ? soLuong(ptCk) : money(ck)}</span><span className="m-t843-dv">{kieuGiam}</span></div>
-            <div className="m-t601-amt"><span>{money(ck)} đ</span></div>
-            <span className="m-t601-grid-lbl">VAT</span>
-            <div className="m-t601-box khoa"><span>{soLuong(ts)}</span><span className="m-t843-dv">%</span></div>
-            <div className="m-t601-amt"><span>{money(thue)} đ</span></div>
-          </>)}
-          <span className="m-t601-grid-lbl tg">Tổng tiền</span>
-          <div className="m-t601-amt tg" style={{ gridColumn: '2 / -1' }}><span>{money(tongHienTai)} đ</span></div>
-        </div>
-      </div>
-    )
-  }
+  // Trả lại hàng mua, hàng bán trả lại lập từ chứng từ gốc (T819, T833; cùng khuôn phiếu mua T853):
+  // giá, chiết khấu, VAT, tổng giữ theo chứng từ gốc nên ô chỉ đọc, không bút sửa; số lượng không quá dong.slMax
+  const khoa = Boolean(chiSl)
+  const slMax = dong.slMax
 
   return (
     <div id={`m-hang-${dong.id ?? stt}`} className={`m-t601-hang-row ${dong.moi ? 'moi' : ''}`}>
@@ -625,7 +554,7 @@ function TheHangMua({
         </div>
         )}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <button
+          {!khoa && <button
             type="button"
             aria-label="Nhân bản dòng"
             className="m-t601-btn-nhan-ban"
@@ -636,7 +565,7 @@ function TheHangMua({
               <rect x="9" y="9" width="12" height="12" rx="2" />
               <path d="M5 15V5a2 2 0 0 1 2-2h8" />
             </svg>
-          </button>
+          </button>}
           <button
             type="button"
             aria-label="Xoá dòng"
@@ -660,7 +589,7 @@ function TheHangMua({
             type="text"
             inputMode="decimal"
             autoFocus={autoFocusSl}
-            aria-label={`Số lượng mặt hàng ${stt}`}
+            aria-label={khoa ? `Số lượng trả lại mặt hàng ${stt}` : `Số lượng mặt hàng ${stt}`}
             style={{ border: 0, outline: 0, flex: 1, minWidth: 0, font: 'inherit', color: 'inherit', background: 'transparent' }}
             value={focusSl ? strSl : String(sl)}
             onFocus={() => {
@@ -669,18 +598,32 @@ function TheHangMua({
             }}
             onChange={e => {
               const s = goSoVN(e.target.value, true)
+              const v = docSoVN(s)
+              if (khoa && slMax !== undefined && v > slMax) {
+                setStrSl(String(slMax))
+                handleDoiSl(slMax)
+                return
+              }
               setStrSl(s)
-              handleDoiSl(docSoVN(s))
+              handleDoiSl(v)
             }}
             onBlur={() => setFocusSl(false)}
           />
+          {khoa ? (
+            /* ĐVT theo chứng từ gốc, không đổi */
+            <span className="m-t601-dvt">{dvt}</span>
+          ) : (
           <button type="button" className="m-t601-dvt" onClick={handleChuyenDvt} aria-label={`Đơn vị tính mặt hàng ${stt}`}>
             <span>{dvt}</span>
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
               <path d="M6 9l6 6 6-6" />
             </svg>
           </button>
+          )}
         </div>
+        {khoa && slMax !== undefined && (
+          <span className="m-t601-tra-max" style={{ gridColumn: '2 / -1' }}>{ban ? 'Đã bán' : 'Đã mua'} {slMax} {dvt}</span>
+        )}
 
         {/* Hàng Đơn giá */}
         <span className="m-t601-grid-lbl">Đơn giá</span>
@@ -689,6 +632,7 @@ function TheHangMua({
             type="text"
             inputMode="numeric"
             aria-label={`Đơn giá mặt hàng ${stt}`}
+            readOnly={khoa}
             style={{ border: 0, outline: 0, width: '100%', font: 'inherit', color: 'inherit', background: 'transparent' }}
             value={focusGia ? strGia : money(gia)}
             onFocus={() => {
@@ -714,6 +658,7 @@ function TheHangMua({
             type="text"
             inputMode={kieuGiam === '%' ? 'decimal' : 'numeric'}
             aria-label={`Chiết khấu mặt hàng ${stt}`}
+            readOnly={khoa}
             style={{ border: 0, outline: 0, width: '100%', font: 'inherit', color: 'inherit', background: 'transparent' }}
             value={focusGiam ? strGiam : (kieuGiam === '%' ? String(dong.ptCk ?? 0) : money(ck))}
             onFocus={() => {
@@ -733,6 +678,9 @@ function TheHangMua({
             }}
             onBlur={() => setFocusGiam(false)}
           />
+          {khoa ? (
+            <span style={{ position: 'absolute', right: 8, fontSize: 12, color: '#9ca3af', pointerEvents: 'none' }}>{kieuGiam}</span>
+          ) : (
           <button
             type="button"
             className="m-t601-btn-kieu-giam"
@@ -747,6 +695,7 @@ function TheHangMua({
             {kieuGiam}
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
           </button>
+          )}
         </div>
         {suaGiamTien ? (
           <div className="m-t601-box tien" style={{ position: 'relative', paddingRight: 24 }}>
@@ -769,7 +718,7 @@ function TheHangMua({
         ) : (
           <div className="m-t601-amt">
             <span>{money(ck)} đ</span>
-            <button
+            {!khoa && <button
               type="button"
               className="m-t601-pen"
               aria-label={`Sửa tiền chiết khấu mặt hàng ${stt}`}
@@ -779,7 +728,7 @@ function TheHangMua({
               }}
             >
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z" /></svg>
-            </button>
+            </button>}
           </div>
         )}
 
@@ -790,6 +739,7 @@ function TheHangMua({
             type="text"
             inputMode="decimal"
             aria-label={`Thuế suất VAT mặt hàng ${stt}`}
+            readOnly={khoa}
             style={{ border: 0, outline: 0, width: '100%', font: 'inherit', color: 'inherit', background: 'transparent' }}
             value={focusTs ? strTs : String(ts)}
             onFocus={() => {
@@ -826,7 +776,7 @@ function TheHangMua({
         ) : (
           <div className="m-t601-amt">
             <span>{money(thue)} đ</span>
-            <button
+            {!khoa && <button
               type="button"
               className="m-t601-pen"
               aria-label={`Sửa tiền VAT mặt hàng ${stt}`}
@@ -836,7 +786,7 @@ function TheHangMua({
               }}
             >
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z" /></svg>
-            </button>
+            </button>}
           </div>
         )}
 
@@ -865,7 +815,7 @@ function TheHangMua({
         ) : (
           <div className="m-t601-amt tg" style={{ gridColumn: '2 / -1' }}>
             <span>{money(tongHienTai)} đ</span>
-            <button
+            {!khoa && <button
               type="button"
               className="m-t601-pen"
               aria-label={`Sửa tổng tiền mặt hàng ${stt}`}
@@ -875,7 +825,7 @@ function TheHangMua({
               }}
             >
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z" /></svg>
-            </button>
+            </button>}
           </div>
         )}
 
@@ -2778,7 +2728,8 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
             </>)}
 
             <div className="m-pb-nhom">MẶT HÀNG ({dsDong.length})</div>
-            <div id="m-lp-o-hang" data-hd="chi-tiet">
+            {/* Hàng bán trả lại: dòng mặt hàng và Tổng cộng nằm trong thẻ như phiếu mua (T853) */}
+            <div id="m-lp-o-hang" data-hd="chi-tiet" className={laTraBan ? 'm-t601-hang-card m-t853-the' : undefined}>
               {laNk && dsDong.map((d, i) => (
                 <TheHangMua
                   key={d.id ?? i}
@@ -2806,14 +2757,13 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                   ban
                 />
               ))}
-              {/* Hàng bán trả lại (T842): tổng dưới danh sách mặt hàng như phiếu mua, thay khối Tổng thanh toán ở thẻ đầu */}
+              {/* Hàng bán trả lại: khối Tổng cộng như phiếu mua (T842, đủ 3 dòng T853); Tổng tiền ghim ở chân */}
               {laTraBan && (
                 <div className="m-t601-tong-khu">
                   <div style={{ fontSize: 15, fontWeight: 600, marginBottom: 6, color: 'var(--ink)' }}>Tổng cộng ({dsDong.length} dòng)</div>
                   <div className="m-t601-tong-dong"><span className="lb">Thành tiền</span><span>{money(tongTien)}</span></div>
-                  {tongCk > 0 && <div className="m-t601-tong-dong"><span className="lb">Tiền chiết khấu</span><span>{money(tongCk)}</span></div>}
-                  {tongThue > 0 && <div className="m-t601-tong-dong"><span className="lb">Tiền thuế</span><span>{money(tongThue)}</span></div>}
-                  <div className="m-t601-tong-dong"><span className="lb">Tổng tiền</span><b>{money(tongThanhToan)} đ</b></div>
+                  <div className="m-t601-tong-dong"><span className="lb">Tiền chiết khấu</span><span>{money(tongCk)}</span></div>
+                  <div className="m-t601-tong-dong"><span className="lb">Tiền thuế</span><span>{money(tongThue)}</span></div>
                 </div>
               )}
               {!laNk && !chiSl && dsDong.map((d, i) => (

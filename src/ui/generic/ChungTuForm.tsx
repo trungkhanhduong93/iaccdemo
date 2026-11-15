@@ -1261,8 +1261,8 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
                 </div>
               )}
 
-              {/* Phương thức thanh toán cho nhóm bán khi thu tiền ngay (T137) */}
-              {nhom === 'ban' && hinhThucTt !== 'congno' && (
+              {/* Phương thức thanh toán cho nhóm bán khi thu tiền ngay (T137); Hàng bán trả lại bỏ ô này (T853) */}
+              {nhom === 'ban' && !traLai && hinhThucTt !== 'congno' && (
                 <div className="row" style={{ gap: 8, alignItems: 'center' }}>
                   <span style={{ fontSize: 12.5, color: 'var(--muted)', whiteSpace: 'nowrap' }}>Phương thức:</span>
                   <Select

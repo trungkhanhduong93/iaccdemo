@@ -48268,9 +48268,6 @@ textarea.m-tpb-inp { height: auto; padding: 8px 12px; }
 .ds-link-so .ds-so-vat.nhap { background: var(--red-t); color: var(--red); }   /* web: nhãn Dự thảo ở số chứng từ danh sách Bán hàng */
 .ct-hd-nhan .ct-hd-nhap { margin-left: .3em; color: var(--red); font-weight: 600; }   /* web: chữ Dự thảo trên chip loại hoá đơn ở form chứng từ */
 
-/* ── Điện thoại, dòng mặt hàng phiếu trả lại cùng khuôn lập phiếu mua: ô chỉ xem (T843) ── */
-.m-t601-box.khoa { justify-content: space-between; background: var(--hdb-chan, #f6f7f9); color: var(--body); }
-.m-t601-box.khoa .m-t843-dv { font-size: 12px; color: #9ca3af; }
 
 
 /* ── Xuất kho định lượng (T849) ── */
@@ -48398,4 +48395,5 @@ textarea.m-tpb-inp { height: auto; padding: 8px 12px; }
   width: 100%;
 }
 
-
+/* ── Điện thoại, phiếu trả lại lập từ chứng từ gốc giống hệt khuôn lập phiếu mua (T853) ── */
+.m-t853-the { margin: 0 0 12px; }   /* Hàng bán trả lại: thẻ mặt hàng nằm trong khung đã có lề */
