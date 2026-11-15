@@ -8,7 +8,9 @@ import { money, soLuong } from '../format'
 import { NGUON, TT_CT, dongCua, doanLyDoThuChi, nguoiTaoMau, ttNghiepVu, type Dong } from '../generic/gen'
 import { boO, nhomCua, theoLoai } from '../generic/nhom'
 import { laLyChiPhi } from '../generic/danhMucStore'
-import { useDongChungTu } from '../generic/VoucherScreen'
+import { giamGtgtCua, giamThueTheoDong, useDongChungTu } from '../generic/VoucherScreen'
+import { dtDong } from '../../modules/ban-hang/BangHangBan'
+import { giamThueHang } from '../../modules/ban-hang/giam-thue'
 import { useDsPhieuDcn } from '../../modules/kho/BangDieuChuyen'
 import { useDsPhieuSx } from '../../modules/kho/BangSanXuat'
 import { SX, TT_SX } from '../../modules/kho/san-xuat'
@@ -150,9 +152,12 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
 
   // Dòng chi tiết
   const idSeed = `${sc.code ?? sc.slug}-${row.id}`
-  const dsDong: Dong[] = useMemo(() => {
+  // Hàng bán trả lại khi GTGT theo % doanh thu (T857): dòng không có VAT, trừ Giảm thuế GTGT theo từng dòng như web
+  const giamTraBan = laTraBan && giamGtgtCua(mod, cfg, s)
+  const dsDongGoc: Dong[] = useMemo(() => {
     return (row._dong as Dong[] | undefined) ?? dongCua(cfg, idSeed)
   }, [row, cfg, idSeed])
+  const dsDong: Dong[] = useMemo(() => giamTraBan ? dsDongGoc.map(d => ({ ...d, ts: 0, thue: 0 })) : dsDongGoc, [dsDongGoc, giamTraBan])
 
   // Lý do thu / chi
   let triLyDo = ''
@@ -196,7 +201,9 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
   const tongTien = dsDong.reduce((a, d) => a + (Number(d.tien) || 0), 0)
   const tongCk = dsDong.reduce((a, d) => a + (Number(d.ck) || 0), 0)
   const tongThue = dsDong.reduce((a, d) => a + (Number(d.thue) || 0), 0)
-  const tongThanhToan = laKk ? 0 : tongTien - tongCk + tongThue
+  const tongGiamThue = giamTraBan ? giamThueTheoDong(dsDongGoc, cfg.dongPos) : 0
+  // Hàng bán trả lại: tổng như danh sách, form web (T857): tiền sau giảm giá, chiết khấu, phí dịch vụ của từng dòng, trừ giảm thuế
+  const tongThanhToan = laKk ? 0 : laTraBan && cfg.dongPos ? dsDong.reduce((a, d) => a + dtDong(d) + (Number(d.thue) || 0), 0) - tongGiamThue : tongTien - tongCk + tongThue
 
   // Tính toán thanh toán phiếu mua
   const tongGoc = Number(row.tong) || tongThanhToan || 0
@@ -525,7 +532,9 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
 
       <div className="m-t449-hang-ds">
         {dsDong.map((d, idx) => {
-          const tongDong = (Number(d.tien) || 0) - (Number(d.ck) || 0) + (Number(d.thue) || 0)
+          // Hàng bán trả lại GTGT theo % doanh thu: giảm thuế từng dòng như xem Bán hàng, cộng các dòng khớp tổng ở trên (T857)
+          const giamDong = giamTraBan ? giamThueHang(cfg.dongPos ? dtDong(d) : (Number(d.tien) || 0) - (Number(d.ck) || 0), d.ma) : 0
+          const tongDong = (Number(d.tien) || 0) - (Number(d.ck) || 0) + (Number(d.thue) || 0) - giamDong
           const vatNhan = !d.ts || d.ts === 0 ? 'KCT' : `${d.ts}%`
 
           return (
@@ -558,6 +567,12 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
                     <span className="val num">{money(d.thue || 0)} đ</span>
                   </div>
                 )}
+                {giamDong > 0 && (
+                  <div className="m-t449-hang-dong">
+                    <span className="lbl">Giảm thuế GTGT:</span>
+                    <span className="val num">{money(giamDong)} đ</span>
+                  </div>
+                )}
                 <div className="m-t449-hang-dong">
                   <span className="lbl">{laNk ? 'Thành tiền:' : 'Tổng tiền:'}</span>
                   <span className="val bold num">{money(tongDong)} đ</span>
@@ -586,6 +601,12 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
             <div className="m-t600-tong-dong">
               <span>Tiền thuế</span>
               <span className="num">{money(tongThue)}</span>
+            </div>
+          )}
+          {tongGiamThue > 0 && (
+            <div className="m-t600-tong-dong">
+              <span>Giảm thuế GTGT</span>
+              <span className="num">{money(tongGiamThue)}</span>
             </div>
           )}
           <div className="m-t600-tong-dong tong-chinh">
@@ -1160,18 +1181,8 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
                       </div>
                     </>
                   )}
-                  <div className="m-pb-nhom">DANH SÁCH CHI TIẾT ({dsDong.length})</div>
-                  {dsDong.map((d, idx) => (
-                    <div key={idx} className="m-pb-the m-pb-muc-dong">
-                      <div className="m-pb-muc-hang1">
-                        <span className="m-pb-muc-ten">{d.ten || 'Mặt hàng'}</span>
-                        <b className="m-pb-muc-tong">{money(d.tien || 0)} đ</b>
-                      </div>
-                      <div className="m-pb-muc-hang2">
-                        <span>{d.sl ?? 0} {d.dvt || ''} × {money(d.gia ?? 0)}</span>
-                      </div>
-                    </div>
-                  ))}
+                  {/* Mặt hàng và khối Tổng cộng cuối phiếu như xem phiếu mua (T856) */}
+                  {renderDsHangHoaMua()}
                 </>
               )
             })() : (

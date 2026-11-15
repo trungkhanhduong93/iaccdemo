@@ -402,6 +402,7 @@ interface TheHangMuaProps {
   gon?: boolean   // phiếu Nhập kho (T824): Số lượng gộp ĐVT như phiếu mua, bỏ Chiết khấu, VAT
   ban?: boolean   // hàng bán trả lại (T833): ghi Đã bán thay Đã mua
   khongVat?: boolean   // bán hàng tính GTGT theo % doanh thu (T855): bỏ ô VAT, thuế dòng 0
+  giamThue?: number   // giảm thuế GTGT của dòng khi theo % doanh thu (T857): trừ vào Tổng tiền dòng như xem Bán hàng
 }
 
 function TheHangMua({
@@ -417,6 +418,7 @@ function TheHangMua({
   gon,
   ban,
   khongVat,
+  giamThue = 0,
 }: TheHangMuaProps) {
   const kieuGiam = dong.kieuGiam ?? (dong?.ck && !dong?.ptCk ? 'đ' : '%')
 
@@ -448,7 +450,7 @@ function TheHangMua({
   const tuChia = Boolean(dong.tuChia)
   const tongNhap = dong.tongNhap
   const tienHang = Math.round(sl * gia)
-  const tongHienTai = tongNhap !== undefined ? tongNhap : (tienHang - ck + thue)
+  const tongHienTai = (tongNhap !== undefined ? tongNhap : (tienHang - ck + thue)) - giamThue
 
   // ĐVT quy đổi
   const dvtChinh = dong.dvtChinh || HANG.find(h => h.ma === dong.ma || h.ten === dong.ten)?.dvt || NVL.find(n => n.ma === dong.ma || n.ten === dong.ten)?.dvt || dvt
@@ -521,8 +523,8 @@ function TheHangMua({
 
   const handleSuaTongTrucTiep = (valStr: string) => {
     const tVal = docSoVN(valStr)
-    const g = sl > 0 ? Math.round((tVal - thue + ck) / sl) : 0
-    onDoiDong({ tongNhap: tVal, tuChia: true, gia: g, tien: Math.round(sl * g) })
+    const g = sl > 0 ? Math.round((tVal + giamThue - thue + ck) / sl) : 0   // Tổng tiền dòng đã trừ giảm thuế (T857)
+    onDoiDong({ tongNhap: tVal + giamThue, tuChia: true, gia: g, tien: Math.round(sl * g) })
   }
 
   const tenClean = dong.ten.replace(/^\d+\.\s*/, '')
@@ -797,6 +799,12 @@ function TheHangMua({
         )}
         </>)}
 
+        </>)}
+
+        {/* Giảm thuế GTGT của dòng (T857): chỉ xem, cộng Tổng tiền các dòng khớp chân phiếu */}
+        {giamThue > 0 && (<>
+          <span className="m-t601-grid-lbl" title="Giảm thuế GTGT">Giảm thuế</span>
+          <div className="m-t601-amt" style={{ gridColumn: '2 / -1' }}><span>{money(giamThue)} đ</span></div>
         </>)}
 
         {/* Hàng Tổng tiền */}
@@ -2819,6 +2827,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                   chiSl
                   ban
                   khongVat={tyLeBan}
+                  giamThue={tyLeBan ? giamThueHang((Number(d.tien) || 0) - (Number(d.ck) || 0), d.ma) : 0}
                 />
               ))}
               {/* Bán hàng, Hàng bán trả lại lập tay: thẻ mặt hàng như phiếu mua (T854) */}
@@ -2833,6 +2842,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                   onXoa={() => xoaDong(i)}
                   autoFocusSl={d.moi && i === dsDong.length - 1}
                   khongVat={tyLeBan}
+                  giamThue={tyLeBan ? giamThueHang((Number(d.tien) || 0) - (Number(d.ck) || 0), d.ma) : 0}
                 />
               ))}
               {!laNk && !chiSl && nhom !== 'ban' && dsDong.map((d, i) => (
