@@ -3,7 +3,8 @@ import { Link, useNavigate } from 'react-router-dom'
 import { dsDonVi, useSession } from '../../app/session'
 import { ROLE } from '../../data/mock'
 import { GOI, GOIS, anNgoaiGoi, minGoi } from '../../app/plan'
-import { MODULES, duongDan, hienMan, maKhoa, moDuoc, tabCua, tenMan } from '../../app/registry'
+import { MODULES, duongDan, hienMan, maKhoa, moDuoc, tabCua, tenMan, timMan } from '../../app/registry'
+import { FLYOUT_CONFIG, type FlyoutItem } from '../../app/SidebarFlyout'
 import { Icon } from '../Icon'
 import { Pk } from '../Page'
 import { fold } from '../format'
@@ -12,33 +13,44 @@ import { D, Sv } from '../../app/thong-bao/chung'
 import { LINK_TAI_LIEU } from '../../app/thong-bao/data'
 import { MNutNgonNgu, MTamGopY, MTamMaHoTro } from './MThongBao'
 
-/** Tên ngắn ở nhóm Danh mục: bỏ chữ "Danh mục" đầu tên, 1.2 và 1.5 gọi gọn như web (T353) */
-const TEN_GON_DM: Record<string, string> = { '1.2': 'Hàng hoá', '1.5': 'Đối tượng' }
-const tenDm = (sc: ScreenDef) => {
-  const t = TEN_GON_DM[sc.code ?? sc.slug.replace(/-/g, '.')] || tenMan(sc).replace(/^Danh mục\s+/i, '')
-  return t.charAt(0).toUpperCase() + t.slice(1)
-}
-
 export function MKhac() {
   const { s, set } = useSession()
   const nav = useNavigate()
   const [q, setQ] = useState('')
   const [tam, setTam] = useState<'' | 'gy' | 'ma'>('')   // tấm trượt Góp ý, Mã hỗ trợ (T803)
 
-  const ten =s.ten.split(' ').slice(-2).map(x => x[0]).join('')
+  const ten = s.ten.split(' ').slice(-2).map(x => x[0]).join('')
 
-  const modDm = MODULES.find(m => m.key === 'danh-muc')
+  const cfgDm = FLYOUT_CONFIG['danh-muc']
+  const locItemDm = (it: FlyoutItem) => {
+    const parts = it.di.replace(/^\/app\//, '').split('?')[0].split('/')
+    const modK = parts[0]
+    const slug = parts[1]
+    const { mod, sc } = timMan(modK, slug)
+    if (sc) {
+      if (sc.anTab?.includes(s.goi) || !hienMan(sc, s.goi, s.cheDo, s)) return null
+      if (anNgoaiGoi(s.goi) && !moDuoc(sc, s.goi)) return null
+      const khoa = !moDuoc(sc, s.goi)
+      const ma = maKhoa(sc)
+      const icon = sc.icon ?? mod?.icon ?? 'folder'
+      return { ...it, icon, khoa, ma }
+    }
+    return null
+  }
+
+  const dsDmTrai = (cfgDm?.trai.items ?? []).map(locItemDm).filter((it): it is NonNullable<typeof it> => it !== null)
+  const dsDmPhai = (cfgDm?.phai.items ?? []).map(locItemDm).filter((it): it is NonNullable<typeof it> => it !== null)
+  const tongSoDm = dsDmTrai.length + dsDmPhai.length
+
   const modHt = MODULES.find(m => m.key === 'he-thong')
-
-  const dsDm = modDm ? tabCua(modDm).filter(sc => hienMan(sc, s.goi, s.cheDo, s) && (!anNgoaiGoi(s.goi) || moDuoc(sc, s.goi))) : []
   const dsHt = modHt ? tabCua(modHt).filter(sc => !sc.anTab?.includes(s.goi) && hienMan(sc, s.goi, s.cheDo, s) && (!anNgoaiGoi(s.goi) || moDuoc(sc, s.goi))) : []
 
   const coKhoaSoDuPhong = !dsHt.some(sc => sc.slug === 'khoa-so')
-  const tongSoDm = dsDm.length
   const tongSoHt = dsHt.length + (coKhoaSoDuPhong ? 1 : 0)
 
   const tuKhoa = fold(q.trim())
-  const dsDmLoc = tuKhoa ? dsDm.filter(sc => fold(tenDm(sc)).includes(tuKhoa)) : dsDm
+  const dsDmTraiLoc = tuKhoa ? dsDmTrai.filter(it => fold(it.ten).includes(tuKhoa)) : dsDmTrai
+  const dsDmPhaiLoc = tuKhoa ? dsDmPhai.filter(it => fold(it.ten).includes(tuKhoa)) : dsDmPhai
   const dsHtLoc = tuKhoa ? dsHt.filter(sc => fold(tenMan(sc)).includes(tuKhoa)) : dsHt
   const hienKhoaSo = coKhoaSoDuPhong && (!tuKhoa || fold('Khoá sổ').includes(tuKhoa))
   const hienCaiDatTb = !tuKhoa || fold('Cài đặt thông báo').includes(tuKhoa)
@@ -103,36 +115,62 @@ export function MKhac() {
         </div>
       </section>
 
-      {/* 2. Nhóm Danh mục */}
-      {modDm && dsDmLoc.length > 0 && (
+      {/* 2. Nhóm Danh mục (T863: chia 2 nhóm Đối tượng & Hàng hoá, Tài chính & Khác như menu web) */}
+      {dsDmTraiLoc.length > 0 && (
         <section className="m-khac-nhom-wrap">
-          <h3 className="m-khac-nhom-tieu">DANH MỤC</h3>
+          <h3 className="m-khac-nhom-tieu">{cfgDm?.trai.tieuDe ?? 'Đối tượng & Hàng hoá'}</h3>
           <div className="m-khac-the">
             <div className="m-khac-ds">
-              {dsDmLoc.map(sc => {
-                const khoa = !moDuoc(sc, s.goi)
-                const ma = maKhoa(sc)
-                return (
-                  <Link
-                    key={`dm-${sc.slug}`}
-                    to={duongDan(modDm, sc)}
-                    className={`m-khac-dong${khoa ? ' khoa' : ''}`}
-                  >
-                    <div className="m-khac-dong-trai">
-                      <span className="m-khac-dong-ic">
-                        <Icon n={sc.icon ?? modDm.icon} className="ic sm" />
-                      </span>
-                      <div className="m-khac-dong-nd">
-                        <span className="m-khac-dong-ten">{tenDm(sc)}</span>
-                      </div>
+              {dsDmTraiLoc.map(it => (
+                <Link
+                  key={`dm-${it.di}`}
+                  to={it.di}
+                  className={`m-khac-dong${it.khoa ? ' khoa' : ''}`}
+                >
+                  <div className="m-khac-dong-trai">
+                    <span className="m-khac-dong-ic">
+                      <Icon n={it.icon ?? 'folder'} className="ic sm" />
+                    </span>
+                    <div className="m-khac-dong-nd">
+                      <span className="m-khac-dong-ten">{it.ten}</span>
                     </div>
-                    <div className="m-khac-dong-phai">
-                      {khoa && ma && <Pk g={minGoi(ma)} o />}
-                      <Icon n="chevr" className="ic sm m-khac-mui-ten" />
+                  </div>
+                  <div className="m-khac-dong-phai">
+                    {it.khoa && it.ma && <Pk g={minGoi(it.ma)} o />}
+                    <Icon n="chevr" className="ic sm m-khac-mui-ten" />
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {dsDmPhaiLoc.length > 0 && (
+        <section className="m-khac-nhom-wrap">
+          <h3 className="m-khac-nhom-tieu">{cfgDm?.phai.tieuDe ?? 'Tài chính & Khác'}</h3>
+          <div className="m-khac-the">
+            <div className="m-khac-ds">
+              {dsDmPhaiLoc.map(it => (
+                <Link
+                  key={`dm-${it.di}`}
+                  to={it.di}
+                  className={`m-khac-dong${it.khoa ? ' khoa' : ''}`}
+                >
+                  <div className="m-khac-dong-trai">
+                    <span className="m-khac-dong-ic">
+                      <Icon n={it.icon ?? 'folder'} className="ic sm" />
+                    </span>
+                    <div className="m-khac-dong-nd">
+                      <span className="m-khac-dong-ten">{it.ten}</span>
                     </div>
-                  </Link>
-                )
-              })}
+                  </div>
+                  <div className="m-khac-dong-phai">
+                    {it.khoa && it.ma && <Pk g={minGoi(it.ma)} o />}
+                    <Icon n="chevr" className="ic sm m-khac-mui-ten" />
+                  </div>
+                </Link>
+              ))}
             </div>
           </div>
         </section>

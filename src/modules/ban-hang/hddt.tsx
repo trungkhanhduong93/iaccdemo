@@ -602,7 +602,7 @@ function BanHd({ hd, t }: { hd: HdDaXuat; t: TtXem }) {
             <tr className="trong"><td colSpan={soCot} /></tr>
             <tr><td colSpan={soCot - 1} className="phai">Cộng tiền hàng:</td><td className="num b">{money(t.congHang)}</td></tr>
             {mau2
-              ? <tr><td colSpan={soCot - 1} className="phai">Giảm trừ thuế (20% mức tỷ lệ % để tính thuế GTGT):</td><td className="num b">-{money(t.giamTru)}</td></tr>
+              ? <tr><td colSpan={soCot - 1} className="phai">Giảm trừ thuế (20% mức tỷ lệ % để tính thuế GTGT):</td><td className="num b">{money(-t.giamTru)}</td></tr>
               : <tr><td colSpan={3}>Thuế suất GTGT: <b>{t.ts}%</b></td><td colSpan={soCot - 4} className="phai">Tiền thuế GTGT:</td><td className="num b">{money(tien.thue)}</td></tr>}
             <tr><td colSpan={soCot - 1} className="phai b">Tổng tiền thanh toán:</td><td className="num b">{money(tien.tong)}</td></tr>
             <tr><td colSpan={soCot}>Số tiền viết bằng chữ: <i className="b">{docSoTien(tien.tong)}.</i></td></tr>
@@ -729,7 +729,7 @@ export function HopXemHd({ s, r, hd, onDong, toast, nhap, dienThoai }: { s: Sess
         <div className="hdx-so-tien">
           <div><span>Tổng tiền trước thuế</span><b>{money(t.congHang)}</b></div>
           <div><span>Tiền thuế{!mau2 && ` (${t.ts}%)`}</span><b>{money(mau2 ? 0 : tien.thue)}</b></div>
-          {mau2 && t.giamTru !== 0 && <div><span>Giảm trừ thuế</span><b>-{money(t.giamTru)}</b></div>}
+          {mau2 && t.giamTru !== 0 && <div><span>Giảm trừ thuế</span><b>{money(-t.giamTru)}</b></div>}
           <div className="tong"><span>Tổng tiền hoá đơn</span><b>{money(tien.tong)}</b></div>
         </div>
       </section>

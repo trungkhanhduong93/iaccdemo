@@ -4,6 +4,15 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T864 | Điện thoại, Bảng giá mua, bán đang trống: làm màn riêng có danh sách, xem, thêm, sửa, xoá, dùng chung kho với web | Trum | 16/11/2026 | 2026-11-16-trum-hddt-bang-gia-danh-muc.md |
+| T863 | Điện thoại, màn Khác: nhóm Danh mục chỉ hiện đúng các mục như menu Danh mục web, chia 2 nhóm Đối tượng & Hàng hoá, Tài chính & Khác | Trum | 16/11/2026 | 2026-11-16-trum-hddt-bang-gia-danh-muc.md |
+| T862 | Form bảng giá: bỏ tô cố định dòng vừa bấm, dòng dưới chuột tô nhẹ đi theo chuột | Trum | 16/11/2026 | 2026-11-16-trum-hddt-bang-gia-danh-muc.md |
+| T861 | Form bảng giá chế độ xem (chưa bấm Sửa): khoá mọi ô đầu form, gồm Cửa hàng áp dụng | Trum | 16/11/2026 | 2026-11-16-trum-hddt-bang-gia-danh-muc.md |
+| T860 | Form bảng giá chế độ sửa: nút xoá dòng đổi thùng rác thành dấu x đỏ như công thức chế biến | Trum | 16/11/2026 | 2026-11-16-trum-hddt-bang-gia-danh-muc.md |
+| T859 | Form bảng giá mua, bán phủ toàn màn hình, che cả menu trái như form công thức chế biến | Trum | 16/11/2026 | 2026-11-16-trum-hddt-bang-gia-danh-muc.md |
+| T858 | Form Chi tiết công thức chế biến gói Plus: khung Thông tin chung và bảng Nguyên vật liệu bo góc tròn như chứng từ | Trum | 16/11/2026 | 2026-11-16-trum-hddt-bang-gia-danh-muc.md |
+| T857 | Điện thoại, màn Nghiệp vụ gói Plus, Pro: cuộn tới đáy mục cuối bị dock menu che, thêm khoảng đệm đáy | Trum | 16/11/2026 | 2026-11-16-trum-hddt-bang-gia-danh-muc.md |
+| T856 | Popup xem hoá đơn điện tử: tờ hoá đơn bị cắt ngang đè khung viền, dòng Giảm trừ thuế hiện hai dấu trừ "--2.040" (cả file PDF) | Trum | 16/11/2026 | 2026-11-16-trum-hddt-bang-gia-danh-muc.md |
 | T855 | Điện thoại, lập Bán hàng: tích Thanh toán ngay, công tắc Phát hành HĐĐT, Kênh bán bắt buộc; Bán hàng, Hàng bán trả lại tính GTGT theo tỷ lệ bỏ ô VAT, Tổng cộng hiện Giảm trừ thuế | dinhlanphuongipacc | 15/11/2026 | [2026-11-15-dinhlanphuongipacc-ban-hang-tt-hddt-kenh](../nhat-ky/2026-11-15-dinhlanphuongipacc-ban-hang-tt-hddt-kenh.md) |
 | T854 | Điện thoại, lập Bán hàng và Hàng bán trả lại thêm mặt hàng tay: thẻ mặt hàng giống hệt lập phiếu mua, Tổng cộng dưới danh sách | dinhlanphuongipacc | 15/11/2026 | [2026-11-15-dinhlanphuongipacc-the-hang-ban-nhu-mua](../nhat-ky/2026-11-15-dinhlanphuongipacc-the-hang-ban-nhu-mua.md) |
 | T832 | Điện thoại: màn mua hàng bỏ tab Hoá đơn mua hàng, Trả lại hàng mua (đã là mục riêng ở menu Nghiệp vụ) | dinhlanphuongipacc | 14/11/2026 | [nhật ký](../nhat-ky/2026-11-14-dinhlanphuongipacc-bo-tab-thua-dien-thoai.md) |

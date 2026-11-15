@@ -23,7 +23,7 @@ export interface FlyoutData {
   phai: { tieuDe: string; items: FlyoutItem[] }
 }
 
-const FLYOUT_CONFIG: Record<string, FlyoutData> = {
+export const FLYOUT_CONFIG: Record<string, FlyoutData> = {
   'home': {
     trai: {
       tieuDe: 'Nghiệp vụ thường dùng',

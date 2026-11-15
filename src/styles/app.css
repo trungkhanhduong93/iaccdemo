@@ -45665,8 +45665,7 @@ body:has(.ctpl-form) .pn-hop {
 .fsf-day:has(.ban-phep) { height: auto; }
 .ban-phep { padding: 8px 22px; }
 
-/* ── Bảng giá gom theo lần khai: dòng vừa bấm ở danh sách tô nhẹ trong lưới form (T761) ── */
-.bg-bang tr.bg-bam td { background: var(--tint); }
+/* ── Bảng giá gom theo lần khai: lọc dòng chi tiết (T761) ── */
 /* Phễu lọc dòng cạnh chữ Chi tiết giá, hàng ô lọc như bảng chi tiết phiếu mua hàng (T383) */
 .bg-thanh > .ct-nut-loc { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; padding: 0; border: 1px solid transparent; border-radius: 6px; background: none; color: var(--muted); cursor: pointer; }
 .bg-thanh > .ct-nut-loc:hover { color: var(--ink); background: var(--soft); }
@@ -48397,3 +48396,228 @@ textarea.m-tpb-inp { height: auto; padding: 8px 12px; }
 
 /* ── Điện thoại, phiếu trả lại lập từ chứng từ gốc giống hệt khuôn lập phiếu mua (T853) ── */
 .m-t853-the { margin: 0 0 12px; }   /* Hàng bán trả lại: thẻ mặt hàng nằm trong khung đã có lề */
+
+/* ── Form bảng giá web: toàn màn, nút xoá, khoá khi xem, tô theo chuột (T859-T862) ── */
+.bg-bang tbody tr:hover td { background: var(--tint); }
+.bg-bang tbody tr.bg-loi:hover td { background: var(--red-t); }
+
+
+/* ── Đệm đáy màn Nghiệp vụ điện thoại tránh bị dock menu che (T857) ── */
+.m-app .m-t498-nv-trang,
+.m-t498-nv-trang {
+  padding-bottom: calc(var(--m-thanh-duoi, 85px) + 38px + env(safe-area-inset-bottom, 0px));
+}
+
+/* ── Bảng giá điện thoại (T864) ── */
+.m-bg-the {
+  position: relative;
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: var(--card, #fff);
+  border: 1px solid var(--border, #e5e7eb);
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  box-sizing: border-box;
+}
+.m-bg-the:active {
+  background: var(--bg-hover, #f9fafb);
+}
+.m-bg-the-dau {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+.m-bg-ma {
+  font-family: var(--font-mono, monospace);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--primary, #0070f3);
+}
+.m-bg-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+.m-bg-chip.mua {
+  background: #EBF7EE;
+  color: #1B7A3D;
+}
+.m-bg-chip.ban {
+  background: #EBF3FD;
+  color: #1A56DB;
+}
+.m-bg-ten {
+  font-size: 15px;
+  color: var(--ink, #111827);
+  margin-bottom: 8px;
+  line-height: 1.35;
+}
+.m-bg-dong {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--dim, #6b7280);
+  margin-bottom: 4px;
+}
+.m-bg-dong-cuoi {
+  margin-bottom: 0;
+}
+.m-bg-ch {
+  color: var(--muted, #9ca3af);
+}
+.m-bg-loai-radio {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+.m-bg-rad-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 12px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--dim, #4b5563);
+  background: var(--bg, #f3f4f6);
+  border: 1px solid var(--border, #e5e7eb);
+  border-radius: 8px;
+  cursor: pointer;
+}
+.m-bg-rad-btn.on {
+  color: var(--primary, #0070f3);
+  background: var(--card, #fff);
+  border-color: var(--primary, #0070f3);
+  font-weight: 600;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+.m-bg-rad-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.m-bg-chu-thich {
+  font-size: 12px;
+  color: var(--muted, #9ca3af);
+  margin-top: 4px;
+}
+.m-bg-dong-gia {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border, #f3f4f6);
+}
+.m-bg-dong-gia:last-child {
+  border-bottom: none;
+}
+.m-bg-gia-luoi {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px 12px;
+  margin-top: 6px;
+  background: var(--bg-hover, #f9fafb);
+  padding: 8px 10px;
+  border-radius: 6px;
+}
+.m-bg-o {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  font-size: 12px;
+}
+.m-bg-o .nhan {
+  color: var(--dim, #6b7280);
+}
+.m-bg-o .tri {
+  color: var(--ink, #111827);
+}
+.m-bg-o .tri.gia-sau {
+  color: var(--green, #16a34a);
+}
+.m-bg-ghi-chu {
+  font-size: 12px;
+  color: var(--dim, #6b7280);
+  margin-top: 4px;
+  padding-left: 2px;
+}
+.m-bg-form-the {
+  margin-bottom: 8px;
+}
+.m-bg-the-ghi-chu {
+  font-size: 12px;
+  color: var(--muted, #6b7280);
+  margin-top: 4px;
+}
+.m-bg-trong-dong {
+  padding: 24px 0;
+  text-align: center;
+  color: var(--muted, #9ca3af);
+  font-size: 13px;
+}
+.m-btn-xoa {
+  color: var(--red, #ef4444) !important;
+}
+
+/* ── Popup xem hoá đơn điện tử: cuộn trong popup, không cắt tờ hoá đơn (T856) ── */
+.hddt-hop.hdx-xem-ban {
+  max-height: calc(100vh / var(--zoom, 1) - 48px);
+  display: flex;
+  flex-direction: column;
+}
+.hddt-hop.hdx-xem-ban .hddt-than {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+}
+.hddt-hop.hdx-xem-ban .hdx-nen-giay {
+  min-height: 100%;
+}
+
+/* ── Form chi tiết công thức chế biến gói Plus: bo góc 3 khung như chứng từ (T858) ── */
+.ctpl-hai-khoi .ctpl-khoi {
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  overflow: hidden;
+  background: #fff;
+}
+.ctpl-khoi-trai > [data-o="tt"],
+.ctpl-khoi-trai > [data-o="cuaHang"],
+.ctpl-khoi-trai > [data-o="kenh"],
+.ctpl-khoi-phai > [data-o="sp"],
+.ctpl-khoi-phai > [data-o="ngay"],
+.ctpl-khoi-phai > [data-o="moTa"] {
+  border-right: none;
+}
+.ctpl-khoi-trai > .ctpl-nhan:last-of-type,
+.ctpl-khoi-trai > [data-o="kenh"],
+.ctpl-khoi-phai > .ctpl-nhan:last-of-type,
+.ctpl-khoi-phai > [data-o="moTa"] {
+  border-bottom: none;
+}
+.ctpl-cot .ctpl-nvl-wrap {
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  overflow: hidden;
+  background: #fff;
+}
+.ctpl-nvl thead tr:first-child th {
+  border-top: none;
+}
+.ctpl-nvl th:first-child,
+.ctpl-nvl td:first-child {
+  border-left: none;
+}
+.ctpl-nvl th:last-child,
+.ctpl-nvl td:last-child {
+  border-right: none;
+}
+.ctpl-nvl tbody tr:last-child td {
+  border-bottom: none;
+}

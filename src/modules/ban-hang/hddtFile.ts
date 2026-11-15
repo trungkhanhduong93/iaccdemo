@@ -90,7 +90,7 @@ function veHd(hd: HdDaXuat, t: TtXem): HTMLCanvasElement {
   }
   y += 8
   tong('Cộng tiền hàng:', money(t.congHang))
-  if (mau2) tong('Giảm trừ thuế (20% mức tỷ lệ % để tính thuế GTGT):', `-${money(t.giamTru)}`)
+  if (mau2) tong('Giảm trừ thuế (20% mức tỷ lệ % để tính thuế GTGT):', money(-t.giamTru))
   else tong(`Thuế suất GTGT: ${t.ts}%    Tiền thuế GTGT:`, money(tien.thue))
   tong('Tổng tiền thanh toán:', money(tien.tong), true)
   y += 12

@@ -31,6 +31,7 @@ import { MKhoaSo } from './MKhoaSo'
 import { MChiPhiNvl } from './MChiPhiNvl'
 import { MToKhaiHKD } from './MToKhaiHKD'
 import { MToKhaiGTGT } from './MToKhaiGTGT'
+import { MBangGia } from './MBangGia'
 
 // Bảng riêng theo mod.key + '/' + sc.slug
 const BANG_RIENG: Record<string, ComponentType<ScreenProps>> = {
@@ -56,9 +57,11 @@ export function manMobile(sc: ScreenDef, mod: ModuleDef): ComponentType<ScreenPr
 
   // ── Luật Anti A thêm ngay dưới dòng này (đợt 11–13) ──
   // T187: Danh mục tài khoản 1.1 và Danh mục cửa hàng
+  // T864: Bảng giá mua, bán (1.14)
   if (mod.key === 'danh-muc') {
     if (sc.code === '1.1' || sc.slug === '1-1') return MTaiKhoan
     if (sc.slug === 'cua-hang') return MCuaHang
+    if (sc.code === '1.14' || sc.slug === '1-14' || sc.slug === 'bang-gia') return MBangGia
   }
 
   // T191: Hệ thống (6 màn mở từ tab Khác)

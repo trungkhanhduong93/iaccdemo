@@ -2,6 +2,14 @@
 
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
+## 16/11/2026
+- T864: Điện thoại, Danh mục > Bảng giá mua, bán có dữ liệu: danh sách mỗi bảng giá một thẻ, bấm xem các dòng giá, thêm, sửa, xoá bảng giá; dùng chung dữ liệu với web.
+- T863: Điện thoại, màn Khác: nhóm Danh mục chỉ còn các mục như menu Danh mục web, chia 2 nhóm Đối tượng & Hàng hoá, Tài chính & Khác.
+- T859-T862: Form bảng giá web phủ toàn màn, che cả menu trái; nút xoá dòng là dấu x đỏ như công thức chế biến; chưa bấm Sửa thì mọi ô đầu form bị khoá; nền xanh đi theo chuột, không tô cố định dòng vừa bấm.
+- T858: Form công thức chế biến gói Plus: khung Thông tin chung và bảng nguyên vật liệu bo góc như chứng từ.
+- T857: Điện thoại, màn Nghiệp vụ gói Plus, Pro: cuộn tới đáy, mục cuối không còn bị thanh menu dưới che.
+- T856: Popup xem hoá đơn điện tử: tờ hoá đơn không còn bị cắt ngang; dòng Giảm trừ thuế chỉ một dấu (hết "--2.040"), cả file PDF tải về.
+
 ## 15/11/2026
 - T855: Điện thoại, lập Bán hàng: có ô Kênh bán bắt buộc (trước Ngày chứng từ), tích Thanh toán ngay (chọn quỹ, lưu thì lập phiếu thu) và công tắc Xuất HĐĐT như web; bật công tắc thì nút ghi Lưu và Xuất HĐĐT. Màn xem Bán hàng có dòng Tham chiếu tới phiếu thu, bấm mở được; chứng từ bán hàng mẫu đã thu tiền mặt cũng có phiếu thu mẫu bên Thu chi. Hàng bán trả lại có ô Kênh bán (lấy theo chứng từ bán gốc), màn xem có dòng Kênh bán hàng. Bán hàng và Hàng bán trả lại của đơn vị tính GTGT theo tỷ lệ: mặt hàng không có ô VAT, Tổng cộng hiện Giảm trừ thuế.
 - T854: Điện thoại, lập Bán hàng: phần đầu và chân phiếu như lập phiếu mua. Bán hàng và Hàng bán trả lại: mặt hàng thêm tay hiện cùng khuôn lập phiếu mua (Số lượng kèm ĐVT, Đơn giá, Chiết khấu, VAT, Tổng tiền, Nhân bản, Xoá); Tổng cộng nằm dưới danh sách.

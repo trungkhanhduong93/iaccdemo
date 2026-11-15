@@ -11,15 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T863 | Điện thoại, màn Khác: nhóm Danh mục chỉ hiện đúng các mục như menu Danh mục web, chia 2 nhóm Đối tượng & Hàng hoá, Tài chính & Khác | Trum | Đang làm | Spec `backup/spec-T856-T862.md`. Sửa `MKhac.tsx`, `SidebarFlyout.tsx` (chỉ export) |
-| T864 | Điện thoại, Bảng giá mua, bán đang trống: làm màn riêng có danh sách, xem, thêm, sửa, xoá, dùng chung kho với web | Trum | Đang làm | Tạo `MBangGia.tsx`, sửa `manMobile.ts`, `ThemBangGia.tsx` (export hàm), cuối `app.css` (mục T856-T864) |
-| T856 | Popup xem hoá đơn điện tử: tờ hoá đơn bị cắt ngang đè khung viền, dòng Giảm trừ thuế hiện hai dấu trừ "--2.040" (cả file PDF) | Trum | Đang làm | Spec `backup/spec-T856-T862.md`. Sửa `hddt.tsx`, `hddtFile.ts`, cuối `app.css` (mục T856-T862) |
-| T857 | Điện thoại, màn Nghiệp vụ gói Plus, Pro: cuộn tới đáy mục cuối bị dock menu che, thêm khoảng đệm đáy | Trum | Đang làm | Sửa `MNghiepVu.tsx`, cuối `app.css` (mục T856-T862) |
-| T858 | Form Chi tiết công thức chế biến gói Plus: khung Thông tin chung và bảng Nguyên vật liệu bo góc tròn như chứng từ | Trum | Đang làm | Sửa `CongThucPlusForm.tsx`, cuối `app.css` (mục T856-T862) |
-| T859 | Form bảng giá mua, bán phủ toàn màn hình, che cả menu trái như form công thức chế biến | Trum | Đang làm | Sửa `ThemBangGia.tsx`, cuối `app.css` (mục T856-T862) |
-| T860 | Form bảng giá chế độ sửa: nút xoá dòng đổi thùng rác thành dấu x đỏ như công thức chế biến | Trum | Đang làm | Sửa `ThemBangGia.tsx` |
-| T861 | Form bảng giá chế độ xem (chưa bấm Sửa): khoá mọi ô đầu form, gồm Cửa hàng áp dụng | Trum | Đang làm | Sửa `ThemBangGia.tsx` |
-| T862 | Form bảng giá: bỏ tô cố định dòng vừa bấm, dòng dưới chuột tô nhẹ đi theo chuột | Trum | Đang làm | Sửa `ThemBangGia.tsx`, mục T761 trong `app.css`, 1 câu QD101 |
 | T852 | Phiếu Xuất bán POS hiện tham chiếu ngược sang phiếu Xuất kho định lượng (T849 mới có chiều XDL sang POS) | | Chờ | `ChungTuBanHang.tsx`, dùng `useDsPhieuXdl` ở `kho/xuat-dinh-luong.ts` |
 | T837 | Điện thoại, danh sách mục Bán hàng lập tay: bỏ tên cửa hàng ở dòng chứng từ, dòng nào cũng ghi loại chứng từ (Xuất bán, Huỷ bán, Hoá đơn thay thế, Hoá đơn điều chỉnh), bộ lọc thêm Loại chứng từ | dinhlanphuongipacc | Đang làm | `MBanHangTay.tsx` |
 | T781 | Giảm thuế GTGT xét hiệu lực nghị quyết theo ngày của từng chứng từ, không theo ngày làm việc (`ptGiamHienHanh` dùng `HOM_NAY`) | | Chờ | Thấy lúc soát T780, `giam-thue.ts` |
