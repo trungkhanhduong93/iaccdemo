@@ -44,15 +44,28 @@ export function IconFigmaXChip(props: SVGProps<SVGSVGElement>) {
   )
 }
 
-export function IconFigmaSheet(props: SVGProps<SVGSVGElement>) {
+export function IconExcel(props: SVGProps<SVGSVGElement>) {
   return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" {...props}>
-      <path d="M10 1.33333H4C3.64638 1.33333 3.30724 1.47381 3.05719 1.72386C2.80714 1.97391 2.66667 2.31304 2.66667 2.66667V13.3333C2.66667 13.687 2.80714 14.0261 3.05719 14.2761C3.30724 14.5262 3.64638 14.6667 4 14.6667H12C12.3536 14.6667 12.6928 14.5262 12.9428 14.2761C13.1929 14.0261 13.3333 13.687 13.3333 13.3333V4.66667L10 1.33333Z" />
-      <path d="M9.33333 1.33333V4C9.33333 4.35362 9.47381 4.69276 9.72386 4.94281C9.97391 5.19286 10.313 5.33333 10.6667 5.33333H13.3333" />
-      <path d="M5.33333 8.66667H6.66667M9.33333 8.66667H10.6667M5.33333 11.3333H6.66667M9.33333 11.3333H10.6667" />
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" {...props}>
+      {/* Khung 4 hàng x 2 cột bo góc bên phải (T851) */}
+      {/* Cột trái: #185C37, #107C41, #185C37 đậm, #185C37 */}
+      <path d="M7.5 1.5h3v3.25h-4.5v-1.75a1.5 1.5 0 0 1 1.5-1.5z" fill="#185C37" />
+      <rect x="6" y="4.75" width="4.5" height="3.25" fill="#107C41" />
+      <rect x="6" y="8" width="4.5" height="3.25" fill="#104A27" />
+      <path d="M6 11.25h4.5v3.25h-3a1.5 1.5 0 0 1-1.5-1.5z" fill="#185C37" />
+      {/* Cột phải: #33C481, #21A366, #107C41, #1D6B40 */}
+      <path d="M10.5 1.5h3a1.5 1.5 0 0 1 1.5 1.5v1.75h-4.5z" fill="#33C481" />
+      <rect x="10.5" y="4.75" width="4.5" height="3.25" fill="#21A366" />
+      <rect x="10.5" y="8" width="4.5" height="3.25" fill="#107C41" />
+      <path d="M10.5 11.25h4.5v1.75a1.5 1.5 0 0 1-1.5 1.5h-3z" fill="#1D6B40" />
+      {/* Ô vuông bo góc #107C41 đè bên trái có chữ X trắng đậm */}
+      <rect x="1" y="3.5" width="9" height="9" rx="1.5" fill="#107C41" />
+      <path d="M3.5 6l4 4m0-4l-4 4" stroke="#FFFFFF" strokeWidth="1.6" strokeLinecap="round" />
     </svg>
   )
 }
+
+export const IconFigmaSheet = IconExcel
 
 export function IconFigmaSliders(props: SVGProps<SVGSVGElement>) {
   return (

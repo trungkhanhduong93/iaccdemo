@@ -21,7 +21,7 @@ import { dsTraBanCon, useDaXoa } from '../../ui/generic/daXoa'
 import { ChonKhoangNgay, docNgay, thangMacDinh, trongKhoang, type KhoangNgay } from '../../ui/ChonNgay'
 import { NutDongBo, NutExcel, NutThemMoiSplit } from '../../ui/CongCuDs'
 import { HopDongBo } from '../../ui/HopDongBo'
-import { IconFigmaSearch, IconFigmaSheet } from '../../ui/IconFigma'
+import { IconFigmaSearch } from '../../ui/IconFigma'
 import { dangLoc, dsGiaTri, khopLoc, type GiaTriLoc, type KieuLoc, type LocCot } from '../../ui/LocCot'
 import {
   BoLoc, ChipTrangThai, NutTuyChinhCot, cotChon, useCauHinhLoc, useCotDs, useLocNhap, type Chip, type OLocDef,

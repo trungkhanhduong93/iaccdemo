@@ -48271,3 +48271,131 @@ textarea.m-tpb-inp { height: auto; padding: 8px 12px; }
 /* ── Điện thoại, dòng mặt hàng phiếu trả lại cùng khuôn lập phiếu mua: ô chỉ xem (T843) ── */
 .m-t601-box.khoa { justify-content: space-between; background: var(--hdb-chan, #f6f7f9); color: var(--body); }
 .m-t601-box.khoa .m-t843-dv { font-size: 12px; color: #9ca3af; }
+
+
+/* ── Xuất kho định lượng (T849) ── */
+.xdl-thanh-loc {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: #fff;
+  border-radius: 8px 8px 0 0;
+  border: 1px solid var(--border);
+  border-bottom: 0;
+}
+.xdl-dem-phieu {
+  margin-left: auto;
+  font-size: 13px;
+}
+.xdl-dau-phieu {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px 16px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px 18px;
+}
+.xdl-dau-o small {
+  display: block;
+  color: var(--dim);
+  font-size: 12px;
+  margin-bottom: 2px;
+}
+.xdl-dau-o b {
+  font-size: 14px;
+  color: var(--body);
+}
+.xdl-tabs {
+  display: flex;
+  gap: 8px;
+  border-bottom: 1px solid var(--border);
+  padding: 0 4px;
+}
+.xdl-tab {
+  border: 0;
+  background: none;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--dim);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+}
+.xdl-tab.on {
+  color: var(--blue, #0b5ea8);
+  border-bottom-color: var(--blue, #0b5ea8);
+  font-weight: 600;
+}
+.xdl-tree-table tr.xdl-row-cha {
+  background: var(--table-zebra, #fcfdfe);
+  font-weight: 500;
+}
+.xdl-tree-table tr.xdl-row-cha.xdl-khong-ct {
+  background: #fff;
+}
+.xdl-tree-table tr.xdl-row-con {
+  background: #fff;
+  color: var(--dim, #4b5563);
+  font-size: 13.5px;
+}
+.xdl-toggle-btn {
+  border: 0;
+  background: none;
+  cursor: pointer;
+  padding: 2px 4px;
+  margin-right: 4px;
+  display: inline-flex;
+  align-items: center;
+  color: var(--dim);
+  border-radius: 4px;
+}
+.xdl-toggle-btn:hover {
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--body);
+}
+.xdl-nvl-ten {
+  font-weight: 500;
+  color: var(--body);
+}
+.xdl-chua-ct {
+  font-style: italic;
+  color: var(--dim, #9ca3af);
+  font-size: 13px;
+}
+
+/* ── Logo Microsoft Excel (T851) ── */
+.ds-toolbar-phai .ds-nut-excel svg,
+.ds-nut-excel svg {
+  color: unset;
+  fill: unset;
+}
+
+/* ── Form công thức chế biến (T845) ── */
+.ctpl-nvl,
+.ctpl-nvl-wrap,
+.sx-nvl-bang,
+.pn-khoi-than.bang-sua .tbl-wrap {
+  min-height: auto;
+}
+
+/* ── Form công thức chế biến gói Plus (T845) ── */
+.ctpl-nvl,
+.ctpl-nvl-wrap {
+  min-height: auto;
+}
+.ctpl-nvl tbody tr {
+  height: 40px;
+}
+.ctpl-nvl td.ctpl-nvl-ma,
+.ctpl-nvl td.ctpl-nvl-ten {
+  padding: 4px 8px;
+}
+.ctpl-nvl td.ctpl-nvl-ma .sel,
+.ctpl-nvl td.ctpl-nvl-ten .sel {
+  width: 100%;
+}
+
+

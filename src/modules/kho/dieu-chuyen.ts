@@ -15,7 +15,7 @@ interface ThongTinDcn { ten: string; man: string; prefix: string; nhap: boolean;
 export const DCN: Record<LoaiDcn, ThongTinDcn> = {
   xdc: { ten: 'Xuất điều chuyển', man: 'kho/5-1-4', prefix: 'XDCK', nhap: false, doi: 'ndc', noCo: [['1368', '152', 'Xuất điều chuyển cho cửa hàng khác']] },
   ndc: { ten: 'Nhập điều chuyển', man: 'kho/5-1-4-2', prefix: 'NDCK', nhap: true, doi: 'xdc', noCo: [['152', '3368', 'Nhập điều chuyển từ cửa hàng khác']] },
-  ck: { ten: 'Chuyển kho', man: 'kho/5-1-4-3', prefix: 'CK', nhap: false, noCo: [] },
+  ck: { ten: 'Xuất chuyển kho', man: 'kho/5-1-4-3', prefix: 'CK', nhap: false, noCo: [] },
 }
 
 /** Kho của một cửa hàng, cửa hàng của một kho */

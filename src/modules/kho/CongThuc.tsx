@@ -29,7 +29,7 @@ export const MAN: Record<LoaiCt, string> = { cb: 'kho/9-1-3', sc: 'kho/5-1-5' }
 export const KENH = ['Tại quán', 'Mang về', 'GrabFood', 'ShopeeFood']
 /** Hàng làm thành phẩm của công thức chế biến: món và bán thành phẩm; nguyên vật liệu chọn trong NVL và hàng sơ chế */
 export const DS_SP = [...HANG.filter(h => !h.tonKho), ...HANG_SX.filter(h => h.nhom === 'Bán thành phẩm' || h.nhom.startsWith('Món'))]
-export const DS_NVL = [...NVL, ...HANG_SX.filter(h => !h.nhom.startsWith('Món'))]
+export const DS_NVL = [...NVL, ...HANG_SX, ...HANG].filter(h => (h as { tonKho?: boolean }).tonKho !== false && h.nhom !== 'Bán thành phẩm' && !h.nhom.startsWith('Món'))
 export const mucHang = (ds: { ma: string; ten: string }[]) => ds.map(h => ({ v: h.ma, t: `${h.ten} - ${h.ma}` }))
 
 /** Công thức của màn: mẫu, công thức lưu trong phiên, áp nội dung đã sửa (bật tắt, sửa form) */
@@ -187,7 +187,7 @@ function DsCongThuc({ sc, mod, loai, ds }: ScreenProps & { loai: LoaiCt; ds: Row
                             {cot.colsHien.map(col => col.k === 'ct'
                               ? <Fragment key={col.k}>
                                 <td>{nvl[j] ? <TenMa ma={nvl[j].ma} /> : ''}</td>
-                                <td className="num">{nvl[j] ? `${soLuong(nvl[j].sl)} ${hangCua(nvl[j].ma)?.dvt ?? ''}` : ''}</td>
+                                <td className="num">{nvl[j] ? `${soLuong(nvl[j].sl)} ${nvl[j].dvt || hangCua(nvl[j].ma)?.dvt || ''}` : ''}</td>
                               </Fragment>
                               : j === 0 && <td key={col.k} rowSpan={n} className={`sx-gop${col.c ? ' c' : ''}`}>{col.k === 'stt' ? batDau + i + 1 : o(c, col.k)}</td>)}
                           </tr>
@@ -255,9 +255,12 @@ function FormCongThuc({ sc, mod, loai, ct, soCt }: ScreenProps & { loai: LoaiCt;
   const dvtHien = dvt && dsDvt.includes(dvt) ? dvt : hSp?.dvt ?? ''
   const doiNvl = (i: number, p: Partial<NvlCongThuc>) => setNvl(ds => ds.map((n, j) => (j === i ? { ...n, ...p } : n)))
   // Tỉ lệ thu hồi của công thức sơ chế: cộng số lượng đích cùng đơn vị tính với NVL gốc
-  const thuHoi = nvl.filter(n => hangCua(n.ma)?.dvt === hSp?.dvt).reduce((a, n) => a + n.sl, 0)
+  const thuHoi = nvl.filter(n => (n.dvt || hangCua(n.ma)?.dvt) === hSp?.dvt).reduce((a, n) => a + n.sl, 0)
   const xoaDong = (ds: number[]) => { setNvl(x => x.filter((_, j) => !ds.includes(j))); setTich(new Set()) }
   const tieuDe = cb ? 'Chi tiết công thức chế biến' : 'Chi tiết công thức sơ chế'
+  const dsNvlLoc = DS_NVL.filter(x => x.ma !== sp)
+  const dsMucHangNvl = mucHang(dsNvlLoc)
+  const dsMucTenNvl = dsNvlLoc.map(x => ({ v: x.ma, t: x.ten }))
 
   // Esc đóng panel; đang mở hộp khác (thêm overlay) thì để hộp tự đóng
   useEffect(() => {
@@ -269,9 +272,10 @@ function FormCongThuc({ sc, mod, loai, ct, soCt }: ScreenProps & { loai: LoaiCt;
   function luu() {
     const thieu = !sp ? (cb ? 'Chọn sản phẩm' : 'Chọn nguyên vật liệu gốc') : !ngay ? 'Nhập ngày áp dụng' : !nvl.length ? (cb ? 'Thêm nguyên vật liệu thành phần' : 'Thêm nguyên vật liệu đích') : ''
     if (thieu) { toast(thieu); return }
+    const nvlLuu = nvl.map(n => ({ ...n, dvt: n.dvt || hangCua(n.ma)?.dvt }))
     const nd: Row = cb
-      ? { ma, spMa: sp, dvt: dvtHien, ngay, kenh, cuaHang, moTa, tt, nvl } satisfies Omit<CongThucCb, 'id'>
-      : { ma, gocMa: sp, dvt: dvtHien, ngay, cuaHang, moTa, tt, dich: nvl } satisfies Omit<CongThucSc, 'id'>
+      ? { ma, spMa: sp, dvt: dvtHien, ngay, kenh, cuaHang, moTa, tt, nvl: nvlLuu } satisfies Omit<CongThucCb, 'id'>
+      : { ma, gocMa: sp, dvt: dvtHien, ngay, cuaHang, moTa, tt, dich: nvlLuu } satisfies Omit<CongThucSc, 'id'>
     if (moi) themPhieu(MAN[loai], { id: `moi-${Date.now()}`, ...nd }, s.ten)
     else suaPhieu(MAN[loai], String(ct.id), nd)
     toast(`Đã lưu công thức ${hSp?.ten ?? ''}`)
@@ -345,10 +349,10 @@ function FormCongThuc({ sc, mod, loai, ct, soCt }: ScreenProps & { loai: LoaiCt;
               {moHangLoat && (
                 // Thêm hàng loạt như phiếu kiểm kê (T465): mỗi nguyên vật liệu đã tích thành một dòng, số lượng nhập sau
                 <ThemHangLoat
-                  ds={DS_NVL.filter(h => h.ma !== sp).map(h => ({ ma: h.ma, ten: h.ten, dvt: h.dvt, nhom: h.nhom, loai: 'Nguyên vật liệu' }))}
+                  ds={dsNvlLoc.map(h => ({ ma: h.ma, ten: h.ten, dvt: h.dvt, nhom: h.nhom, loai: 'Nguyên vật liệu' }))}
                   daCo={nvl.map(n => n.ma)}
                   onDong={() => setMoHangLoat(false)}
-                  onXacNhan={ds => setNvl(cu => [...cu.filter(n => n.ma), ...ds.map(h => ({ ma: h.ma, sl: 0 }))])}
+                  onXacNhan={ds => setNvl(cu => [...cu.filter(n => n.ma), ...ds.map(h => ({ ma: h.ma, sl: 0, dvt: h.dvt }))])}
                 />
               )}
             </div>
@@ -364,7 +368,7 @@ function FormCongThuc({ sc, mod, loai, ct, soCt }: ScreenProps & { loai: LoaiCt;
                     <th className="c" style={{ width: 44 }}>#</th>
                     <th style={{ width: 150 }}>{cb ? 'Mã nguyên vật liệu' : 'Mã nguyên vật liệu đích'}</th>
                     <th style={{ minWidth: 180 }}>{cb ? 'Tên nguyên vật liệu' : 'Tên nguyên vật liệu đích'}</th>
-                    <th style={{ width: 80 }}>Đơn vị tính</th>
+                    <th style={{ width: 90 }}>Đơn vị tính</th>
                     <th className="num" style={{ width: 90 }}>Số lượng</th>
                     <th style={{ width: 48 }} />
                   </tr>
@@ -372,6 +376,16 @@ function FormCongThuc({ sc, mod, loai, ct, soCt }: ScreenProps & { loai: LoaiCt;
                 <tbody>
                   {nvl.map((n, i) => {
                     const h = hangCua(n.ma)
+                    const dsDvtNvl = h ? [h.dvt, ...quyDoiTuDanhMuc(h.ten, h.dvt).map(q => q.dv)] : []
+                    const dvtHienNvl = n.dvt && dsDvtNvl.includes(n.dvt) ? n.dvt : h?.dvt ?? ''
+                    const chonMa = (
+                      <ChonDanhMuc dm="nvl" nhan="nguyên vật liệu" coMa chiMa className="inp sm" trong="Chọn" value={n.ma}
+                        ds={dsMucHangNvl} onChange={v => doiNvl(i, { ma: v, dvt: undefined })} />
+                    )
+                    const chonTen = (
+                      <ChonDanhMuc dm="nvl" nhan="nguyên vật liệu" className="inp sm" trong="Chọn" value={n.ma}
+                        ds={dsMucTenNvl} onChange={v => doiNvl(i, { ma: v, dvt: undefined })} />
+                    )
                     return (
                       <tr key={i}>
                         {cb && <td className="c">
@@ -379,10 +393,21 @@ function FormCongThuc({ sc, mod, loai, ct, soCt }: ScreenProps & { loai: LoaiCt;
                             onChange={() => setTich(t => { const m = new Set(t); if (m.has(i)) m.delete(i); else m.add(i); return m })} />
                         </td>}
                         <td className="c">{i + 1}</td>
-                        <td><ChonDanhMuc dm="nvl" nhan="nguyên vật liệu" coMa chiMa className="inp sm" trong="Chọn" value={n.ma}
-                          ds={mucHang(DS_NVL.filter(x => x.ma !== sp))} onChange={v => doiNvl(i, { ma: v })} /></td>
-                        <td>{h?.ten}</td>
-                        <td>{h?.dvt}</td>
+                        <td>{moi ? chonMa : (n.ma || chonMa)}</td>
+                        <td>{moi ? chonTen : (h?.ten || chonTen)}</td>
+                        <td>
+                          {dsDvtNvl.length > 1 ? (
+                            <Select
+                              className="inp sm"
+                              aria-label={`Đơn vị tính ${h?.ten ?? ''}`}
+                              value={dvtHienNvl}
+                              onChange={e => doiNvl(i, { dvt: e.target.value })}
+                              ds={dsDvtNvl.map(d => ({ v: d, t: d }))}
+                            />
+                          ) : (
+                            dvtHienNvl
+                          )}
+                        </td>
                         <td className="num"><OSo val={n.sl} onChange={v => doiNvl(i, { sl: v })} /></td>
                         <td className="c">
                           <button type="button" className="icon-btn sm sx-xoa" title="Xoá dòng" aria-label={`Xoá dòng ${i + 1}`} onClick={() => xoaDong([i])}><Icon n="x" className="ic sm" /></button>

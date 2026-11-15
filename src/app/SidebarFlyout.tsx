@@ -135,7 +135,7 @@ const FLYOUT_CONFIG: Record<string, FlyoutData> = {
         { ten: 'Phiếu chế biến', di: '/app/kho/5-1-3' },
         { ten: 'Xuất điều chuyển', di: '/app/kho/5-1-4' },
         { ten: 'Nhập điều chuyển', di: '/app/kho/5-1-4-2' },
-        { ten: 'Chuyển kho', di: '/app/kho/5-1-4-3' },
+        { ten: 'Xuất chuyển kho', di: '/app/kho/5-1-4-3' },
         { ten: 'Phiếu sơ chế', di: '/app/kho/5-1-6' },
         { ten: 'Kiểm kê kho', di: '/app/kho/5-1-10' },
         { ten: 'Tính giá vốn xuất kho', di: '/app/kho/5-1-7' },

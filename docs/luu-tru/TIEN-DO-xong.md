@@ -4,6 +4,14 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T851 | Mọi icon Excel (nút nhập, xuất Excel, màn Báo cáo) đổi sang logo Microsoft Excel đủ màu | Trum | 15/11/2026 | `2026-11-15-trum-logo-excel-cong-thuc-kho-plus.md` |
+| T850 | Kho gói Plus đổi tab Điều chuyển thành Xuất chuyển kho (phiếu Chuyển kho, mọi kho); Pro có đủ Xuất, Nhập điều chuyển và Xuất chuyển kho | Trum | 15/11/2026 | `2026-11-15-trum-logo-excel-cong-thuc-kho-plus.md` |
+| T849 | Kho gói Plus, Pro thêm màn Xuất kho định lượng: mỗi phiếu Xuất bán POS sinh một phiếu, lưới cây món và NVL theo công thức | Trum | 15/11/2026 | `2026-11-15-trum-logo-excel-cong-thuc-kho-plus.md` |
+| T848 | Form công thức chế biến: ĐVT dòng NVL chọn được ĐVT quy đổi trong danh mục | Trum | 15/11/2026 | `2026-11-15-trum-logo-excel-cong-thuc-kho-plus.md` |
+| T847 | Form công thức chế biến: khi Thêm mới, chọn NVL xong vẫn đổi lại được; sửa công thức đã lưu giữ khoá | Trum | 15/11/2026 | `2026-11-15-trum-logo-excel-cong-thuc-kho-plus.md` |
+| T846 | Form công thức chế biến: Thêm hàng loạt và ô Chọn từng dòng chỉ liệt kê hàng có Theo dõi tồn kho | Trum | 15/11/2026 | `2026-11-15-trum-logo-excel-cong-thuc-kho-plus.md` |
+| T845 | Form công thức chế biến: dòng nguyên vật liệu mới thêm cao quá, về cao như bảng chi tiết chứng từ | Trum | 15/11/2026 | `2026-11-15-trum-logo-excel-cong-thuc-kho-plus.md` |
+| T844 | Logo dấu vuông, favicon dùng ảnh `icon accounting_Final.png`, viền xanh mỏng, bo 4 góc | Trum | 15/11/2026 | `2026-11-15-trum-logo-excel-cong-thuc-kho-plus.md` |
 | T843 | Điện thoại, dòng mặt hàng phiếu trả lại (bán, mua) cùng khuôn lập phiếu mua: Số lượng, Đơn giá, Chiết khấu, VAT, Tổng tiền; chỉ sửa số lượng | dinhlanphuongipacc | 15/11/2026 | Xem [nhật ký](../nhat-ky/2026-11-14-dinhlanphuongipacc-vat-xem-hddt-dien-thoai.md) |
 | T842 | Điện thoại, lập Hàng bán trả lại gọn như phiếu mua: ẩn địa chỉ, MST, người giao dịch, phương thức, tổng ở đầu phiếu; tổng cộng dưới mặt hàng, Tổng tiền ghim đáy | dinhlanphuongipacc | 15/11/2026 | Xem [nhật ký](../nhat-ky/2026-11-14-dinhlanphuongipacc-vat-xem-hddt-dien-thoai.md) |
 | T841 | Điện thoại, xem Hàng bán trả lại: thẻ đầu như phiếu mua (nguồn lên dòng cửa hàng, khung thanh toán), bỏ địa chỉ, MST, người giao dịch, thanh toán ở Thông tin chung | dinhlanphuongipacc | 15/11/2026 | Xem [nhật ký](../nhat-ky/2026-11-14-dinhlanphuongipacc-vat-xem-hddt-dien-thoai.md) |

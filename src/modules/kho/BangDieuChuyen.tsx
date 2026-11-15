@@ -78,12 +78,13 @@ export function DauDieuChuyen({ loai, sua, cuaHang, kho, setKho, khoNhan, setKho
     )
   }
   if (loai === 'ck') {
+    const dsKhoNhan = CUA_HANG.flatMap(c => c.kho).filter(k => k !== kho)
     return (
       <div className="dcn-dau">
         {oKhoXuat}
         <div className="f">
           <label>Kho nhận <em>*</em></label>
-          <OChon nhan="Kho nhận" value={khoNhan} ds={khoCn.filter(k => k !== kho)} trong="Chọn kho nhận cùng cửa hàng" sua={sua} onChange={setKhoNhan} />
+          <OChon nhan="Kho nhận" value={khoNhan} ds={dsKhoNhan} trong="Chọn kho nhận" sua={sua} onChange={setKhoNhan} />
         </div>
       </div>
     )

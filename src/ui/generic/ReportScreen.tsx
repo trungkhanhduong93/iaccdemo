@@ -20,7 +20,7 @@ import { ganMoPhieu } from './SoChungTu'
 import { Dropdown, MenuHead, MenuItem, MenuSep, Popover } from '../Dropdown'
 import { ChonKhoangNgay, dmy, khoangThang, type KhoangNgay } from '../ChonNgay'
 import { BoLoc, ONhanVien, useCauHinhLoc, useDongEsc, type OLocDef } from '../LocNangCao'
-import { IconFigmaDownload, IconFigmaPrinter, IconFigmaSliders } from '../IconFigma'
+import { IconExcel, IconFigmaDownload, IconFigmaPrinter, IconFigmaSliders } from '../IconFigma'
 import { SoTrangCtx, ToGiay, NgatTrang, tachKhoi, type Kho } from '../bao-cao/ToGiay'
 import { datNguonXuat, layNguonXuat, taoTenFile, xuatFile, type NguonXuat } from '../bao-cao/xuat'
 import { ChonHaiCot } from '../ChonHaiCot'
@@ -390,7 +390,7 @@ export function ReportToolbar({ ky, setKy, children, moTa }: { ky: string; setKy
       <div className="ds-hang-trang-thai">
         {coNhom && segNhom}
         <div className="ds-toolbar-phai ds-cong-cu-h2">
-          <Dropdown btnClass="nut-vuong ds-nut-excel" align="end" width={180} title="Xuất báo cáo" label={<Icon n="download" className="ic sm" />}>
+          <Dropdown btnClass="nut-vuong ds-nut-excel" align="end" width={180} title="Xuất báo cáo" label={<IconExcel />}>
             {menuXuat}
           </Dropdown>
           {nutTuyChinh}

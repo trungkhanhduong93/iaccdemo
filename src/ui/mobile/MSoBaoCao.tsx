@@ -14,6 +14,7 @@ import { CAU_HINH_BC, kyHieuBC, tenBC, tenQuyTm } from '../../modules/bao-cao/da
 import { layNguonXuat, xuatFile, type NguonXuat } from '../bao-cao/xuat'
 import { fold, money, moneyD, rutGonSo } from '../format'
 import { Icon } from '../Icon'
+import { IconExcel } from '../IconFigma'
 import { duongPhieu } from '../generic/SoChungTu'
 import { layKhuonDong, MBaoCaoDong } from './MBaoCaoDong'
 import { laSoTT152 } from './MSoTT152'
@@ -762,10 +763,7 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc, mod }) => {
                 aria-label="Tải file Excel"
                 data-hd="in"
               >
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                  <rect x="2" y="2" width="20" height="20" rx="3.5" fill="#107C41" />
-                  <path d="M7.5 7.5L16.5 16.5M16.5 7.5L7.5 16.5" stroke="white" strokeWidth="2.2" strokeLinecap="round" />
-                </svg>
+                <IconExcel width={24} height={24} />
               </button>
             )}
             <button

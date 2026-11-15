@@ -3,6 +3,11 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 15/11/2026
+- T851: Mọi nút nhập, xuất Excel (danh sách chứng từ, danh mục, màn Báo cáo, sổ báo cáo điện thoại) dùng logo Excel đủ màu.
+- T850: Kho gói Plus: tab Điều chuyển đổi thành Xuất chuyển kho, một phiếu chuyển giữa mọi kho, không hạch toán. Xuất, Nhập điều chuyển chỉ còn ở gói Pro.
+- T849: Kho gói Plus, Pro có màn Xuất kho định lượng thay tab Xuất bán POS: mỗi phiếu Xuất bán POS sinh một phiếu, mở ra thấy món đã bán và nguyên vật liệu theo công thức chế biến kèm giá vốn; gói Pro có tab Hạch toán.
+- T845-T848: Form công thức chế biến: dòng nguyên vật liệu cao vừa phải, chỉ chọn hàng có theo dõi tồn kho, Thêm mới thì đổi lại nguyên vật liệu được, cột Đơn vị tính chọn được đơn vị quy đổi.
+- T844: Dấu vuông, favicon dùng logo hoá đơn và máy tính có dải iPOS.VN, viền xanh, bo góc.
 - T843: Điện thoại, lập Hàng bán trả lại và Trả lại hàng mua: mỗi mặt hàng có đủ Số lượng, Đơn giá, Chiết khấu, VAT, Tổng tiền cùng khuôn với lập phiếu mua; chỉ sửa số lượng, các ô khác giữ theo chứng từ gốc.
 - T842: Điện thoại, lập Hàng bán trả lại: ẩn địa chỉ, mã số thuế, người giao dịch, phương thức thanh toán và khối Tổng thanh toán ở đầu phiếu; tổng cộng nằm dưới danh sách mặt hàng và dòng Tổng tiền ghim ở đáy như lập phiếu mua.
 - T841: Điện thoại, xem Hàng bán trả lại: thẻ đầu như phiếu mua (cửa hàng, nguồn chứng từ, tổng tiền khớp danh sách, khung thanh toán Đã trả / tổng); Thông tin chung bỏ địa chỉ, mã số thuế, người giao dịch, thanh toán, phương thức.

@@ -3,7 +3,7 @@ import { useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { Dropdown, MenuHead, MenuItem, MenuSep } from './Dropdown'
 import { Icon } from './Icon'
-import { IconFigmaSheet } from './IconFigma'
+import { IconExcel } from './IconFigma'
 import { useSession } from '../app/session'
 import { HopXacNhan } from './LocNangCao'
 
@@ -26,7 +26,7 @@ export function NutExcel({
   children?: (dong: () => void) => ReactNode
 }) {
   return (
-    <Dropdown btnClass="nut-vuong ds-nut-excel" align={align} width={width} title={title} label={label ?? <IconFigmaSheet />}>
+    <Dropdown btnClass="nut-vuong ds-nut-excel" align={align} width={width} title={title} label={label ?? <IconExcel />}>
       {dong => (children ? children(dong) : <>
         <MenuHead>Excel</MenuHead>
         {onNhap && <MenuItem icon="upload" onClick={() => { onNhap(); dong() }}>Nhập Excel</MenuItem>}
@@ -38,7 +38,7 @@ export function NutExcel({
 
 /** Nút chỉ xuất Excel, cùng biểu tượng với NutExcel; dùng ở màn chỉ xem, vd màn chi tiết mở từ trang chủ gói Free (T232) */
 export function NutXuatExcel({ onXuat }: { onXuat: () => void }) {
-  return <button type="button" className="nut-vuong ds-nut-excel" title="Xuất Excel" aria-label="Xuất Excel" onClick={onXuat}><IconFigmaSheet /></button>
+  return <button type="button" className="nut-vuong ds-nut-excel" title="Xuất Excel" aria-label="Xuất Excel" onClick={onXuat}><IconExcel /></button>
 }
 
 /** Đổi icon dạng khối/đặc sang icon nét mảnh cùng kiểu trong menu Thêm theo loại (T542) */

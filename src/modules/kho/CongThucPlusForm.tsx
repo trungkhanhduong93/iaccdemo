@@ -122,6 +122,11 @@ export function FormCongThucPlus({ sc, mod, ct, soCt }: ScreenProps & { ct?: Row
       return
     }
 
+    const nvlLuu = nvl.filter(n => n.ma).map(n => ({
+      ...n,
+      dvt: n.dvt || hangCua(n.ma)?.dvt || '',
+    }))
+
     const nd: Row = {
       ma: moi ? maMoi : ma,
       spMa: sp,
@@ -131,7 +136,7 @@ export function FormCongThucPlus({ sc, mod, ct, soCt }: ScreenProps & { ct?: Row
       cuaHang,
       moTa,
       tt,
-      nvl: nvl.filter(n => n.ma),
+      nvl: nvlLuu,
     } satisfies Omit<CongThucCb, 'id'>
 
     if (moi) themPhieu(MAN.cb, { id: `moi-${Date.now()}`, ...nd }, s.ten)
@@ -142,6 +147,10 @@ export function FormCongThucPlus({ sc, mod, ct, soCt }: ScreenProps & { ct?: Row
   }
 
   function saoChep() {
+    const nvlLuu = nvl.filter(n => n.ma).map(n => ({
+      ...n,
+      dvt: n.dvt || hangCua(n.ma)?.dvt || '',
+    }))
     nav(`${path}/moi`, {
       state: {
         saoChep: {
@@ -151,11 +160,15 @@ export function FormCongThucPlus({ sc, mod, ct, soCt }: ScreenProps & { ct?: Row
           kenh,
           moTa,
           ngay,
-          nvl: nvl.filter(n => n.ma),
+          nvl: nvlLuu,
         },
       },
     })
   }
+
+  const dsNvlLoc = useMemo(() => DS_NVL.filter(x => x.ma !== sp), [sp])
+  const dsMucHangNvl = useMemo(() => mucHang(dsNvlLoc), [dsNvlLoc])
+  const dsMucTenNvl = useMemo(() => dsNvlLoc.map(x => ({ v: x.ma, t: x.ten })), [dsNvlLoc])
 
   const dsNvlGoc = useMemo(() => nvl.map((item, index) => ({ item, index })), [nvl])
 
@@ -409,36 +422,51 @@ export function FormCongThucPlus({ sc, mod, ct, soCt }: ScreenProps & { ct?: Row
                   dsNvlHien.map(({ item, index }) => {
                     const h = hangCua(item.ma)
                     const dsDvtNvl = dvtCuaNvl(item.ma)
-                    // Dòng mới: cả ô mã và ô tên đều chọn được, tìm theo mã hoặc tên
-                    const oChonHang = (
+                    const chonMa = (
                       <ChonDanhMuc
                         dm="nvl"
                         nhan="nguyên vật liệu"
                         goiYTim="Tìm mã, tên nguyên vật liệu"
                         coMa
+                        chiMa
                         className="inp sm"
                         trong="Chọn"
                         value={item.ma}
-                        ds={mucHang(DS_NVL.filter(x => x.ma !== sp && !nvl.some(n => n.ma === x.ma)))}
+                        ds={dsMucHangNvl}
+                        onChange={v => doiNvl(index, { ma: v, dvt: undefined })}
+                      />
+                    )
+                    const chonTen = (
+                      <ChonDanhMuc
+                        dm="nvl"
+                        nhan="nguyên vật liệu"
+                        goiYTim="Tìm mã, tên nguyên vật liệu"
+                        className="inp sm"
+                        trong="Chọn"
+                        value={item.ma}
+                        ds={dsMucTenNvl}
                         onChange={v => doiNvl(index, { ma: v, dvt: undefined })}
                       />
                     )
                     return (
                       <tr key={index}>
                         <td className="ctpl-nvl-ma">
-                          {item.ma || oChonHang}
+                          {moi ? chonMa : (item.ma ? item.ma : chonMa)}
                         </td>
-                        <td className="ctpl-nvl-ten">{item.ma ? h?.ten ?? '' : oChonHang}</td>
+                        <td className="ctpl-nvl-ten">
+                          {moi ? chonTen : (item.ma ? (h?.ten ?? item.ma) : chonTen)}
+                        </td>
                         <td className="ctpl-nvl-dvt">
-                          {dsDvtNvl.length > 0 && (
+                          {dsDvtNvl.length > 1 ? (
                             <Select
                               className="inp sm"
                               aria-label={`Đơn vị tính ${h?.ten ?? ''}`}
                               value={dvtHienNvl(item)}
-                              // Đổi đơn vị giữ nguyên số lượng, người dùng tự nhập lại (QD100)
-                              onChange={e => doiNvl(index, { dvt: e.target.value === h?.dvt ? undefined : e.target.value })}
-                              ds={dsDvtNvl.map(d => ({ v: d, t: nhanDvt(d) }))}
+                              onChange={e => doiNvl(index, { dvt: e.target.value })}
+                              ds={dsDvtNvl.map(d => ({ v: d, t: d }))}
                             />
+                          ) : (
+                            dvtHienNvl(item)
                           )}
                         </td>
                         <td className="num ctpl-nvl-sl">
@@ -484,7 +512,7 @@ export function FormCongThucPlus({ sc, mod, ct, soCt }: ScreenProps & { ct?: Row
 
       {moHangLoat && (
         <ThemHangLoat
-          ds={DS_NVL.filter(h => h.ma !== sp).map(h => ({
+          ds={dsNvlLoc.map(h => ({
             ma: h.ma,
             ten: h.ten,
             dvt: h.dvt,
@@ -494,7 +522,7 @@ export function FormCongThucPlus({ sc, mod, ct, soCt }: ScreenProps & { ct?: Row
           daCo={nvl.map(n => n.ma)}
           onDong={() => setMoHangLoat(false)}
           onXacNhan={dsChon => {
-            setNvl(cu => [...cu.filter(n => n.ma), ...dsChon.map(h => ({ ma: h.ma, sl: 1 }))])
+            setNvl(cu => [...cu.filter(n => n.ma), ...dsChon.map(h => ({ ma: h.ma, sl: 1, dvt: h.dvt }))])
             setMoHangLoat(false)
           }}
         />

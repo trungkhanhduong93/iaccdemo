@@ -8,7 +8,7 @@ import { cuaHangHienTai, donViHienTai, gtgtTyLe, loaiHinhDv, useSession } from '
 import { giamThueHkd } from '../../modules/ban-hang/giam-thue'
 import { kieuGhiSoDv } from '../../app/plan'
 import { Icon } from '../Icon'
-import { IconFigmaSearch, IconFigmaSheet, IconFigmaSliders } from '../IconFigma'
+import { IconExcel, IconFigmaSearch, IconFigmaSliders } from '../IconFigma'
 import { PageHead } from '../Page'
 import { ChonHaiCot, type MucHaiCot } from '../ChonHaiCot'
 import { OChonMot, type MucChonMot } from '../OChonMot'
@@ -688,7 +688,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
               {/* Excel, Tuỳ chỉnh cột, Thao tác hàng loạt nằm dưới nút Thêm mới (T510) */}
               <div className="ds-toolbar-phai ds-cong-cu-h2">
                 <NutExcel
-                  label={<IconFigmaSheet />}
+                  label={<IconExcel />}
                   onNhap={() => toast('Nhập chứng từ từ file Excel')}
                   onXuat={() => toast(`Đã xuất ${list.length} chứng từ ra Excel`)}
                 />

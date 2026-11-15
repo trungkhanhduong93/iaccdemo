@@ -11,14 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T844 | Logo dấu vuông, favicon dùng ảnh `icon accounting_Final.png`, viền xanh mỏng, bo 4 góc | Trum | Đang làm | Anti 1. `Logo.tsx`, `acc-dau.png`, `public/favicon.png`, `app-icon.png`. Spec `backup/spec-T844-T851.md` |
-| T851 | Mọi icon Excel (nút nhập, xuất Excel, màn Báo cáo) đổi sang logo Microsoft Excel đủ màu | Trum | Đang làm | Anti 1. `IconFigma.tsx`, `CongCuDs.tsx`, dòng icon ở `ReportScreen.tsx`, `VoucherScreen.tsx`, cuối `app.css`. Thay hướng T499 |
-| T845 | Form công thức chế biến: dòng nguyên vật liệu mới thêm cao quá, về cao như bảng chi tiết chứng từ | Trum | Đang làm | Anti 2. `CongThuc.tsx`, cuối `app.css` |
-| T846 | Form công thức chế biến: Thêm hàng loạt và ô Chọn từng dòng chỉ liệt kê hàng có Theo dõi tồn kho | Trum | Đang làm | Anti 2. `CongThuc.tsx` |
-| T847 | Form công thức chế biến: khi Thêm mới, chọn NVL xong vẫn đổi lại được; sửa công thức đã lưu giữ khoá | Trum | Đang làm | Anti 2. `CongThuc.tsx` |
-| T848 | Form công thức chế biến: ĐVT dòng NVL chọn được ĐVT quy đổi trong danh mục | Trum | Đang làm | Anti 2. `CongThuc.tsx`, có thể `san-xuat.ts` |
-| T849 | Kho gói Plus, Pro thêm màn Xuất kho định lượng: mỗi phiếu Xuất bán POS sinh một phiếu, lưới cây món và NVL theo công thức | Trum | Đang làm | Anti 4. File mới `XuatDinhLuong.tsx`, `kho/index.ts`, `plan.ts` (bỏ 11.2 khỏi DA_BO), QD111 |
-| T850 | Kho gói Plus đổi tab Điều chuyển thành Xuất chuyển kho (phiếu Chuyển kho, mọi kho); Pro có đủ Xuất, Nhập điều chuyển và Xuất chuyển kho | Trum | Đang làm | Anti 3. `kho/index.ts` dòng 60-115, `dieu-chuyen.ts`, `SidebarFlyout.tsx`, `kho/quy-trinh.ts`. QD111 |
+| T852 | Phiếu Xuất bán POS hiện tham chiếu ngược sang phiếu Xuất kho định lượng (T849 mới có chiều XDL sang POS) | | Chờ | `ChungTuBanHang.tsx`, dùng `useDsPhieuXdl` ở `kho/xuat-dinh-luong.ts` |
 | T837 | Điện thoại, danh sách mục Bán hàng lập tay: bỏ tên cửa hàng ở dòng chứng từ, dòng nào cũng ghi loại chứng từ (Xuất bán, Huỷ bán, Hoá đơn thay thế, Hoá đơn điều chỉnh), bộ lọc thêm Loại chứng từ | dinhlanphuongipacc | Đang làm | `MBanHangTay.tsx` |
 | T832 | Điện thoại: Xuất bán POS bỏ tab Báo cáo theo dõi; màn mua hàng bỏ tab Hoá đơn mua hàng, Trả lại hàng mua (đã là mục riêng ở menu Nghiệp vụ) | dinhlanphuongipacc | Đang làm | `MDsChungTuChuan.tsx`, `MChungTu.tsx` |
 | T781 | Giảm thuế GTGT xét hiệu lực nghị quyết theo ngày của từng chứng từ, không theo ngày làm việc (`ptGiamHienHanh` dùng `HOM_NAY`) | | Chờ | Thấy lúc soát T780, `giam-thue.ts` |
