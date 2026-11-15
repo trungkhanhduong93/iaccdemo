@@ -9,7 +9,8 @@
 - `src/ui/mobile/MLapPhieu.tsx`, nhánh `khuonMua`, theo web `ChungTuForm.tsx` T785, T450:
   - Bán hàng (`laBanTay`): ô Kênh bán bắt buộc (sheet chọn từ `KENH_BAN`, mặc định Tại quán khi thêm mới), lưu `kenh` vào phiếu.
   - Bán hàng: tích Thanh toán ngay, chọn quỹ; lưu thì sinh phiếu thu (quỹ tiền mặt) hoặc báo có (quỹ ngân hàng) bên Thu chi, lý do Thu tiền bán hàng, giữ ở `_ctTt`. Dùng chung hàm `ctTtTra` với Hàng bán trả lại.
-  - Bán hàng: công tắc Phát hành HĐĐT (mặc định bật khi thêm mới nếu Cấu hình HĐĐT bật). Lưu thì gọi `phatHanhHd`: ký hiệu theo cửa hàng, ngày hoá đơn hôm nay, người mua theo khách (khách không có mã số thuế là không lấy hoá đơn). Phiếu đã xuất thì hiện chữ Đã xuất HĐĐT thay công tắc.
+  - Bán hàng: công tắc Xuất HĐĐT (mặc định bật khi thêm mới nếu Cấu hình HĐĐT bật). Lưu thì gọi `phatHanhHd`: ký hiệu theo cửa hàng, ngày hoá đơn hôm nay, người mua theo khách (khách không có mã số thuế là không lấy hoá đơn). Phiếu đã xuất thì hiện chữ Đã xuất HĐĐT thay công tắc.
+  - Góp ý thêm của người dùng: ô Kênh bán đứng trước Ngày chứng từ (Khách hàng, Kho xuất, Kênh bán, Ngày chứng từ, Ghi chú). Công tắc ghi Xuất HĐĐT. Bật công tắc thì nút ở chân ghi Lưu và Xuất HĐĐT, tắt thì ghi Lưu phiếu.
   - GTGT theo % doanh thu (`tyLeBan`): Bán hàng, Hàng bán trả lại bỏ ô VAT trên `TheHangMua` (prop `khongVat`), thuế dòng 0, Tổng cộng hiện Giảm trừ thuế (`giamThueHang`), tổng thanh toán trừ giảm trừ thuế. Phương pháp khấu trừ giữ ô VAT, Tiền thuế.
 
 ## Đã kiểm

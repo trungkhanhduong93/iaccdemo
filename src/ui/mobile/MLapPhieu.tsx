@@ -2604,15 +2604,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                   </button>
                 </div>
                 {loiO.kho && <div className="m-lp-loi-o m-t655-loi">{loiO.kho}</div>}
-                <div className="m-t655-hang">
-                  <span className="m-t655-nhan">Ngày chứng từ <em>*</em></span>
-                  <button type="button" className="m-t655-o" id="m-lp-o-thoiGian" onClick={() => setMoLich(true)}>
-                    <span className="chu">{thoiGian.slice(0, 10)}</span>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
-                  </button>
-                </div>
-                <textarea className="m-t655-ghi-chu" aria-label="Ghi chú" rows={1} placeholder="Ghi chú" value={ghiChu} onChange={e => setGhiChu(e.target.value)} />
-                {/* Kênh bán bắt buộc ở Bán hàng lập tay (T855, như web T785) */}
+                {/* Kênh bán bắt buộc ở Bán hàng lập tay (T855, như web T785): trước Ngày chứng từ */}
                 {laBanTay && (<>
                   <div className="m-t655-hang">
                     <span className="m-t655-nhan">Kênh bán <em>*</em></span>
@@ -2623,11 +2615,19 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                   </div>
                   {loiO.kenh && <div className="m-lp-loi-o m-t655-loi">{loiO.kenh}</div>}
                 </>)}
+                <div className="m-t655-hang">
+                  <span className="m-t655-nhan">Ngày chứng từ <em>*</em></span>
+                  <button type="button" className="m-t655-o" id="m-lp-o-thoiGian" onClick={() => setMoLich(true)}>
+                    <span className="chu">{thoiGian.slice(0, 10)}</span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
+                  </button>
+                </div>
+                <textarea className="m-t655-ghi-chu" aria-label="Ghi chú" rows={1} placeholder="Ghi chú" value={ghiChu} onChange={e => setGhiChu(e.target.value)} />
                 {khuonMua && (<>
                 <div className="m-t655-ke" />
 
                 {/* Hai tích cùng một hàng như phiếu mua: Đã thanh toán (trả tiền khách ngay), Lập kèm hoá đơn;
-                    Bán hàng (T855): Thanh toán ngay (lập phiếu thu), công tắc Phát hành HĐĐT như web T785 */}
+                    Bán hàng (T855): Thanh toán ngay (lập phiếu thu), công tắc Xuất HĐĐT như web T785; bật thì nút Lưu đổi chữ Lưu và Xuất HĐĐT */}
                 <div className="m-t656-tich-hang">
                   <button
                     type="button"
@@ -2650,7 +2650,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                   {laBanTay ? (hdDaXuat ? <span className="m-t655-tich">Đã xuất HĐĐT</span> : (
                     <label className="m-t655-tich">
                       <input type="checkbox" className="bat-tat" checked={phatHd} onChange={e => setPhatHd(e.target.checked)} />
-                      Phát hành HĐĐT
+                      Xuất HĐĐT
                     </label>
                   )) : <button
                     type="button"
@@ -2942,7 +2942,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
           onClick={() => thucHienLuu(false)}
           data-hd="luu"
         >
-          {(nhom === 'mua' || khuonMua) ? 'Lưu phiếu' : (dangSua ? 'Lưu thay đổi' : 'Lưu phiếu')}
+          {laBanTay && phatHd && !hdDaXuat ? 'Lưu và Xuất HĐĐT' : (nhom === 'mua' || khuonMua) ? 'Lưu phiếu' : (dangSua ? 'Lưu thay đổi' : 'Lưu phiếu')}
         </button>
       </div>
 

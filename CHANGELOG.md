@@ -3,7 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 15/11/2026
-- T855: Điện thoại, lập Bán hàng: có ô Kênh bán bắt buộc, tích Thanh toán ngay (chọn quỹ, lưu thì lập phiếu thu) và công tắc Phát hành HĐĐT như web. Bán hàng và Hàng bán trả lại của đơn vị tính GTGT theo tỷ lệ: mặt hàng không có ô VAT, Tổng cộng hiện Giảm trừ thuế.
+- T855: Điện thoại, lập Bán hàng: có ô Kênh bán bắt buộc (trước Ngày chứng từ), tích Thanh toán ngay (chọn quỹ, lưu thì lập phiếu thu) và công tắc Xuất HĐĐT như web; bật công tắc thì nút ghi Lưu và Xuất HĐĐT. Bán hàng và Hàng bán trả lại của đơn vị tính GTGT theo tỷ lệ: mặt hàng không có ô VAT, Tổng cộng hiện Giảm trừ thuế.
 - T854: Điện thoại, lập Bán hàng: phần đầu và chân phiếu như lập phiếu mua. Bán hàng và Hàng bán trả lại: mặt hàng thêm tay hiện cùng khuôn lập phiếu mua (Số lượng kèm ĐVT, Đơn giá, Chiết khấu, VAT, Tổng tiền, Nhân bản, Xoá); Tổng cộng nằm dưới danh sách.
 - T853: Điện thoại, lập Hàng bán trả lại và Trả lại hàng mua từ chứng từ gốc: dòng mặt hàng giống hệt lập phiếu mua (ô trắng, ghi chú từng dòng, Tổng cộng đủ Thành tiền, Tiền chiết khấu, Tiền thuế); giá, chiết khấu, VAT giữ theo chứng từ gốc, chỉ sửa số lượng. Hàng bán trả lại bỏ Phương thức ở form lập và màn xem, web và điện thoại.
 - T851: Mọi nút nhập, xuất Excel (danh sách chứng từ, danh mục, màn Báo cáo, sổ báo cáo điện thoại) dùng logo Excel đủ màu.
