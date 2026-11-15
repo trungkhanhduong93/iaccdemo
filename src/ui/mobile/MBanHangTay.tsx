@@ -142,7 +142,7 @@ export const MBanHangTay: FC<MBanHangTayProps> = ({ sc, mod, rows, duong, tabTay
   const coCt = (id: string) => rows.some(x => String(x.id) === id)
   const dsThamChieu: { so: string; ten: string; mo: () => void }[] = !ct ? [] : [
     // Phiếu thu, báo có lập khi Thanh toán ngay (T855) và các phiếu thu lập sau, đứng đầu như phiếu mua; bấm mở bên Thu chi
-    ...[ctTtCon(ct), ...dsTtCon(ct)].filter((c): c is { id: string; so: string } => Boolean(c))
+    ...[ctTtCon(ct), ...dsTtCon(ct)].flatMap(c => (c ? [c] : []))
       .map(c => ({ so: c.so, ten: 'Chứng từ thu tiền', mo: () => nav(`/app/tien/2-1-1/${c.id}`) })),
     ...(hdGoc && coCt(hdGoc.id) ? [{ so: hdGoc.so, ten: 'Chứng từ gốc', mo: () => setIdXem(hdGoc.id) }] : []),
     ...([ct._huyBan, ct._hdTt] as (CtLq | undefined)[]).filter((c): c is CtLq => Boolean(c) && coCt(c!.id))
