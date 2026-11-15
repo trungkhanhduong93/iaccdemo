@@ -3,7 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 15/11/2026
-- T854: Điện thoại, lập Bán hàng và Hàng bán trả lại: mặt hàng thêm tay hiện cùng khuôn lập phiếu mua (Số lượng kèm ĐVT, Đơn giá, Chiết khấu, VAT, Tổng tiền, Nhân bản, Xoá); Tổng cộng nằm dưới danh sách.
+- T854: Điện thoại, lập Bán hàng: phần đầu và chân phiếu như lập phiếu mua. Bán hàng và Hàng bán trả lại: mặt hàng thêm tay hiện cùng khuôn lập phiếu mua (Số lượng kèm ĐVT, Đơn giá, Chiết khấu, VAT, Tổng tiền, Nhân bản, Xoá); Tổng cộng nằm dưới danh sách.
 - T853: Điện thoại, lập Hàng bán trả lại và Trả lại hàng mua từ chứng từ gốc: dòng mặt hàng giống hệt lập phiếu mua (ô trắng, ghi chú từng dòng, Tổng cộng đủ Thành tiền, Tiền chiết khấu, Tiền thuế); giá, chiết khấu, VAT giữ theo chứng từ gốc, chỉ sửa số lượng. Hàng bán trả lại bỏ Phương thức ở form lập và màn xem, web và điện thoại.
 - T851: Mọi nút nhập, xuất Excel (danh sách chứng từ, danh mục, màn Báo cáo, sổ báo cáo điện thoại) dùng logo Excel đủ màu.
 - T850: Kho gói Plus: tab Điều chuyển đổi thành Xuất chuyển kho, một phiếu chuyển giữa mọi kho, không hạch toán. Xuất, Nhập điều chuyển chỉ còn ở gói Pro.
