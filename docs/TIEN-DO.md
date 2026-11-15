@@ -11,6 +11,8 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T863 | Điện thoại, màn Khác: nhóm Danh mục chỉ hiện đúng các mục như menu Danh mục web, chia 2 nhóm Đối tượng & Hàng hoá, Tài chính & Khác | Trum | Đang làm | Spec `backup/spec-T856-T862.md`. Sửa `MKhac.tsx`, `SidebarFlyout.tsx` (chỉ export) |
+| T864 | Điện thoại, Bảng giá mua, bán đang trống: làm màn riêng có danh sách, xem, thêm, sửa, xoá, dùng chung kho với web | Trum | Đang làm | Tạo `MBangGia.tsx`, sửa `manMobile.ts`, `ThemBangGia.tsx` (export hàm), cuối `app.css` (mục T856-T864) |
 | T856 | Popup xem hoá đơn điện tử: tờ hoá đơn bị cắt ngang đè khung viền, dòng Giảm trừ thuế hiện hai dấu trừ "--2.040" (cả file PDF) | Trum | Đang làm | Spec `backup/spec-T856-T862.md`. Sửa `hddt.tsx`, `hddtFile.ts`, cuối `app.css` (mục T856-T862) |
 | T857 | Điện thoại, màn Nghiệp vụ gói Plus, Pro: cuộn tới đáy mục cuối bị dock menu che, thêm khoảng đệm đáy | Trum | Đang làm | Sửa `MNghiepVu.tsx`, cuối `app.css` (mục T856-T862) |
 | T858 | Form Chi tiết công thức chế biến gói Plus: khung Thông tin chung và bảng Nguyên vật liệu bo góc tròn như chứng từ | Trum | Đang làm | Sửa `CongThucPlusForm.tsx`, cuối `app.css` (mục T856-T862) |
