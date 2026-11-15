@@ -20,7 +20,10 @@
 ## Dở dang, việc tiếp theo
 
 - Không.
-- Bán hàng điện thoại chưa có tích Đã thanh toán (lập phiếu thu ngay), Lập kèm hoá đơn như Hàng bán trả lại. Cần thì làm việc riêng.
+- Người dùng yêu cầu thêm, làm ở phiên mới (`MLapPhieu.tsx`, nhánh `khuonMua`), theo logic web `ChungTuForm.tsx`:
+  - Bán hàng điện thoại thêm tích Thanh toán ngay (lập phiếu thu) và công tắc Phát hành HĐĐT (web T785, `ChungTuForm.tsx:208-220`, `:1297`, bắt buộc Kênh bán khi có HĐĐT `:541`).
+  - Phần đầu Bán hàng hiện ô Kênh bán bắt buộc như web (`ChungTuForm.tsx:307`, `:1459`, danh sách `KENH_BAN`).
+  - Hộ kinh doanh tính GTGT theo tỷ lệ doanh thu (`gtgtTyLe(s)`, web `ChungTuForm.tsx:384-386`): Bán hàng, Hàng bán trả lại không có ô VAT trên dòng, thuế 0, tổng hiện Giảm trừ thuế như web `PhepTinhBan`. Chỉ phương pháp khấu trừ mới hiện VAT.
 - `MLapPhieu.tsx` Trum đang giữ ở T552. Phiên này chỉ sửa khối MẶT HÀNG nhóm bán.
 
 ## Bẫy, quyết định mới
