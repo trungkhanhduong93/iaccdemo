@@ -294,7 +294,7 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, gia
     }
   }, [dongBang])
   const tongDongBang = dongBangDuLieu.length
-  const hienPhanTrangBang = laBang && tongDongBang > 100
+  const hienPhanTrangBang = laBang
   const soTrangBang = Math.max(1, Math.ceil(tongDongBang / coTrangBang))
   const trangBangHt = Math.min(trangBang, soTrangBang)
 
@@ -322,14 +322,57 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, gia
     return () => window.removeEventListener('bc-da-xem', onDaXem)
   }, [])
 
-  const dongBangHienThi = useMemo(() => {
-    if (!hienPhanTrangBang) return dongBang
+  const { dongBangHienThi, dongTongHienThi } = useMemo(() => {
+    if (!laBang || !bangDau) {
+      return { dongBangHienThi: dongBang, dongTongHienThi: dongTongBang }
+    }
     const batDau = (trangBangHt - 1) * coTrangBang
-    return [...dongBangDuLieu.slice(batDau, batDau + coTrangBang), ...dongTongBang]
-  }, [hienPhanTrangBang, dongBang, dongBangDuLieu, dongTongBang, trangBangHt, coTrangBang])
-  // Dòng tổng cuối bảng ghim đáy khung cuộn (T494): đo cao từng dòng từ dưới lên để nhiều dòng tổng xếp chồng, không đè nhau.
+    const dongTrangDuLieu = dongBangDuLieu.slice(batDau, batDau + coTrangBang)
+
+    if (dongTongBang.length === 0) {
+      return { dongBangHienThi: dongTrangDuLieu, dongTongHienThi: [] }
+    }
+
+    const dongTongGoc = dongTongBang.find(r => Object.values(r).some(v => typeof v === 'string' && /tổng/i.test(v))) ?? dongTongBang[0]
+    const kLabel = bangDau.cols.find(c => {
+      const v = dongTongGoc[c.k]
+      return typeof v === 'string' && /tổng|cộng/i.test(v)
+    })?.k ?? bangDau.cols.find(c => {
+      const v = dongTongGoc[c.k]
+      return typeof v === 'string' && v.trim().length > 0
+    })?.k ?? (bangDau.cols.find(c => c.k === 'ten' || c.k === 'dienGiai' || c.k === 'dg')?.k ?? bangDau.cols[0]?.k)
+
+    const dongHopLe = dongTrangDuLieu.filter(r => !r._nhom && !r._cong && !r._t && !(r as any).isGroup && !(r._b && Object.values(r).some(v => typeof v === 'string' && /đầu kỳ/i.test(v))))
+
+    const dongTongTrang: Row = {
+      _t: 1,
+      _cls: 'bc-dong-tong-trang',
+      id: '__tong_trang__',
+      [kLabel]: 'Tổng trang',
+    }
+    bangDau.cols.forEach(c => {
+      if (c.k === kLabel) return
+      if (typeof dongTongGoc[c.k] === 'number') {
+        dongTongTrang[c.k] = dongHopLe.reduce((sum, r) => {
+          const v = r[c.k]
+          return sum + (typeof v === 'number' ? v : (Number(v) || 0))
+        }, 0)
+      }
+    })
+
+    // Một dòng tổng thì đổi nhãn thành Tổng báo cáo; nhiều dòng tổng (Cộng phát sinh, Số dư cuối kỳ…) giữ nguyên cả
+    const tongMoi = dongTongBang.length === 1
+      ? [dongTongTrang, { ...dongTongGoc, _t: 1, _cls: 'bc-dong-tong-bao-cao', id: '__tong_bao_cao__', [kLabel]: 'Tổng báo cáo' }]
+      : [dongTongTrang, ...dongTongBang]
+    return {
+      dongBangHienThi: [...dongTrangDuLieu, ...tongMoi],
+      dongTongHienThi: tongMoi,
+    }
+  }, [laBang, bangDau, dongBang, dongBangDuLieu, dongTongBang, trangBangHt, coTrangBang])
+
+  // Dòng tổng cuối bảng ghim đáy khung cuộn (T494, T867): đo cao từng dòng từ dưới lên để nhiều dòng tổng xếp chồng, không đè nhau.
   // Dòng số dư, tồn đầu kỳ ở đầu bảng ghim ngay dưới tiêu đề cột
-  const dongGhim = useMemo(() => new Set(dongTongBang), [dongTongBang])
+  const dongGhim = useMemo(() => new Set(dongTongHienThi), [dongTongHienThi])
   const dongGhimTren = useMemo(() => {
     const res = new Set<Row>()
     for (const r of dongBang) {
@@ -562,7 +605,7 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, gia
             {dieuKienLoc && <div className="bc-bang-dk-loc"><Icon n="filter" className="ic sm" />Điều kiện lọc: {dieuKienLoc}</div>}
             {/* Dòng nhóm, dòng cộng, dòng tổng in đậm như ở Tờ in (T179) */}
             <Table cols={bangDau.cols} rows={dongBangHienThi} onRow={bangDau.onRow} motDong keDoc virtual={false}
-              rowCls={r => r._t ? (dongGhim.has(r) ? 'bc-dong-tong bc-dong-ghim' : 'bc-dong-tong') : dongGhimTren.has(r) ? 'bc-dong-dam bc-dong-ghim-tren' : r._b || r._nhom ? 'bc-dong-dam' : ''} />
+              rowCls={r => r._t ? (dongGhim.has(r) ? `bc-dong-tong bc-dong-ghim ${r._cls ?? ''}`.trim() : `bc-dong-tong ${r._cls ?? ''}`.trim()) : dongGhimTren.has(r) ? 'bc-dong-dam bc-dong-ghim-tren' : r._b || r._nhom ? 'bc-dong-dam' : ''} />
           </div>
         ) : !moXemTruoc && (
           <div className="bc-ban" ref={ban}>
@@ -577,12 +620,8 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, gia
         <div className="bc-thanh">
           <div className="bc-thanh-nhom">
             {laBang ? (
-              hienPhanTrangBang ? (
-                <PhanTrang tong={tongDongBang} trang={trangBangHt} coTrang={coTrangBang} dsCoTrang={[100, 200, 500]}
-                  onTrang={t => { setTrangBang(t); cuonBangLenDau() }} onCoTrang={doiCoTrangBang} />
-              ) : (
-                tongDong > 0 && <span className="bc-thanh-dem">{dongBang.length.toLocaleString(locSo())} dòng</span>
-              )
+              <PhanTrang tong={tongDongBang} trang={trangBangHt} coTrang={coTrangBang} dsCoTrang={DS_CO_TRANG_BANG}
+                onTrang={t => { setTrangBang(t); cuonBangLenDau() }} onCoTrang={doiCoTrangBang} />
             ) : (
               <>
                 {!giay && tongDong > 0 && !hienPhanTrang && <span className="bc-thanh-dem">{tongDong.toLocaleString(locSo())} dòng</span>}

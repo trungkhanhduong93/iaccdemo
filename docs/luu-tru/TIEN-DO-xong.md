@@ -4,6 +4,9 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T867 | Bảng dữ liệu báo cáo: dòng Tổng trang và Tổng báo cáo ghim cuối mỗi trang, thanh phân trang luôn hiện (sửa QD60) | Trum | 16/11/2026 | 2026-11-16-trum-xuat-nhap-ton-tong-trang.md |
+| T866 | Báo cáo xuất nhập tồn gói Standard có dòng tổng số lượng (sửa QD78) | Trum | 16/11/2026 | 2026-11-16-trum-xuat-nhap-ton-tong-trang.md |
+| T865 | Báo cáo xuất nhập tồn gói Standard: tiêu đề 1 tầng, bỏ dòng "SL" ở màn, tờ in, Excel | Trum | 16/11/2026 | 2026-11-16-trum-xuat-nhap-ton-tong-trang.md |
 | T864 | Điện thoại, Bảng giá mua, bán đang trống: làm màn riêng có danh sách, xem, thêm, sửa, xoá, dùng chung kho với web | Trum | 16/11/2026 | 2026-11-16-trum-hddt-bang-gia-danh-muc.md |
 | T863 | Điện thoại, màn Khác: nhóm Danh mục chỉ hiện đúng các mục như menu Danh mục web, chia 2 nhóm Đối tượng & Hàng hoá, Tài chính & Khác | Trum | 16/11/2026 | 2026-11-16-trum-hddt-bang-gia-danh-muc.md |
 | T862 | Form bảng giá: bỏ tô cố định dòng vừa bấm, dòng dưới chuột tô nhẹ đi theo chuột | Trum | 16/11/2026 | 2026-11-16-trum-hddt-bang-gia-danh-muc.md |

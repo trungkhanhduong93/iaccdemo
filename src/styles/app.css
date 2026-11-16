@@ -48621,3 +48621,13 @@ textarea.m-tpb-inp { height: auto; padding: 8px 12px; }
 .ctpl-nvl tbody tr:last-child td {
   border-bottom: none;
 }
+
+/* ── Tổng trang Bảng dữ liệu báo cáo (T867) ── */
+.bc-ban-du-lieu .tbl tr.bc-dong-tong-trang td {
+  font-weight: 700;
+  background: var(--giay-tong);
+}
+.bc-ban-du-lieu .tbl tr.bc-dong-tong-bao-cao td {
+  font-weight: 800;
+  background: var(--giay-tong);
+}

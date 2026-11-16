@@ -58,13 +58,13 @@ export function XuatNhapTon({ sc, mod }: ScreenProps) {
     { k: 'ma', t: 'Mã', cls: 'code', w: 90, r: x => x._t ? '' : moThe(String(x.ma), String(x.ma)) },
     { k: 'ten', t: 'Tên nguyên vật liệu, hàng hoá', r: x => x._t ? String(x.ten) : moThe(String(x.ma), String(x.ten)) },
     { k: 'dvt', t: 'ĐVT', c: true, w: 60 },
-    { k: 'sl0', t: 'SL', num: true, nhom: 'Đầu kỳ' },
+    { k: 'sl0', t: isStandard ? 'Đầu kỳ' : 'SL', num: true, ...(isStandard ? {} : { nhom: 'Đầu kỳ' }) },
     ...(isStandard ? [] : [{ k: 'gt0', t: 'Giá trị', num: true, nhom: 'Đầu kỳ' } as Col]),
-    { k: 'sln', t: 'SL', num: true, nhom: 'Nhập trong kỳ' },
+    { k: 'sln', t: isStandard ? 'Nhập trong kỳ' : 'SL', num: true, ...(isStandard ? {} : { nhom: 'Nhập trong kỳ' }) },
     ...(isStandard ? [] : [{ k: 'gtn', t: 'Giá trị', num: true, nhom: 'Nhập trong kỳ' } as Col]),
-    { k: 'slx', t: 'SL', num: true, nhom: 'Xuất trong kỳ' },
+    { k: 'slx', t: isStandard ? 'Xuất trong kỳ' : 'SL', num: true, ...(isStandard ? {} : { nhom: 'Xuất trong kỳ' }) },
     ...(isStandard ? [] : [{ k: 'gtx', t: 'Giá trị', num: true, nhom: 'Xuất trong kỳ' } as Col]),
-    { k: 'sl1', t: 'SL', num: true, nhom: 'Cuối kỳ' },
+    { k: 'sl1', t: isStandard ? 'Cuối kỳ' : 'SL', num: true, ...(isStandard ? {} : { nhom: 'Cuối kỳ' }) },
     ...(isStandard ? [] : [{ k: 'gt1', t: 'Giá trị', num: true, nhom: 'Cuối kỳ' } as Col]),
   ]
 
@@ -75,7 +75,20 @@ export function XuatNhapTon({ sc, mod }: ScreenProps) {
         <ReportToolbar ky={ky} setKy={setKy} />
         <ReportPaper title="Báo cáo xuất nhập tồn" sub={`${tenKho} · Tháng ${ky}/2026`}>
           {/* Bảng dữ liệu RptTable (tiêu đề 2 tầng theo nhom) để màn chính hiện dạng bảng như các báo cáo khác, không phải tờ in (T308) */}
-          <RptTable cols={cols} rows={isStandard ? (rows as Row[]) : [...rows as Row[], { ten: 'Tổng cộng', gt0: sum('gt0'), gtn: sum('gtn'), gtx: sum('gtx'), gt1: sum('gt1'), _t: 1 }]} />
+          <RptTable cols={cols} rows={[...rows as Row[], {
+            ten: 'Tổng cộng',
+            sl0: sum('sl0'),
+            sln: sum('sln'),
+            slx: sum('slx'),
+            sl1: sum('sl1'),
+            ...(isStandard ? {} : {
+              gt0: sum('gt0'),
+              gtn: sum('gtn'),
+              gtx: sum('gtx'),
+              gt1: sum('gt1'),
+            }),
+            _t: 1,
+          }]} />
         </ReportPaper>
       </section>
     </div>

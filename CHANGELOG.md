@@ -3,6 +3,8 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 16/11/2026
+- T867: Báo cáo dạng Bảng dữ liệu luôn có thanh phân trang; báo cáo có dòng tổng hiện thêm dòng Tổng trang ngay trên dòng Tổng báo cáo, ghim cuối mỗi trang.
+- T865-T866: Báo cáo xuất nhập tồn gói Standard: tiêu đề còn 1 tầng (Đầu kỳ, Nhập trong kỳ, Xuất trong kỳ, Cuối kỳ), thêm dòng tổng số lượng.
 - T864: Điện thoại, Danh mục > Bảng giá mua, bán có dữ liệu: danh sách mỗi bảng giá một thẻ, bấm xem các dòng giá, thêm, sửa, xoá bảng giá; dùng chung dữ liệu với web.
 - T863: Điện thoại, màn Khác: nhóm Danh mục chỉ còn các mục như menu Danh mục web, chia 2 nhóm Đối tượng & Hàng hoá, Tài chính & Khác.
 - T859-T862: Form bảng giá web phủ toàn màn, che cả menu trái; nút xoá dòng là dấu x đỏ như công thức chế biến; chưa bấm Sửa thì mọi ô đầu form bị khoá; nền xanh đi theo chuột, không tô cố định dòng vừa bấm.

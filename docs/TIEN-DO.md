@@ -11,9 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T865 | Báo cáo xuất nhập tồn gói Standard: tiêu đề 1 tầng, bỏ dòng "SL" ở màn, tờ in, Excel | Trum | Đang làm | Sửa `XuatNhapTon.tsx`. Spec `backup/spec-T865-T867.md` |
-| T866 | Báo cáo xuất nhập tồn gói Standard có dòng tổng số lượng (sửa QD78) | Trum | Đang làm | Sửa `XuatNhapTon.tsx` |
-| T867 | Bảng dữ liệu báo cáo: dòng Tổng trang và Tổng báo cáo ghim cuối mỗi trang, thanh phân trang luôn hiện (sửa QD60) | Trum | Đang làm | Sửa `ToGiay.tsx`, `PhanTrang.tsx`, `ReportScreen.tsx` (T594 cũng ghi), cuối `app.css` (mục T867) |
 | T852 | Phiếu Xuất bán POS hiện tham chiếu ngược sang phiếu Xuất kho định lượng (T849 mới có chiều XDL sang POS) | | Chờ | `ChungTuBanHang.tsx`, dùng `useDsPhieuXdl` ở `kho/xuat-dinh-luong.ts` |
 | T837 | Điện thoại, danh sách mục Bán hàng lập tay: bỏ tên cửa hàng ở dòng chứng từ, dòng nào cũng ghi loại chứng từ (Xuất bán, Huỷ bán, Hoá đơn thay thế, Hoá đơn điều chỉnh), bộ lọc thêm Loại chứng từ | dinhlanphuongipacc | Đang làm | `MBanHangTay.tsx` |
 | T781 | Giảm thuế GTGT xét hiệu lực nghị quyết theo ngày của từng chứng từ, không theo ngày làm việc (`ptGiamHienHanh` dùng `HOM_NAY`) | | Chờ | Thấy lúc soát T780, `giam-thue.ts` |
