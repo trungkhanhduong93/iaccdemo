@@ -48631,3 +48631,25 @@ textarea.m-tpb-inp { height: auto; padding: 8px 12px; }
   font-weight: 800;
   background: var(--giay-tong);
 }
+
+/* ── Tổng báo cáo ở chân khung Bảng dữ liệu (T868) ── */
+.bc-ban-du-lieu .tbl {
+  height: 100%;
+}
+.bc-ban-du-lieu .tbl:has(.bc-dong-dem) tr.tbl-spacer:not(.bc-dong-dem) {
+  display: none;
+}
+.bc-ban-du-lieu .tbl tr.bc-dong-dem {
+  height: 100%;
+}
+.bc-ban-du-lieu .tbl tr.bc-dong-dem td {
+  height: auto !important;
+  padding: 0 !important;
+  border-top: none !important;
+  border-bottom: none !important;
+  background: transparent !important;
+  line-height: 0 !important;
+  font-size: 0 !important;
+  pointer-events: none;
+}
+

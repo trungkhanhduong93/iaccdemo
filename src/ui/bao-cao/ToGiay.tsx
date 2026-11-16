@@ -360,18 +360,24 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, gia
       }
     })
 
+    const dongDem: Row = {
+      _t: 1,
+      _cls: 'bc-dong-dem tbl-spacer',
+      id: '__dong_dem__',
+    }
+
     // Một dòng tổng thì đổi nhãn thành Tổng báo cáo; nhiều dòng tổng (Cộng phát sinh, Số dư cuối kỳ…) giữ nguyên cả
-    const tongMoi = dongTongBang.length === 1
-      ? [dongTongTrang, { ...dongTongGoc, _t: 1, _cls: 'bc-dong-tong-bao-cao', id: '__tong_bao_cao__', [kLabel]: 'Tổng báo cáo' }]
-      : [dongTongTrang, ...dongTongBang]
+    const tongBaoCao = dongTongBang.length === 1
+      ? [{ ...dongTongGoc, _t: 1, _cls: 'bc-dong-tong-bao-cao', id: '__tong_bao_cao__', [kLabel]: 'Tổng báo cáo' }]
+      : dongTongBang
     return {
-      dongBangHienThi: [...dongTrangDuLieu, ...tongMoi],
-      dongTongHienThi: tongMoi,
+      dongBangHienThi: [...dongTrangDuLieu, dongTongTrang, dongDem, ...tongBaoCao],
+      dongTongHienThi: tongBaoCao,
     }
   }, [laBang, bangDau, dongBang, dongBangDuLieu, dongTongBang, trangBangHt, coTrangBang])
 
-  // Dòng tổng cuối bảng ghim đáy khung cuộn (T494, T867): đo cao từng dòng từ dưới lên để nhiều dòng tổng xếp chồng, không đè nhau.
-  // Dòng số dư, tồn đầu kỳ ở đầu bảng ghim ngay dưới tiêu đề cột
+  // Dòng tổng cuối bảng ghim đáy khung cuộn (T494, T867, T868): đo cao từng dòng từ dưới lên để nhiều dòng tổng xếp chồng, không đè nhau.
+  // Dòng Tổng trang bám ngay dưới dòng dữ liệu cuối, không ghim chân (T868). Dòng số dư, tồn đầu kỳ ở đầu bảng ghim ngay dưới tiêu đề cột
   const dongGhim = useMemo(() => new Set(dongTongHienThi), [dongTongHienThi])
   const dongGhimTren = useMemo(() => {
     const res = new Set<Row>()
@@ -605,7 +611,7 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, gia
             {dieuKienLoc && <div className="bc-bang-dk-loc"><Icon n="filter" className="ic sm" />Điều kiện lọc: {dieuKienLoc}</div>}
             {/* Dòng nhóm, dòng cộng, dòng tổng in đậm như ở Tờ in (T179) */}
             <Table cols={bangDau.cols} rows={dongBangHienThi} onRow={bangDau.onRow} motDong keDoc virtual={false}
-              rowCls={r => r._t ? (dongGhim.has(r) ? `bc-dong-tong bc-dong-ghim ${r._cls ?? ''}`.trim() : `bc-dong-tong ${r._cls ?? ''}`.trim()) : dongGhimTren.has(r) ? 'bc-dong-dam bc-dong-ghim-tren' : r._b || r._nhom ? 'bc-dong-dam' : ''} />
+              rowCls={r => r.id === '__dong_dem__' ? 'bc-dong-dem tbl-spacer' : r._t ? (dongGhim.has(r) ? `bc-dong-tong bc-dong-ghim ${r._cls ?? ''}`.trim() : `bc-dong-tong ${r._cls ?? ''}`.trim()) : dongGhimTren.has(r) ? 'bc-dong-dam bc-dong-ghim-tren' : r._b || r._nhom ? 'bc-dong-dam' : ''} />
           </div>
         ) : !moXemTruoc && (
           <div className="bc-ban" ref={ban}>

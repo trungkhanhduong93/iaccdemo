@@ -546,7 +546,8 @@ export function bienDoiBang(
       if (!chu) return tRow
       const moi = { ...tRow }
       for (const c of cols) {
-        if (c.num && c.k !== 'gia' && !c.t.includes('Đơn giá')) {
+        // Chỉ cột dòng tổng gốc có số; cột số dư luỹ kế (Tồn ở thẻ kho) để trống thì giữ trống (T869)
+        if (c.num && c.k !== 'gia' && !c.t.includes('Đơn giá') && tRow[c.k] != null && tRow[c.k] !== '') {
           moi[c.k] = conLai.reduce((acc, r) => acc + soO(r[c.k]), 0)
         }
       }

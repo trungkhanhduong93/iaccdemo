@@ -3,6 +3,8 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 16/11/2026
+- T869: Thẻ kho và báo cáo đang lọc: dòng Cộng phát sinh, Tổng trang để trống cột Tồn, không cộng dồn số dư.
+- T868: Bảng dữ liệu báo cáo: dòng Tổng báo cáo nằm ở chân khung, sát trên thanh phân trang; Tổng trang ngay dưới dòng cuối.
 - T867: Báo cáo dạng Bảng dữ liệu luôn có thanh phân trang; báo cáo có dòng tổng hiện thêm dòng Tổng trang ngay trên dòng Tổng báo cáo, ghim cuối mỗi trang.
 - T865-T866: Báo cáo xuất nhập tồn gói Standard: tiêu đề còn 1 tầng (Đầu kỳ, Nhập trong kỳ, Xuất trong kỳ, Cuối kỳ), thêm dòng tổng số lượng.
 - T864: Điện thoại, Danh mục > Bảng giá mua, bán có dữ liệu: danh sách mỗi bảng giá một thẻ, bấm xem các dòng giá, thêm, sửa, xoá bảng giá; dùng chung dữ liệu với web.

@@ -11,8 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T869 | Báo cáo lọc (vd Thẻ kho ẩn dòng không phát sinh): dòng Cộng phát sinh, Tổng trang không cộng cột số dư luỹ kế Tồn | Trum | Đang làm | Sửa `tuyChinhBC.ts` (tính lại dòng tổng chỉ cột dòng gốc có số) |
-| T868 | Bảng dữ liệu báo cáo: dòng Tổng báo cáo nằm ở chân khung bảng sát thanh phân trang, Tổng trang bám dưới dòng dữ liệu cuối (sửa T867) | Trum | Đang làm | Sửa `ToGiay.tsx`, cuối `app.css` (mục T868). Spec `backup/spec-T868.md` |
 | T852 | Phiếu Xuất bán POS hiện tham chiếu ngược sang phiếu Xuất kho định lượng (T849 mới có chiều XDL sang POS) | | Chờ | `ChungTuBanHang.tsx`, dùng `useDsPhieuXdl` ở `kho/xuat-dinh-luong.ts` |
 | T837 | Điện thoại, danh sách mục Bán hàng lập tay: bỏ tên cửa hàng ở dòng chứng từ, dòng nào cũng ghi loại chứng từ (Xuất bán, Huỷ bán, Hoá đơn thay thế, Hoá đơn điều chỉnh), bộ lọc thêm Loại chứng từ | dinhlanphuongipacc | Đang làm | `MBanHangTay.tsx` |
 | T781 | Giảm thuế GTGT xét hiệu lực nghị quyết theo ngày của từng chứng từ, không theo ngày làm việc (`ptGiamHienHanh` dùng `HOM_NAY`) | | Chờ | Thấy lúc soát T780, `giam-thue.ts` |
