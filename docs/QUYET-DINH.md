@@ -651,7 +651,7 @@ Lý do: Trum duyệt ngày 14/10/2026 (T237). Hai loại màn cùng một kiểu
 ## QD60. Phân trang Bảng dữ liệu báo cáo (14/10/2026)
 
 - Màn xem báo cáo trên máy tính, chế độ Bảng dữ liệu: phân trang mặc định 100 dòng/trang, chọn 100, 200, 500. Lựa chọn lưu trên máy, chung mọi báo cáo.
-- Thanh phân trang hiện khi trên 100 dòng. Dòng tổng cuối báo cáo là tổng cả báo cáo theo bộ lọc, ghim cuối mọi trang; không có dòng Tổng trang.
+- Thanh phân trang luôn hiện, kể cả khi chỉ có 1 trang. Báo cáo có dòng tổng thì ghim cuối mọi trang 2 dòng: Tổng trang (cộng dòng trên trang đang xem), rồi Tổng báo cáo (tổng cả báo cáo theo bộ lọc). Trum sửa ngày 16/11/2026 (T867).
 - Bấm Lọc, đổi kỳ, tìm, đổi số dòng/trang thì về trang 1.
 - Tờ in, bản in, xuất file, giao diện điện thoại giữ nguyên.
 
@@ -851,6 +851,7 @@ Trum chốt 21/10/2026 (T551–T555), mẫu trên artifact https://claude.ai/art
 Trum chốt 22/10/2026 (T624).
 
 - Báo cáo xuất nhập tồn 5.2.3 gói Free chỉ hiện số lượng, ở web, bản in và điện thoại. Không cột tiền, không dòng Tổng cộng. Cộng số lượng nhiều mặt hàng khác đơn vị tính không có nghĩa.
+- Sửa ngày 16/11/2026 (T865, T866): gói Standard tiêu đề 1 tầng, không có dòng "SL" dưới mỗi nhóm. Có dòng tổng cộng số lượng mọi dòng, Trum chốt dù khác đơn vị tính.
 - Gói S, PL, PR hiện cả số lượng và tiền. Điện thoại: mỗi nhóm Đầu kỳ, Nhập, Xuất, Cuối kỳ có số lượng ở trên, tiền ở dưới.
 - Tạm bỏ Tổng hợp nhập xuất tồn 5.2.2 vì trùng 5.2.3. Gỡ khỏi sidebar, quy trình, danh sách báo cáo; giữ code.
 - Báo cáo điện thoại Bảng kê chi tiết bán hàng, Công nợ nhà cung cấp, Tổng hợp nhập kho, Chi tiết nhập kho, Báo cáo xuất nhập tồn theo mẫu D của Bảng kê chi tiết mua hàng.
