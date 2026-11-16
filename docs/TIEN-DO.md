@@ -11,6 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T874 | Popup Chia sẻ hoá đơn điện tử làm lại theo mẫu C: 3 tab Ứng dụng chat, Email, Liên kết (QR), chiều cao cố định khi chuyển tab, logo Zalo, Messenger, Telegram, WhatsApp, Gmail đều cỡ | Trum | Đang làm | Sửa `ban-hang/HopChiaSeHd.tsx`, mục T793 hoặc cuối `app.css` (mục T874), thêm `public/logo-chia-se/`. Spec `backup/spec-T874.md` |
 | T873 | Rà mẫu báo cáo gói Plus theo bộ mẫu TT58 bản 13/11 (17 mẫu), lập bảng lệch `docs/RA-SOAT-MAU-TT58.md`, chưa sửa code | Trum | Dở dang | Chỉ tạo `docs/RA-SOAT-MAU-TT58.md`. Spec `backup/spec-T594-T871-T873.md`. Dừng 17/11: đã trích 17 sheet ra `backup/review-T873/excel_summary.txt`, chưa viết bảng lệch |
 | T852 | Phiếu Xuất bán POS hiện tham chiếu ngược sang phiếu Xuất kho định lượng (T849 mới có chiều XDL sang POS) | | Chờ | `ChungTuBanHang.tsx`, dùng `useDsPhieuXdl` ở `kho/xuat-dinh-luong.ts` |
 | T837 | Điện thoại, danh sách mục Bán hàng lập tay: bỏ tên cửa hàng ở dòng chứng từ, dòng nào cũng ghi loại chứng từ (Xuất bán, Huỷ bán, Hoá đơn thay thế, Hoá đơn điều chỉnh), bộ lọc thêm Loại chứng từ | dinhlanphuongipacc | Đang làm | `MBanHangTay.tsx` |
