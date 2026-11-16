@@ -2,6 +2,11 @@
 
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
+## 17/11/2026
+- T871: Thẻ kho: tiêu đề 2 tầng, ô Chứng từ gộp hai cột Nhập, Xuất. Màn hình, tờ in, file Excel đổi theo.
+- T872: Popup xem hoá đơn điện tử: tờ hoá đơn cao đủ nội dung, mã QR và khối chữ ký nằm trong khung viền.
+- T594: Tờ in báo cáo: số phiếu, số tiền hiện đủ ký tự, không bị cắt; phần bề rộng dư dồn cho cột Diễn giải, tên hàng, đối tượng.
+
 ## 16/11/2026
 - T870: Thẻ kho trên máy tính: cột Số phiếu tách thành Số phiếu nhập, Số phiếu xuất; thêm cột ĐVT sau Diễn giải. Tờ in và file Excel đổi theo.
 - T869: Thẻ kho và báo cáo đang lọc: dòng Cộng phát sinh, Tổng trang để trống cột Tồn, không cộng dồn số dư.

@@ -33,8 +33,8 @@ export function theKho(thang: number, kho: string, ma: string) {
   const xuat = chiaSo(x.slx, Array.from({ length: dim }, () => 0.6 + r()))
   const cols: Col[] = [
     { k: 'ngay', t: 'Ngày', w: 90 },
-    { k: 'soNhap', t: 'Số phiếu nhập', cls: 'code', w: 120 },
-    { k: 'soXuat', t: 'Số phiếu xuất', cls: 'code', w: 120 },
+    { k: 'soNhap', t: 'Nhập', nhom: 'Chứng từ', cls: 'code', w: 100 },
+    { k: 'soXuat', t: 'Xuất', nhom: 'Chứng từ', cls: 'code', w: 100 },
     { k: 'dg', t: 'Diễn giải' },
     { k: 'dvt', t: 'ĐVT', c: true, w: 50 },
     { k: 'nhap', t: 'Nhập', num: true },

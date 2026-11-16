@@ -2,6 +2,7 @@
 import type { Col, Row } from '../../modules/types'
 import { money } from '../format'
 import type { Kho } from './ToGiay'
+import { phieuTheoSo } from '../generic/SoChungTu'
 
 export function coChuTheoKho(colsCount: number, kho: Kho): number {
   if (kho === 'doc') {
@@ -31,10 +32,10 @@ export function phanLoaiCot(c: Col): LoaiCot {
   const t = c.t.toLowerCase().trim()
 
   // 1. STT
-  if (k === 'stt' || /^stt\b/i.test(t)) return 'stt'
+  if (k === 'stt' || /^(stt|số\s+tt|số\s+thứ\s+tự)\b/i.test(t)) return 'stt'
 
   // 2. Ngày
-  if (!c.num && (k.includes('ngay') || /\bngày\b/i.test(t))) return 'ngay'
+  if (!c.num && (k.includes('ngay') || k === 'date' || /\bngày\b/i.test(t))) return 'ngay'
 
   // 3. Tỷ lệ, phần trăm, hệ số, thuế suất
   if (
@@ -62,8 +63,7 @@ export function phanLoaiCot(c: Col): LoaiCot {
   // Tiêu đề bắt đầu bằng Tên, Diễn giải… là cột chữ dài, kể cả khi có chữ "tài khoản" (vd Tên tài khoản)
   if (/^(tên|diễn giải|nội dung|lý do|ghi chú)/i.test(t)) return 'chudai'
 
-  // 6. Mã, số chứng từ, số hiệu TK, cửa hàng
-  if (k === 'cn' || /cửa hàng/i.test(t)) return 'ma_ct_tk'
+  // 6. Mã, số chứng từ, số hiệu TK
   if (c.cls === 'code' || k.includes('ma') || /\bmã\b/i.test(t)) return 'ma_ct_tk'
   if (['so', 'thu', 'chi', 'soct', 'sophieu', 'shd', 'sohoadon'].includes(k) || /số\s+(chứng từ|phiếu|hoá đơn|hđ)/i.test(t)) {
     return 'ma_ct_tk'
@@ -72,7 +72,7 @@ export function phanLoaiCot(c: Col): LoaiCot {
     return 'ma_ct_tk'
   }
 
-  // 7. Cột chữ dài
+  // 7. Cột chữ dài (bao gồm tên cửa hàng cn, đối tượng, mặt hàng, khách hàng...)
   return 'chudai'
 }
 
@@ -134,13 +134,18 @@ export function trichDoDaiCot(cols: Col[], rows?: Row[]): DoDaiCot[] {
           }
         }
       }
-    } else if (loai === 'ngay' || c.k === 'ngay' || c.k.includes('ngay')) {
+    } else if (loai === 'ngay' || c.k === 'ngay' || c.k.includes('ngay') || c.k === 'date') {
       lenData = 10
     } else if (c.cls === 'code' || loai === 'ma_ct_tk') {
       if (rows && rows.length > 0) {
         for (const r of rows) {
           if (r._t || r._nhom || r._b) continue
-          const s = String(r[c.k] ?? '').trim()
+          const raw = r[c.k]
+          let s = String(raw ?? '').trim()
+          const p = phieuTheoSo(raw)
+          if (p?.so && p.so.length > s.length) {
+            s = p.so
+          }
           if (s.length > lenData) lenData = s.length
         }
       }
@@ -183,21 +188,21 @@ export function tinhMinPxTuDoDai(item: DoDaiCot, fs: number, padH: number, dungS
     if (item.lenData === 0) {
       pxData = pxHeader
     } else {
-      const charW = item.coDam ? fs * 0.57 : fs * 0.50
-      pxData = item.lenData * charW + padH + dungSai
+      const charW = item.coDam ? fs * 0.62 : fs * 0.56
+      pxData = item.lenData * charW + padH + dungSai + 3.5
     }
   } else if (item.loai === 'soluong_dongia') {
-    const charW = item.coDam ? fs * 0.54 : fs * 0.48
-    const minNum = item.lenData > 4 ? 31 : 20
-    pxData = Math.max(pxHeader, item.lenData * charW + padH + dungSai, minNum)
+    const charW = item.coDam ? fs * 0.60 : fs * 0.54
+    const minNum = item.lenData > 4 ? 36 : 22
+    pxData = Math.max(pxHeader, item.lenData * charW + padH + dungSai + 3.5, minNum)
   } else if (item.loai === 'ngay') {
-    pxData = 10 * fs * 0.56 + padH + dungSai
+    pxData = 10 * fs * 0.60 + padH + dungSai + 3
   } else if (item.loai === 'ma_ct_tk') {
-    pxData = Math.max(pxHeader, item.lenData * fs * 0.69 + padH + dungSai)
+    pxData = Math.max(pxHeader, item.lenData * fs * 0.72 + padH + dungSai + 3.5)
   } else if (item.loai === 'stt') {
-    pxData = 3 * fs * 0.50 + padH + dungSai
+    pxData = 3 * fs * 0.52 + padH + dungSai
   } else if (item.loai === 'tyle') {
-    pxData = 5 * fs * 0.52 + padH + dungSai
+    pxData = 5 * fs * 0.54 + padH + dungSai + 2
   } else {
     pxData = item.lenData * fs * 0.54 + padH + dungSai
   }
@@ -223,9 +228,9 @@ export function tinhCoChu(cols: Col[], kho: Kho = 'doc', rows?: Row[], coChuChon
   const padH = m ? Number(m[1]) * 2 : 12
   const dungSai = (n >= 16 && kho === 'doc') ? 0.5 : 1.5
 
-  // Thử từ tran giảm dần mỗi bước 0.5px tới 8.0px (vòng lặp chỉ làm phép nhân, không quét rows)
+  // Thử từ tran giảm dần mỗi bước 0.5px tới 7.0px (vòng lặp chỉ làm phép nhân, không quét rows)
   let fs = tran
-  while (fs > 8.0) {
+  while (fs > 7.0) {
     let sumMin = 0
     for (const item of lengths) {
       sumMin += tinhMinPxTuDoDai(item, fs, padH, dungSai)
@@ -237,7 +242,7 @@ export function tinhCoChu(cols: Col[], kho: Kho = 'doc', rows?: Row[], coChuChon
     fs = Math.round((fs - 0.5) * 10) / 10
   }
 
-  return 8.0
+  return 7.0
 }
 
 export function chiaCot(cols: Col[], kho: Kho = 'doc', rows?: Row[], coChuTuyChinh?: number, colLengths?: DoDaiCot[], vungInPx?: number): number[] {
@@ -265,33 +270,24 @@ export function chiaCot(cols: Col[], kho: Kho = 'doc', rows?: Row[], coChuTuyChi
 
   if (sumMin <= 100) {
     const rem = 100 - sumMin
-    // Tính phần mong muốn thêm của từng cột theo trọng số cơ bản
-    const desired = cols.map((c, i) => {
-      const base = trongSoMacDinh(loais[i], kho)
-      let w = base
-      if (c.w && c.w > 0) {
-        const wPct = (c.w / tongPxVungIn) * 100
-        if (wPct > base) w = Math.min(base * 2, wPct)
-      }
-      return Math.max(0, w - minPcts[i])
-    })
-    const sumDesired = desired.reduce((a, b) => a + b, 0)
-    if (sumDesired > 0.001) {
-      for (let i = 0; i < n; i++) {
-        weights[i] += rem * (desired[i] / sumDesired)
-      }
-    } else {
-      const idxChuDai = loais.map((l, i) => l === 'chudai' ? i : -1).filter(i => i >= 0)
-      if (idxChuDai.length > 0) {
-        const avgLens = idxChuDai.map(i => lengths[i].avgLen || Math.max(12, cols[i].t.length))
-        const tongLen = avgLens.reduce((a, b) => a + b, 0) || 1
-        idxChuDai.forEach((colIdx, k) => {
-          weights[colIdx] += rem * (avgLens[k] / tongLen)
-        })
-      } else {
-        for (let i = 0; i < n; i++) {
-          weights[i] += rem / n
+    const idxChuDai = loais.map((l, i) => l === 'chudai' ? i : -1).filter(i => i >= 0)
+    if (idxChuDai.length > 0) {
+      // Dồn toàn bộ phần dư cho các cột chữ dài (Diễn giải, tên hàng, đối tượng, cửa hàng...) (T594)
+      const avgLens = idxChuDai.map(i => {
+        const c = cols[i]
+        if (c.w && c.w > 0) {
+          return c.w / 5
         }
+        return lengths[i].avgLen || Math.max(12, c.t.length)
+      })
+      const tongLen = avgLens.reduce((a, b) => a + b, 0) || 1
+      idxChuDai.forEach((colIdx, k) => {
+        weights[colIdx] += rem * (avgLens[k] / tongLen)
+      })
+    } else {
+      // Nếu bảng không có cột chữ dài nào, chia đều phần dư theo tỷ lệ minPcts
+      for (let i = 0; i < n; i++) {
+        weights[i] += rem * (minPcts[i] / (sumMin || 1))
       }
     }
   } else {
