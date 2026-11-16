@@ -31,14 +31,31 @@ export function theKho(thang: number, kho: string, ma: string) {
   const ngayNhap = Array.from({ length: dim }, (_, i) => i + 1).filter(d => d % 3 === 1)
   const nhap = chiaSo(x.sln, ngayNhap.map(() => 0.6 + r()))
   const xuat = chiaSo(x.slx, Array.from({ length: dim }, () => 0.6 + r()))
-  const cols: Col[] = [{ k: 'ngay', t: 'Ngày', w: 90 }, { k: 'so', t: 'Số phiếu', cls: 'code', w: 120 }, { k: 'dg', t: 'Diễn giải' }, { k: 'nhap', t: 'Nhập', num: true }, { k: 'xuat', t: 'Xuất', num: true }, { k: 'ton', t: 'Tồn', num: true }]
+  const cols: Col[] = [
+    { k: 'ngay', t: 'Ngày', w: 90 },
+    { k: 'soNhap', t: 'Số phiếu nhập', cls: 'code', w: 120 },
+    { k: 'soXuat', t: 'Số phiếu xuất', cls: 'code', w: 120 },
+    { k: 'dg', t: 'Diễn giải' },
+    { k: 'dvt', t: 'ĐVT', c: true, w: 50 },
+    { k: 'nhap', t: 'Nhập', num: true },
+    { k: 'xuat', t: 'Xuất', num: true },
+    { k: 'ton', t: 'Tồn', num: true },
+  ]
   let ton = x.sl0
   const rows: Row[] = [{ dg: 'Tồn đầu kỳ', ton, _b: 1, _z: 1 }]
   for (let d = 1; d <= dim; d++) {
     const ngay = `${pad(d)}/${pad(thang)}/2026`
     const iN = ngayNhap.indexOf(d)
-    if (iN >= 0 && nhap[iN] > 0) { ton += nhap[iN]; rows.push({ ngay, so: `MH26${pad(thang)}-${pad(d * 7, 4)}`, dg: 'Nhập mua từ Thực phẩm Tươi An Phú', nhap: nhap[iN], ton, _z: 1 }) }
-    if (xuat[d - 1] > 0) { ton -= xuat[d - 1]; rows.push({ ngay, so: `XB26${pad(thang)}-${pad(d)}`, dg: 'Xuất bán POS theo định lượng', xuat: xuat[d - 1], ton, _z: 1 }) }
+    if (iN >= 0 && nhap[iN] > 0) {
+      const so = `MH26${pad(thang)}-${pad(d * 7, 4)}`
+      ton += nhap[iN]
+      rows.push({ ngay, so, soNhap: so, dg: 'Nhập mua từ Thực phẩm Tươi An Phú', dvt: x.dvt, nhap: nhap[iN], ton, _z: 1 })
+    }
+    if (xuat[d - 1] > 0) {
+      const so = `XB26${pad(thang)}-${pad(d)}`
+      ton -= xuat[d - 1]
+      rows.push({ ngay, so, soXuat: so, dg: 'Xuất bán POS theo định lượng', dvt: x.dvt, xuat: xuat[d - 1], ton, _z: 1 })
+    }
   }
   rows.push({ dg: 'Cộng phát sinh', nhap: x.sln, xuat: x.slx, _t: 1 }, { dg: 'Tồn cuối kỳ', ton: x.sl1, _t: 1, _z: 1 })
   return { hang: x, cols, rows }

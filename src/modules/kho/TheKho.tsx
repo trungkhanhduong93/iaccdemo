@@ -1,12 +1,13 @@
 // Thẻ kho một mặt hàng, một kho (T157, T412). Mở từ mã hàng trên báo cáo xuất nhập tồn: đường dẫn mang ?ma=&kho=&ky= nên thẻ lọc sẵn đúng hàng, kho, kỳ
 import { useLayoutEffect, useMemo, useState } from 'react'
 import { useLocation, useSearchParams } from 'react-router-dom'
-import type { ScreenProps } from '../types'
+import type { Row, ScreenProps } from '../types'
 import { tenMan } from '../../app/registry'
 import { cuaHangHienTai, useSession } from '../../app/session'
 import { KHO } from '../../data/mock'
 import { PageHead } from '../../ui/Page'
 import { ReportPaper, ReportToolbar, RptTable } from '../../ui/generic/ReportScreen'
+import { SoChungTu } from '../../ui/generic/SoChungTu'
 import { datKyNhap, useTrangThaiLoc, xemBaoCao } from '../../ui/bao-cao/tuyChinhBC'
 import { Select } from '../../ui/Dropdown'
 import { LocO } from '../../ui/ThanhLoc'
@@ -41,6 +42,12 @@ export function TheKho({ sc, mod }: ScreenProps) {
   }, [q, path])
 
   const the = useMemo(() => theKho(Number(ky), kho, ma), [ky, kho, ma])
+  const cols = useMemo(() => the.cols.map(c => {
+    if (c.k === 'soNhap' || c.k === 'soXuat') {
+      return { ...c, r: (x: Row) => x?.[c.k] ? <SoChungTu so={x[c.k]} /> : null }
+    }
+    return c
+  }), [the.cols])
   const ten = tenMan(sc)
   return (
     <div className="page page-report">
@@ -53,7 +60,7 @@ export function TheKho({ sc, mod }: ScreenProps) {
           </ReportToolbar>
         )}
         <ReportPaper title={ten} sub={`${the.hang.ma} - ${the.hang.ten} (${the.hang.dvt}) · ${kho} · Tháng ${ky}/2026`}>
-          <RptTable cols={the.cols} rows={the.rows} />
+          <RptTable cols={cols} rows={the.rows} />
         </ReportPaper>
       </section>
     </div>

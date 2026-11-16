@@ -5535,6 +5535,129 @@ def kiem_tra_t742_phan_quyen():
     return loi
 
 
+def kiem_tra_t870_the_kho():
+    """Kiểm tra T870: Thẻ kho (5.2.1) tách cột Số phiếu nhập, Số phiếu xuất, thêm cột ĐVT."""
+    loi = []
+    print('Kiểm tra T870: Thẻ kho tách cột Số phiếu nhập, Số phiếu xuất, thêm cột ĐVT (1440x900):')
+    with sync_playwright() as p:
+        b = p.chromium.launch(channel='chrome')
+        pg = b.new_page(viewport={'width': 1440, 'height': 900})
+        con = []
+        pg.on('console', lambda m: con.append(m.text) if m.type == 'error' else None)
+        pg.on('pageerror', lambda e: con.append(str(e)))
+
+        # Đăng nhập gói Standard
+        pg.goto(URL + '#/dang-nhap')
+        pg.wait_for_selector('.auth-box')
+        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('S'))})")
+
+        # Mở Thẻ kho máy tính, gói Standard, chế độ Bảng dữ liệu
+        pg.goto(f"{URL}?goi=S&p=t870#/app/kho/5-2-1?ma=&kho=&ky=")
+        pg.wait_for_selector('.bc-ban-du-lieu table.tbl', timeout=8000)
+        pg.wait_for_timeout(300)
+
+        # 1. Tiêu đề cột đúng thứ tự: Ngày, Số phiếu nhập, Số phiếu xuất, Diễn giải, ĐVT, Nhập, Xuất, Tồn
+        ky_vong_cot = ['Ngày', 'Số phiếu nhập', 'Số phiếu xuất', 'Diễn giải', 'ĐVT', 'Nhập', 'Xuất', 'Tồn']
+        th_texts = [t.strip() for t in pg.locator('.bc-ban-du-lieu thead tr.tbl-cot th').all_inner_texts() if t.strip()]
+        if th_texts != ky_vong_cot:
+            loi.append(f'T870: Tiêu đề cột Thẻ kho không đúng: {th_texts}, kỳ vọng {ky_vong_cot}')
+
+        idx_so_nhap = th_texts.index('Số phiếu nhập') if 'Số phiếu nhập' in th_texts else 1
+        idx_so_xuat = th_texts.index('Số phiếu xuất') if 'Số phiếu xuất' in th_texts else 2
+        idx_dg = th_texts.index('Diễn giải') if 'Diễn giải' in th_texts else 3
+        idx_dvt = th_texts.index('ĐVT') if 'ĐVT' in th_texts else 4
+
+        # 2 & 3. Dòng dữ liệu: số MH/XB đúng cột, cột ĐVT có chữ ở dòng phiếu, trống ở 3 dòng tổng
+        rows = pg.locator('.bc-ban-du-lieu tbody tr:not(.tbl-spacer)')
+        so_dong = rows.count()
+        if so_dong == 0:
+            loi.append('T870: Thẻ kho không có dòng dữ liệu nào')
+
+        dem_mh = 0
+        dem_xb = 0
+        thay_ton_dau = False
+        thay_cong_ps = False
+        thay_ton_cuoi = False
+
+        for i in range(so_dong):
+            row = rows.nth(i)
+            cells = [c.strip() for c in row.locator('td').all_inner_texts()]
+            if len(cells) < 8:
+                continue
+
+            so_nhap = cells[idx_so_nhap]
+            so_xuat = cells[idx_so_xuat]
+            dg = cells[idx_dg]
+            dvt = cells[idx_dvt]
+
+            if 'Tồn đầu kỳ' in dg:
+                thay_ton_dau = True
+                if dvt != '':
+                    loi.append(f'T870: Cột ĐVT không trống ở dòng Tồn đầu kỳ: "{dvt}"')
+            elif 'Cộng phát sinh' in dg:
+                thay_cong_ps = True
+                if dvt != '':
+                    loi.append(f'T870: Cột ĐVT không trống ở dòng Cộng phát sinh: "{dvt}"')
+            elif 'Tồn cuối kỳ' in dg:
+                thay_ton_cuoi = True
+                if dvt != '':
+                    loi.append(f'T870: Cột ĐVT không trống ở dòng Tồn cuối kỳ: "{dvt}"')
+
+            if so_nhap.startswith('MH'):
+                dem_mh += 1
+                if so_xuat != '':
+                    loi.append(f'T870: Dòng nhập {so_nhap} có cột Số phiếu xuất không trống: "{so_xuat}"')
+                if not dvt:
+                    loi.append(f'T870: Dòng nhập {so_nhap} bị trống cột ĐVT')
+
+            if so_xuat.startswith('MH'):
+                loi.append(f'T870: Số phiếu nhập {so_xuat} lại nằm ở cột Số phiếu xuất')
+
+            if so_xuat.startswith('XB'):
+                dem_xb += 1
+                if so_nhap != '':
+                    loi.append(f'T870: Dòng xuất {so_xuat} có cột Số phiếu nhập không trống: "{so_nhap}"')
+                if not dvt:
+                    loi.append(f'T870: Dòng xuất {so_xuat} bị trống cột ĐVT')
+
+            if so_nhap.startswith('XB'):
+                loi.append(f'T870: Số phiếu xuất {so_nhap} lại nằm ở cột Số phiếu nhập')
+
+        if dem_mh == 0:
+            loi.append('T870: Không tìm thấy dòng phiếu nhập nào (số bắt đầu bằng MH)')
+        if dem_xb == 0:
+            loi.append('T870: Không tìm thấy dòng phiếu xuất nào (số bắt đầu bằng XB)')
+        if not thay_ton_dau:
+            loi.append('T870: Không tìm thấy dòng Tồn đầu kỳ')
+        if not thay_cong_ps:
+            loi.append('T870: Không tìm thấy dòng Cộng phát sinh')
+        if not thay_ton_cuoi:
+            loi.append('T870: Không tìm thấy dòng Tồn cuối kỳ')
+
+        # 4. Bấm một số phiếu ở cột nhập: mở được chứng từ
+        col_nhap_num = idx_so_nhap + 1
+        link_nhap = pg.locator(f'.bc-ban-du-lieu tbody tr td:nth-child({col_nhap_num}) a').first
+        if link_nhap.count() == 0:
+            loi.append('T870: Số phiếu ở cột Số phiếu nhập không phải là liên kết bấm được')
+        else:
+            so_txt = link_nhap.inner_text().strip()
+            href = link_nhap.get_attribute('href') or ''
+            url_truoc = pg.url
+            link_nhap.click()
+            pg.wait_for_timeout(400)
+            url_sau = pg.url
+            if url_sau == url_truoc:
+                loi.append(f'T870: Bấm số phiếu nhập "{so_txt}" không chuyển trang (vẫn ở {url_sau})')
+            elif href and href.replace('#', '') not in url_sau:
+                loi.append(f'T870: Bấm số phiếu nhập "{so_txt}" chuyển tới {url_sau}, không khớp href {href}')
+
+        if con:
+            loi.append(f'T870: lỗi console {con[:2]}')
+
+        b.close()
+    return loi
+
+
 def main():
     if DIEN_THOAI:
         kiem_tra_cac_khung_dt()
@@ -5698,6 +5821,7 @@ def main():
     loi += kiem_tra_t742_phan_quyen()
     loi += kiem_tra_t681_tour_huong_dan()
     loi += kiem_tra_t675_tour_dien_thoai()
+    loi += kiem_tra_t870_the_kho()
     if loi:
         print(f'{len(loi)} LỖI:')
         for x in loi:

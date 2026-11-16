@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T870 | Thẻ kho (5.2.1) trên máy tính: tách cột Số phiếu thành Số phiếu nhập, Số phiếu xuất; thêm cột ĐVT sau Diễn giải. Bảng dữ liệu, tờ in, Excel cùng đổi, mọi gói | Trum | 16/11/2026 | 2026-11-16-trum-the-kho-tach-so-phieu.md |
 | T869 | Báo cáo lọc (vd Thẻ kho ẩn dòng không phát sinh): dòng Cộng phát sinh, Tổng trang không cộng cột số dư luỹ kế Tồn | Trum | 16/11/2026 | 2026-11-16-trum-tong-bao-cao-chan-bang.md |
 | T868 | Bảng dữ liệu báo cáo: dòng Tổng báo cáo nằm ở chân khung bảng sát thanh phân trang, Tổng trang bám dưới dòng dữ liệu cuối (sửa T867) | Trum | 16/11/2026 | 2026-11-16-trum-tong-bao-cao-chan-bang.md |
 | T867 | Bảng dữ liệu báo cáo: dòng Tổng trang và Tổng báo cáo ghim cuối mỗi trang, thanh phân trang luôn hiện (sửa QD60) | Trum | 16/11/2026 | 2026-11-16-trum-xuat-nhap-ton-tong-trang.md |

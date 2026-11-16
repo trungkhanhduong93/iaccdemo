@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 16/11/2026
+- T870: Thẻ kho trên máy tính: cột Số phiếu tách thành Số phiếu nhập, Số phiếu xuất; thêm cột ĐVT sau Diễn giải. Tờ in và file Excel đổi theo.
 - T869: Thẻ kho và báo cáo đang lọc: dòng Cộng phát sinh, Tổng trang để trống cột Tồn, không cộng dồn số dư.
 - T868: Bảng dữ liệu báo cáo: dòng Tổng báo cáo nằm ở chân khung, sát trên thanh phân trang; Tổng trang ngay dưới dòng cuối.
 - T867: Báo cáo dạng Bảng dữ liệu luôn có thanh phân trang; báo cáo có dòng tổng hiện thêm dòng Tổng trang ngay trên dòng Tổng báo cáo, ghim cuối mỗi trang.
