@@ -651,7 +651,7 @@ Lý do: Trum duyệt ngày 14/10/2026 (T237). Hai loại màn cùng một kiểu
 ## QD60. Phân trang Bảng dữ liệu báo cáo (14/10/2026)
 
 - Màn xem báo cáo trên máy tính, chế độ Bảng dữ liệu: phân trang mặc định 100 dòng/trang, chọn 100, 200, 500. Lựa chọn lưu trên máy, chung mọi báo cáo.
-- Thanh phân trang luôn hiện, kể cả khi chỉ có 1 trang. Báo cáo có dòng tổng thì ghim cuối mọi trang 2 dòng: Tổng trang (cộng dòng trên trang đang xem), rồi Tổng báo cáo (tổng cả báo cáo theo bộ lọc). Trum sửa ngày 16/11/2026 (T867).
+- Thanh phân trang luôn hiện, kể cả khi chỉ có 1 trang. Báo cáo có dòng tổng thì ghim cuối mọi trang 2 dòng: Tổng trang (cộng dòng trên trang đang xem), rồi Tổng báo cáo (tổng cả báo cáo theo bộ lọc). Trum sửa ngày 16/11/2026 (T867). Tổng trang bám ngay dưới dòng dữ liệu cuối; Tổng báo cáo nằm ở chân khung bảng, sát trên thanh phân trang, kể cả khi ít dòng (T868).
 - Bấm Lọc, đổi kỳ, tìm, đổi số dòng/trang thì về trang 1.
 - Tờ in, bản in, xuất file, giao diện điện thoại giữ nguyên.
 
