@@ -1,7 +1,6 @@
-/** Popup Chia sẻ hoá đơn điện tử theo mẫu C (T874): 3 tab Ứng dụng chat, Email, Liên kết.
+/** Popup Chia sẻ hoá đơn điện tử theo mẫu C (T874, sửa T875): 3 tab Ứng dụng chat, Email, Liên kết.
  *  Chuyển tab không đổi chiều cao popup (540x660px). Không hiện số tiền ở bất kỳ đâu. */
 import { useEffect, useRef, useState, type KeyboardEvent as ReactKeyboardEvent, type ReactNode } from 'react'
-import { Icon } from '../../ui/Icon'
 import { chiaSeFile, taiVe } from '../../ui/luuFile'
 import { MaQr, NCC_HDDT, Vo, type HdDaXuat, type TtXem } from './hddt'
 import { pdfHd, tenFileHd, xmlHd } from './hddtFile'
@@ -85,14 +84,14 @@ export function HopChiaSeHd({ hd, t, onDong, toast }: { hd: HdDaXuat; t: TtXem; 
   // State Tab Email
   const [emails, setEmails] = useState<string[]>(() => (t.k.email ? [t.k.email.trim()] : []))
   const [emailInp, setEmailInp] = useState('')
-  const [tieuDeEmail, setTieuDeEmail] = useState(() => tieuDe)
+  const [tieuDeEmail, setTieuDeEmail] = useState(() => `${tieuDe} – ${t.dv.ten}`)
   const [noiDungEmail, setNoiDungEmail] = useState(() => noiDung)
   const [kemPdf, setKemPdf] = useState(true)
   const [kemXml, setKemXml] = useState(true)
 
   // State Tab Liên kết
   const [daChepLk, setDaChepLk] = useState(false)
-  const lienKet = hd.traCuu ? `${NCC_HDDT}?tc=${ma(hd.traCuu)}` : NCC_HDDT
+  const lienKet = `invoice.ipos.vn/tra-cuu/${hd.traCuu ?? hd.so}`
 
   const tenFile = tenFileHd(hd, 'pdf')
   const tenFileXml = tenFileHd(hd, 'xml')
@@ -236,28 +235,35 @@ export function HopChiaSeHd({ hd, t, onDong, toast }: { hd: HdDaXuat; t: TtXem; 
   const chanPopup = tab === 'chat' ? (
     <>
       <span className="cs-hd-chan-chu">Chọn người nhận trong {kenhHienTai.ten} rồi bấm Gửi.</span>
-      <span className="grow" />
-      <div className="cs-hd-chan-phai">
-        <button type="button" className="cs-hd-btn-phu" onClick={onDong}>Huỷ</button>
-        <button type="button" className="cs-hd-btn-chinh" onClick={() => void moKenh(kenhHienTai)}>Mở {kenhHienTai.ten}</button>
-      </div>
+      <button type="button" className="cs-hd-btn-phu" onClick={onDong}>Huỷ</button>
+      <button type="button" className="cs-hd-btn-chinh" onClick={() => void moKenh(kenhHienTai)}>
+        Mở {kenhHienTai.ten}
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <path d="M7 17L17 7M9 7h8v8" />
+        </svg>
+      </button>
     </>
   ) : tab === 'email' ? (
     <>
-      <button type="button" className="cs-hd-btn-text" onClick={() => taiVe(pdfHd(hd, t), tenFile)}>Tải PDF</button>
-      <span className="grow" />
-      <div className="cs-hd-chan-phai">
-        <button type="button" className="cs-hd-btn-phu" onClick={onDong}>Huỷ</button>
-        <button type="button" className="cs-hd-btn-chinh" onClick={guiEmail}>Gửi email</button>
-      </div>
+      <button type="button" className="cs-hd-btn-tai-pdf" onClick={() => taiVe(pdfHd(hd, t), tenFile)}>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0560a6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <path d="M12 4v11M7 10l5 5 5-5M5 20h14" />
+        </svg>
+        Tải PDF
+      </button>
+      <div style={{ flexGrow: 1 }} />
+      <button type="button" className="cs-hd-btn-phu" onClick={onDong}>Huỷ</button>
+      <button type="button" className="cs-hd-btn-chinh" onClick={guiEmail}>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <path d="M21 4L3 11l6 2 2 6 3-4 5 4z" />
+        </svg>
+        Gửi email
+      </button>
     </>
   ) : (
     <>
       <span className="cs-hd-chan-chu">Liên kết dùng được tới khi hoá đơn bị huỷ.</span>
-      <span className="grow" />
-      <div className="cs-hd-chan-phai">
-        <button type="button" className="cs-hd-btn-chinh" onClick={onDong}>Đóng</button>
-      </div>
+      <button type="button" className="cs-hd-btn-phu" onClick={onDong}>Đóng</button>
     </>
   )
 
@@ -271,6 +277,9 @@ export function HopChiaSeHd({ hd, t, onDong, toast }: { hd: HdDaXuat; t: TtXem; 
           className={`cs-hd-tab${tab === 'chat' ? ' chon' : ''}`}
           onClick={() => setTab('chat')}
         >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z" />
+          </svg>
           Ứng dụng chat
         </button>
         <button
@@ -280,6 +289,10 @@ export function HopChiaSeHd({ hd, t, onDong, toast }: { hd: HdDaXuat; t: TtXem; 
           className={`cs-hd-tab${tab === 'email' ? ' chon' : ''}`}
           onClick={() => setTab('email')}
         >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <rect x="3" y="5" width="18" height="14" rx="2" />
+            <path d="M3 7l9 6 9-6" />
+          </svg>
           Email
         </button>
         <button
@@ -289,15 +302,20 @@ export function HopChiaSeHd({ hd, t, onDong, toast }: { hd: HdDaXuat; t: TtXem; 
           className={`cs-hd-tab${tab === 'link' ? ' chon' : ''}`}
           onClick={() => setTab('link')}
         >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+            <path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1" />
+            <path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1" />
+          </svg>
           Liên kết
         </button>
       </div>
 
-      <div className="cs-hd-than">
+      <div className={`cs-hd-than${tab === 'link' ? ' tab-link' : ''}`}>
         {tab === 'chat' && (
           <>
+            <div className="cs-hd-nhan">Chọn ứng dụng</div>
             <div className="cs-hd-luoi-2x2">
-              {dsKenh.map((u, i) => (
+              {dsKenh.map(u => (
                 <button
                   type="button"
                   key={u.ma}
@@ -307,13 +325,18 @@ export function HopChiaSeHd({ hd, t, onDong, toast }: { hd: HdDaXuat; t: TtXem; 
                   <span className="cs-hd-logo-o">{u.logo}</span>
                   <div className="cs-hd-kenh-tt">
                     <span className="cs-hd-kenh-ten">{u.ten}</span>
-                    {i === 0 && <span className="cs-hd-badge-truoc">Dùng lần trước</span>}
+                    {u.ma === lastKenh && <span className="cs-hd-kenh-phu">Dùng lần trước</span>}
                   </div>
                 </button>
               ))}
             </div>
 
-            <button type="button" className="cs-hd-btn-text" onClick={khac}>
+            <button type="button" className="cs-hd-btn-khac" onClick={khac}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0560a6" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+                <circle cx="5" cy="12" r="1.5" />
+                <circle cx="12" cy="12" r="1.5" />
+                <circle cx="19" cy="12" r="1.5" />
+              </svg>
               Ứng dụng khác trên máy
             </button>
 
@@ -328,10 +351,8 @@ export function HopChiaSeHd({ hd, t, onDong, toast }: { hd: HdDaXuat; t: TtXem; 
             </label>
 
             <div className="cs-hd-file-dong">
-              <div className="cs-hd-file-trai">
-                <Icon n="file" className="ic sm" />
-                <span className="cs-hd-file-ten">{tenFile}</span>
-              </div>
+              <span className="cs-hd-tag-pdf">PDF</span>
+              <span className="cs-hd-file-ten">{tenFile}</span>
               <span className="cs-hd-kem-san">Kèm sẵn</span>
             </div>
           </>
@@ -346,7 +367,9 @@ export function HopChiaSeHd({ hd, t, onDong, toast }: { hd: HdDaXuat; t: TtXem; 
                   <span key={i} className="cs-hd-email-chip">
                     {em}
                     <button type="button" className="cs-hd-chip-x" onClick={() => xoaEmail(i)} aria-label="Xoá">
-                      ×
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#044a80" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true">
+                        <path d="M6 6l12 12M18 6L6 18" />
+                      </svg>
                     </button>
                   </span>
                 ))}
@@ -357,9 +380,10 @@ export function HopChiaSeHd({ hd, t, onDong, toast }: { hd: HdDaXuat; t: TtXem; 
                   onChange={e => setEmailInp(e.target.value)}
                   onKeyDown={onEmailKeyDown}
                   onBlur={() => { if (emailInp) themEmail(emailInp) }}
-                  placeholder={emails.length === 0 ? 'Nhập địa chỉ email...' : ''}
+                  placeholder="Thêm email"
                 />
               </div>
+              <div className="cs-hd-email-phu">Lấy từ email khách trong danh mục.</div>
             </label>
 
             <label className="cs-hd-nhom">
@@ -376,7 +400,7 @@ export function HopChiaSeHd({ hd, t, onDong, toast }: { hd: HdDaXuat; t: TtXem; 
               <span className="cs-hd-nhan">Nội dung</span>
               <textarea
                 className="cs-hd-textarea"
-                rows={3}
+                rows={4}
                 value={noiDungEmail}
                 onChange={e => setNoiDungEmail(e.target.value)}
               />
@@ -391,7 +415,8 @@ export function HopChiaSeHd({ hd, t, onDong, toast }: { hd: HdDaXuat; t: TtXem; 
                     checked={kemPdf}
                     onChange={e => setKemPdf(e.target.checked)}
                   />
-                  <span>PDF ({tenFile})</span>
+                  <span className="cs-hd-tag-pdf">PDF</span>
+                  <span className="cs-hd-dinh-kem-chu">Bản thể hiện</span>
                 </label>
                 <label className={`cs-hd-dinh-kem-o${kemXml ? ' chon' : ''}`}>
                   <input
@@ -399,7 +424,8 @@ export function HopChiaSeHd({ hd, t, onDong, toast }: { hd: HdDaXuat; t: TtXem; 
                     checked={kemXml}
                     onChange={e => setKemXml(e.target.checked)}
                   />
-                  <span>XML ({tenFileXml})</span>
+                  <span className="cs-hd-tag-xml">XML</span>
+                  <span className="cs-hd-dinh-kem-chu">File gốc có chữ ký</span>
                 </label>
               </div>
             </div>
@@ -408,16 +434,27 @@ export function HopChiaSeHd({ hd, t, onDong, toast }: { hd: HdDaXuat; t: TtXem; 
 
         {tab === 'link' && (
           <>
-            <div className="cs-hd-qr-card" ref={qrKhungRef}>
-              <MaQr so={hd.so} />
-              <div className="cs-hd-qr-chu">Khách quét mã để xem hoá đơn</div>
-              <div className="cs-hd-qr-nuts">
-                <button type="button" className="cs-hd-nut-nho" onClick={taiQr}>
-                  Tải mã QR
-                </button>
-                <button type="button" className="cs-hd-nut-nho" onClick={inQr}>
-                  In mã
-                </button>
+            <div className="cs-hd-qr-card">
+              <div ref={qrKhungRef} className="cs-hd-qr-box">
+                <MaQr so={hd.so} />
+              </div>
+              <div className="cs-hd-qr-phai">
+                <div className="cs-hd-qr-tieude">Khách quét mã để xem hoá đơn</div>
+                <div className="cs-hd-qr-phu">Mở trang tra cứu, xem và tải PDF, XML. Không cần tài khoản.</div>
+                <div className="cs-hd-qr-nuts">
+                  <button type="button" className="cs-hd-btn-qr" onClick={taiQr}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#363636" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <path d="M12 4v11M7 10l5 5 5-5M5 20h14" />
+                    </svg>
+                    Tải mã QR
+                  </button>
+                  <button type="button" className="cs-hd-btn-qr" onClick={inQr}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#363636" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+                      <path d="M6 9V3h12v6M6 18H4v-6h16v6h-2M8 14h8v7H8z" />
+                    </svg>
+                    In mã
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -431,6 +468,10 @@ export function HopChiaSeHd({ hd, t, onDong, toast }: { hd: HdDaXuat; t: TtXem; 
                   value={lienKet}
                 />
                 <button type="button" className="cs-hd-btn-chep" onClick={saoChepLienKet}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <rect x="8" y="8" width="12" height="12" rx="2" />
+                    <path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3" />
+                  </svg>
                   {daChepLk ? 'Đã sao chép' : 'Sao chép'}
                 </button>
               </div>
@@ -439,7 +480,7 @@ export function HopChiaSeHd({ hd, t, onDong, toast }: { hd: HdDaXuat; t: TtXem; 
             <div className="cs-hd-2-o">
               <div className="cs-hd-o-nho">
                 <span className="cs-hd-o-nhan">Mã tra cứu</span>
-                <span className="cs-hd-o-gt">{hd.traCuu || 'Chưa có'}</span>
+                <span className="cs-hd-o-gt ma-tc">{hd.traCuu || 'Chưa có'}</span>
               </div>
               <div className="cs-hd-o-nho">
                 <span className="cs-hd-o-nhan">Trang tra cứu</span>
