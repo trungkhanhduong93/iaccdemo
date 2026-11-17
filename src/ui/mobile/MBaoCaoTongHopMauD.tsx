@@ -25,7 +25,6 @@ interface ItemChuan {
   tra: number
   tt: number
   cuoi: number
-  soDon: number
   thang?: number
   cn?: string
   // Nhập kho (5.2.9)
@@ -50,7 +49,6 @@ interface ItemChuan {
 interface NhomItem {
   tenNhom: string
   tongTien: number
-  tongSl: number
   items: ItemChuan[]
 }
 
@@ -108,7 +106,6 @@ export const MBaoCaoTongHopMauD: FC<MBaoCaoTongHopMauDProps> = ({ maBc, rows, q 
         const tra = Number(r.tra ?? 0)
         const tt = Number(r.tt ?? r.psCo ?? 0)
         const cuoi = Number(r.cuoi ?? 0)
-        const soDon = Number(r.soDon ?? 0)
 
         // 5.2.9 Nhập kho
         const slNhap = Number(r.sl ?? 0)
@@ -145,7 +142,6 @@ export const MBaoCaoTongHopMauD: FC<MBaoCaoTongHopMauDProps> = ({ maBc, rows, q 
           tra,
           tt,
           cuoi,
-          soDon,
           thang: r._thang ? Number(r._thang) : undefined,
           cn: r._cn ? String(r._cn) : undefined,
           slNhap,
@@ -178,22 +174,17 @@ export const MBaoCaoTongHopMauD: FC<MBaoCaoTongHopMauDProps> = ({ maBc, rows, q 
 
     return Array.from(map.entries()).map(([tenNhom, items]) => {
       let tongTien = 0
-      let tongSl = 0
       if (laCongNo) {
         tongTien = items.reduce((s, x) => s + x.cuoi, 0)
-        tongSl = items.reduce((s, x) => s + x.soDon, 0)
       } else if (is529) {
         tongTien = items.reduce((s, x) => s + x.tienNhap, 0)
-        tongSl = items.reduce((s, x) => s + x.slNhap, 0)
       } else if (is523) {
         tongTien = isStandard ? 0 : items.reduce((s, x) => s + x.gt1, 0)
-        tongSl = isStandard ? 0 : items.reduce((s, x) => s + x.sl1, 0)
       }
 
       return {
         tenNhom,
         tongTien,
-        tongSl,
         items,
       }
     })
@@ -326,12 +317,9 @@ export const MBaoCaoTongHopMauD: FC<MBaoCaoTongHopMauDProps> = ({ maBc, rows, q 
                             </div>
 
                             {/* Chân thẻ công nợ */}
-                            <div className="m-bkm-ct-chan">
-                              <div className="m-bkm-ct-chan-trai">
-                                <span>Số đơn phát sinh <b className="num">{it.soDon}</b></span>
-                              </div>
-                              <div className="m-bkm-ct-chan-phai" style={{ display: 'flex', gap: 6 }}>
-                                {it.cuoi > 0 && (
+                            {it.cuoi > 0 && (
+                              <div className="m-bkm-ct-chan" style={{ justifyContent: 'flex-end' }}>
+                                <div className="m-bkm-ct-chan-phai" style={{ display: 'flex', gap: 6 }}>
                                   <Link
                                     to={is329
                                       ? `/app/tien/2-1-1/moi?loai=thu&ly=THU02&dt=${encodeURIComponent(it.ten)}`
@@ -341,9 +329,9 @@ export const MBaoCaoTongHopMauD: FC<MBaoCaoTongHopMauDProps> = ({ maBc, rows, q 
                                   >
                                     {is329 ? 'Thu tiền' : 'Thanh toán'}
                                   </Link>
-                                )}
+                                </div>
                               </div>
-                            </div>
+                            )}
                           </div>
                         )}
 

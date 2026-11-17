@@ -128,7 +128,7 @@ function LichSuCongNo({ loai, ma, ten, thang, cnTen, chiCn, onDong }: { loai: Lo
         <div className="ds-hop-dau"><b>Lịch sử công nợ - {ten}{chiCn ? ` · ${chiCn}` : ''}</b><span className="grow" />
           {loai === 'ncc' && no > 0 && <NutThanhToan ten={ten} cn={chiCn} btnClass="btn pri sm" onChon={onDong} />}
           <button type="button" className="btn ghost sm" title="Đóng" onClick={onDong} autoFocus><Icon n="x" className="ic sm" /></button></div>
-        <div className="cn-hop-than"><Table cols={ganMoPhieu(cols)} rows={rows} motDong keDoc /></div>
+        <div className="cn-hop-than"><Table cols={ganMoPhieu(cols)} rows={rows} motDong keDoc rowCls={r => r._b || r._t ? 'cn-dong-dam' : ''} /></div>
       </div>
     </div>,
     document.body,
@@ -158,17 +158,16 @@ const cotSo = (k: string, ten: string, kh: string): Col =>
 
 export function colsCongNo(loai: Loai): Col[] {
   return [
-    { k: 'stt', t: '#', c: true, w: 48 },
+    { k: 'stt', t: '#', c: true, w: 48, hd: <span className="cn-tieu-de">#</span> },
     // T308: dòng con (cửa hàng) thụt vào dưới tên nhà cung cấp, cùng cột, để các cột số (nhất là Nợ cuối kỳ) vẫn vừa màn
-    { k: 'ten', t: NHAN[loai].doiTuong, r: x => x._t ? x.ten : x._con ? <TenCuaHang x={x} /> : <TenDoiTuong x={x} /> },
-    { k: 'soDon', t: 'Số đơn phát sinh', num: true, w: 130 },
+    { k: 'ten', t: NHAN[loai].doiTuong, hd: <span className="cn-tieu-de">{NHAN[loai].doiTuong}</span>, r: x => x._t ? x.ten : x._con ? <TenCuaHang x={x} /> : <TenDoiTuong x={x} /> },
     cotSo('dau', 'Nợ đầu kỳ', 'I'),
     cotSo('ps', NHAN[loai].tienPs, 'II'),
     cotSo('tra', 'Tiền trả hàng', 'III'),
     cotSo('tt', 'Tiền thanh toán', 'IV'),
     cotSo('cuoi', 'Nợ cuối kỳ', 'V = I+II-III-IV'),
     // Công nợ nhà cung cấp: nút Thanh toán ngay ở dòng còn nợ (T304)
-    ...(loai === 'ncc' ? [{ k: '_thanhToan', t: 'Thanh toán', c: true, w: 140, chiManHinh: true,
+    ...(loai === 'ncc' ? [{ k: '_thanhToan', t: 'Thanh toán', c: true, w: 140, chiManHinh: true, hd: <span className="cn-tieu-de">Thanh toán</span>,
       r: (x: Row) => !x._t && Number(x.cuoi) > 0 ? <NutThanhToan ten={String(x.ten)} cn={x._con ? String(x.cuaHang) : undefined} btnClass="btn sm cn-thanh-toan" /> : null } as Col] : []),
   ]
 }
@@ -177,10 +176,10 @@ export function rowsCongNo(loai: Loai, thang: number, cnTen?: string): Row[] {
   const ds = dsDoiTuong(loai).map((d, i): Row => {
     const { dau, phieu } = soLieu(loai, d.ma, thang, cnTen)
     const ps = phieu.reduce((a, p) => a + p.ps, 0), tra = phieu.reduce((a, p) => a + p.tra, 0), tt = phieu.reduce((a, p) => a + p.tt, 0)
-    return { stt: i + 1, ma: d.ma, ten: d.ten, soDon: phieu.filter(p => p.ps).length, dau, ps, tra, tt, cuoi: dau + ps - tra - tt, _loai: loai, _thang: thang, _cn: cnTen }
+    return { stt: i + 1, ma: d.ma, ten: d.ten, dau, ps, tra, tt, cuoi: dau + ps - tra - tt, _loai: loai, _thang: thang, _cn: cnTen }
   })
   const cong = (f: string) => ds.reduce((a, x) => a + (x[f] as number), 0)
-  return [...ds, { ten: 'Tổng cộng', soDon: cong('soDon'), dau: cong('dau'), ps: cong('ps'), tra: cong('tra'), tt: cong('tt'), cuoi: cong('cuoi'), _t: 1 }]
+  return [...ds, { ten: 'Tổng cộng', dau: cong('dau'), ps: cong('ps'), tra: cong('tra'), tt: cong('tt'), cuoi: cong('cuoi'), _t: 1 }]
 }
 
 /** Báo cáo 4.2.3 Công nợ nhà cung cấp có cấp nhóm (T308): xem tất cả cửa hàng thì dưới mỗi nhà cung cấp là từng cửa hàng có phát sinh
@@ -195,7 +194,7 @@ export function rowsCongNoNhom(loai: Loai, thang: number, cnTen?: string): Row[]
     const con = CUA_HANG.map(c => {
       const { dau, phieu } = soLieuCuaHang(loai, String(r.ma), thang, c.ten)
       const ps = phieu.reduce((a, p) => a + p.ps, 0), tra = phieu.reduce((a, p) => a + p.tra, 0), tt = phieu.reduce((a, p) => a + p.tt, 0)
-      return { ma: r.ma, ten: r.ten, cuaHang: c.ten, soDon: phieu.filter(p => p.ps).length, dau, ps, tra, tt, cuoi: dau + ps - tra - tt, _loai: loai, _thang: thang, _con: 1, _i: 1 } as Row
+      return { ma: r.ma, ten: r.ten, cuaHang: c.ten, dau, ps, tra, tt, cuoi: dau + ps - tra - tt, _loai: loai, _thang: thang, _con: 1, _i: 1 } as Row
     }).filter(x => [x.dau, x.ps, x.tra, x.tt].some(v => Number(v) !== 0))
     // Dòng nhà cung cấp in đậm (_nhom) là tổng; dưới là từng cửa hàng có phát sinh, kể cả khi chỉ có 1 cửa hàng
     out.push(con.length ? { ...r, _nhom: 1 } : r, ...con)

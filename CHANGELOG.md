@@ -3,6 +3,9 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 17/11/2026
+- T876: Báo cáo Công nợ nhà cung cấp, Công nợ khách hàng bỏ cột Số đơn phát sinh ở màn hình, tờ in, file Excel, điện thoại.
+- T877: Hai báo cáo công nợ: tiêu đề cột canh giữa.
+- T878: Popup Lịch sử công nợ: dòng Đầu kỳ, Cuối kỳ in đậm.
 - T875: Popup Chia sẻ hoá đơn to hơn, đủ chỗ, ô đính kèm PDF, XML không còn tràn ngang. Thêm biểu tượng ở thanh tab và các nút.
 - T874: Popup Chia sẻ hoá đơn điện tử chia 3 tab Ứng dụng chat, Email, Liên kết. Tab Liên kết có mã QR tra cứu, nút sao chép liên kết. Popup không hiện số tiền.
 - T871: Thẻ kho: tiêu đề 2 tầng, ô Chứng từ gộp hai cột Nhập, Xuất. Màn hình, tờ in, file Excel đổi theo.

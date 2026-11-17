@@ -4,6 +4,9 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T878 | Popup Lịch sử công nợ (NCC, khách hàng): in đậm cả dòng Đầu kỳ, Cuối kỳ | Trum | 17/11/2026 | 2026-11-17-trum-cong-no-bo-so-don.md |
+| T877 | Công nợ NCC (4.2.3), khách hàng (3.2.9): tiêu đề cột bảng báo cáo canh giữa | Trum | 17/11/2026 | 2026-11-17-trum-cong-no-bo-so-don.md |
+| T876 | Công nợ NCC (4.2.3), khách hàng (3.2.9): bỏ cột Số đơn phát sinh ở màn hình, in, Excel, thẻ điện thoại | Trum | 17/11/2026 | 2026-11-17-trum-cong-no-bo-so-don.md |
 | T875 | Popup Chia sẻ hoá đơn làm lại cho giống mẫu C: bù zoom để hiện đúng 540x660 px, nhãn PDF, XML màu, icon tab và nút, tab Liên kết QR bên trái | Trum | 17/11/2026 | 2026-11-17-trum-chia-se-hd-giong-mau.md |
 | T874 | Popup Chia sẻ hoá đơn điện tử theo mẫu C: 3 tab Ứng dụng chat, Email, Liên kết (QR), cao cố định 660px khi chuyển tab, logo Zalo, Messenger, Telegram, WhatsApp đều cỡ | Trum | 17/11/2026 | 2026-11-17-trum-chia-se-hd-3-tab.md |
 | T871 | Thẻ kho (5.2.1): tiêu đề 2 tầng, ô Chứng từ gộp hai cột Nhập, Xuất (thay Số phiếu nhập, Số phiếu xuất); áp màn hình, xem trước in, Excel | Trum | 17/11/2026 | 2026-11-17-trum-mau-in-the-kho-hddt.md |

@@ -11,9 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T876 | Công nợ NCC (4.2.3), khách hàng (3.2.9): bỏ cột Số đơn phát sinh ở màn hình, in, Excel, điện thoại | Trum | Đang làm | Sửa `bao-cao/cong-no.tsx`, `ui/mobile/MBaoCaoTongHopMauD.tsx`. Spec `backup/spec-T876-T878.md` |
-| T877 | Công nợ NCC, khách hàng: tiêu đề cột bảng báo cáo canh giữa | Trum | Đang làm | Sửa `bao-cao/cong-no.tsx`, cuối `app.css` (mục T877). Spec `backup/spec-T876-T878.md` |
-| T878 | Popup Lịch sử công nợ (NCC, khách hàng): in đậm dòng Đầu kỳ, Cuối kỳ | Trum | Đang làm | Sửa `bao-cao/cong-no.tsx`. Spec `backup/spec-T876-T878.md` |
 | T873 | Rà mẫu báo cáo gói Plus theo bộ mẫu TT58 bản 13/11 (17 mẫu), lập bảng lệch `docs/RA-SOAT-MAU-TT58.md`, chưa sửa code | Trum | Dở dang | Chỉ tạo `docs/RA-SOAT-MAU-TT58.md`. Spec `backup/spec-T594-T871-T873.md`. Dừng 17/11: đã trích 17 sheet ra `backup/review-T873/excel_summary.txt`, chưa viết bảng lệch |
 | T852 | Phiếu Xuất bán POS hiện tham chiếu ngược sang phiếu Xuất kho định lượng (T849 mới có chiều XDL sang POS) | | Chờ | `ChungTuBanHang.tsx`, dùng `useDsPhieuXdl` ở `kho/xuat-dinh-luong.ts` |
 | T837 | Điện thoại, danh sách mục Bán hàng lập tay: bỏ tên cửa hàng ở dòng chứng từ, dòng nào cũng ghi loại chứng từ (Xuất bán, Huỷ bán, Hoá đơn thay thế, Hoá đơn điều chỉnh), bộ lọc thêm Loại chứng từ | dinhlanphuongipacc | Đang làm | `MBanHangTay.tsx` |

@@ -48722,4 +48722,11 @@ textarea.m-tpb-inp { height: auto; padding: 8px 12px; }
   align-self: flex-start;
 }
 
+/* ── Tiêu đề cột báo cáo công nợ canh giữa (T877) ── */
+.tbl:has(.cn-tieu-de) thead th { text-align: center; }
+.cn-tieu-de { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; width: 100%; }
+
+/* ── Popup Lịch sử công nợ in đậm dòng Đầu kỳ, Cuối kỳ (T878) ── */
+.cn-hop .tbl tr.cn-dong-dam td { font-weight: 700; }
+
 
