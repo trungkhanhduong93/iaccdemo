@@ -528,7 +528,7 @@ const boCach = (v: string) => v.replace(/\s/g, '')
 const ngayChu = (d: string) => { const [n, t, y] = d.split('/'); return `Ngày ${n} tháng ${t} năm ${y}` }
 
 /** Mã QR tra cứu giả lập: 3 ô định vị ở góc, phần còn lại sinh theo số hoá đơn */
-function MaQr({ so }: { so: string }) {
+export function MaQr({ so }: { so: string }) {
   const n = 21
   let hat = Number(so) || 1
   const o: ReactNode[] = []

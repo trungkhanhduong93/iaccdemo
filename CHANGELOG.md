@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 17/11/2026
+- T874: Popup Chia sẻ hoá đơn điện tử chia 3 tab Ứng dụng chat, Email, Liên kết. Tab Liên kết có mã QR tra cứu, nút sao chép liên kết. Popup không hiện số tiền.
 - T871: Thẻ kho: tiêu đề 2 tầng, ô Chứng từ gộp hai cột Nhập, Xuất. Màn hình, tờ in, file Excel đổi theo.
 - T872: Popup xem hoá đơn điện tử: tờ hoá đơn cao đủ nội dung, mã QR và khối chữ ký nằm trong khung viền.
 - T594: Tờ in báo cáo: số phiếu, số tiền hiện đủ ký tự, không bị cắt; phần bề rộng dư dồn cho cột Diễn giải, tên hàng, đối tượng.
