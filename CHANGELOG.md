@@ -2,6 +2,9 @@
 
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
+## 18/11/2026
+- T879-T881: Tồn kho ban đầu làm lại theo mẫu mới. Chọn đúng 1 kho, 3 chip Có tồn đầu, Không có tồn đầu, Cần xem lại. Sửa số liệu qua Thiết lập hàng loạt, có Thay thế cả cột, Lấy giá nhập gần nhất, Chép sang kho khác, Xoá hàng loạt. Kho đã kiểm kê hoặc đã khoá sổ thì không cho thay đổi.
+
 ## 17/11/2026
 - T876: Báo cáo Công nợ nhà cung cấp, Công nợ khách hàng bỏ cột Số đơn phát sinh ở màn hình, tờ in, file Excel, điện thoại.
 - T877: Hai báo cáo công nợ: tiêu đề cột canh giữa.

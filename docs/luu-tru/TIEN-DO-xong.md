@@ -4,6 +4,9 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T881 | Tồn kho ban đầu mẫu C: modal Thiết lập hàng loạt, popup Thay thế hàng loạt, Chép sang kho khác, Xoá hàng loạt, thông báo khoá | Trum | 18/11/2026 | 2026-11-18-trum-ton-kho-ban-dau-mau-c.md |
+| T880 | Tồn kho ban đầu mẫu C trên máy tính: hàng lọc, 3 chip, bảng chỉ xem có dòng Tổng cộng, nút Thêm mới tách đôi, thay màn sửa tại chỗ T736 | Trum | 18/11/2026 | 2026-11-18-trum-ton-kho-ban-dau-mau-c.md |
+| T879 | Tồn kho ban đầu mẫu C: dữ liệu theo kho, ĐVT quy đổi, giá nhập gần nhất, luật khoá khi kho đã kiểm kê hoặc đã khoá sổ | Trum | 18/11/2026 | 2026-11-18-trum-ton-kho-ban-dau-mau-c.md |
 | T878 | Popup Lịch sử công nợ (NCC, khách hàng): in đậm cả dòng Đầu kỳ, Cuối kỳ | Trum | 17/11/2026 | 2026-11-17-trum-cong-no-bo-so-don.md |
 | T877 | Công nợ NCC (4.2.3), khách hàng (3.2.9): tiêu đề cột bảng báo cáo canh giữa | Trum | 17/11/2026 | 2026-11-17-trum-cong-no-bo-so-don.md |
 | T876 | Công nợ NCC (4.2.3), khách hàng (3.2.9): bỏ cột Số đơn phát sinh ở màn hình, in, Excel, thẻ điện thoại | Trum | 17/11/2026 | 2026-11-17-trum-cong-no-bo-so-don.md |

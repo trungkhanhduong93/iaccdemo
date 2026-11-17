@@ -11,10 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T879 | Tồn kho ban đầu mẫu C: dữ liệu dùng chung theo kho (Có, Không có tồn đầu, Cần xem lại), ĐVT quy đổi, luật khoá khi kho đã kiểm kê hoặc đã khoá sổ | Trum | Đang làm | File mới `kho/ton-dau.ts`, sửa `kho/data.ts`. Spec `backup/spec-T879-T882.md`, mẫu `backup/mau-T879/` |
-| T880 | Tồn kho ban đầu mẫu C trên máy tính: hàng lọc, chip, bảng chỉ xem có dòng Tổng cộng, nút Thêm mới tách đôi | Trum | Đang làm | Viết lại `kho/TonKhoBanDau.tsx`, CSS mục T880 cuối `app.css` |
-| T881 | Tồn kho ban đầu: modal Thiết lập hàng loạt, popup Thay thế hàng loạt, Chép sang kho khác, Xoá hàng loạt, thông báo khoá | Trum | Đang làm | File mới `kho/HopTonDau.tsx`, CSS mục T881 cuối `app.css` |
-| T882 | Tồn kho ban đầu trên điện thoại: danh sách thẻ, chọn nhiều, Thiết lập hàng loạt, Xoá | Trum | Đang làm | File mới `ui/mobile/MTonDau.tsx`, CSS mục T882 cuối `app.css` |
+| T882 | Tồn kho ban đầu trên điện thoại: danh sách thẻ, chọn nhiều, Thiết lập hàng loạt, Xoá | | Chờ | Trum dời sang phiên sau (18/11/2026). Mẫu `backup/mau-T879/Dt*.dc.html`, spec mục Việc T882 trong `backup/spec-T879-T882.md` |
 | T873 | Rà mẫu báo cáo gói Plus theo bộ mẫu TT58 bản 13/11 (17 mẫu), lập bảng lệch `docs/RA-SOAT-MAU-TT58.md`, chưa sửa code | Trum | Dở dang | Chỉ tạo `docs/RA-SOAT-MAU-TT58.md`. Spec `backup/spec-T594-T871-T873.md`. Dừng 17/11: đã trích 17 sheet ra `backup/review-T873/excel_summary.txt`, chưa viết bảng lệch |
 | T852 | Phiếu Xuất bán POS hiện tham chiếu ngược sang phiếu Xuất kho định lượng (T849 mới có chiều XDL sang POS) | | Chờ | `ChungTuBanHang.tsx`, dùng `useDsPhieuXdl` ở `kho/xuat-dinh-luong.ts` |
 | T837 | Điện thoại, danh sách mục Bán hàng lập tay: bỏ tên cửa hàng ở dòng chứng từ, dòng nào cũng ghi loại chứng từ (Xuất bán, Huỷ bán, Hoá đơn thay thế, Hoá đơn điều chỉnh), bộ lọc thêm Loại chứng từ | dinhlanphuongipacc | Đang làm | `MBanHangTay.tsx` |
