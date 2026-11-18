@@ -11,6 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T889 | Component thông báo chung `ThongBao` (6 loại) thay 45 hộp thoại cả 3 gói, máy tính và điện thoại; toast có loại; 9 toast chặn thành hộp; theo bản vẽ `backup/mau-T889/` | Trum | Đang làm | Tạo `src/ui/ThongBao.tsx`. Sửa `LocNangCao.tsx`, `session.tsx`, `ChungTuForm.tsx`, `CatalogScreen.tsx`, `KhoaSoStandard.tsx`, `HopTonDau.tsx`, `MXemPhieu.tsx`, `MCcdc.tsx` (T436 đang giữ, chỉ đổi khối hộp), `DanhMucCuaHang.tsx` (T333 đang giữ, chỉ đổi khối hộp), cuối `app.css` (mục T889) và các file khác trong spec. Spec `backup/spec-T889.md` |
 | T886 | Xuất kho định lượng: hàng lọc giống Xuất huỷ (kỳ, ô tìm, phễu, Excel, đếm phiếu), bỏ ô chọn cửa hàng riêng | Trum | Đang làm | Sửa `XuatDinhLuong.tsx`, cuối `app.css` (mục T886). Spec `backup/spec-T886-T888.md` |
 | T887 | Chuyển Xuất kho định lượng từ Kho sang Bán hàng, đứng ngay sau tab Bán hàng (Plus) hoặc Xuất bán POS (Pro), bỏ khỏi Kho | Trum | Đang làm | Sửa `kho/index.ts`, `ban-hang/index.ts`, `ChungTuBanHang.tsx` (link tham chiếu), `SidebarFlyout.tsx`, `thaoTacNhanh.ts`, `kho/quy-trinh.ts`. Spec `backup/spec-T886-T888.md` |
 | T888 | Kho gói Plus: bỏ Xuất chuyển kho, mở lại Xuất điều chuyển, Nhập điều chuyển; Pro giữ cả 3 (QD112) | Trum | Đang làm | Sửa `kho/index.ts`, `SidebarFlyout.tsx`, `kho/quy-trinh.ts`. Spec `backup/spec-T886-T888.md` |
