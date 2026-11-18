@@ -726,7 +726,7 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
                   <Icon n="receipt" className="ic sm" />Xuất HĐĐT
                 </button>
               )}
-              <NutDongBo ten="máy POS" onDongBo={() => setMoHopDongBo(true)} />
+              <NutDongBo ten="máy POS" tip="Đồng bộ dữ liệu bán hàng từ máy POS" onDongBo={() => setMoHopDongBo(true)} />
               <NutExcel
                 onNhap={() => toast('Nhập chứng từ bán hàng từ file Excel')}
                 onXuat={() => toast(`Đã xuất ${hienThiList.length} chứng từ ra Excel`)}

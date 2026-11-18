@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 18/11/2026
+- T883: Nút đồng bộ ở danh sách Thu chi, Bán hàng thành nút xanh "Đồng bộ lại", cùng chỗ trên thanh công cụ của bảng, ngay trước nút Excel. Nhãn số phiếu thu chi chưa đồng bộ vẫn ở thanh tab.
 - T879-T881: Tồn kho ban đầu làm lại theo mẫu mới. Chọn đúng 1 kho, 3 chip Có tồn đầu, Không có tồn đầu, Cần xem lại. Sửa số liệu qua Thiết lập hàng loạt, có Thay thế cả cột, Lấy giá nhập gần nhất, Chép sang kho khác, Xoá hàng loạt. Kho đã kiểm kê hoặc đã khoá sổ thì không cho thay đổi.
 
 ## 17/11/2026

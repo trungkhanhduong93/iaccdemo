@@ -108,9 +108,8 @@ export function NutThemMoiSplit({
   )
 }
 
-/** Nút vuông chỉ icon đồng bộ, cạnh Excel và Tuỳ chỉnh cột (T510) */
-export function NutDongBo({ ten, onDongBo }: { ten: string; onDongBo: () => void }) {
-  const t = `Đồng bộ từ ${ten}`
+/** Nút đồng bộ cạnh Excel và Tuỳ chỉnh cột (T510); từ T883 là nút xanh "Đồng bộ lại" có chữ, dùng chung Bán hàng, Thu chi, Danh mục */
+export function NutDongBo({ ten, tip = `Đồng bộ từ ${ten}`, onDongBo }: { ten: string; tip?: string; onDongBo: () => void }) {
   // data-hd: chỗ khoanh bước Đồng bộ của Hướng dẫn nhanh (T701)
-  return <button type="button" className="nut-vuong ds-nut-dong-bo" data-hd="dongBo" title={t} aria-label={t} onClick={onDongBo}><Icon n="refresh" className="ic sm" /></button>
+  return <button type="button" className="btn pri sm ds-nut-dong-bo" data-hd="dongBo" title={tip} onClick={onDongBo}><Icon n="refresh" className="ic sm" />Đồng bộ lại</button>
 }

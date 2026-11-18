@@ -25,6 +25,7 @@ import {
 } from '../LocNangCao'
 import { ctTtCon, dsDcCon, dsTraCon, dsTtCon, MAN_TRA_MUA, soDaTra, ttTienTheoTra, useDaXoa, xoaPhieu } from './daXoa'
 import { MAN_DC, MAN_KK, TEN_DC } from '../../modules/kho/dieu-chinh'
+import { NutDongBoThuChiFabi } from '../../modules/tien/DongBoThuChiFabi'
 
 import { CUA_HANG, HANG, NHAN_VIEN, NVL } from '../../data/mock'
 import { NGUON, TT_CT, chungTu, dongCua, gioPhieu, nguoiTaoMau, tomTatTenHang, ttNghiepVu, type Dong } from './gen'
@@ -687,6 +688,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
               )}
               {/* Excel, Tuỳ chỉnh cột, Thao tác hàng loạt nằm dưới nút Thêm mới (T510) */}
               <div className="ds-toolbar-phai ds-cong-cu-h2">
+                {mod.key === 'tien' && <NutDongBoThuChiFabi />}
                 <NutExcel
                   label={<IconExcel />}
                   onNhap={() => toast('Nhập chứng từ từ file Excel')}

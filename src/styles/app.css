@@ -48859,3 +48859,16 @@ textarea.m-tpb-inp { height: auto; padding: 8px 12px; }
 .td-giua-nut { display: flex; gap: 8px; width: 100%; margin-top: 8px; }
 .td-giua-nut .btn { flex: 1; }
 .td-nut-rong { width: 100%; margin-top: 8px; }
+
+/* ── Nút Đồng bộ lại xanh trên thanh công cụ bảng (T883) ── */
+.btn.ds-nut-dong-bo {
+  width: auto;
+  height: 34px;   /* bằng nút Excel, Tuỳ chỉnh cột cạnh bên */
+  padding: 0 12px;
+  gap: 6px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.btn.ds-nut-dong-bo .ic {
+  color: #fff;
+}

@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T883 | Nút đồng bộ Thu chi và Bán hàng cùng kiểu: nút xanh "Đồng bộ lại" có icon, đặt trên thanh công cụ bảng ngay trước nút Excel | Trum | 18/11/2026 | 2026-11-18-trum-nut-dong-bo-lai.md |
 | T881 | Tồn kho ban đầu mẫu C: modal Thiết lập hàng loạt, popup Thay thế hàng loạt, Chép sang kho khác, Xoá hàng loạt, thông báo khoá | Trum | 18/11/2026 | 2026-11-18-trum-ton-kho-ban-dau-mau-c.md |
 | T880 | Tồn kho ban đầu mẫu C trên máy tính: hàng lọc, 3 chip, bảng chỉ xem có dòng Tổng cộng, nút Thêm mới tách đôi, thay màn sửa tại chỗ T736 | Trum | 18/11/2026 | 2026-11-18-trum-ton-kho-ban-dau-mau-c.md |
 | T879 | Tồn kho ban đầu mẫu C: dữ liệu theo kho, ĐVT quy đổi, giá nhập gần nhất, luật khoá khi kho đã kiểm kê hoặc đã khoá sổ | Trum | 18/11/2026 | 2026-11-18-trum-ton-kho-ban-dau-mau-c.md |
