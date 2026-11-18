@@ -11,6 +11,9 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T886 | Xuất kho định lượng: hàng lọc giống Xuất huỷ (kỳ, ô tìm, phễu, Excel, đếm phiếu), bỏ ô chọn cửa hàng riêng | Trum | Đang làm | Sửa `XuatDinhLuong.tsx`, cuối `app.css` (mục T886). Spec `backup/spec-T886-T888.md` |
+| T887 | Chuyển Xuất kho định lượng từ Kho sang Bán hàng, đứng ngay sau tab Bán hàng (Plus) hoặc Xuất bán POS (Pro), bỏ khỏi Kho | Trum | Đang làm | Sửa `kho/index.ts`, `ban-hang/index.ts`, `ChungTuBanHang.tsx` (link tham chiếu), `SidebarFlyout.tsx`, `thaoTacNhanh.ts`, `kho/quy-trinh.ts`. Spec `backup/spec-T886-T888.md` |
+| T888 | Kho gói Plus: bỏ Xuất chuyển kho, mở lại Xuất điều chuyển, Nhập điều chuyển; Pro giữ cả 3 (QD112) | Trum | Đang làm | Sửa `kho/index.ts`, `SidebarFlyout.tsx`, `kho/quy-trinh.ts`. Spec `backup/spec-T886-T888.md` |
 | T882 | Tồn kho ban đầu trên điện thoại: danh sách thẻ, chọn nhiều, Thiết lập hàng loạt, Xoá | | Chờ | Trum dời sang phiên sau (18/11/2026). Mẫu `backup/mau-T879/Dt*.dc.html`, spec mục Việc T882 trong `backup/spec-T879-T882.md` |
 | T873 | Rà mẫu báo cáo gói Plus theo bộ mẫu TT58 bản 13/11 (17 mẫu), lập bảng lệch `docs/RA-SOAT-MAU-TT58.md`, chưa sửa code | Trum | Dở dang | Chỉ tạo `docs/RA-SOAT-MAU-TT58.md`. Spec `backup/spec-T594-T871-T873.md`. Dừng 17/11: đã trích 17 sheet ra `backup/review-T873/excel_summary.txt`, chưa viết bảng lệch |
 | T852 | Phiếu Xuất bán POS hiện tham chiếu ngược sang phiếu Xuất kho định lượng (T849 mới có chiều XDL sang POS) | | Chờ | `ChungTuBanHang.tsx`, dùng `useDsPhieuXdl` ở `kho/xuat-dinh-luong.ts` |

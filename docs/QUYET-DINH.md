@@ -1213,3 +1213,4 @@ Trum chốt 15/11/2026 (T849, T850).
 - Kho gói Plus, Pro có Xuất kho định lượng thay tab Xuất bán POS ở Kho, mỗi phiếu Xuất bán POS sinh một phiếu.
 - Gói Plus dùng Xuất chuyển kho (một phiếu, mọi kho, không hạch toán), Pro có thêm Xuất, Nhập điều chuyển (T850).
 
+## QD112. Kho gói Plus dùng Xuất, Nhập điều chuyển; Xuất kho định lượng sang Bán hàng (đang soạn)
