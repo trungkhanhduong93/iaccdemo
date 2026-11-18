@@ -152,7 +152,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
 
   // Dòng chi tiết
   const idSeed = `${sc.code ?? sc.slug}-${row.id}`
-  // Hàng bán trả lại khi GTGT theo % doanh thu (T857): dòng không có VAT, trừ Giảm thuế GTGT theo từng dòng như web
+  // Hàng bán trả lại khi GTGT theo % doanh thu (T885): dòng không có VAT, trừ Giảm thuế GTGT theo từng dòng như web
   const giamTraBan = laTraBan && giamGtgtCua(mod, cfg, s)
   const dsDongGoc: Dong[] = useMemo(() => {
     return (row._dong as Dong[] | undefined) ?? dongCua(cfg, idSeed)
@@ -202,7 +202,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
   const tongCk = dsDong.reduce((a, d) => a + (Number(d.ck) || 0), 0)
   const tongThue = dsDong.reduce((a, d) => a + (Number(d.thue) || 0), 0)
   const tongGiamThue = giamTraBan ? giamThueTheoDong(dsDongGoc, cfg.dongPos) : 0
-  // Hàng bán trả lại: tổng như danh sách, form web (T857): tiền sau giảm giá, chiết khấu, phí dịch vụ của từng dòng, trừ giảm thuế
+  // Hàng bán trả lại: tổng như danh sách, form web (T885): tiền sau giảm giá, chiết khấu, phí dịch vụ của từng dòng, trừ giảm thuế
   const tongThanhToan = laKk ? 0 : laTraBan && cfg.dongPos ? dsDong.reduce((a, d) => a + dtDong(d) + (Number(d.thue) || 0), 0) - tongGiamThue : tongTien - tongCk + tongThue
 
   // Tính toán thanh toán phiếu mua
@@ -532,7 +532,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
 
       <div className="m-t449-hang-ds">
         {dsDong.map((d, idx) => {
-          // Hàng bán trả lại GTGT theo % doanh thu: giảm thuế từng dòng như xem Bán hàng, cộng các dòng khớp tổng ở trên (T857)
+          // Hàng bán trả lại GTGT theo % doanh thu: giảm thuế từng dòng như xem Bán hàng, cộng các dòng khớp tổng ở trên (T885)
           const giamDong = giamTraBan ? giamThueHang(cfg.dongPos ? dtDong(d) : (Number(d.tien) || 0) - (Number(d.ck) || 0), d.ma) : 0
           const tongDong = (Number(d.tien) || 0) - (Number(d.ck) || 0) + (Number(d.thue) || 0) - giamDong
           const vatNhan = !d.ts || d.ts === 0 ? 'KCT' : `${d.ts}%`
@@ -1181,7 +1181,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
                       </div>
                     </>
                   )}
-                  {/* Mặt hàng và khối Tổng cộng cuối phiếu như xem phiếu mua (T856) */}
+                  {/* Mặt hàng và khối Tổng cộng cuối phiếu như xem phiếu mua (T884) */}
                   {renderDsHangHoaMua()}
                 </>
               )

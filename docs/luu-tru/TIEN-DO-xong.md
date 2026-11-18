@@ -4,8 +4,8 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
-| T857 | Hàng bán trả lại: số tổng danh sách, form web, xem và lập điện thoại lấy từ dòng chi tiết; GTGT theo % doanh thu ghi giảm thuế từng dòng | dinhlanphuongipacc | 15/11/2026 | [2026-11-15-dinhlanphuongipacc-tong-tra-ban-theo-dong](../nhat-ky/2026-11-15-dinhlanphuongipacc-tong-tra-ban-theo-dong.md) |
-| T856 | Điện thoại, xem Hàng bán trả lại: mặt hàng và khối Tổng cộng cuối phiếu như xem phiếu mua | dinhlanphuongipacc | 15/11/2026 | [2026-11-15-dinhlanphuongipacc-tong-xem-tra-ban](../nhat-ky/2026-11-15-dinhlanphuongipacc-tong-xem-tra-ban.md) |
+| T885 | Hàng bán trả lại: số tổng danh sách, form web, xem và lập điện thoại lấy từ dòng chi tiết; GTGT theo % doanh thu ghi giảm thuế từng dòng | dinhlanphuongipacc | 15/11/2026 | [2026-11-15-dinhlanphuongipacc-tong-tra-ban-theo-dong](../nhat-ky/2026-11-15-dinhlanphuongipacc-tong-tra-ban-theo-dong.md) |
+| T884 | Điện thoại, xem Hàng bán trả lại: mặt hàng và khối Tổng cộng cuối phiếu như xem phiếu mua | dinhlanphuongipacc | 15/11/2026 | [2026-11-15-dinhlanphuongipacc-tong-xem-tra-ban](../nhat-ky/2026-11-15-dinhlanphuongipacc-tong-xem-tra-ban.md) |
 | T883 | Nút đồng bộ Thu chi và Bán hàng cùng kiểu: nút xanh "Đồng bộ lại" có icon, đặt trên thanh công cụ bảng ngay trước nút Excel | Trum | 18/11/2026 | 2026-11-18-trum-nut-dong-bo-lai.md |
 | T881 | Tồn kho ban đầu mẫu C: modal Thiết lập hàng loạt, popup Thay thế hàng loạt, Chép sang kho khác, Xoá hàng loạt, thông báo khoá | Trum | 18/11/2026 | 2026-11-18-trum-ton-kho-ban-dau-mau-c.md |
 | T880 | Tồn kho ban đầu mẫu C trên máy tính: hàng lọc, 3 chip, bảng chỉ xem có dòng Tổng cộng, nút Thêm mới tách đôi, thay màn sửa tại chỗ T736 | Trum | 18/11/2026 | 2026-11-18-trum-ton-kho-ban-dau-mau-c.md |

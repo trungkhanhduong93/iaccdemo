@@ -402,7 +402,7 @@ interface TheHangMuaProps {
   gon?: boolean   // phiếu Nhập kho (T824): Số lượng gộp ĐVT như phiếu mua, bỏ Chiết khấu, VAT
   ban?: boolean   // hàng bán trả lại (T833): ghi Đã bán thay Đã mua
   khongVat?: boolean   // bán hàng tính GTGT theo % doanh thu (T855): bỏ ô VAT, thuế dòng 0
-  giamThue?: number   // giảm thuế GTGT của dòng khi theo % doanh thu (T857): trừ vào Tổng tiền dòng như xem Bán hàng
+  giamThue?: number   // giảm thuế GTGT của dòng khi theo % doanh thu (T885): trừ vào Tổng tiền dòng như xem Bán hàng
 }
 
 function TheHangMua({
@@ -523,7 +523,7 @@ function TheHangMua({
 
   const handleSuaTongTrucTiep = (valStr: string) => {
     const tVal = docSoVN(valStr)
-    const g = sl > 0 ? Math.round((tVal + giamThue - thue + ck) / sl) : 0   // Tổng tiền dòng đã trừ giảm thuế (T857)
+    const g = sl > 0 ? Math.round((tVal + giamThue - thue + ck) / sl) : 0   // Tổng tiền dòng đã trừ giảm thuế (T885)
     onDoiDong({ tongNhap: tVal + giamThue, tuChia: true, gia: g, tien: Math.round(sl * g) })
   }
 
@@ -801,7 +801,7 @@ function TheHangMua({
 
         </>)}
 
-        {/* Giảm thuế GTGT của dòng (T857): chỉ xem, cộng Tổng tiền các dòng khớp chân phiếu */}
+        {/* Giảm thuế GTGT của dòng (T885): chỉ xem, cộng Tổng tiền các dòng khớp chân phiếu */}
         {giamThue > 0 && (<>
           <span className="m-t601-grid-lbl" title="Giảm thuế GTGT">Giảm thuế</span>
           <div className="m-t601-amt" style={{ gridColumn: '2 / -1' }}><span>{money(giamThue)} đ</span></div>

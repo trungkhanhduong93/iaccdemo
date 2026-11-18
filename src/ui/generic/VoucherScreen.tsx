@@ -214,7 +214,7 @@ const MAC_DINH: VoucherCfg ={ prefix: 'CT', doiTuong: 'none', dienGiai: ['Chứn
 /** Chứng từ bán hàng có thuế khi GTGT theo % doanh thu: hiện Giảm thuế GTGT thay Thuế suất, Tiền thuế (T450) */
 export const giamGtgtCua = (mod: ModuleDef, cfg: VoucherCfg, s: Parameters<typeof gtgtTyLe>[0]) => nhomCua(mod.key, cfg) === 'ban' && cfg.thue !== 0 && gtgtTyLe(s)
 
-/** Giảm thuế GTGT của phiếu cộng theo từng dòng chi tiết, cùng cách form chứng từ tính (T780, T857) */
+/** Giảm thuế GTGT của phiếu cộng theo từng dòng chi tiết, cùng cách form chứng từ tính (T780, T885) */
 export const giamThueTheoDong = (ds: Dong[], dongPos?: boolean) => ds.reduce((a, d) => a + giamThueHang(dongPos ? dtDong(d) : (d.tien || 0) - (d.ck || 0), d.ma), 0)
 
 export function useDongChungTu(sc: ScreenDef, mod: ModuleDef): { cfg: VoucherCfg; rows: Row[] } {
@@ -225,7 +225,7 @@ export function useDongChungTu(sc: ScreenDef, mod: ModuleDef): { cfg: VoucherCfg
   const { ban, laDaXoa, phieuMoi, apSua } = useDaXoa(`${mod.key}/${sc.slug}`)
   // Chứng từ bán hàng khi GTGT theo % doanh thu (T450): không tiền thuế, tổng tiền = tiền hàng − Giảm thuế GTGT
   const giam = giamGtgtCua(mod, cfg, s)
-  // Hàng bán trả lại (T857): số tổng lấy từ dòng chi tiết của chính phiếu để danh sách, form web, điện thoại cùng một số
+  // Hàng bán trả lại (T885): số tổng lấy từ dòng chi tiết của chính phiếu để danh sách, form web, điện thoại cùng một số
   const theoDong = sc.code === '3.1.4'
   const dongCt = (r: Row) => (r._dong as Dong[] | undefined) ?? dongCua(cfg, `${sc.code ?? sc.slug}-${r.id}`)
   const rows = useMemo(() => [...phieuMoi, ...tatCa].filter(r => !laDaXoa(r.id)).map(apSua)

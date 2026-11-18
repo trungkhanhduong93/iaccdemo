@@ -3,6 +3,8 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 18/11/2026
+- T885: Hàng bán trả lại: số tổng ở danh sách, form web, xem và lập trên điện thoại cùng tính từ dòng chi tiết của phiếu. Đơn vị GTGT theo % doanh thu: mỗi dòng ghi giảm thuế, Tổng tiền dòng đã trừ, cộng các dòng khớp tổng phiếu (cả lập Bán hàng điện thoại).
+- T884: Điện thoại, xem Hàng bán trả lại: mặt hàng hiện đủ số lượng, đơn giá, VAT hoặc giảm thuế, tổng tiền; cuối phiếu có khối Tổng cộng như xem phiếu mua.
 - T883: Nút đồng bộ ở danh sách Thu chi, Bán hàng thành nút xanh "Đồng bộ lại", cùng chỗ trên thanh công cụ của bảng, ngay trước nút Excel. Nhãn số phiếu thu chi chưa đồng bộ vẫn ở thanh tab.
 - T879-T881: Tồn kho ban đầu làm lại theo mẫu mới. Chọn đúng 1 kho, 3 chip Có tồn đầu, Không có tồn đầu, Cần xem lại. Sửa số liệu qua Thiết lập hàng loạt, có Thay thế cả cột, Lấy giá nhập gần nhất, Chép sang kho khác, Xoá hàng loạt. Kho đã kiểm kê hoặc đã khoá sổ thì không cho thay đổi.
 
@@ -30,8 +32,6 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 - T856: Popup xem hoá đơn điện tử: tờ hoá đơn không còn bị cắt ngang; dòng Giảm trừ thuế chỉ một dấu (hết "--2.040"), cả file PDF tải về.
 
 ## 15/11/2026
-- T857: Hàng bán trả lại: số tổng ở danh sách, form web, xem và lập trên điện thoại cùng tính từ dòng chi tiết của phiếu. Đơn vị GTGT theo % doanh thu: mỗi dòng ghi giảm thuế, Tổng tiền dòng đã trừ, cộng các dòng khớp tổng phiếu (cả lập Bán hàng điện thoại).
-- T856: Điện thoại, xem Hàng bán trả lại: mặt hàng hiện đủ số lượng, đơn giá, VAT hoặc giảm thuế, tổng tiền; cuối phiếu có khối Tổng cộng như xem phiếu mua.
 - T855: Điện thoại, lập Bán hàng: có ô Kênh bán bắt buộc (trước Ngày chứng từ), tích Thanh toán ngay (chọn quỹ, lưu thì lập phiếu thu) và công tắc Xuất HĐĐT như web; bật công tắc thì nút ghi Lưu và Xuất HĐĐT. Màn xem Bán hàng có dòng Tham chiếu tới phiếu thu, bấm mở được; chứng từ bán hàng mẫu đã thu tiền mặt cũng có phiếu thu mẫu bên Thu chi. Hàng bán trả lại có ô Kênh bán (lấy theo chứng từ bán gốc), màn xem có dòng Kênh bán hàng. Bán hàng và Hàng bán trả lại của đơn vị tính GTGT theo tỷ lệ: mặt hàng không có ô VAT, Tổng cộng hiện Giảm trừ thuế.
 - T854: Điện thoại, lập Bán hàng: phần đầu và chân phiếu như lập phiếu mua. Bán hàng và Hàng bán trả lại: mặt hàng thêm tay hiện cùng khuôn lập phiếu mua (Số lượng kèm ĐVT, Đơn giá, Chiết khấu, VAT, Tổng tiền, Nhân bản, Xoá); Tổng cộng nằm dưới danh sách.
 - T853: Điện thoại, lập Hàng bán trả lại và Trả lại hàng mua từ chứng từ gốc: dòng mặt hàng giống hệt lập phiếu mua (ô trắng, ghi chú từng dòng, Tổng cộng đủ Thành tiền, Tiền chiết khấu, Tiền thuế); giá, chiết khấu, VAT giữ theo chứng từ gốc, chỉ sửa số lượng. Hàng bán trả lại bỏ Phương thức ở form lập và màn xem, web và điện thoại.

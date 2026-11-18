@@ -1,4 +1,4 @@
-# Xem Hàng bán trả lại điện thoại có tổng hợp cuối phiếu như phiếu mua (T856)
+# Xem Hàng bán trả lại điện thoại có tổng hợp cuối phiếu như phiếu mua (T884)
 
 - Ngày: 15/11/2026
 - Người: dinhlanphuongipacc, agent: Claude Code
