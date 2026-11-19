@@ -10,7 +10,7 @@ import { ChonDanhMuc } from '../../ui/ChonDanhMuc'
 import { ONgay } from '../../ui/ChonNgay'
 import { useDong } from '../../ui/FormToanMan'
 import { ThemHangLoat } from '../../ui/generic/ThemHangLoat'
-import { HopXacNhan } from '../../ui/LocNangCao'
+import { ThongBao } from '../../ui/ThongBao'
 import { suaPhieu, themPhieu } from '../../ui/generic/daXoa'
 import { ChonNhieu, quyDoiTuDanhMuc } from '../danh-muc/QuyDoiDvt'
 import { maDvt } from '../danh-muc/data'
@@ -118,7 +118,7 @@ export function FormCongThucPlus({ sc, mod, ct, soCt }: ScreenProps & { ct?: Row
           ? 'Thêm nguyên vật liệu thành phần'
           : ''
     if (thieu) {
-      toast(thieu)
+      toast(thieu, { loai: 'loi' })
       return
     }
 
@@ -529,19 +529,31 @@ export function FormCongThucPlus({ sc, mod, ct, soCt }: ScreenProps & { ct?: Row
       )}
 
       {hienCanhBao && (
-        <HopXacNhan
-          tieuDe="Cảnh báo"
-          nut="Xác nhận"
-          nutHuy="Huỷ"
-          nutDo={false}
-          onDong={() => setHienCanhBao(false)}
-          onDongY={() => {
-            setHienCanhBao(false)
-            dong()
+        <ThongBao
+          loai="canhBao"
+          hinh="luu"
+          nhan="Chưa lưu"
+          tieuDe="Công thức có thay đổi chưa lưu"
+          moTa="Đóng bây giờ thì mất các thay đổi trên công thức."
+          nutThem={{
+            ten: 'Bỏ thay đổi',
+            do: true,
+            onClick: () => {
+              setHienCanhBao(false)
+              dong()
+            },
           }}
-        >
-          Dữ liệu đã thay đổi, bạn có chắc chắn muốn đóng?
-        </HopXacNhan>
+          nutPhu="Ở lại sửa"
+          nut={{
+            ten: 'Lưu rồi đóng',
+            onClick: () => {
+              // luu() lưu xong tự về danh sách, thiếu ô thì báo và ở lại form
+              setHienCanhBao(false)
+              luu()
+            },
+          }}
+          onDong={() => setHienCanhBao(false)}
+        />
       )}
     </div>
   )

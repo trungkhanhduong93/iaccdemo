@@ -95,7 +95,7 @@ const ccdc: ModuleDef = {
         nhan: 'Xoá phân bổ', icon: 'trash', goi: ['PR'],
         hoi: (rows, ky) => {
           const da = rows.filter(r => daPhanBoKy(r.soThe, ky)).length
-          return da && !kyKhoa(ky) ? `Xoá phân bổ ${tenKy(ky)} của ${da} thẻ? Các khoản phân bổ tháng này trong Lịch phân bổ về trạng thái Chờ phân bổ.` : null
+          return da && !kyKhoa(ky) ? `Xoá phân bổ ${tenKy(ky)} của ${da} thẻ? Các khoản phân bổ ${tenKy(ky)} trong Lịch phân bổ về lại Chờ phân bổ. Thẻ giữ nguyên.` : null
         },
         lam: (rows, ky) => {
           if (kyKhoa(ky)) return `Tháng ${ky % 100}/${Math.floor(ky / 100)} thuộc kỳ đã khoá sổ, không xoá phân bổ được`

@@ -7,10 +7,10 @@ import { fold, money } from '../format'
 import { QUY_TIEN, theCuaPhieu } from '../generic/ChungTuForm'
 import { MLichSu } from './MLichSu'
 import { useDongChungTu } from '../generic/VoucherScreen'
-import { HopXacNhan } from '../LocNangCao'
+import { ThongBao } from '../ThongBao'
 import type { Dong } from '../generic/gen'
 import { tinhButToan } from './butToan'
-import { CUA_HANG } from '../../data/mock'
+import { CUA_HANG, khoaSoDenCua } from '../../data/mock'
 import { laLyChiPhi } from '../generic/danhMucStore'
 import { tcNhuStandard } from '../../app/plan'
 
@@ -450,47 +450,63 @@ export const MDtThuChiXem: FC<MDtThuChiXemProps> = ({
 
       {/* Hộp xác nhận bỏ ghi sổ */}
       {hoiBoGhi && (
-        <HopXacNhan
+        <ThongBao
+          loai="canhBao"
+          nhan="Bỏ ghi sổ"
           tieuDe={`Bỏ ghi sổ ${soCt}?`}
-          nut="Bỏ ghi sổ"
-          onDong={() => setHoiBoGhi(false)}
-          onDongY={() => {
-            setHoiBoGhi(false)
-            toast('Đã bỏ ghi sổ')
+          moTa={`Bút toán của phiếu bị huỷ. Báo cáo tháng ${String(row.ngay ?? '').split(' ')[0].slice(3)} không tính phiếu này tới khi ghi sổ lại.`}
+          nut={{
+            ten: 'Bỏ ghi sổ',
+            onClick: () => {
+              setHoiBoGhi(false)
+              toast('Đã bỏ ghi sổ')
+            },
           }}
-        >
-          Bỏ ghi sổ sẽ huỷ các bút toán và cập nhật lại số dư sổ sách liên quan.
-        </HopXacNhan>
+          onDong={() => setHoiBoGhi(false)}
+        />
       )}
 
       {/* Phiếu chi còn thẻ chi phí phân bổ (T475) */}
-      {hoiKhongSua && (
-        <HopXacNhan
-          tieuDe={`Không sửa được ${soCt}`}
-          nut="Mở thẻ"
-          nutHuy="Đóng"
-          nutDo={false}
-          onDong={() => setHoiKhongSua(false)}
-          onDongY={() => {
-            setHoiKhongSua(false)
-            nav(`/app/ccdc/8-1-1?mo=${theCuaPhieu(row)[0]}`, { state: { veGoc: `${path}/${row.id}` } })
-          }}
-        >
-          Phiếu đã có thẻ chi phí phân bổ {theCuaPhieu(row).join(', ')}. Xoá thẻ trước rồi mới sửa được phiếu.
-        </HopXacNhan>
-      )}
+      {hoiKhongSua && (() => {
+        const kk = khoaSoDenCua(row.cn)
+        const moThe = () => {
+          setHoiKhongSua(false)
+          nav(`/app/ccdc/8-1-1?mo=${theCuaPhieu(row)[0]}`, { state: { veGoc: `${path}/${row.id}` } })
+        }
+        return (
+          <ThongBao
+            loai="chan"
+            tieuDe="Phiếu đã sinh thẻ chi phí phân bổ"
+            moTa="Số tiền trên phiếu đang được chia dần vào chi phí các tháng. Sửa phiếu thì lịch phân bổ sai theo."
+            duKien={[
+              { nhan: 'Phiếu đang mở', gt: soCt },
+              { nhan: 'Thẻ phân bổ', gt: theCuaPhieu(row).join(', '), di: moThe },
+              { nhan: 'Đã khoá sổ đến', gt: `Tháng ${String(kk.thang).padStart(2, '0')}/${kk.nam}` },
+            ]}
+            buoc={[
+              `Mở thẻ ${theCuaPhieu(row)[0]}, bấm Xoá. Thẻ chỉ xoá được khi tháng bắt đầu phân bổ chưa khoá sổ.`,
+              'Quay lại phiếu, sửa rồi lưu. Phần mềm hỏi tạo lại thẻ.',
+            ]}
+            nut={{ ten: `Mở thẻ ${theCuaPhieu(row)[0]}`, onClick: moThe }}
+            onDong={() => setHoiKhongSua(false)}
+          />
+        )
+      })()}
 
-      {/* Hộp xác nhận xoá */}
-      {hoiXoa && (
-        <HopXacNhan
-          tieuDe={`Xoá ${soCt}?`}
-          nut="Xoá phiếu"
-          onDong={() => setHoiXoa(false)}
-          onDongY={thucHienXoa}
-        >
-          Phiếu đã xoá không lấy lại được.
-        </HopXacNhan>
-      )}
+      {/* Hộp xác nhận xoá: thẻ chi phí của phiếu xoá theo (thucHienXoa gọi xoaTheCuaPhieu) */}
+      {hoiXoa && (() => {
+        const kem = theCuaPhieu(row).map(so => ({ nhan: 'Thẻ chi phí phân bổ', gt: so }))
+        return (
+          <ThongBao
+            loai="xoa"
+            tieuDe={`Xoá phiếu ${soCt}?`}
+            moTa={kem.length ? 'Xoá xong không lấy lại được. Các chứng từ dưới đây xoá theo:' : 'Xoá xong không lấy lại được.'}
+            duKien={kem}
+            nut={{ ten: kem.length ? `Xoá phiếu và ${kem.length} chứng từ kèm` : 'Xoá phiếu', onClick: thucHienXoa }}
+            onDong={() => setHoiXoa(false)}
+          />
+        )
+      })()}
     </div>
   )
 }

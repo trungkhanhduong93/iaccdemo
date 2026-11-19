@@ -15,7 +15,7 @@ import { MBaoCaoTheoDoi } from './MBaoCaoTheoDoi'
 import { MChon } from './MChon'
 import { MTheNoiDung, MTheSua, type TheMobile } from './MThePhanBo'
 import { LichDon } from '../ChonNgay'
-import { HopXacNhan } from '../LocNangCao'
+import { ThongBao } from '../ThongBao'
 import { MTaoTheBoSung, useKhoanCho } from './MTaoTheBoSung'
 import {
   daPhanBoToiKy,
@@ -102,6 +102,7 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
   const [theSuaId, setTheSuaId] = useState<string | null>(null)
   const [moMenuMore, setMoMenuMore] = useState(false)
   const [hoiXoaThe, setHoiXoaThe] = useState(false)
+  const [chanXoaThe, setChanXoaThe] = useState<string | null>(null)   // lý do không xoá được thẻ (T889: hộp chặn thay toast)
   const [moChonCn, setMoChonCn] = useState(false)
   const [moChonLoaiThe, setMoChonLoaiThe] = useState(false)
   const [themDau, setThemDau] = useState(false)
@@ -348,24 +349,24 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
 
   const handleLuuGhiTang = () => {
     if (!ftTen.trim()) {
-      toast('Vui lòng nhập tên mục chi phí / CCDC')
+      toast('Vui lòng nhập tên mục chi phí / CCDC', { loai: 'loi' })
       return
     }
     if (valGt <= 0) {
-      toast('Số tiền phải lớn hơn 0')
+      toast('Số tiền phải lớn hơn 0', { loai: 'loi' })
       return
     }
     if (valKy <= 0) {
-      toast('Số tháng phân bổ phải lớn hơn 0')
+      toast('Số tháng phân bổ phải lớn hơn 0', { loai: 'loi' })
       return
     }
     if (ftDau) {
       if (!truocDauNam(s, ftNgay)) {
-        toast(`Ngày ghi tăng phải trước ngày bắt đầu năm tài chính ${ngayDauNam(s)}`)
+        toast(`Ngày ghi tăng phải trước ngày bắt đầu năm tài chính ${ngayDauNam(s)}`, { loai: 'loi' })
         return
       }
       if (kyConPb <= 0) {
-        toast('Số tháng đã phân bổ phải nhỏ hơn số tháng phân bổ')
+        toast('Số tháng đã phân bổ phải nhỏ hơn số tháng phân bổ', { loai: 'loi' })
         return
       }
       const soTheDau = soTheKeTiep(theList.map(t => t.soThe), 'dau', ftNgay)
@@ -999,7 +1000,7 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
         const hoiXoa = () => {
           const ly = lyDoKhongXoaThe(theXem as unknown as Row)
           setMoMenuMore(false)
-          if (ly) { toast(ly); return }
+          if (ly) { setChanXoaThe(ly); return }
           setHoiXoaThe(true)
         }
         const handleXoaThe = () => {
@@ -1016,9 +1017,29 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
         return (
           <div className="m-pb-man">
             {hoiXoaThe && (
-              <HopXacNhan tieuDe={`Xoá thẻ ${theXem.soThe}?`} nut="Xoá thẻ" onDong={() => setHoiXoaThe(false)} onDongY={handleXoaThe}>
-                Thẻ đã xoá không lấy lại được.
-              </HopXacNhan>
+              <ThongBao
+                loai="xoa"
+                nhan="Xoá thẻ"
+                tieuDe={`Xoá thẻ ${theXem.soThe}?`}
+                duKien={[
+                  { nhan: 'Tên', gt: theXem.ten },
+                  { nhan: 'Giá trị', gt: money(theXem.gt) },
+                  ...(theXem.soCt ? [{ nhan: 'Chứng từ gốc', gt: theXem.soCt }] : []),
+                ]}
+                moTa="Xoá xong không lấy lại được. Chứng từ gốc giữ nguyên."
+                nut={{ ten: 'Xoá thẻ', onClick: handleXoaThe }}
+                onDong={() => setHoiXoaThe(false)}
+              />
+            )}
+            {chanXoaThe && (
+              <ThongBao
+                loai="chan"
+                nhan="Không xoá được"
+                tieuDe={`Thẻ ${theXem.soThe} thuộc kỳ đã khoá sổ`}
+                moTa={chanXoaThe}
+                nut={{ ten: 'Mở màn khoá sổ', onClick: () => { setChanXoaThe(null); nav(s.goi === 'PR' ? '/app/tong-hop/10-1-6' : '/app/he-thong/khoa-so') } }}
+                onDong={() => setChanXoaThe(null)}
+              />
             )}
             {/* Thanh đầu: nút back, tiêu đề là số thẻ */}
             <header className="m-pb-thanh-dau">

@@ -14,13 +14,14 @@ import { fold, money, nhapSoQT, soQT, locSo } from '../format'
 import { xongViecHuongDan } from '../../modules/home/HuongDan'
 import { Dropdown, MenuItem, Popover, Select } from '../Dropdown'
 import { LocO } from '../ThanhLoc'
-import { TRUONG_DM, hopPp, type CauHinhDM, type KhoiDM, type TruongDM, type KieuTruong } from '../../modules/danh-muc/truong-dm'
+import { TRUONG_DM, hopPp, type CauHinhDM, type HoiThem, type KhoiDM, type TruongDM, type KieuTruong } from '../../modules/danh-muc/truong-dm'
 import { heThongTk } from '../../modules/danh-muc/he-thong-tk'
 import { FormToanMan } from '../FormToanMan'
+import { ThongBao } from '../ThongBao'
 import { LichSu } from './ChungTuForm'
 import { HopCotPhieu } from './BangSua'
 import { NutPhimTat, phimDong } from '../BangPhimTat'
-import { ChipTrangThai, HopXacNhan, NutTuyChinhCot, ONhanVien, useCotDs, BoLoc, useLocNhap, useCauHinhLoc, type Chip, type OLocDef } from '../LocNangCao'
+import { ChipTrangThai, NutTuyChinhCot, ONhanVien, useCotDs, BoLoc, useLocNhap, useCauHinhLoc, type Chip, type OLocDef } from '../LocNangCao'
 import { NutExcel, NutThemMoiSplit } from '../CongCuDs'
 import { IconFigmaSearch } from '../IconFigma'
 import { sinhCotBoSung } from './TuyChonCotDM'
@@ -659,12 +660,17 @@ export function CatalogScreen({ sc }: ScreenProps) {
           }}
         />
       )}
-      {hoiNut && (
-        <HopXacNhan tieuDe={`${hoiNut.n.nhan}?`} nut={hoiNut.n.nhan} onDong={() => setHoiNut(null)}
-          onDongY={() => { const h = hoiNut; setHoiNut(null); toast(h.n.lam(cfg.rows(s.cheDo, h.k).map(r => hauXuLy ? hauXuLy(r) : r), h.k)) }}>
-          {hoiNut.cau}
-        </HopXacNhan>
-      )}
+      {hoiNut && (() => {
+        // Câu hỏi đầu làm tiêu đề, phần sau làm mô tả; k là kỳ yyyymm (T889)
+        const i = hoiNut.cau.indexOf('? ')
+        const xoa = hoiNut.n.icon === 'trash'
+        return (
+          <ThongBao loai={xoa ? 'xoa' : 'hoi'} nhan={xoa ? hoiNut.n.nhan : undefined}
+            tieuDe={i >= 0 ? hoiNut.cau.slice(0, i + 1) : `${hoiNut.n.nhan}?`} moTa={i >= 0 ? hoiNut.cau.slice(i + 2) : hoiNut.cau}
+            onDong={() => setHoiNut(null)}
+            nut={{ ten: `${hoiNut.n.nhan} tháng ${hoiNut.k % 100}`, onClick: () => { const h = hoiNut; setHoiNut(null); toast(h.n.lam(cfg.rows(s.cheDo, h.k).map(r => hauXuLy ? hauXuLy(r) : r), h.k)) } }} />
+        )
+      })()}
       {quyVuaTao && <GoiYLapPhieu quy={quyVuaTao} onDong={() => setQuyVuaTao(null)} />}
       {moHangLoat && cfg.hangLoat && <cfg.hangLoat.Form soDong={all.length} rows={all} onDong={() => setMoHangLoat(false)} />}
       {moFormThem && cfg.formThem && (
@@ -783,7 +789,8 @@ export function CatalogPanel({
   const [hoiXoa, setHoiXoa] = useState(false)
   const saoChep = () => { const d = cauHinh?.tienIch?.saoChep?.(formVal); if (d) onSaoChep?.(formVal._kieu, d) }
   // Xoá: có lý do chặn (vd thẻ thuộc kỳ đã khoá sổ, T439) thì báo, không hỏi xoá
-  const thuXoa = () => { const ly = cauHinh?.tienIch?.chanXoa?.(formVal); if (ly) toast(ly); else setHoiXoa(true) }
+  const [chanXoa, setChanXoa] = useState<string | null>(null)   // lý do không xoá được, hiện hộp chặn (T889)
+  const thuXoa = () => { const ly = cauHinh?.tienIch?.chanXoa?.(formVal); if (ly) setChanXoa(ly); else setHoiXoa(true) }
   const thuXoaRef = useRef(thuXoa)
   thuXoaRef.current = thuXoa
   const saoChepRef = useRef(saoChep)
@@ -792,7 +799,7 @@ export function CatalogPanel({
   cauHinhRef.current = cauHinh
   const formValRef = useRef(formVal)
   formValRef.current = formVal
-  const [hoi, setHoi] = useState<{ tieuDe: string; hoi: string; sua: Record<string, any>; themTiep: boolean; luu?: boolean } | null>(null)
+  const [hoi, setHoi] = useState<({ tieuDe: string; hoi: string; sua: Record<string, any>; themTiep: boolean; luu?: boolean } & HoiThem) | null>(null)
 
   // Khung panel hiện ngay, thân nhiều trường vẽ ở khung hình sau để bấm mở không bị khựng (T81)
   const editThan = useDeferredValue(edit)
@@ -871,7 +878,7 @@ export function CatalogPanel({
       if (hd) {
         if (hd.dien) m = { ...m, ...hd.dien }
         if (hd.sua && Object.keys(hd.sua).length > 0) {
-          setHoi({ tieuDe: hd.tieuDe, hoi: hd.hoi, sua: hd.sua, themTiep: false, luu: false })
+          setHoi({ ...hd, themTiep: false, luu: false })
         }
       }
     }
@@ -935,7 +942,7 @@ export function CatalogPanel({
     // Lỗi cần người dùng chọn cách xử lý (vd tổng phân bổ lệch): hỏi trước, không lưu khi chưa khớp
     const chan = cauHinh?.loi?.(formVal)
     if (chan) {
-      toast(chan)
+      toast(chan, { loai: 'loi' })
       return
     }
     const loi = cauHinh?.kiemLuu?.(formVal)
@@ -1154,6 +1161,18 @@ export function CatalogPanel({
   if (!edit) return null
 
   const tenNganHien = cauHinh?.bien?.find(b => b.k === formVal._kieu)?.ten ?? cauHinh?.ten ?? tenNgan ?? ten ?? 'danh mục'
+  // Hộp xoá danh mục theo bản vẽ (T889): tên, mã số thuế nếu có
+  const maXoa = String(edit.soThe ?? edit.ma ?? '')
+  const hopXoa = hoiXoa && (
+    <ThongBao loai="xoa" nhan="Xoá danh mục" tieuDe={`Xoá ${tenNganHien} ${maXoa}?`}
+      duKien={[
+        ...(formVal.ten && formVal.ten !== maXoa ? [{ nhan: 'Tên', gt: String(formVal.ten) }] : []),
+        ...(formVal.mst ? [{ nhan: 'Mã số thuế', gt: String(formVal.mst) }] : []),
+      ]}
+      moTa="Xoá xong không lấy lại được."
+      onDong={() => setHoiXoa(false)}
+      nut={{ ten: `Xoá ${tenNganHien}`, onClick: () => { setHoiXoa(false); onXoa?.(formVal) } }} />
+  )
 
   return (
     <>
@@ -1266,12 +1285,7 @@ export function CatalogPanel({
             const ds = kh.bang!(formVal, doiO, s.goi, xem).cols.filter(c => !cotKhoa(c.k) && c.t).map((c): [string, string] => [`${kh.ten}|${c.k}`, c.t])
             return <HopCotPhieu ds={ds} an={anCot} onDoi={doiAnCot} onDong={() => setHopCot(false)} />
           })()}
-          {hoiXoa && (
-            <HopXacNhan tieuDe={`Xoá ${tenNganHien}`} nut="Xoá" nutHuy="Không"
-              onDong={() => setHoiXoa(false)} onDongY={() => { setHoiXoa(false); onXoa?.(formVal) }}>
-              Bạn có chắc chắn muốn xoá {tenNganHien} <b>{edit.soThe ?? edit.ma}</b> không?
-            </HopXacNhan>
-          )}
+          {hopXoa}
         </FormToanMan>
       )}
 
@@ -1313,27 +1327,37 @@ export function CatalogPanel({
               </>}
             </div>
           </aside>
-          {hoiXoa && (
-            <HopXacNhan tieuDe={`Xoá ${tenNganHien}`} nut="Xoá" nutHuy="Không"
-              onDong={() => setHoiXoa(false)} onDongY={() => { setHoiXoa(false); onXoa?.(formVal) }}>
-              Bạn có chắc chắn muốn xoá {tenNganHien} <b>{edit.ma}</b> không?
-            </HopXacNhan>
-          )}
+          {hopXoa}
         </>
       )}
 
       {hoi && (
-        <HopXacNhan tieuDe={hoi.tieuDe} nut="Đồng ý" nutHuy="Không" onDong={() => setHoi(null)} onDongY={() => {
-          // Đồng ý: áp phần sửa (vd dồn phần lệch vào kỳ cuối) rồi lưu; Không: về form để người dùng tự sửa
-          setFormVal(v => ({ ...v, ...hoi.sua }))
-          const isSave = Boolean(hoi.luu || hoi.themTiep)
-          const themTiep = hoi.themTiep
-          setHoi(null)
-          if (isSave) luuXong(themTiep)
-        }}>
-          {hoi.hoi}
-        </HopXacNhan>
+        <ThongBao loai={hoi.loai ?? 'hoi'} nhan={hoi.nhan} tieuDe={hoi.tieuDe} moTa={hoi.bang ? undefined : hoi.hoi} anhHuong={hoi.anhHuong}
+          nutPhu={hoi.nutPhu} onDong={() => setHoi(null)}
+          nut={{ ten: hoi.nut ?? 'Áp dụng', onClick: () => {
+            // Nút chính: áp phần sửa (vd dồn phần lệch vào kỳ cuối) rồi lưu; Huỷ: về form để người dùng tự sửa
+            setFormVal(v => ({ ...v, ...hoi.sua }))
+            const isSave = Boolean(hoi.luu || hoi.themTiep)
+            const themTiep = hoi.themTiep
+            setHoi(null)
+            if (isSave) luuXong(themTiep)
+          } }}>
+          {hoi.bang && (
+            <table className="tb-doi-chieu">
+              <thead><tr>{hoi.bang.cot.map(c => <th key={c}>{c}</th>)}</tr></thead>
+              <tbody>{hoi.bang.dong.map((d, i) => <tr key={i}>{d.map((o, j) => <td key={j}>{j === d.length - 1 ? <b>{o}</b> : o}</td>)}</tr>)}</tbody>
+            </table>
+          )}
+        </ThongBao>
       )}
+      {chanXoa && (() => {
+        // Câu đầu làm tiêu đề, phần sau là cách làm (T889)
+        const i = chanXoa.indexOf('. ')
+        return (
+          <ThongBao loai="chan" nhan="Không xoá được" tieuDe={i >= 0 ? chanXoa.slice(0, i + 1) : chanXoa} moTa={i >= 0 ? chanXoa.slice(i + 2) : undefined}
+            nutPhu={null} onDong={() => setChanXoa(null)} nut={{ ten: 'Đóng', onClick: () => setChanXoa(null) }} />
+        )
+      })()}
     </>
   )
 }

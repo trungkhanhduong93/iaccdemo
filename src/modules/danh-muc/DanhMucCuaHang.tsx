@@ -18,7 +18,8 @@ import { fold } from '../../ui/format'
 import { cuaHangChuaDung } from '../onboarding/cua-hang-fabi'
 import { DsCuaHang } from '../onboarding/OnboardFabi'
 import { Select } from '../../ui/Dropdown'
-import { HopXacNhan, useDongEsc } from '../../ui/LocNangCao'
+import { useDongEsc } from '../../ui/LocNangCao'
+import { ThongBao } from '../../ui/ThongBao'
 import { batDongBoThuChi, datDongBoThuChi, phieuThuChiFabi } from '../tien/dong-bo-fabi'
 import { DI_DOI_CACH_NVL } from '../home/chi-phi-nvl'
 
@@ -193,14 +194,15 @@ export function DanhMucCuaHang({ sc, mod }: ScreenProps) {
         const cu = congTyCn(s, doiCty.cn)
         const moi = dsDonVi(s).find(d => d.id === doiCty.cty) ?? cu
         return (
-          <HopXacNhan tieuDe="Chọn lại công ty của cửa hàng" nut="Chuyển sang công ty mới" onDong={() => setDoiCty(null)} onDongY={() => {
-            set({ cnCongTy: { ...s.cnCongTy, [s.donVi]: { ...s.cnCongTy?.[s.donVi], [doiCty.cn]: doiCty.cty } } })
-            setDoiCty(null)
-            toast(`Đã chuyển ${doiCty.ten} sang ${moi.ten}`)
-          }}>
-            Toàn bộ số liệu của cửa hàng {doiCty.ten} (chứng từ, sổ sách, số dư, báo cáo) sẽ chuyển từ {cu.ten} sang {moi.ten}.
-            Sau khi chuyển, {cu.ten} không còn số liệu của cửa hàng này. Bạn có chắc muốn chuyển?
-          </HopXacNhan>
+          <ThongBao loai="hoi" nhan="Thay đổi lớn" tieuDe={`Chuyển ${doiCty.ten} sang công ty khác?`}
+            anhHuong={[{ nhan: 'Công ty hiện tại', gt: cu.ten }, { nhan: 'Công ty mới', gt: moi.ten, mau: 'xanh' }]}
+            moTa="Toàn bộ chứng từ, sổ, số dư, báo cáo của cửa hàng chuyển theo. Báo cáo công ty cũ giảm số tương ứng."
+            onDong={() => setDoiCty(null)}
+            nut={{ ten: 'Chuyển sang công ty mới', onClick: () => {
+              set({ cnCongTy: { ...s.cnCongTy, [s.donVi]: { ...s.cnCongTy?.[s.donVi], [doiCty.cn]: doiCty.cty } } })
+              setDoiCty(null)
+              toast(`Đã chuyển ${doiCty.ten} sang ${moi.ten}`)
+            } }} />
         )
       })()}
     </div>

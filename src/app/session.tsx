@@ -133,13 +133,24 @@ function chuanHoaStandard(n: Session): Session {
   return { ...s, cheDo: CHE_DO_DN_STANDARD, ppGtgt: 'tyLe', ppTndn: 'tyLe' }
 }
 
-const Ctx = createContext<{ s: Session; set: (p: Partial<Session>) => void; toast: (m: string) => void } | null>(null)
+// Toast có loại (T889): không truyền thì loai 'xong'. xong 3 giây, loi và thongTin 5 giây, canhBao đứng tới khi bấm đóng.
+export interface ToastTuyChon { loai?: 'xong' | 'loi' | 'thongTin' | 'canhBao'; phu?: string; nut?: { ten: string; onClick: () => void } }
+const TOAST_MS = { xong: 3000, loi: 5000, thongTin: 5000, canhBao: 0 }
+const TOAST_IC = {
+  xong: <path d="M5 12.5l4.5 4.5L19 7.5" />,
+  loi: <><circle cx="12" cy="12" r="9" /><path d="M12 7v6M12 17h.01" /></>,
+  thongTin: <><circle cx="12" cy="12" r="9" /><path d="M12 11v6M12 7.5h.01" /></>,
+  canhBao: <><path d="M12 3l10 18H2L12 3z" /><path d="M12 10v5M12 18h.01" /></>,
+}
+
+const Ctx = createContext<{ s: Session; set: (p: Partial<Session>) => void; toast: (m: string, tc?: ToastTuyChon) => void } | null>(null)
 
 export function SessionProvider({ children }: { children: ReactNode }) {
   const [s, setS] = useState<Session>(doc)
-  const [msg, setMsg] = useState<string | null>(null)
+  const [msg, setMsg] = useState<{ m: string; tc: ToastTuyChon; id: number } | null>(null)
+  const toast = (m: string, tc: ToastTuyChon = {}) => setMsg({ m, tc, id: Date.now() })
   useEffect(() => { try { localStorage.setItem(KEY, JSON.stringify(s)) } catch { /* trình duyệt chặn lưu thì thôi */ } }, [s])
-  useEffect(() => { if (!msg) return; const t = setTimeout(() => setMsg(null), 2600); return () => clearTimeout(t) }, [msg])
+  useEffect(() => { if (!msg) return; const ms = TOAST_MS[msg.tc.loai ?? 'xong']; if (!ms) return; const t = setTimeout(() => setMsg(null), ms); return () => clearTimeout(t) }, [msg])
   // Đổi gói mà không chỉ định chế độ: hộ kinh doanh lấy TT152 nếu gói cho phép, còn lại lấy mặc định của gói (T179)
   const cheDoKhiDoiGoi = (n: Session, g: Goi): CheDo =>
     loaiHinhDv(n, donViHienTai(n)) === 'hkd' && CHE_DO_HOP_LE[g].includes('TT152') ? 'TT152' : CHE_DO_MAC_DINH[g]
@@ -150,9 +161,18 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   datGiamVat(s, loaiHinhDv(s, donViHienTai(s)) !== 'hkd')   // T754
   ngayLamViecHt = ngayLamViec(s)   // T782
   return (
-    <Ctx.Provider value={{ s, set, toast: setMsg }}>
+    <Ctx.Provider value={{ s, set, toast }}>
       <Fragment key={kieu}>{children}</Fragment>
-      {msg && <div className="toast">{msg}</div>}
+      {msg && (
+        <div key={msg.id} className={`toast toast-${msg.tc.loai ?? 'xong'}`} role={msg.tc.loai === 'loi' ? 'alert' : 'status'}>
+          <span className="toast-ic" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">{TOAST_IC[msg.tc.loai ?? 'xong']}</svg>
+          </span>
+          <div className="toast-chu"><b>{msg.m}</b>{msg.tc.phu && <span>{msg.tc.phu}</span>}</div>
+          {msg.tc.nut && <button type="button" className="toast-nut" onClick={() => { msg.tc.nut!.onClick(); setMsg(null) }}>{msg.tc.nut.ten}</button>}
+          {msg.tc.loai === 'canhBao' && <button type="button" className="toast-dong" aria-label="Đóng" onClick={() => setMsg(null)}>×</button>}
+        </div>
+      )}
     </Ctx.Provider>
   )
 }

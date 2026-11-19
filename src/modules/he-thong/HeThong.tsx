@@ -6,13 +6,14 @@ import { MODULES, duongDan, hienMan, laBaoCao } from '../../app/registry'
 import { donViHienTai, dsCuaHang, dsDonVi, gtgtTyLe, loaiHinhDv, useSession, cheDoHienTai, namTaiChinh, ngayDauNam, ngayLamViec, type PpGtgt, type PpTndn, type Session } from '../../app/session'
 import { ChonKenh, KENH_ONLINE, KENH_SAN, NHOM_HKD, type LoaiHinh, type PpHkd } from '../onboarding/OnboardFabi'
 import { FEATURE, FEATURES, GOI, GOIS, MODS, demTheoGoi, kieuGhiSo, type Goi } from '../../app/plan'
+import { ThongBao } from '../../ui/ThongBao'
 import { CHE_DO, CHE_DO_HOP_LE, cheDoCuaGoi, type CheDo } from '../../app/che-do'
 import { CUA_HANG, NGUOI_DUNG, type Role } from '../../data/mock'
 import { Icon } from '../../ui/Icon'
 import { Card, Note, PageHead, Pk } from '../../ui/Page'
 import { St, Table } from '../../ui/Table'
 import { Select } from '../../ui/Dropdown'
-import { BoLoc, HopXacNhan, NutTuyChinhCot, useCauHinhLoc, useCotDs, useLocNhap, type OLocDef } from '../../ui/LocNangCao'
+import { BoLoc, NutTuyChinhCot, useCauHinhLoc, useCotDs, useLocNhap, type OLocDef } from '../../ui/LocNangCao'
 import { IconFigmaSearch } from '../../ui/IconFigma'
 import { fold } from '../../ui/format'
 import { ONgay } from '../../ui/ChonNgay'
@@ -711,7 +712,7 @@ export function CauHinh({ sc }: ScreenProps) {
   const [hd, setHd] = useState<CauHinhHddt>(cauHinhHddt(s))
   const luu = () => {
     const loi = loiGv() ?? (coHddt ? loiHddt(hd) : null)
-    if (loi) { toast(loi); return }
+    if (loi) { toast(loi, { loai: 'loi' }); return }
     const gvLuu = { ...gv, ds: [dongGv] }
     set({ kieuSo: { ...s.kieuSo, [s.donVi]: kieu }, ...(coGiamVat ? { giamVat: { ...s.giamVat, [s.donVi]: gvLuu } } : {}),
       ...(coHddt ? { hddt: { ...s.hddt, [s.donVi]: hd } } : {}) }); toast('Đã lưu cấu hình')
@@ -823,9 +824,9 @@ export function ThongTinDonVi({ sc }: ScreenProps) {
   const cheDoTheoLoai = (l: LoaiHinh): CheDo =>
     l === 'hkd' ? (CHE_DO_HOP_LE[s.goi].includes('TT152') ? 'TT152' : s.cheDo) : s.goi === 'PL' || dnStandard ? 'TT58' : s.cheDo
   const luuDv = () => {
-    if (!/^\d{2}\/\d{2}\/\d{4}$/.test(dauNam)) { toast('Ngày đầu năm tài chính cần nhập dạng dd/mm/yyyy'); return }
-    if (!/^\d{2}\/\d{2}\/\d{4}$/.test(ngayLam)) { toast('Ngày bắt đầu làm việc cần nhập dạng dd/mm/yyyy'); return }
-    if (!f.ten.trim()) { toast('Tên đơn vị không được để trống'); return }
+    if (!/^\d{2}\/\d{2}\/\d{4}$/.test(dauNam)) { toast('Ngày đầu năm tài chính cần nhập dạng dd/mm/yyyy', { loai: 'loi' }); return }
+    if (!/^\d{2}\/\d{2}\/\d{4}$/.test(ngayLam)) { toast('Ngày bắt đầu làm việc cần nhập dạng dd/mm/yyyy', { loai: 'loi' }); return }
+    if (!f.ten.trim()) { toast('Tên đơn vị không được để trống', { loai: 'loi' }); return }
     const { ten, mst, diaChi, loai, nhom, ppHkd, cnChinh, kenhOnline, kenhSan } = f
     const nvl = f.cachNvl !== cachNvlHienTai(s) ? datCachNvl(s, f.cachNvl) : {}   // đổi cách tính áp dụng từ tháng đầu chưa khoá sổ
     if (!loai) {   // chưa chọn loại hình: chỉ lưu thông tin chung, Kê khai thuế vẫn hỏi Thông tin kê khai thuế
@@ -941,14 +942,22 @@ export function ThongTinDonVi({ sc }: ScreenProps) {
         </Card>
       </div>
       {choDoi && (
-        <HopXacNhan tieuDe="Đổi chế độ kế toán" nut="Đồng ý" onDong={() => setChoDoi(null)} onDongY={() => {
-          const cdDef = CHE_DO[choDoi]
-          set({ cheDo: choDoi })
-          setChoDoi(null)
-          toast('Đã đổi chế độ kế toán sang ' + cdDef.ngan)
-        }}>
-          Đổi sang {CHE_DO[choDoi].soHieu}? Danh mục tài khoản, mẫu chứng từ, mẫu in, sổ và báo cáo sẽ đổi theo chế độ mới. Bản thật chỉ cho đổi từ đầu năm tài chính và phải kết chuyển số dư (10.1.9).
-        </HopXacNhan>
+        <ThongBao loai="hoi" nhan="Thay đổi lớn" tieuDe="Đổi chế độ kế toán của đơn vị?"
+          anhHuong={[
+            { nhan: 'Đang dùng', gt: `${CHE_DO[s.cheDo].soHieu} · ${CHE_DO[s.cheDo].ten}` },
+            { nhan: 'Đổi sang', gt: `${CHE_DO[choDoi].soHieu} · ${CHE_DO[choDoi].ten}`, mau: 'xanh' },
+          ]}
+          duKien={[
+            { nhan: 'Đổi theo', gt: 'Hệ thống tài khoản, mẫu chứng từ, mẫu in, sổ, báo cáo' },
+            { nhan: 'Giữ nguyên', gt: 'Chứng từ đã lập, danh mục' },
+          ]}
+          onDong={() => setChoDoi(null)}
+          nut={{ ten: 'Đổi chế độ', onClick: () => {
+            const cdDef = CHE_DO[choDoi]
+            set({ cheDo: choDoi })
+            setChoDoi(null)
+            toast('Đã đổi chế độ kế toán sang ' + cdDef.ngan)
+          } }} />
       )}
     </div>
   )

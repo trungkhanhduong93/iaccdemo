@@ -23,7 +23,7 @@ import { DsCot, Net } from '../../ui/thiet-ke/DsCot'
 import { DsKy } from '../../ui/thiet-ke/DsKy'
 import { OSo } from '../../ui/thiet-ke/OSo'
 import { Dropdown, MenuItem, Select } from '../../ui/Dropdown'
-import { HopXacNhan } from '../../ui/LocNangCao'
+import { ThongBao } from '../../ui/ThongBao'
 import { Icon } from '../../ui/Icon'
 import { PageHead } from '../../ui/Page'
 import { heSoZoom } from '../../ui/zoom'
@@ -625,22 +625,24 @@ export function ThietKeMauIn({ sc }: ScreenProps) {
       </div>
 
       {hoiXoa && (
-        <HopXacNhan tieuDe="Xoá mẫu riêng" nut="Xoá" onDong={() => setHoiXoa(null)}
-          onDongY={() => {
+        <ThongBao loai="xoa" nhan="Xoá mẫu in" tieuDe={`Xoá mẫu riêng "${hoiXoa.ten}"?`}
+          duKien={[{ nhan: 'Làm từ mẫu chuẩn', gt: goc.ten }, { nhan: 'Đang đặt mặc định', gt: hoiXoa.macDinh ? 'Có' : 'Không' }]}
+          moTa={`Xoá xong không lấy lại được.${hoiXoa.macDinh ? ' Phiếu in theo mẫu chuẩn.' : ''}`}
+          onDong={() => setHoiXoa(null)}
+          nut={{ ten: 'Xoá mẫu riêng', onClick: () => {
             xoaMauRieng(donVi.id, hoiXoa.id)
             setRev(x => x + 1)
             if (sua.rieng?.id === hoiXoa.id) mo(sua.goc)
             toast(`Đã xoá ${hoiXoa.ten}`)
             setHoiXoa(null)
-          }}>
-          Xoá {hoiXoa.ten} của {goc.ten}? Mẫu đã xoá không lấy lại được.{hoiXoa.macDinh ? ' Phiếu in sẽ dùng mẫu chuẩn.' : ''}
-        </HopXacNhan>
+          } }} />
       )}
       {hoiVeChuan && (
-        <HopXacNhan tieuDe="Khôi phục mặc định" nut="Đặt lại" onDong={() => setHoiVeChuan(false)}
-          onDongY={() => { setSua(d => ({ ...d, mau: goc, doi: true })); setHoiVeChuan(false) }}>
-          Đặt lại {sua.rieng?.ten} giống mẫu chuẩn {goc.ten}? Bấm Lưu thì mới ghi đè mẫu riêng.
-        </HopXacNhan>
+        <ThongBao loai="hoi" nhan="Khôi phục" tieuDe={`Đưa ${sua.rieng?.ten ?? 'mẫu đang sửa'} về mẫu chuẩn?`}
+          duKien={[{ nhan: 'Mẫu chuẩn', gt: goc.ten }]}
+          moTa="Bấm Lưu thì mới ghi đè mẫu riêng."
+          onDong={() => setHoiVeChuan(false)}
+          nut={{ ten: 'Khôi phục mặc định', onClick: () => { setSua(d => ({ ...d, mau: goc, doi: true })); setHoiVeChuan(false) } }} />
       )}
     </div>
   )

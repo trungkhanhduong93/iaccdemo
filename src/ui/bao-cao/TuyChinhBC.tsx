@@ -8,7 +8,7 @@ import { docTuyChinh, luuTuyChinh, xoaTuyChinh, type TuyChinhLuu } from './tuyCh
 import { type MucDs } from '../thiet-ke/DsCot'
 import { DsCotNhom } from './DsCotNhom'
 import { DsKy } from '../thiet-ke/DsKy'
-import { HopXacNhan } from '../LocNangCao'
+import { ThongBao } from '../ThongBao'
 import { Icon } from '../Icon'
 import type { OKy } from '../generic/ReportScreen'
 
@@ -465,14 +465,19 @@ export function TuyChinhBC({
       </aside>
 
       {hoiChuan && (
-        <HopXacNhan
-          tieuDe="Về mặc định?"
-          nut="Khôi phục"
+        <ThongBao
+          loai="hoi"
+          nhan="Khôi phục"
+          tieuDe={`Đưa ${tenBaoCao ? `báo cáo ${tenBaoCao}` : 'báo cáo này'} về mặc định?`}
+          moTa={dsCotItem.some(c => c.an) || nhomDangChon.length || chiRieng ? undefined : 'Cột, nhóm, người ký về như lúc đầu.'}
+          duKien={[
+            ...(dsCotItem.some(c => c.an) ? [{ nhan: 'Cột đang ẩn hiện lại', gt: `${dsCotItem.filter(c => c.an).length} cột` }] : []),
+            ...(nhomDangChon.length ? [{ nhan: 'Nhóm theo', gt: `${nhomDangChon.map(tenCotNhom).join(', ')} → Không nhóm` }] : []),
+            ...(chiRieng ? [{ nhan: 'Người ký', gt: 'Về người ký chung' }] : []),
+          ]}
           onDong={() => setHoiChuan(false)}
-          onDongY={veMauChuan}
-        >
-          Khôi phục lại toàn bộ cột, nhóm và người ký mặc định của báo cáo này.
-        </HopXacNhan>
+          nut={{ ten: 'Khôi phục mặc định', onClick: veMauChuan }}
+        />
       )}
     </div>,
     document.body,

@@ -25,6 +25,7 @@ import { xongViecHuongDan } from '../../modules/home/HuongDan'
 import { ghiTraNo, phieuMuaConNo, type TraNo } from '../generic/BangTraNoNcc'
 import { useBanPhieu } from '../generic/daXoa'
 import { MTraNoNcc } from './MTraNoNcc'
+import { ThongBao } from '../ThongBao'
 
 export interface MDtThuChiLapProps extends ScreenProps {
   id?: string
@@ -415,7 +416,7 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
 
   const handleXoaDong = (idx: number) => {
     if (dsDong.length <= 1) {
-      toast('Phiếu phải có ít nhất 1 dòng chi tiết')
+      toast('Phiếu phải có ít nhất 1 dòng chi tiết', { loai: 'loi' })
       return
     }
     const next = dsDong.filter((_, i) => i !== idx)
@@ -444,16 +445,16 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
     const lyDoLuu = tour && !lyDo ? 'Tiền điện' : lyDo
     const quyLuu = tour && !quy ? `Quỹ tiền mặt ${ch.ngan}` : quy
     if (traNoMode && !traNo.length) {
-      toast(doiTuong ? 'Chọn phiếu mua cần thanh toán ở mục Chi tiết' : 'Chọn nhà cung cấp cần thanh toán')
+      toast(doiTuong ? 'Chọn phiếu mua cần thanh toán ở mục Chi tiết' : 'Chọn nhà cung cấp cần thanh toán', { loai: 'loi' })
       return
     }
     if (tienLuu <= 0) {
-      toast('Vui lòng nhập số tiền lớn hơn 0')
+      toast('Vui lòng nhập số tiền lớn hơn 0', { loai: 'loi' })
       return
     }
     const thangNum = Number(ngay.split('/')[1]) || 10
     if (!quyLuu) {
-      toast('Vui lòng chọn quỹ tiền')
+      toast('Vui lòng chọn quỹ tiền', { loai: 'loi' })
       return
     }
     const duLieuPhieu: Partial<Row> = {
@@ -1725,20 +1726,23 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
       />
 
       {/* ── HỘP THÔNG BÁO TẠO THẺ CHI PHÍ PHÂN BỔ (T419, T633) ── */}
+      {/* Bấm nền hoặc Esc: về phiếu vừa lưu như lưu thường (T889, như bản máy tính) */}
       {hoiThe && (
-        <div className="m-tam-overlay" style={{ zIndex: 1200 }}>
-          <div className="m-tam-hop m-lp-hop-hoi-the">
-            <div className="m-tam-dau">
-              <h3 className="m-tam-tieu" style={{ fontSize: 16 }}>Tạo thẻ chi phí phân bổ</h3>
-            </div>
-            <div className="m-lp-hop-nd" style={{ padding: '14px 16px', fontSize: 14, color: 'var(--ink)' }}>
-              <b>{hoiThe.soCt}</b> có khoản chi phí phân bổ nhiều kỳ. Phần mềm mở màn Tạo thẻ chi phí phân bổ, điền sẵn tên, số tiền, ngày, chứng từ gốc từ phiếu. Bạn vẫn sửa lại được.
-            </div>
-            <div className="m-tam-day" style={{ padding: '10px 16px' }}>
-              <button
-                type="button"
-                className="m-tam-btn-apdung"
-                onClick={() => {
+        <ThongBao
+          loai="thongTin"
+          nhan="Bước tiếp theo"
+          tieuDe="Khoản chi này chia dần vào chi phí nhiều tháng"
+          duKien={[
+            { nhan: 'Phiếu', gt: hoiThe.soCt },
+            { nhan: 'Khoản chi', gt: ghiChu || dsDong[0]?.ten || 'Chi phí chờ phân bổ' },
+            { nhan: 'Số tiền', gt: money(soTien) },
+          ]}
+          moTa="Phần mềm mở màn Tạo thẻ chi phí phân bổ, điền sẵn số trên. Bạn sửa lại được."
+          nutPhu={null}
+          onDong={() => { const h = hoiThe; setHoiThe(null); nav(`${path}/${h.idMoi}`, { replace: true }) }}
+          nut={{
+            ten: 'Mở màn tạo thẻ',
+            onClick: () => {
                   const h = hoiThe
                   setHoiThe(null)
                   nav('/app/ccdc/8-1-1?moi=the', {
@@ -1762,13 +1766,9 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
                       },
                     },
                   })
-                }}
-              >
-                Tiếp tục
-              </button>
-            </div>
-          </div>
-        </div>
+            },
+          }}
+        />
       )}
 
       {/* Sheet chọn Ngày */}

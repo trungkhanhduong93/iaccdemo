@@ -16,12 +16,12 @@ import { useDsPhieuSx } from '../../modules/kho/BangSanXuat'
 import { SX, TT_SX } from '../../modules/kho/san-xuat'
 import { DCN } from '../../modules/kho/dieu-chuyen'
 import { MAN_DC } from '../../modules/kho/dieu-chinh'
-import { CUA_HANG, KHOAN_MUC, TK_NGAN_HANG, daKhoaSo } from '../../data/mock'
-import { ctTtCon, dsDcCon, dsTraCon, dsTtCon, MAN_TRA_MUA, ghiNhatKy, soDaTra, soKeTiep, suaPhieu, themPhieu, ttThamChieu, xoaPhieu } from '../generic/daXoa'
+import { CUA_HANG, KHOAN_MUC, TK_NGAN_HANG, daKhoaSo, khoaSoDenCua } from '../../data/mock'
+import { apKhoPhieu, ctTtCon, dsDcCon, dsTraCon, dsTtCon, MAN_TRA_MUA, ghiNhatKy, soDaTra, soKeTiep, suaPhieu, themPhieu, ttThamChieu, xoaPhieu } from '../generic/daXoa'
 import { MAN_THU_CHI, TEN_CT_TT, TIEN_TO_CT_TT, lyDoKhongXoaTheCuaPhieu, theCuaPhieu, xoaTheCuaPhieu, type TraTu } from '../generic/ChungTuForm'
 import { MLichSu } from './MLichSu'
 import { loaiXuLy } from '../generic/BangKiemKe'
-import { HopXacNhan } from '../LocNangCao'
+import { ThongBao, type ThongBaoProps } from '../ThongBao'
 import { LichDon } from '../ChonNgay'
 import { Icon } from '../Icon'
 import { MChon } from './MChon'
@@ -103,7 +103,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
   const [hoiKhongSua, setHoiKhongSua] = useState(false)   // phiếu chi còn thẻ chi phí (T475)
   const [hoiKhongSuaTt, setHoiKhongSuaTt] = useState(false)   // phiếu mua đã thanh toán (T658)
   const [hoiBoGhi, setHoiBoGhi] = useState(false)
-  const [phieuChiVuaLap, setPhieuChiVuaLap] = useState<{ so: string; id: string } | null>(null)
+  const [chan, setChan] = useState<Omit<ThongBaoProps, 'loai' | 'onDong'> | null>(null)   // hộp chặn xoá thay toast (T889)
   const [moLichSuTt, setMoLichSuTt] = useState(false)
 
   const loai = cfgMan.loai?.find(x => x.k === row.loai) ?? cfgMan.loai?.[0]
@@ -292,7 +292,9 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
       goi: s.goi,
       ai: s.ten,
     })
-    toast(`Đã lập ${soMoi}, trả ${money(tt.soTien)} đ`)
+    toast(`Đã lập ${soMoi}, trả ${money(tt.soTien)} đ`, {
+      nut: { ten: 'Xem', onClick: () => { const p = apKhoPhieu(MAN_THU_CHI, []).find(r => r.so === soMoi); if (p) nav(`/app/${MAN_THU_CHI}/${p.id}`) } },
+    })
   }
 
   // Tên loại phiếu và số phiếu
@@ -452,16 +454,54 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
       toast('Đã sao chép chứng từ')
       nav(`${path}/moi${row.loai ? `?loai=${row.loai}` : ''}`, { state: { saoChep: row } })
     } else if (k === 'xoa') {
+      // Lỗi chặn có chứng từ: hộp chặn thay toast (T889, Chan.html hộp 5, 6)
+      const ngayCt = String(row.ngay ?? '').split(' ')[0]
+      const kk = khoaSoDenCua(row.cn)
+      const thangKhoa = `${String(kk.thang).padStart(2, '0')}/${kk.nam}`
+      const moKhoaSo = { ten: 'Mở màn khoá sổ', onClick: () => { setChan(null); nav(s.goi === 'PR' ? '/app/tong-hop/10-1-6' : '/app/he-thong/khoa-so') } }
+      const dong = { ten: 'Đóng', onClick: () => setChan(null) }
       if (daKhoaSo(String(row.ngay), row.cn)) {
-        toast(`${row.so} thuộc kỳ đã khoá sổ, không xoá được`)
+        setChan({
+          nhan: 'Không xoá được', tieuDe: `${row.so} nằm trong tháng đã khoá sổ`,
+          moTa: `Báo cáo tháng ${ngayCt.slice(3)} đã chốt. Xoá phiếu sẽ làm báo cáo đã nộp khác số trên phần mềm.`,
+          duKien: [{ nhan: 'Ngày phiếu', gt: ngayCt }, { nhan: 'Đã khoá sổ đến', gt: `Tháng ${thangKhoa}` }],
+          buoc: [`Mở khoá sổ về trước tháng ${ngayCt.slice(3)}.`, 'Xoá phiếu, rồi khoá sổ lại.'],
+          nut: moKhoaSo,
+        })
       } else if (coNutGhiSo && row.tt !== 'nhap') {
-        toast(`${row.so} đã ghi sổ, bỏ ghi sổ rồi mới xoá`)
+        setChan({
+          nhan: 'Không xoá được', tieuDe: `${row.so} đã ghi sổ`,
+          moTa: 'Phiếu đã có bút toán trong sổ. Bỏ ghi sổ trước rồi mới xoá được.',
+          buoc: ['Bỏ ghi sổ phiếu.', 'Xoá phiếu.'],
+          nut: { ten: 'Bỏ ghi sổ', onClick: () => { setChan(null); setHoiBoGhi(true) } },
+        })
       } else if (lyDoKhongXoaTheCuaPhieu(row)) {
-        toast(lyDoKhongXoaTheCuaPhieu(row)!)   // thẻ chi phí của phiếu thuộc kỳ đã khoá sổ (T475, theo T439)
+        // thẻ chi phí của phiếu thuộc kỳ đã khoá sổ (T475, theo T439)
+        setChan({
+          nhan: 'Không xoá được', tieuDe: `Thẻ chi phí của ${row.so} thuộc kỳ đã khoá sổ`,
+          moTa: lyDoKhongXoaTheCuaPhieu(row)!,
+          duKien: [{ nhan: 'Phiếu đang mở', gt: row.so }, { nhan: 'Đã khoá sổ đến', gt: `Tháng ${thangKhoa}` }],
+          nut: moKhoaSo,
+        })
       } else if (ttThamChieu(row)) {
-        toast(`${row.so} có phiếu ${ttThamChieu(row)!.so} tham chiếu, xoá ${ttThamChieu(row)!.so} trước`)
+        const tc = ttThamChieu(row)!
+        setChan({
+          nhan: 'Không xoá được', tieuDe: `${row.so} đang có phiếu ${tc.so} tham chiếu`,
+          duKien: [{ nhan: 'Phiếu đang mở', gt: row.so }, { nhan: 'Tham chiếu bởi', gt: tc.so }],
+          buoc: [`Xoá phiếu ${tc.so}.`, 'Quay lại xoá phiếu này.'],
+          nut: dong, nutPhu: null,
+        })
       } else if (((laSx && !sxNhap) || dcn === 'xdc') && row._phieuNhap) {
-        toast(`${row.so} đã có phiếu nhập ${(row._phieuNhap as { so: string }).so}, xoá phiếu nhập trước`)
+        const pn = row._phieuNhap as { id: string; so: string }
+        const manNhap = sx ? SX[SX[sx].doi!].man : DCN.ndc.man
+        setChan({
+          nhan: 'Không xoá được',
+          tieuDe: dcn === 'xdc' ? 'Cửa hàng nhận đã nhập phiếu điều chuyển này' : `${row.so} đã có phiếu nhập`,
+          moTa: dcn === 'xdc' ? 'Xoá phiếu xuất thì tồn kho bên nhận còn hàng nhưng bên xuất không trừ.' : undefined,
+          duKien: [{ nhan: 'Phiếu xuất', gt: row.so }, { nhan: 'Phiếu nhập', gt: pn.so, chip: 'Đã nhập' }],
+          buoc: [`Xoá phiếu nhập ${pn.so}${dcn === 'xdc' ? ' ở cửa hàng nhận' : ''}.`, 'Quay lại xoá phiếu xuất này.'],
+          nut: { ten: 'Mở phiếu nhập', onClick: () => { setChan(null); nav(`/app/${manNhap}/${pn.id}`) } },
+        })
       } else {
         setHoiXoa(true)
       }
@@ -618,8 +658,12 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
     </div>
   )
 
+  const hopChan = chan && <ThongBao loai="chan" {...chan} onDong={() => setChan(null)} />
+
   if (laTien) {
     return (
+      <>
+      {hopChan}
       <MDtThuChiXem
         sc={sc}
         mod={mod}
@@ -640,6 +684,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
         triNguoiGiaoDich={triNguoiGiaoDich}
         cuaHangTen={cuaHangTen}
       />
+      </>
     )
   }
 
@@ -658,25 +703,6 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
 
       {/* ── NỘI DUNG CUỘN ── */}
       <div className="m-pb-noi-dung">
-        {/* Thông báo vừa lập phiếu chi thanh toán */}
-        {phieuChiVuaLap && (
-          <div className="tt-toast">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4">
-              <path d="M5 12l5 5 9-10" />
-            </svg>
-            <span>
-              Đã lập phiếu chi <b>{phieuChiVuaLap.so}</b>
-            </span>
-            <button
-              type="button"
-              className="tt-toast-xem"
-              onClick={() => nav(`/app/tien/2-1-1/${phieuChiVuaLap.id}`)}
-            >
-              Xem
-            </button>
-          </div>
-        )}
-
         {/* 1. THẺ TỔNG QUAN (A2) */}
         {/* Hàng bán trả lại dùng thẻ đầu như phiếu mua: cửa hàng, nguồn, tổng tiền, khung thanh toán (T841) */}
         {nhomMb === 'mua' || laTraBan ? (
@@ -1429,51 +1455,92 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
 
       {/* Hộp xác nhận bỏ ghi sổ */}
       {hoiBoGhi && (
-        <HopXacNhan
+        <ThongBao
+          loai="canhBao"
+          nhan="Bỏ ghi sổ"
           tieuDe={`Bỏ ghi sổ ${soCt}?`}
-          nut="Bỏ ghi sổ"
-          onDong={() => setHoiBoGhi(false)}
-          onDongY={() => {
-            setHoiBoGhi(false)
-            toast('Đã bỏ ghi sổ')
+          moTa={`Bút toán của phiếu bị huỷ. Báo cáo tháng ${String(row.ngay ?? '').split(' ')[0].slice(3)} không tính phiếu này tới khi ghi sổ lại.`}
+          nut={{
+            ten: 'Bỏ ghi sổ',
+            onClick: () => {
+              setHoiBoGhi(false)
+              toast('Đã bỏ ghi sổ')
+            },
           }}
-        >
-          Bỏ ghi sổ sẽ huỷ các bút toán và cập nhật lại số dư sổ sách liên quan.
-        </HopXacNhan>
+          onDong={() => setHoiBoGhi(false)}
+        />
       )}
 
       {/* Phiếu chi còn thẻ chi phí phân bổ: không sửa, mở thẻ để xoá; xoá thẻ xong về phiếu ở chế độ sửa (T475, theo T439) */}
-      {hoiKhongSua && (
-        <HopXacNhan tieuDe={`Không sửa được ${soCt}`} nut="Mở thẻ" nutHuy="Đóng" nutDo={false}
-          onDong={() => setHoiKhongSua(false)}
-          onDongY={() => { setHoiKhongSua(false); nav(`/app/ccdc/8-1-1?mo=${theCuaPhieu(row)[0]}`, { state: { veGoc: `${path}/${row.id}` } }) }}>
-          Phiếu đã có thẻ chi phí phân bổ {theCuaPhieu(row).join(', ')}. Xoá thẻ trước rồi mới sửa được phiếu. Thẻ chỉ xoá được khi kỳ khoá sổ còn trước tháng bắt đầu phân bổ của thẻ.
-        </HopXacNhan>
-      )}
+      {hoiKhongSua && (() => {
+        const kk = khoaSoDenCua(row.cn)
+        const moThe = () => { setHoiKhongSua(false); nav(`/app/ccdc/8-1-1?mo=${theCuaPhieu(row)[0]}`, { state: { veGoc: `${path}/${row.id}` } }) }
+        return (
+          <ThongBao
+            loai="chan"
+            tieuDe="Phiếu đã sinh thẻ chi phí phân bổ"
+            moTa="Số tiền trên phiếu đang được chia dần vào chi phí các tháng. Sửa phiếu thì lịch phân bổ sai theo."
+            duKien={[
+              { nhan: 'Phiếu đang mở', gt: soCt },
+              { nhan: 'Thẻ phân bổ', gt: theCuaPhieu(row).join(', '), di: moThe },
+              { nhan: 'Đã khoá sổ đến', gt: `Tháng ${String(kk.thang).padStart(2, '0')}/${kk.nam}` },
+            ]}
+            buoc={[
+              `Mở thẻ ${theCuaPhieu(row)[0]}, bấm Xoá. Thẻ chỉ xoá được khi tháng bắt đầu phân bổ chưa khoá sổ.`,
+              'Quay lại phiếu, sửa rồi lưu. Phần mềm hỏi tạo lại thẻ.',
+            ]}
+            nut={{ ten: `Mở thẻ ${theCuaPhieu(row)[0]}`, onClick: moThe }}
+            onDong={() => setHoiKhongSua(false)}
+          />
+        )
+      })()}
 
       {/* Phiếu mua đã thanh toán: không sửa, mở phiếu chi để xoá trước (T658) */}
-      {hoiKhongSuaTt && (
-        <HopXacNhan tieuDe={`Không sửa được ${soCt}`} nut={dsChiMua.length ? 'Mở phiếu chi' : 'Đã hiểu'} nutHuy={dsChiMua.length ? 'Đóng' : null} nutDo={false}
-          onDong={() => setHoiKhongSuaTt(false)}
-          onDongY={() => { setHoiKhongSuaTt(false); if (dsChiMua.length) nav(`/app/tien/2-1-1/${dsChiMua[0].id}`) }}>
-          {dsChiMua.length
-            ? `Phiếu đã thanh toán bằng ${dsChiMua.map(c => c.so).join(', ')}. Xoá phiếu chi trước rồi mới sửa được phiếu.`
-            : 'Phiếu đã thanh toán. Xoá phiếu chi của phiếu này trước rồi mới sửa được phiếu.'}
-        </HopXacNhan>
-      )}
+      {hoiKhongSuaTt && (() => {
+        const moChi = (id: string) => { setHoiKhongSuaTt(false); nav(`/app/tien/2-1-1/${id}`) }
+        return (
+          <ThongBao
+            loai="chan"
+            tieuDe="Phiếu mua đã có phiếu chi trả nợ"
+            moTa="Phiếu đã trả tiền cho nhà cung cấp. Sửa số lượng, đơn giá lúc này sẽ lệch công nợ."
+            duKien={[
+              { nhan: 'Phiếu đang mở', gt: soCt },
+              ...dsChiMua.map(c => ({ nhan: 'Bị khoá bởi', gt: c.so, di: () => moChi(c.id), chip: 'Đã chi' })),
+              { nhan: 'Số tiền đã trả', gt: money(daTra) },
+            ]}
+            buoc={[
+              dsChiMua.length ? `Mở phiếu chi ${dsChiMua.map(c => c.so).join(', ')}, bấm Xoá.` : 'Mở phiếu chi của phiếu này, bấm Xoá.',
+              'Quay lại phiếu mua, sửa rồi lưu.',
+              'Lập lại phiếu chi theo số tiền mới.',
+            ]}
+            nut={dsChiMua.length
+              ? { ten: `Mở phiếu chi ${dsChiMua[0].so}`, onClick: () => moChi(dsChiMua[0].id) }
+              : { ten: 'Đóng', onClick: () => setHoiKhongSuaTt(false) }}
+            nutPhu={dsChiMua.length ? undefined : null}
+            onDong={() => setHoiKhongSuaTt(false)}
+          />
+        )
+      })()}
 
-      {/* Hộp xác nhận xoá */}
-      {hoiXoa && (
-        <HopXacNhan
-          tieuDe={`Xoá ${soCt}?`}
-          nut="Xoá phiếu"
-          onDong={() => setHoiXoa(false)}
-          onDongY={thucHienXoa}
-        >
-          Phiếu đã xoá không lấy lại được.
-          {laKk && dsDc.length > 0 && <> Phiếu điều chỉnh {dsDc.map(c => c.so).join(', ')} cũng bị xoá theo.</>}
-        </HopXacNhan>
-      )}
+      {/* Hộp xác nhận xoá: liệt kê chứng từ xoá theo (thẻ chi phí, phiếu điều chỉnh của kiểm kê) */}
+      {hoiXoa && (() => {
+        const kem = [
+          ...theCuaPhieu(row).map(so => ({ nhan: 'Thẻ chi phí phân bổ', gt: so })),
+          ...(laKk ? dsDc.map(c => ({ nhan: 'Phiếu điều chỉnh', gt: c.so })) : []),
+        ]
+        return (
+          <ThongBao
+            loai="xoa"
+            tieuDe={`Xoá phiếu ${soCt}?`}
+            moTa={kem.length ? 'Xoá xong không lấy lại được. Các chứng từ dưới đây xoá theo:' : 'Xoá xong không lấy lại được.'}
+            duKien={kem}
+            nut={{ ten: kem.length ? `Xoá phiếu và ${kem.length} chứng từ kèm` : 'Xoá phiếu', onClick: thucHienXoa }}
+            onDong={() => setHoiXoa(false)}
+          />
+        )
+      })()}
+
+      {hopChan}
 
       {/* ── SHEET LỊCH SỬ THANH TOÁN (A3) ── */}
       {moLichSuTt && (

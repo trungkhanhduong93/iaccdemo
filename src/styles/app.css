@@ -242,7 +242,7 @@ textarea.inp { height: auto; padding: 8px 11px; resize: vertical; }
 .overlay { position: fixed; inset: 0; background: rgba(14, 26, 43, .38); z-index: 50; display: flex; align-items: flex-start; justify-content: center; padding-top: 12vh; animation: fade .15s ease; }
 @keyframes fade { from { opacity: 0; } }
 @keyframes slide { from { transform: translateX(30px); opacity: 0; } }
-.toast { position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%); background: var(--ink); color: #fff; padding: 10px 16px; border-radius: 10px; font-weight: 500; z-index: 90; box-shadow: var(--sh-lg); animation: fade .2s ease; }
+.toast { position: fixed; right: 24px; bottom: 24px; width: min(420px, calc(100vw - 48px)); display: flex; align-items: flex-start; gap: 14px; background: var(--white); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; z-index: 1200; box-shadow: var(--sh-lg); animation: fade .2s ease; }   /* thẻ trắng góc dưới phải, nằm trên hộp, màn xem phiếu (T889) */
 
 /* ── Biểu đồ ── */
 .chart text { font-family: var(--fs); font-size: 11px; fill: var(--muted); }
@@ -759,8 +759,6 @@ textarea.inp { height: auto; padding: 8px 11px; resize: vertical; }
 .ds-tim-cot input { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; color: var(--ink); font-size: 13.5px; }
 .ds-dem-cot { color: var(--muted); font-size: 12.5px; white-space: nowrap; }
 .ds-hop-ds { flex: 1; min-height: 0; max-height: none; padding: 0 10px 6px; }
-.ds-hop-than { margin: 0; padding: 0 16px 14px; color: var(--body); font-size: 13.5px; }
-.btn.pri.ds-nut-xoa { background: var(--red); border-color: var(--red); }
 
 /* Nút thao tác hàng loạt */
 .ds-hang-loat { gap: 6px; padding: 0 10px; }
@@ -10916,7 +10914,6 @@ body:has(.m-lp) .m-thanh-duoi {
 
   .ds-hop > .ds-hop-ds,
   .ds-hop > .dm-hop-than,
-  .ds-hop > .ds-hop-than,
   .ds-hop > .stack {
     flex: 1 !important;
     overflow-y: auto !important;
@@ -17066,17 +17063,6 @@ a.lsq-dong:hover { background: var(--tint); }
   }
 }
 
-/* ── Gợi ý lập phiếu thu, chi sau khi tạo quỹ từ trang chủ (T250) ── */
-.goiy-lap-phieu .ds-hop-dau .ic { color: var(--green); }
-.goiy-lap-phieu-nut { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 0 16px 14px; }
-.goiy-lap-phieu-nut .btn { justify-content: center; }
-/* Điện thoại: hộp nhỏ giữa màn hình, không phủ kín như các hộp ds-hop khác */
-@media (max-width: 767px) {
-  .ds-hop-nen:has(> .goiy-lap-phieu) { align-items: center !important; justify-content: center !important; padding: 16px !important; }
-  .ds-hop-nen > .ds-hop.goiy-lap-phieu { width: 100% !important; height: auto !important; border-radius: 14px !important; }
-  .ds-hop.goiy-lap-phieu > .ds-hop-than { flex: none !important; }
-  .ds-hop.goiy-lap-phieu > .ds-chan { position: static !important; }
-}
 /* Ô bên phải thanh tab: chọn tháng năm ở Tổng quan gói Free (T250) */
 .mtabs-phai { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); display: flex; align-items: center; }
 .mtabs-phai:empty { display: none; }
@@ -21489,10 +21475,6 @@ input.bat-tat:disabled { opacity: .5; cursor: not-allowed; }
   max-height: 80vh !important;
 }
 
-.m-lp-hop-hoi-the {
-  border-radius: 14px !important;
-  overflow: hidden;
-}
 
 /* ── Hộp phím tắt form toàn màn: mỗi phím một ô (T297) ── */
 .phim-dong { justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--line-2); }
@@ -22184,7 +22166,6 @@ button[class*="btn-"] .ic .l2 {
 /* ── Khoá sổ gói Free (T315) ── */
 .check .ks-xem { margin-left: auto; }
 .ks-ly-do { width: 100%; resize: vertical; }
-.ks-nut { display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; }
 .bbt-nhac-khoa { display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 12px; border-radius: 8px; background: var(--amber-t); color: var(--amber); font-size: 13px; font-weight: 600; text-decoration: none; white-space: nowrap; }
 .bbt-nhac-khoa b { margin-left: 6px; color: var(--blue); }
 .bbt-nhac-khoa:hover b { text-decoration: underline; }
@@ -29231,32 +29212,8 @@ a.tx-item:hover {
   padding: 2px 12px;
 }
 
-.tt-toast {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: var(--green-t, #e3f4ea);
-  color: var(--green, #138a52);
-  border-radius: 12px;
-  padding: 10px 12px;
-  font-size: 13px;
-  margin-bottom: 4px;
-}
 
-.tt-toast span {
-  flex: 1;
-  color: var(--ink, #1f2225);
-}
 
-.tt-toast-xem {
-  color: var(--blue, #0560a6);
-  cursor: pointer;
-  background: none;
-  border: none;
-  font-weight: 600;
-  font-size: 13px;
-  padding: 0;
-}
 
 /* ── Vùng cuộn điện thoại không bị thanh tab che (T416) ── */
 .m-app:not(.m-cap-2) .m-bc {
@@ -31659,11 +31616,6 @@ a.tx-item:hover {
 .ks-bang th, .ks-bang td { vertical-align: middle; }
 .ks-bang tr.ks-dong-mo td { background: var(--tint); }
 .ks-nam { min-width: 120px; }
-.ds-hop.ks-hop-rong { width: 640px; max-width: calc(100vw - 32px); }
-.ds-hop.ks-hop-ls { width: 900px; }
-.ks-pham { margin: 0 0 8px; color: var(--muted); }
-.ks-hop-rong .check small { margin-left: auto; text-align: right; }
-.ks-hop-rong .check .ks-xem { margin-left: 8px; }
 .ks-den-thang { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
 .ks-ds-ch label { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; cursor: pointer; }
 .ks-ds-ch label.muted { cursor: default; }
@@ -37662,7 +37614,6 @@ body:has(.m-app) .m-thanh-duoi .m-tab.on .m-tab-ic .ic .l2 {
   .overlay.ds-hop-nen:has(> .ds-hop[role="alertdialog"]) { align-items: center !important; justify-content: center !important; padding: 24px !important; }
   .ds-hop-nen > .ds-hop[role="alertdialog"] { width: 100% !important; max-width: 360px !important; height: auto !important; max-height: 80dvh !important; border-radius: 14px !important; }
   .ds-hop[role="alertdialog"] > .ds-hop-dau { border-bottom: 0 !important; padding: 16px 16px 6px !important; }
-  .ds-hop[role="alertdialog"] > .ds-hop-than { flex: none !important; padding: 0 16px 16px !important; }
   .ds-hop[role="alertdialog"] > .ds-chan { position: static !important; border-top: 0 !important; padding: 0 16px 16px !important; }
 }
 
@@ -48849,11 +48800,6 @@ textarea.m-tpb-inp { height: auto; padding: 8px 12px; }
 .td-chep-ds small { margin-left: auto; font-size: 12px; color: var(--muted); }
 .td-canh { display: flex; gap: 10px; padding: 12px; border-radius: 10px; background: var(--amber-t); color: #7a4d08; line-height: 1.5; }
 .td-canh svg { flex-shrink: 0; color: var(--amber); margin-top: 1px; }
-.td-hop-giua { width: 420px; align-items: center; text-align: center; padding: 24px 24px 20px; box-sizing: border-box; gap: 10px; }
-.td-bieu-tuong { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; }
-.td-bieu-tuong.do { background: var(--red-t); color: var(--red); }
-.td-bieu-tuong.cam { background: var(--amber-t); color: var(--amber); }
-.td-hop-giua .muted { line-height: 1.5; }
 .td-ly-do { color: var(--body); line-height: 1.6; }
 .td-ly-do a { font-weight: 600; }
 .td-giua-nut { display: flex; gap: 8px; width: 100%; margin-top: 8px; }
@@ -48872,3 +48818,122 @@ textarea.m-tpb-inp { height: auto; padding: 8px 12px; }
 .btn.ds-nut-dong-bo .ic {
   color: #fff;
 }
+
+/* ── Thông báo dùng chung ThongBao (T889) ── */
+/* Hộp: máy tính giữa màn rộng 600px; điện thoại tấm trượt từ đáy. Màu theo loại qua --tb-m (chữ, nét), --tb-n (nền ô biểu tượng). */
+.overlay.tb-nen { align-items: center; padding: 24px; z-index: 1100; }   /* đè màn xem phiếu, thẻ (m-pb-man 1000), như T475 */
+.tb { --tb-m: var(--blue); --tb-n: var(--tint); display: flex; flex-direction: column; width: 600px; max-width: 100%; max-height: calc(100dvh - 48px); overflow-y: auto; background: var(--white); border-radius: 16px; box-shadow: var(--sh-lg); }
+.tb.tb-chan, .tb.tb-xoa { --tb-m: var(--red); --tb-n: var(--red-t); }
+.tb.tb-canhBao { --tb-m: var(--amber); --tb-n: var(--amber-t); }
+.tb.tb-xong { --tb-m: var(--green); --tb-n: var(--green-t); }
+.tb-keo { display: none; }
+.tb-dau { display: flex; align-items: flex-start; gap: 18px; padding: 28px 32px 0; }
+.tb-ic { flex: none; width: 56px; height: 56px; border-radius: 16px; display: flex; align-items: center; justify-content: center; background: var(--tb-n); color: var(--tb-m); }
+.tb-ic svg { width: 28px; height: 28px; }
+.tb-chu { flex: 1; min-width: 0; }
+.tb-nhan { display: block; padding: 0; border-radius: 0; background: none; margin: 2px 0 6px; font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--tb-m); }
+.tb-tieu { margin: 0; font-size: 22px; line-height: 30px; font-weight: 700; color: var(--ink); }
+.tb-mota { margin-top: 16px; font-size: 15px; line-height: 24px; color: var(--body); }
+.tb-x { flex: none; width: 40px; height: 40px; border: 0; border-radius: 10px; background: transparent; color: var(--muted); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+.tb-x:hover { background: var(--soft); color: var(--ink); }
+.tb-x svg { width: 20px; height: 20px; }
+.tb-than { display: flex; flex-direction: column; gap: 18px; padding: 16px 32px 0 106px; }
+.tb-dk { margin: 0; display: flex; flex-direction: column; gap: 10px; padding: 14px 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--hdb-chan); }
+.tb-dk-dong { display: flex; justify-content: space-between; align-items: center; gap: 12px; font-size: 14px; color: var(--body); }
+.tb-dk dd { margin: 0; display: flex; align-items: center; gap: 10px; color: var(--ink); font-weight: 600; text-align: right; }
+.tb-link { border: 0; padding: 0; background: none; font: inherit; font-size: 15px; font-weight: 700; color: var(--blue); cursor: pointer; }
+.tb-link:hover { color: var(--blue-d); text-decoration: underline; }
+.tb-chip { display: inline-flex; align-items: center; height: 24px; padding: 0 10px; border-radius: 999px; font-size: 12px; font-weight: 600; background: var(--amber-t); color: var(--amber); }
+.tb-ah { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.tb-ah-o { display: flex; flex-direction: column; gap: 2px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px; }
+.tb-ah-o span { font-size: 12px; color: var(--muted); }
+.tb-ah-o b { font-size: 17px; color: var(--ink); }
+.tb-ah-do b { color: var(--red); }
+.tb-ah-xanh b { color: var(--green); }
+.tb-ah-vang b { color: var(--amber); }
+.tb-buoc-dau { margin-bottom: 10px; font-size: 12px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); }
+.tb-buoc ol { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.tb-buoc li { display: flex; align-items: flex-start; gap: 12px; font-size: 14px; line-height: 22px; color: var(--body); }
+.tb-buoc-so { flex: none; width: 24px; height: 24px; border-radius: 999px; display: flex; align-items: center; justify-content: center; background: var(--tint); color: var(--blue); font-size: 12px; font-weight: 700; }
+/* .tb-chan vừa là loại 'chan' (trên .tb) vừa là chân nút (con của .tb): chân nút luôn viết .tb > .tb-chan */
+.tb > .tb-chan { display: flex; align-items: center; gap: 10px; margin-top: 8px; padding: 24px 32px 28px; }
+.tb > .tb-chan .btn { height: 44px; padding: 0 20px; border-radius: 10px; font-size: 15px; font-weight: 600; }
+.tb > .tb-chan .tb-nut-phu { color: var(--body); }
+.tb > .tb-chan .tb-nut-do { color: var(--red); border-color: transparent; background: none; box-shadow: none; padding-left: 4px; }
+.tb > .tb-chan .btn.pri.tb-nut-xoa, .tb > .tb-chan .btn.pri.tb-nut-xoa:hover { background: var(--red); border-color: var(--red); }
+
+/* Toast có loại theo bản vẽ Toast.html: biểu tượng 36px, nút chữ bên phải */
+.toast { --tb-m: var(--green); --tb-n: var(--green-t); }
+.toast-loi { --tb-m: var(--red); --tb-n: var(--red-t); }
+.toast-thongTin { --tb-m: var(--blue); --tb-n: var(--tint); }
+.toast-canhBao { --tb-m: var(--amber); --tb-n: var(--amber-t); }
+.toast-ic { flex: none; width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; background: var(--tb-n); color: var(--tb-m); }
+.toast-ic svg { width: 20px; height: 20px; }
+.toast-chu { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; font-size: 14px; line-height: 21px; color: var(--body); }
+.toast-chu b { font-size: 15px; color: var(--ink); }
+.toast-nut { flex: none; align-self: center; padding: 8px; border: 0; background: transparent; font: inherit; font-size: 14px; font-weight: 700; color: var(--blue); cursor: pointer; }
+.toast-dong { flex: none; align-self: center; width: 32px; height: 32px; border: 0; border-radius: 8px; background: transparent; color: var(--muted); font-size: 20px; line-height: 1; cursor: pointer; }
+.toast-dong:hover { background: var(--soft); color: var(--ink); }
+
+@keyframes tb-truot { from { transform: translateY(40px); opacity: 0; } }
+@media (max-width: 767px) {
+  .overlay.tb-nen { align-items: flex-end; justify-content: stretch; padding: 0; }
+  .tb { width: 100%; max-height: 90dvh; gap: 14px; padding: 10px 20px calc(24px + env(safe-area-inset-bottom, 0px)); border-radius: 24px 24px 0 0; animation: tb-truot .2s ease; }
+  .tb-keo { display: block; flex: none; align-self: center; width: 40px; height: 5px; border-radius: 99px; background: var(--line); }
+  .tb-dau { gap: 14px; padding: 0; }
+  .tb-ic { width: 48px; height: 48px; border-radius: 14px; }
+  .tb-ic svg { width: 24px; height: 24px; }
+  .tb-nhan { margin: 0 0 2px; font-size: 11px; }
+  .tb-tieu { font-size: 19px; line-height: 26px; }
+  .tb-mota { margin: 8px 0 0 -62px; font-size: 14px; line-height: 22px; }   /* điện thoại: mô tả tràn hết bề ngang như Toast.html, bù ô biểu tượng 48px + khe 14px */
+  .tb-x { display: none; }
+  .tb-than { gap: 14px; padding: 0; }
+  .tb-dk { gap: 8px; padding: 12px 14px; }
+  .tb-dk-dong { font-size: 13px; }
+  /* nút xếp dọc, nút chính trên cùng: DOM là thêm, giãn, phụ, chính */
+  .tb > .tb-chan { flex-direction: column-reverse; align-items: stretch; margin-top: 4px; padding: 0; }
+  .tb > .tb-chan .grow { display: none; }
+  .tb > .tb-chan .btn { width: 100%; height: 46px; border-radius: 13px; }
+  /* toast sát trên thanh tab dưới, rộng hết màn trừ lề 13px */
+  .toast { left: 13px; right: 13px; width: auto; bottom: calc(var(--m-thanh-duoi, 85px) + 32px + env(safe-area-inset-bottom, 0px)); }
+}
+/* Phần riêng của hộp danh mục, khoá sổ, chọn cửa hàng (T889) */
+/* ── Nhóm C T889: bảng so sánh trong ThongBao (CanhBao.html hộp 2 "Ô | Đang là | Đổi thành", hộp 3 "Mặt hàng | Bảng giá | Áp dụng") ── */
+/* Không dùng .tb-bang vì app.css đã có .tb-bang cho việc khác (dòng ~48062). */
+.tb-doi-chieu { width: 100%; border-collapse: separate; border-spacing: 0; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; font-size: 14px; }
+.tb-doi-chieu th { background: var(--tint); text-align: left; font-weight: 600; padding: 9px 12px; color: var(--ink); }
+.tb-doi-chieu td { padding: 9px 12px; border-top: 1px solid var(--line); color: var(--body); }
+.tb-doi-chieu td b { color: var(--ink); }
+/* Danh sách trùng giá dài: cuộn trong hộp, không đẩy nút ra ngoài màn hình */
+.tb-than:has(> .tb-doi-chieu) { max-height: 50vh; overflow-y: auto; }
+/* ── Nhóm E T889: khoá sổ, tồn đầu, chọn cửa hàng trong ThongBao ── */
+/* Hộp khoá, mở khoá hàng loạt, lịch sử khoá sổ cần rộng hơn 600px: bỏ thụt trái 106px, nới hộp. Sửa selector .tb-than nếu nhóm A đặt tên khác. */
+.tb:has(.ks-tb-rong) { width: min(760px, calc(100vw - 32px)); }
+.tb-than:has(> .ks-tb-rong) { margin-left: 0; padding-left: 0; }
+.ks-tb-rong { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.ks-tb-rong .ks-den-thang, .ks-tb-rong .ks-thanh-loc { flex-wrap: wrap; }
+
+/* Danh sách 5 bước khoá sổ: dấu xong xanh, dấu chấm than vàng, link Làm ngay */
+.ks-tb-buoc { list-style: none; margin: 0; padding: 0; border: 1px solid var(--line); border-radius: 12px; }
+.ks-tb-buoc li { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-bottom: 1px solid var(--line); font-size: 14px; }
+.ks-tb-buoc li:last-child { border-bottom: 0; }
+.ks-tb-buoc b { flex: 1 1 auto; min-width: 45%; font-weight: 600; color: var(--ink); }
+.ks-tb-buoc small { flex: 0 1 auto; text-align: right; }
+.ks-tb-dau { width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; flex: none; }
+.ks-tb-buoc li.xong .ks-tb-dau { background: var(--green-t); color: var(--green); }
+.ks-tb-buoc li.thieu .ks-tb-dau { background: var(--amber-t); color: var(--amber); }
+.ks-tb-lam { flex: none; font-weight: 600; color: var(--blue); text-decoration: none; }
+.ks-tb-lam:hover { text-decoration: underline; }
+.ks-tb-canh { margin: 0; padding: 10px 14px; border-radius: 10px; background: var(--amber-t); color: var(--ink); font-size: 14px; line-height: 22px; }
+
+/* Nhãn ô Lý do mở khoá */
+.ks-tb-nhan { display: block; font-size: 13px; font-weight: 600; color: var(--body); margin: 0 0 6px; }
+.tb-than .ks-ly-do { width: 100%; }
+
+/* Chọn cửa hàng trước khi lập phiếu (máy tính và tấm trượt điện thoại) */
+.ccht-tb-tim { margin: 0 0 10px; }
+.ccht-tb-tim .icon-btn { border: 0; background: none; padding: 0; cursor: pointer; }
+.ccht-tb-ds { display: flex; flex-direction: column; gap: 8px; max-height: 300px; overflow-y: auto; }
+.ccht-tb-dong { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 44px; padding: 0 14px; border: 1px solid var(--line); border-radius: 10px; background: transparent; color: var(--ink); font: inherit; font-size: 15px; font-weight: 600; text-align: left; cursor: pointer; }
+.ccht-tb-dong:hover, .ccht-tb-dong:focus-visible { border-color: var(--blue); background: var(--tint); }
+.ccht-tb-dong .ic { color: var(--muted); }

@@ -5,7 +5,6 @@ import { Dropdown, MenuHead, MenuItem, MenuSep } from './Dropdown'
 import { Icon } from './Icon'
 import { IconExcel } from './IconFigma'
 import { useSession } from '../app/session'
-import { HopXacNhan } from './LocNangCao'
 
 
 export function NutExcel({

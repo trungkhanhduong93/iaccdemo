@@ -13,7 +13,7 @@ import { Table } from '../../ui/Table'
 import { fold, k, money } from '../../ui/format'
 import { ThanhLoc } from '../../ui/ThanhLoc'
 import { Select } from '../../ui/Dropdown'
-import { HopXacNhan } from '../../ui/LocNangCao'
+import { ThongBao } from '../../ui/ThongBao'
 import { CUA_HANG, DON_VI, KHACH, NCC, NVL } from '../../data/mock'
 import { TEN_TK, soCai } from './so-cai'
 export type TabKey = 'tk' | 'tien' | 'kh' | 'ncc' | 'kho'
@@ -242,10 +242,12 @@ export function SoDuBanDau({ sc, mod }: ScreenProps) {
         )}
       </section>
       {hoiXoa && (
-        <HopXacNhan tieuDe="Xoá dòng số dư?" nut="Xoá dòng" onDong={() => setHoiXoa(null)}
-          onDongY={() => { setAll(ds => ds.filter(r => r.id !== hoiXoa.id)); toast('Đã xoá dòng số dư'); setHoiXoa(null) }}>
-          {khoa(hoiXoa) ? <>Số dư ban đầu của <b>{hoiXoa.ct || `${hoiXoa.tk} · ${hoiXoa.ten}`}</b> sẽ bị xoá khỏi bảng.</> : 'Dòng mới chưa chọn đối tượng sẽ bị xoá khỏi bảng.'}
-        </HopXacNhan>
+        <ThongBao loai="xoa" nhan="Xoá số dư ban đầu" tieuDe={hoiXoa.tk ? `Xoá số dư tài khoản ${hoiXoa.tk}?` : 'Xoá dòng số dư?'}
+          anhHuong={khoa(hoiXoa) ? [Number(hoiXoa.co) > 0 ? { nhan: 'Dư Có', gt: money(Number(hoiXoa.co)) } : { nhan: 'Dư Nợ', gt: money(Number(hoiXoa.no) || 0) },
+            { nhan: hoiXoa.ct ? 'Đối tượng' : 'Tên tài khoản', gt: String(hoiXoa.ct || hoiXoa.ten || '') }] : undefined}
+          moTa={khoa(hoiXoa) ? 'Bảng cân đối tài khoản kỳ đầu sẽ lệch Nợ, Có cho tới khi nhập lại.' : 'Dòng mới chưa chọn đối tượng sẽ bị xoá khỏi bảng.'}
+          nut={{ ten: 'Xoá dòng số dư', onClick: () => { setAll(ds => ds.filter(r => r.id !== hoiXoa.id)); toast('Đã xoá dòng số dư'); setHoiXoa(null) } }}
+          onDong={() => setHoiXoa(null)} />
       )}
     </div>
   )

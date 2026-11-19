@@ -1215,4 +1215,15 @@ Trum chốt 15/11/2026 (T849, T850).
 
 ## QD112. Kho gói Plus dùng Xuất, Nhập điều chuyển; Xuất kho định lượng sang Bán hàng (đang soạn)
 
-## QD113. Thông báo dùng chung ThongBao: 6 loại, chỉ xoá có nút đỏ, toast có loại (đang soạn)
+## QD113. Thông báo dùng chung ThongBao: 6 loại, chỉ xoá có nút đỏ, toast có loại (19/11/2026)
+
+Trum chốt 18/11/2026 (T889), theo bản vẽ `backup/mau-T889/`.
+
+- Mọi hộp báo, hỏi, chặn của 3 gói, máy tính và điện thoại dùng `ThongBao` ở `src/ui/ThongBao.tsx`. Không dựng hộp riêng. `HopXacNhan` chỉ còn để gọi lại `ThongBao`.
+- 6 loại: `chan` (không làm được, kèm dữ kiện và cách gỡ), `xoa`, `canhBao` (làm được nhưng số liệu đổi), `hoi` (thao tác lớn như khoá sổ, đổi chế độ), `xong`, `thongTin`. Loại quyết định biểu tượng, màu, nhãn.
+- Chỉ loại `xoa` có nút đỏ. Nút phụ ghi "Huỷ" khi hỏi, "Đóng" khi báo. Nút chính ghi hành động, không ghi OK, Đồng ý, Xác nhận.
+- Tiêu đề nói lý do. Số phiếu đặt trong khối dữ kiện, bấm mở được, không nhét vào câu văn. Ô không có hàm tính sẵn thì bỏ, không bịa số.
+- Lỗi chặn có chứng từ gây chặn dùng hộp `chan`, không dùng toast.
+- Toast có loại: `toast(m, { loai, phu, nut })`. Không truyền thì `xong` (3 giây). `loi`, `thongTin` 5 giây, `canhBao` đứng tới khi bấm đóng. Báo thiếu, sai ô nhập dùng `loi`.
+- Khoá sổ giữ nghiệp vụ cũ: còn bước chưa xong vẫn khoá được, hộp chỉ liệt kê bước thiếu.
+- Điện thoại: hộp thành tấm trượt từ đáy, nút xếp dọc, nút chính trên cùng.

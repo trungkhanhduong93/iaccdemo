@@ -10,7 +10,7 @@ import { MTrong } from './MTrong'
 import { MChon } from './MChon'
 import { LichDon, docNgay, type KhoangNgay } from '../ChonNgay'
 import { quayLaiMobile } from './quayLai'
-import { HopXacNhan } from '../LocNangCao'
+import { ThongBao } from '../ThongBao'
 import { thayNhomCatalogRows, useAddedCatalogRows } from '../generic/danhMucStore'
 import {
   type LoaiGia,
@@ -145,7 +145,7 @@ export const MBangGia: FC<ScreenProps> = ({ sc, mod }) => {
   const [moChonDt, setMoChonDt] = useState(false)
   const [moLichTu, setMoLichTu] = useState(false)
   const [moLichDen, setMoLichDen] = useState(false)
-  const [hoiTrung, setHoiTrung] = useState<{ ds: string[] } | null>(null)
+  const [hoiTrung, setHoiTrung] = useState<{ ds: { bg: string; hang: string }[] } | null>(null)
 
   // Modal thêm/sửa dòng mặt hàng
   const [moTamItem, setMoTamItem] = useState(false)
@@ -296,19 +296,19 @@ export const MBangGia: FC<ScreenProps> = ({ sc, mod }) => {
 
   const luuDongItem = () => {
     if (!itemMa) {
-      toast('Vui lòng chọn mặt hàng')
+      toast('Vui lòng chọn mặt hàng', { loai: 'loi' })
       return
     }
     const giaSo = docSoQT(itemGia)
     if (giaSo <= 0) {
-      toast('Đơn giá phải lớn hơn 0')
+      toast('Đơn giá phải lớn hơn 0', { loai: 'loi' })
       return
     }
     const trung = formDong.some(
       (d, idx) => idx !== dangSuaIdx && d.ma === itemMa && d.dvt === itemDvt,
     )
     if (trung) {
-      toast('Mặt hàng và ĐVT này đã có trong danh sách')
+      toast('Mặt hàng và ĐVT này đã có trong danh sách', { loai: 'loi' })
       return
     }
 
@@ -347,11 +347,11 @@ export const MBangGia: FC<ScreenProps> = ({ sc, mod }) => {
 
   const luuForm = (boQuaTrung = false) => {
     if (!formTen.trim()) {
-      toast('Nhập tên bảng giá')
+      toast('Nhập tên bảng giá', { loai: 'loi' })
       return
     }
     if (formRieng && !formDt) {
-      toast(`Chọn ${nhanDt}, hoặc chọn áp dụng cho mọi ${nhanDt}`)
+      toast(`Chọn ${nhanDt}, hoặc chọn áp dụng cho mọi ${nhanDt}`, { loai: 'loi' })
       return
     }
     const knTu = docNgay(formTuNgay)
@@ -360,12 +360,13 @@ export const MBangGia: FC<ScreenProps> = ({ sc, mod }) => {
     if (ngayHong) {
       toast(
         'Thời gian áp dụng: nhập đủ Từ ngày, Đến ngày dạng dd/mm/yyyy, Đến ngày không trước Từ ngày',
+        { loai: 'loi' },
       )
       return
     }
     const dongDien = formDong.filter(d => d.ma && docSoQT(d.gia) > 0)
     if (!dongDien.length) {
-      toast('Chọn ít nhất một mặt hàng và nhập đơn giá')
+      toast('Chọn ít nhất một mặt hàng và nhập đơn giá', { loai: 'loi' })
       return
     }
 
@@ -374,7 +375,7 @@ export const MBangGia: FC<ScreenProps> = ({ sc, mod }) => {
     dongDien.forEach(d => dem.set(khoaTrung(d), (dem.get(khoaTrung(d)) ?? 0) + 1))
     const coTrung = dongDien.some(d => (dem.get(khoaTrung(d)) ?? 0) > 1)
     if (coTrung) {
-      toast('Trùng mặt hàng và ĐVT với dòng khác trong bảng giá')
+      toast('Trùng mặt hàng và ĐVT với dòng khác trong bảng giá', { loai: 'loi' })
       return
     }
 
@@ -401,10 +402,10 @@ export const MBangGia: FC<ScreenProps> = ({ sc, mod }) => {
           const k = `${r.soBg} ${r.tenBg}`
           nhom.set(k, [...(nhom.get(k) ?? []), `${r.tenHang} (${r.dvt})`])
         })
-      const trung = [...nhom].map(
-        ([k, ds]) =>
-          `${k}: ${ds.slice(0, 3).join(', ')}${ds.length > 3 ? ` và ${ds.length - 3} dòng khác` : ''}`,
-      )
+      const trung = [...nhom].map(([k, ds]) => ({
+        bg: k,
+        hang: `${ds.slice(0, 3).join(', ')}${ds.length > 3 ? ` và ${ds.length - 3} dòng khác` : ''}`,
+      }))
       if (trung.length) {
         setHoiTrung({ ds: trung })
         return
@@ -939,27 +940,21 @@ export const MBangGia: FC<ScreenProps> = ({ sc, mod }) => {
 
         {/* Hộp xác nhận khi trùng giá với bảng giá khác (QD101) */}
         {hoiTrung && (
-          <HopXacNhan
+          <ThongBao
+            loai="canhBao"
+            nhan="Trùng giá"
             tieuDe="Mặt hàng đã có giá ở bảng giá khác"
-            nut="Vẫn lưu"
-            nutDo={false}
+            duKien={hoiTrung.ds.map(t => ({ nhan: t.bg, gt: t.hang }))}
+            moTa={`Cùng ${formRieng ? nhanDt : `giá chung cho mọi ${nhanDt}`}, thời gian và cửa hàng. Vẫn lưu được. Ngày nào hai bảng cùng áp thì bảng bắt đầu muộn hơn được dùng.`}
             onDong={() => setHoiTrung(null)}
-            onDongY={() => {
-              setHoiTrung(null)
-              luuForm(true)
+            nut={{
+              ten: 'Vẫn lưu',
+              onClick: () => {
+                setHoiTrung(null)
+                luuForm(true)
+              },
             }}
-          >
-            <p>
-              Cùng {formRieng ? nhanDt : `giá chung cho mọi ${nhanDt}`}, mặt hàng, ĐVT đã có giá
-              trong thời gian và cửa hàng này:
-            </p>
-            <ul>
-              {hoiTrung.ds.map(t => (
-                <li key={t}>{t}</li>
-              ))}
-            </ul>
-            <p>Lưu vẫn được, khi bán hàng, mua hàng bảng giá bắt đầu muộn hơn được ưu tiên.</p>
-          </HopXacNhan>
+          />
         )}
       </div>
     )
@@ -1108,20 +1103,27 @@ export const MBangGia: FC<ScreenProps> = ({ sc, mod }) => {
 
         {/* Hộp xác nhận xoá */}
         {hoiXoa && (
-          <HopXacNhan
+          <ThongBao
+            loai="xoa"
+            nhan="Xoá bảng giá"
             tieuDe={`Xoá bảng giá ${dangXem.soBg}?`}
-            nut="Xoá"
+            duKien={[
+              { nhan: 'Tên bảng giá', gt: dangXem.tenBg },
+              { nhan: 'Số mặt hàng', gt: `${dangXem.dong.length} dòng` },
+              { nhan: 'Áp dụng', gt: dangXem.thoiGian },
+            ]}
+            moTa="Xoá xong không lấy lại được. Phiếu lập trong khoảng ngày này không còn lấy giá từ bảng này."
             onDong={() => setHoiXoa(false)}
-            onDongY={() => {
-              thayNhomCatalogRows(DM, r => r.soBg === dangXem.soBg, [])
-              toast(`Đã xoá bảng giá ${dangXem.soBg}`)
-              setHoiXoa(false)
-              quayLaiMobile(nav, path)
+            nut={{
+              ten: 'Xoá bảng giá',
+              onClick: () => {
+                thayNhomCatalogRows(DM, r => r.soBg === dangXem.soBg, [])
+                toast(`Đã xoá bảng giá ${dangXem.soBg}`)
+                setHoiXoa(false)
+                quayLaiMobile(nav, path)
+              },
             }}
-          >
-            Xoá bảng giá {dangXem.tenBg} cùng {dangXem.dong.length} dòng mặt hàng, áp dụng{' '}
-            {dangXem.thoiGian}.
-          </HopXacNhan>
+          />
         )}
       </div>
     )

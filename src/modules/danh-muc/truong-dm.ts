@@ -14,6 +14,7 @@ import { createElement, type ReactNode } from 'react'
 import type { Col, Row } from '../types'
 import type { Goi } from '../../app/plan'
 import type { CheDo } from '../../app/che-do'
+import type { AnhHuongThongBao } from '../../ui/ThongBao'
 
 export type KieuTruong = 'chu' | 'so' | 'tien' | 'chon' | 'chonNhieu' | 'chonTim' | 'tich' | 'ngay' | 'khoangNgay' | 'nhieuDong' | 'chonHaiCot'   // chonNhieu: chọn nhiều, lưu dạng "A, B", chọn đủ lưu "Tất cả" (T144); chonTim: chọn một có ô tìm, dòng hiện tên và mã (T151); khoangNgay: lưu "dd/mm/yyyy - dd/mm/yyyy" (T154); chonHaiCot: chọn nhiều hai cột (T751)
 
@@ -142,10 +143,13 @@ export interface CauHinhDM {
   moi?: (rows: Row[], ctx: { kieu?: string; ngayDauNam: string }) => Record<string, any>   // giá trị sẵn khi thêm mới theo kiểu thêm mới, ngày đầu năm của đơn vị
   doi?: (k: string, v: Record<string, any>, rows: Row[], s?: { goi: Goi; cheDo: CheDo }) => Record<string, any>   // ô tự tính khi ô k đổi
   goiHoiDoi?: Goi[]   // chỉ hỏi hoiDoi ở các gói này (T144: nhóm hàng hoá gói Free, Standard không có ngầm định)
-  hoiDoi?: (k: string, v: Record<string, any>, rows: Row[]) => { tieuDe: string; hoi: string; sua: Record<string, any>; dien?: Record<string, any> } | null   // hỏi khi đổi ô (T136)
+  hoiDoi?: (k: string, v: Record<string, any>, rows: Row[]) => ({ tieuDe: string; hoi: string; sua: Record<string, any>; dien?: Record<string, any> } & HoiThem) | null   // hỏi khi đổi ô (T136)
   loi?: (v: Record<string, any>) => string | null   // lỗi chặn lưu, báo bằng thông báo
-  kiemLuu?: (v: Record<string, any>) => { tieuDe: string; hoi: string; sua: Record<string, any> } | null   // lỗi cần hỏi trước khi lưu; đồng ý thì áp sua rồi lưu
+  kiemLuu?: (v: Record<string, any>) => ({ tieuDe: string; hoi: string; sua: Record<string, any> } & HoiThem) | null   // lỗi cần hỏi trước khi lưu; đồng ý thì áp sua rồi lưu
 }
+
+/** Phần hiện thêm trên hộp ThongBao khi hỏi (T889): loại, ô ảnh hưởng, bảng cũ/mới, tên nút */
+export type HoiThem = { loai?: 'canhBao' | 'hoi'; nhan?: string; anhHuong?: AnhHuongThongBao[]; bang?: { cot: string[]; dong: string[][] }; nut?: string; nutPhu?: string }
 
 export const TRUONG_DM: Record<string, CauHinhDM> = {
   // 1.2 Hàng hoá (DM_ITEM, DM_ITEM_CLASS)
@@ -294,6 +298,7 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
       const dien: Record<string, any> = {}
       const sua: Record<string, any> = {}
       const tenDoi: string[] = []
+      const bang: string[][] = []   // Ô | Đang là | Đổi thành trên hộp hỏi (T889)
 
       for (const f of O_NGAM_DINH) {
         const valNhom = nhomMoi[f]
@@ -308,6 +313,7 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
           if (khac) {
             sua[f] = valNhom
             tenDoi.push(TEN_O[f] ?? f)
+            bang.push([TEN_O[f] ?? f, String(valForm), String(valNhom)])
           }
         }
       }
@@ -317,10 +323,13 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
       }
 
       return {
-        tieuDe: `Áp thông tin ngầm định của nhóm ${v.nhom}?`,
+        tieuDe: `Áp thông tin của nhóm ${v.nhom}?`,
         hoi: `Các ô sẽ đổi: ${tenDoi.join(', ')}`,
         sua,
         dien,
+        bang: { cot: ['Ô', 'Đang là', 'Đổi thành'], dong: bang },
+        nut: `Áp ${bang.length} ô theo nhóm`,
+        nutPhu: 'Giữ như cũ',
       }
     },
   },

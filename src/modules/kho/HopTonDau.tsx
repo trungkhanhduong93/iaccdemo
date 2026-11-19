@@ -1,19 +1,18 @@
 // Modal của màn Tồn kho ban đầu mẫu C (T881): Thiết lập hàng loạt (kèm popup Thay thế hàng loạt), Chép sang kho khác, Xoá hàng loạt, thông báo khoá.
 // Mẫu: artifact "Tồn kho ban đầu – gợi ý", bản chép ở backup/mau-T879/M*.dc.html
 import { useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { KHO } from '../../data/mock'
 import { useSession } from '../../app/session'
 import { Select } from '../../ui/Dropdown'
 import { Icon } from '../../ui/Icon'
+import { ThongBao } from '../../ui/ThongBao'
 import { fold, money, nhapSoQT, soQT } from '../../ui/format'
 import { MAN_KK } from './dieu-chinh'
 import { NGAY_SO_DU, chepTonDau, dsTonDau, dvtCuaHang, giaNhapGanNhat, khoaTonDau, luuTonDau, xoaTonDau, type LyDoKhoa } from './ton-dau'
 
 const IconThay = () => <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M4 8h13l-3-3M20 16H7l3 3" /></svg>
 const IconPheu = () => <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" aria-hidden="true"><path d="M4 5h16l-6 7v6l-4 2v-8L4 5z" /></svg>
-const IconKhoa = () => <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2" /><path d="M8 11V7a4 4 0 0 1 8 0v4" /></svg>
-const IconRac = () => <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3" /></svg>
 const IconCanh = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 3 2 20h20L12 3z" /><path d="M12 10v4M12 17h0" /></svg>
 
 const NutDong = ({ onDong, nho }: { onDong: () => void; nho?: boolean }) => (
@@ -45,7 +44,7 @@ export function HopThietLapTonDau({ kho, ma, tichSan, onDong }: { kho: string; m
   const tien = (d: DongTl) => (d.sl !== '' && d.gia !== '' ? Number(d.sl) * Number(d.gia) : null)
 
   const xacNhanThay = () => {
-    if (!tich.size) { toast('Tích chọn dòng trước'); return }
+    if (!tich.size) { toast('Tích chọn dòng trước', { loai: 'loi' }); return }
     if (thay === 'gia' && cachGia === 'gan') setDong(ds => ds.map(d => tich.has(d.ma) ? { ...d, gia: String(giaNhapGanNhat(d.ma, kho) ?? '') } : d))
     else setDong(ds => ds.map(d => tich.has(d.ma) ? { ...d, [thay]: giaTri } : d))
     setThay(''); setGiaTri('')
@@ -203,35 +202,32 @@ export function HopXoaTonDau({ kho, ma, onDong }: { kho: string; ma: string[]; o
   const { toast } = useSession()
   const xoa = () => { xoaTonDau(kho, ma); toast(`Đã xoá tồn đầu ${ma.length} mã hàng`); onDong() }
   return (
-    <div className="td-phu td-phu-nho">
-      <div className="td-hop-nho td-hop-giua" role="dialog" aria-modal="true" aria-label="Xoá hàng loạt">
-        <div className="td-bieu-tuong do"><IconRac /></div>
-        <b className="td-tieu-de">Xoá tồn đầu {ma.length} mã hàng?</b>
-        <span className="muted">{ma.length} mã hàng ở {kho} chuyển sang Không có tồn đầu. Danh mục hàng hoá giữ nguyên.</span>
-        <div className="td-giua-nut">
-          <button type="button" className="btn td-nut" onClick={onDong}>Huỷ</button>
-          <button type="button" className="btn td-nut td-nut-do" onClick={xoa}>Xoá</button>
-        </div>
-      </div>
-    </div>
+    <ThongBao loai="xoa" nhan="Xoá tồn đầu" tieuDe={`Xoá tồn đầu ${ma.length} mã hàng?`}
+      moTa={`${ma.length} mã chuyển sang Không có tồn đầu. Danh mục hàng hoá giữ nguyên.`}
+      anhHuong={[{ nhan: 'Kho', gt: kho }]}
+      nut={{ ten: `Xoá tồn đầu ${ma.length} mã`, onClick: xoa }} onDong={onDong} />
   )
 }
 
 export function HopKhoaTonDau({ lyDo, onDong }: { lyDo: LyDoKhoa; onDong: () => void }) {
+  const { s } = useSession()
+  const nav = useNavigate()
+  const toi = (url: string) => { onDong(); nav(url) }
+  if (lyDo.loai === 'kiem-ke') {
+    const moKk = () => toi(`/app/${MAN_KK}/${lyDo.id}`)
+    return (
+      <ThongBao loai="chan" nhan="Không đổi được tồn đầu" tieuDe="Kho đã kiểm kê sau ngày số dư"
+        moTa="Số kiểm kê đã tính từ tồn đầu hiện tại. Đổi tồn đầu thì chênh lệch kiểm kê sai."
+        duKien={[{ nhan: 'Phiếu kiểm kê', gt: lyDo.so, di: moKk }, { nhan: 'Ngày kiểm kê', gt: lyDo.ngay }]}
+        buoc={[`Xoá phiếu kiểm kê ${lyDo.so} và phiếu điều chỉnh kèm theo.`, 'Sửa tồn đầu, rồi kiểm kê lại.']}
+        nut={{ ten: 'Mở phiếu kiểm kê', onClick: moKk }} onDong={onDong} />
+    )
+  }
   return (
-    <div className="td-phu td-phu-nho">
-      <div className="td-hop-nho td-hop-giua" role="dialog" aria-modal="true" aria-label="Không thể thay đổi tồn đầu">
-        <div className="td-bieu-tuong cam"><IconKhoa /></div>
-        <b className="td-tieu-de">Không thể thay đổi tồn đầu</b>
-        {lyDo.loai === 'kiem-ke' ? <>
-          <span className="td-ly-do">Kho đã có phiếu kiểm kê <Link to={`/app/${MAN_KK}/${lyDo.id}`} onClick={onDong}>{lyDo.so}</Link> ngày {lyDo.ngay}, sau ngày số dư {NGAY_SO_DU}.</span>
-          <small className="muted">Muốn thêm, sửa, xoá tồn đầu thì xoá phiếu kiểm kê này trước.</small>
-        </> : <>
-          <span className="td-ly-do">{lyDo.cuaHang === 'tất cả cửa hàng' ? 'Tất cả cửa hàng' : `Cửa hàng ${lyDo.cuaHang}`} đã khoá sổ đến tháng {lyDo.ky}, gồm cả ngày số dư {NGAY_SO_DU}.</span>
-          <small className="muted">Muốn thêm, sửa, xoá tồn đầu thì mở khoá sổ ở Tổng hợp › Khoá sổ trước.</small>
-        </>}
-        <button type="button" className="btn pri td-nut td-nut-rong" onClick={onDong} autoFocus>Đã hiểu</button>
-      </div>
-    </div>
+    <ThongBao loai="chan" nhan="Không đổi được tồn đầu" tieuDe={`Đã khoá sổ đến tháng ${lyDo.ky}`}
+      moTa={`Tồn đầu là số liệu ngày ${NGAY_SO_DU}. Tháng đó đã khoá nên tồn đầu chỉ xem.`}
+      duKien={[{ nhan: 'Kỳ khoá sổ', gt: `Tháng ${lyDo.ky}` }, { nhan: 'Cửa hàng', gt: lyDo.cuaHang === 'tất cả cửa hàng' ? 'Tất cả cửa hàng' : lyDo.cuaHang }]}
+      buoc={[`Mở khoá tháng ${lyDo.ky} (tháng khoá gần nhất), ghi lý do.`, 'Sửa tồn đầu, tính lại giá vốn, khoá sổ lại.']}
+      nut={{ ten: 'Mở màn khoá sổ', onClick: () => toi(s.goi === 'PR' ? '/app/tong-hop/10-1-6' : '/app/he-thong/khoa-so') }} onDong={onDong} />
   )
 }

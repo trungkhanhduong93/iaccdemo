@@ -719,9 +719,9 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
                     // T785: chỉ chọn dòng đã xuất thì báo; chọn lẫn thì bỏ qua dòng đã xuất, báo số dòng bỏ qua, mở popup cho phần còn lại
                     const ds = rows.filter(r => chon.has(String(r.id)))
                     const da = ds.filter(r => hdCua(r) || r.nguon === 'FABi' || loaiCtCua(r) !== 'XBAN')   // hoá đơn thay thế, điều chỉnh, huỷ bán không xuất ở đây (T787)
-                    if (!ds.length) toast('Chọn chứng từ bán hàng lập tay cần xuất hoá đơn điện tử')
+                    if (!ds.length) toast('Chọn chứng từ bán hàng lập tay cần xuất hoá đơn điện tử', { loai: 'loi' })
                     else if (da.length === ds.length) toast(da.length === 1 ? `Chứng từ ${da[0].so} đã xuất hoá đơn điện tử.` : `${da.length} chứng từ đã chọn đều đã xuất hoá đơn điện tử.`)
-                    else { if (da.length) toast(`Bỏ qua ${da.length} chứng từ đã xuất hoá đơn điện tử`); setMoHd(true) }
+                    else { if (da.length) toast(`Bỏ qua ${da.length} chứng từ đã xuất hoá đơn điện tử`, { loai: 'canhBao' }); setMoHd(true) }
                   }}>
                   <Icon n="receipt" className="ic sm" />Xuất HĐĐT
                 </button>

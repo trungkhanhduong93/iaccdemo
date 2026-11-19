@@ -9,7 +9,7 @@ import { useState } from 'react'
 import { useSession } from '../../app/session'
 import { FormToanMan } from '../../ui/FormToanMan'
 import { Icon } from '../../ui/Icon'
-import { HopXacNhan } from '../../ui/LocNangCao'
+import { ThongBao } from '../../ui/ThongBao'
 import { Dropdown, MenuItem, Select } from '../../ui/Dropdown'
 import { ONgay, docNgay, type KhoangNgay } from '../../ui/ChonNgay'
 import { ChonDanhMuc } from '../../ui/ChonDanhMuc'
@@ -118,7 +118,7 @@ export function ThemBangGia({ onDong, tab, sua: dongSua }: { onDong: () => void;
   const [dongCu] = useState(() => soBgGoc ? tatCa.filter(r => r.soBg === soBgGoc) : [])
   const dau: Row | undefined = dongCu[0] ?? dongSua
   const [ten, setTen] = useState(String(dau?.tenBg ?? ''))
-  const [hoiTrung, setHoiTrung] = useState<{ ds: string[]; themTiep: boolean } | null>(null)
+  const [hoiTrung, setHoiTrung] = useState<{ ds: { hang: string; bg: string; ad: string }[]; soHang: number; themTiep: boolean } | null>(null)
   const homNay = new Date(HOM_NAY.getFullYear(), HOM_NAY.getMonth(), HOM_NAY.getDate())
   const [loai, setLoai] = useState<LoaiGia>(dau ? (dau.loai === 'Giá bán' ? 'Giá bán' : 'Giá mua') : tab === 'Giá bán' ? 'Giá bán' : 'Giá mua')   // mở theo tab đang xem (T724)
   // Thời gian áp dụng: hai ô Từ ngày, Đến ngày gõ dd/mm/yyyy hoặc chọn lịch (T812)
@@ -214,10 +214,10 @@ export function ThemBangGia({ onDong, tab, sua: dongSua }: { onDong: () => void;
 
   const dongDien = dong.filter(d => d.ma || d.gia)
   const luu = (themTiep: boolean, boQuaTrung = false) => {
-    if (!ten.trim()) { toast('Nhập tên bảng giá'); return }
-    if (rieng && !dt) { toast(`Chọn ${nhanDt}, hoặc chọn áp dụng cho mọi ${nhanDt}`); return }
-    if (ngayHong) { toast('Thời gian áp dụng: nhập đủ Từ ngày, Đến ngày dạng dd/mm/yyyy, Đến ngày không trước Từ ngày'); return }
-    if (!dongDien.length) { toast('Chọn ít nhất một mặt hàng và nhập đơn giá'); return }
+    if (!ten.trim()) { toast('Nhập tên bảng giá', { loai: 'loi' }); return }
+    if (rieng && !dt) { toast(`Chọn ${nhanDt}, hoặc chọn áp dụng cho mọi ${nhanDt}`, { loai: 'loi' }); return }
+    if (ngayHong) { toast('Thời gian áp dụng: nhập đủ Từ ngày, Đến ngày dạng dd/mm/yyyy, Đến ngày không trước Từ ngày', { loai: 'loi' }); return }
+    if (!dongDien.length) { toast('Chọn ít nhất một mặt hàng và nhập đơn giá', { loai: 'loi' }); return }
     const khoaTrung = (d: DongGia) => `${d.ma}|${d.dvt}`
     const dem = new Map<string, number>()
     dongDien.forEach(d => dem.set(khoaTrung(d), (dem.get(khoaTrung(d)) ?? 0) + 1))
@@ -228,19 +228,17 @@ export function ThemBangGia({ onDong, tab, sua: dongSua }: { onDong: () => void;
     const sai = dongDien.filter(d => lyDo(d))
     if (sai.length) {
       setLoi(new Set(sai.map(d => d.key)))
-      toast(`Dòng ${dong.indexOf(sai[0]) + 1}: ${lyDo(sai[0])}`)
+      toast(`Dòng ${dong.indexOf(sai[0]) + 1}: ${lyDo(sai[0])}`, { loai: 'loi' })
       return
     }
     const maDt = rieng ? dt : ''
     // Trùng mặt hàng, ĐVT với bảng giá khác đang dùng, cùng loại, cùng đối tượng, giao thời gian và cửa hàng: hỏi lại trước khi lưu
     if (!boQuaTrung) {
-      const nhom = new Map<string, string[]>()
-      tatCa.filter(r => r.soBg !== maSua && r.loai === loai && r._tt !== 0 && String(r.dtMa ?? '') === maDt)
+      const trung = tatCa.filter(r => r.soBg !== maSua && r.loai === loai && r._tt !== 0 && String(r.dtMa ?? '') === maDt)
         .filter(r => { const k = docKhoang(r.thoiGian); return k && giaoNgay(k, khoang) && giaoCh(tachCh(r.cuaHang), cuaHang) })
         .filter(r => dongDien.some(d => r.maHang === d.ma && r.dvt === d.dvt))
-        .forEach(r => { const k = `${r.soBg} ${r.tenBg}`; nhom.set(k, [...(nhom.get(k) ?? []), `${r.tenHang} (${r.dvt})`]) })
-      const trung = [...nhom].map(([k, ds]) => `${k}: ${ds.slice(0, 3).join(', ')}${ds.length > 3 ? ` và ${ds.length - 3} dòng khác` : ''}`)
-      if (trung.length) { setHoiTrung({ ds: trung, themTiep }); return }
+        .map(r => ({ hang: `${r.tenHang} (${r.dvt})`, bg: String(r.soBg), ad: String(r.thoiGian ?? '') }))
+      if (trung.length) { setHoiTrung({ ds: trung, soHang: new Set(trung.map(t => t.hang)).size, themTiep }); return }
     }
     const thoiGian = `${dmy(khoang.tu)} - ${dmy(khoang.den)}`
     const rows = bangGia(soBg, ten.trim(), loai, thoiGian, cuaHang.join(', '), maDt,
@@ -448,18 +446,22 @@ export function ThemBangGia({ onDong, tab, sua: dongSua }: { onDong: () => void;
       </div>
 
       {hoiXoa && maSua && (
-        <HopXacNhan tieuDe={`Xoá bảng giá ${maSua}?`} nut="Xoá" onDong={() => setHoiXoa(false)}
-          onDongY={() => { thayNhomCatalogRows(DM, r => r.soBg === maSua, []); toast(`Đã xoá bảng giá ${maSua}`); onDong() }}>
-          Xoá bảng giá {ten} cùng {dongDien.length} dòng mặt hàng, áp dụng {tuNgay} - {denNgay}.
-        </HopXacNhan>
+        <ThongBao loai="xoa" nhan="Xoá bảng giá" tieuDe={`Xoá bảng giá ${maSua}?`}
+          duKien={[{ nhan: 'Tên bảng giá', gt: ten }, { nhan: 'Số mặt hàng', gt: `${dongDien.length} dòng` }, { nhan: 'Áp dụng', gt: `${tuNgay} - ${denNgay}` }]}
+          moTa={`Xoá xong không lấy lại được. ${laMua ? 'Phiếu mua' : 'Phiếu bán'} lập sau đó không lấy giá từ bảng này nữa.`}
+          onDong={() => setHoiXoa(false)}
+          nut={{ ten: 'Xoá bảng giá', onClick: () => { thayNhomCatalogRows(DM, r => r.soBg === maSua, []); toast(`Đã xoá bảng giá ${maSua}`); onDong() } }} />
       )}
       {hoiTrung && (
-        <HopXacNhan tieuDe="Mặt hàng đã có giá ở bảng giá khác" nut="Vẫn lưu" nutDo={false} onDong={() => setHoiTrung(null)}
-          onDongY={() => { const t = hoiTrung.themTiep; setHoiTrung(null); luu(t, true) }}>
-          <p>Cùng {rieng ? nhanDt : `giá chung cho mọi ${nhanDt}`}, mặt hàng, ĐVT đã có giá trong thời gian và cửa hàng này:</p>
-          <ul>{hoiTrung.ds.map(t => <li key={t}>{t}</li>)}</ul>
-          <p>Lưu vẫn được, khi bán hàng, mua hàng bảng giá bắt đầu muộn hơn được ưu tiên.</p>
-        </HopXacNhan>
+        <ThongBao loai="canhBao" nhan="Trùng giá" tieuDe={`${hoiTrung.soHang} mặt hàng đã có giá ở bảng giá khác`}
+          moTa={`Cùng ${rieng ? nhanDt : `giá chung cho mọi ${nhanDt}`}, cùng ĐVT, thời gian và cửa hàng giao nhau. Vẫn lưu được. Ngày nào hai bảng cùng áp thì bảng bắt đầu muộn hơn được dùng.`}
+          onDong={() => setHoiTrung(null)}
+          nut={{ ten: 'Vẫn lưu', onClick: () => { const t = hoiTrung.themTiep; setHoiTrung(null); luu(t, true) } }}>
+          <table className="tb-doi-chieu">
+            <thead><tr><th>Mặt hàng</th><th>Bảng giá</th><th>Áp dụng</th></tr></thead>
+            <tbody>{hoiTrung.ds.map((t, i) => <tr key={i}><td>{t.hang}</td><td>{t.bg}</td><td>{t.ad}</td></tr>)}</tbody>
+          </table>
+        </ThongBao>
       )}
       {moHangLoat && (
         <ThemHangLoat ds={dsHang.map(h => ({ ma: h.ma, ten: h.ten, dvt: h.dvt, nhom: h.nhom, loai: laMua && h.ma.startsWith('NVL') ? 'Nguyên vật liệu' : 'Hàng hoá' }))}

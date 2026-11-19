@@ -158,7 +158,7 @@ export function GhiTangHangLoat({ rows: daCo, onDong }: { soDong: number; rows: 
   const tatCa = ds.length > 0 && ds.every(d => d.chon)
 
   const tao = () => {
-    if (!chon.length) { toast('Chọn ít nhất một dòng để ghi tăng thẻ'); return }
+    if (!chon.length) { toast('Chọn ít nhất một dòng để ghi tăng thẻ', { loai: 'loi' }); return }
     const thieuMa = (r: DongCho) => r.loai === CCDC && !r.ma
     const thieuSl = (r: DongCho) => r.loai === CCDC && docSoQT(r.sl) <= 0
     const sai = chon.filter(r => thieuMa(r) || thieuSl(r) || docSoQT(r.ky) <= 0 || !(ngaySo(r.ngayPb) >= ngaySo(r.ngayCt)))

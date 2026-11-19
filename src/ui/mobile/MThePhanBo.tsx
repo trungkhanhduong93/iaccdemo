@@ -8,7 +8,7 @@ import { canKichHoat, daPhanBoKy, daPhanBoToiKy, kyNay, lichDong, ngayBd, tinhDo
 import { docSoQT, money } from '../format'
 import { Icon } from '../Icon'
 import { LichDon } from '../ChonNgay'
-import { HopXacNhan } from '../LocNangCao'
+import { ThongBao } from '../ThongBao'
 import { MLichSu, type DongLichSu } from './MLichSu'
 
 export type TheMobile = {
@@ -514,11 +514,23 @@ export const MTheSua: FC<{ t: TheMobile; goi: Goi; onHuy: () => void; onLuu: (mo
         />
       )}
 
-      {hoi !== null && (
-        <HopXacNhan tieuDe="Tổng phân bổ không khớp" nut="Điều chỉnh" nutHuy="Không" nutDo={false} onDong={() => setHoi(null)} onDongY={dieuChinh}>
-          Tổng giá trị phân bổ các kỳ của <b>{dr.dong[hoi].ten || dr.ten}</b> đang không khớp. Bạn có muốn điều chỉnh về kỳ phân bổ cuối cùng không?
-        </HopXacNhan>
-      )}
+      {hoi !== null && (() => {
+        const d = dr.dong[hoi], ds = lichDong(dr, d), can = tinhDong(dr, d).can, lech = Math.round(lechDong(dr, d))
+        return (
+          <ThongBao
+            loai="canhBao"
+            tieuDe={`Tổng ${ds.length} kỳ phân bổ lệch ${money(Math.abs(lech))} đồng`}
+            anhHuong={[
+              { nhan: 'Cần phân bổ', gt: money(can) },
+              { nhan: 'Cộng các kỳ', gt: money(ds.reduce((s, k) => s + k.tien, 0)) },
+              { nhan: 'Chênh', gt: money(lech), mau: 'vang' },
+            ]}
+            moTa={<>{lech > 0 ? 'Cộng' : 'Trừ'} {money(Math.abs(lech))} đồng ở kỳ cuối của <b>{d.ten || dr.ten}</b> để tổng khớp số cần phân bổ?</>}
+            nut={{ ten: lech > 0 ? 'Cộng vào kỳ cuối' : 'Trừ ở kỳ cuối', onClick: dieuChinh }}
+            onDong={() => setHoi(null)}
+          />
+        )
+      })()}
     </div>
   )
 }

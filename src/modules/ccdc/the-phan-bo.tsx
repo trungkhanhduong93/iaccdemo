@@ -546,9 +546,18 @@ export const THE_PHAN_BO: CauHinhDM = {
     })
     const ds = dong.map((d, i) => lech[i] !== 0 ? `${d.ten || `dòng ${i + 1}`} (lệch ${soQT(lech[i])} đ)` : '').filter(Boolean)
     if (!ds.length) return null
+    // Hộp hỏi theo bản vẽ (T889): một dòng lệch thì hiện giá trị, cộng các kỳ, chênh; nhiều dòng thì liệt kê
+    const i1 = lech.findIndex(l => l !== 0)
+    const lich1 = lichDong(v, dong[i1]), can1 = tinhDong(v, dong[i1]).can, l1 = lech[i1]
+    const mot = ds.length === 1
     return {
-      tieuDe: 'Tổng tiền phân bổ không khớp',
-      hoi: `Phát hiện tổng tiền phân bổ không khớp: ${ds.join(', ')}. Bạn có muốn tự điều chỉnh vào kỳ cuối của từng dòng cho khớp không?`,
+      loai: 'canhBao',
+      tieuDe: mot ? `Tổng ${lich1.length} kỳ phân bổ lệch ${soQT(Math.abs(l1))} đồng` : `${ds.length} dòng có tổng phân bổ lệch`,
+      hoi: mot
+        ? `${l1 > 0 ? 'Cộng' : 'Trừ'} ${soQT(Math.abs(l1))} đồng ${l1 > 0 ? 'vào' : 'ở'} kỳ cuối ${lich1[lich1.length - 1].ngay.slice(3)} để tổng khớp giá trị ${dong.length === 1 ? 'thẻ' : 'dòng'}?`
+        : `${ds.join(', ')}. Dồn phần lệch vào kỳ cuối của từng dòng cho khớp?`,
+      anhHuong: mot ? [{ nhan: dong.length === 1 ? 'Giá trị thẻ' : 'Giá trị dòng', gt: soQT(can1) }, { nhan: 'Cộng các kỳ', gt: soQT(can1 - l1) }, { nhan: 'Chênh', gt: soQT(l1), mau: 'vang' }] : undefined,
+      nut: mot ? (l1 > 0 ? 'Cộng vào kỳ cuối' : 'Trừ ở kỳ cuối') : 'Chỉnh kỳ cuối từng dòng',
       sua: { dong: dong.map((d, i) => {
         if (!lech[i]) return d
         const lich = lichDong(v, d), cuoi = lich.length - 1

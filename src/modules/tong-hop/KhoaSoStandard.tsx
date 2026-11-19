@@ -3,14 +3,14 @@
 // Mở khoá bắt buộc ghi lý do. Tháng đã khoá, lịch sử lưu ở trình duyệt (khoaSoCuaHang, data/mock.ts).
 // Khoá riêng từng cửa hàng (T19): bảng các tháng của một cửa hàng chọn trên màn, lọc theo năm, trạng thái.
 // Khoá một tháng thì khoá luôn các tháng trước còn thiếu; Mở khoá chỉ ở tháng khoá gần nhất. Nhiều cửa hàng dùng Khoá sổ hàng loạt
-import { useEffect, useState, type ReactNode } from 'react'
-import { createPortal } from 'react-dom'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import type { ScreenProps } from '../types'
 import { tenMan } from '../../app/registry'
 import { useSession } from '../../app/session'
 import { CUA_HANG, KY_MO, LICH_SU_KHOA_SO, khoaSoCuaHang, khoaSoDenCua, kySau, kyTruoc, type CuaHang, type KyKhoa, type LichSuKhoaSo } from '../../data/mock'
 import { Icon } from '../../ui/Icon'
+import { ThongBao } from '../../ui/ThongBao'
 import { Card, Note, PageHead } from '../../ui/Page'
 import { Table } from '../../ui/Table'
 import { Select } from '../../ui/Dropdown'
@@ -142,21 +142,6 @@ export function KhoaSoStandard({ sc, mod }: ScreenProps) {
   )
 }
 
-/** Khung hộp thoại giữa màn dùng chung cho Khoá, Mở khoá, Khoá sổ hàng loạt, Lịch sử */
-function KhungHop({ tieuDe, rong, onDong, children }: { tieuDe: string; rong?: boolean | 'lich-su'; onDong: () => void; children: ReactNode }) {
-  return createPortal(
-    <div className="overlay ds-hop-nen" onMouseDown={e => { if (e.target === e.currentTarget) onDong() }} onKeyDown={e => { if (e.key === 'Escape') onDong() }}>
-      <div className={`ds-hop${rong ? ' ks-hop-rong' : ''}${rong === 'lich-su' ? ' ks-hop-ls' : ''}`} role="dialog" aria-modal="true" aria-label={tieuDe}>
-        <div className="ds-hop-dau">
-          <Icon n="lock" kieu="net" className="ic sm" /><b>{tieuDe}</b>
-          <span className="grow" />
-          <button type="button" className="icon-btn sm" onClick={onDong} aria-label="Đóng"><Icon n="x" className="ic sm" /></button>
-        </div>
-        <div className="ds-hop-than">{children}</div>
-      </div>
-    </div>, document.body)
-}
-
 const tenCh = (ids: string[]) => ids.length === CUA_HANG.length ? 'tất cả cửa hàng' : CUA_HANG.filter(c => ids.includes(c.id)).map(c => c.ten).join(', ')
 
 /** Khoá sổ một tháng của một cửa hàng: các bước kiểm tra của tháng đó, còn bước chưa xong vẫn khoá được.
@@ -188,22 +173,21 @@ function HopKhoa({ id, ky, onDong }: { id: string; ky: KyKhoa; onDong: () => voi
     onDong()
   }
   return (
-    <KhungHop tieuDe={`Khoá sổ tháng ${nhanKy(ky)}`} rong onDong={onDong}>
-      <p className="ks-pham">{cns[0].ten} · {soXong}/{buoc.length} bước đã xong</p>
+    <ThongBao loai="hoi" hinh="khoa" nhan="Khoá sổ" tieuDe={`Khoá sổ tháng ${nhanKy(ky)}${soXong < buoc.length ? `: còn ${buoc.length - soXong} bước chưa xong` : ''}`}
+      moTa={`${cns[0].ten}. Khoá xong, chứng từ trong tháng chỉ xem. Cần sửa thì mở khoá, ghi lý do.`}
+      nut={{ ten: `Khoá sổ tháng ${ky.thang}`, onClick: khoa }} onDong={onDong}>
       {truoc.length > 0 && <Note kind="warn" icon="alert">Tháng {truoc.map(nhanKy).join(', ')} chưa khoá sổ. Khoá tháng {nhanKy(ky)} thì khoá luôn các tháng này.</Note>}
-      {buoc.map(b => (
-        <div className={`check ${b.xong ? 'done' : 'now'}`} key={b.ten}>
-          <span className="box">{b.xong && <Icon n="check" className="ic sm" />}</span>
-          <b>{b.ten}</b><small className="muted">{b.phu}</small>
-          <Link className="btn sm ks-xem" to={b.to}>Xem</Link>
-        </div>
-      ))}
-      {soXong < buoc.length && <Note kind="warn" icon="alert">Còn bước chưa xong, khoá lúc này thì số liệu tháng {nhanKy(ky)} có thể chưa đủ. Vẫn khoá được, hệ thống ghi lại người khoá và thời điểm.</Note>}
-      <div className="ks-nut">
-        <button className="btn" onClick={onDong}>Huỷ</button>
-        <button className="btn acc" onClick={khoa}><Icon n="lock" kieu="net" className="ic sm" />Khoá sổ tháng {nhanKy(ky)}</button>
-      </div>
-    </KhungHop>
+      <ul className="ks-tb-buoc">
+        {buoc.map(b => (
+          <li key={b.ten} className={b.xong ? 'xong' : 'thieu'}>
+            <span className="ks-tb-dau" aria-label={b.xong ? 'Đã xong' : 'Chưa xong'}><Icon n={b.xong ? 'check' : 'alert'} className="ic sm" /></span>
+            <b>{b.ten}</b><small className="muted">{b.phu}</small>
+            {!b.xong && <Link className="ks-tb-lam" to={b.to}>Làm ngay</Link>}
+          </li>
+        ))}
+      </ul>
+      {soXong < buoc.length && <p className="ks-tb-canh">Còn bước chưa xong thì số liệu tháng {nhanKy(ky)} có thể chưa đủ. Vẫn khoá được, hệ thống ghi người khoá và thời điểm.</p>}
+    </ThongBao>
   )
 }
 
@@ -211,21 +195,22 @@ function HopKhoa({ id, ky, onDong }: { id: string; ky: KyKhoa; onDong: () => voi
 function HopMo({ ids, ky, onDong }: { ids: string[]; ky: KyKhoa; onDong: () => void }) {
   const { s, toast } = useSession()
   const [lyDo, setLyDo] = useState('')
+  const ch = CUA_HANG.find(c => c.id === ids[0])
+  const l = ch && lanKhoa(ch, ky)
   const mo = () => {
-    if (!lyDo.trim()) { toast('Nhập lý do mở khoá'); return }
+    if (!lyDo.trim()) { toast('Nhập lý do mở khoá', { loai: 'loi' }); return }
     khoaSoCuaHang(ids, true, `Mở khoá, lý do: ${lyDo.trim()}`, s.ten)
     toast(`Đã mở khoá tháng ${nhanKy(ky)}, ${tenCh(ids)}`)
     onDong()
   }
   return (
-    <KhungHop tieuDe={`Mở khoá tháng ${nhanKy(ky)}`} onDong={onDong}>
-      <p className="ks-pham">{tenCh(ids)}. Mở khoá thì phiếu trong tháng sửa, xoá được lại.</p>
-      <textarea className="inp ks-ly-do" rows={3} autoFocus placeholder={`Lý do mở khoá, vd bổ sung hoá đơn điện tháng ${ky.thang}`} value={lyDo} onChange={e => setLyDo(e.target.value)} />
-      <div className="ks-nut">
-        <button className="btn" onClick={onDong}>Huỷ</button>
-        <button className="btn pri" onClick={mo}>Mở khoá</button>
-      </div>
-    </KhungHop>
+    <ThongBao loai="hoi" hinh="moKhoa" nhan="Mở khoá sổ" tieuDe={`Mở khoá tháng ${nhanKy(ky)}?`}
+      moTa={`Chứng từ tháng ${ky.thang} sửa, xoá được lại. Báo cáo đã nộp có thể khác số trên phần mềm.`}
+      duKien={[{ nhan: 'Cửa hàng', gt: tenCh(ids) }, ...(l ? [{ nhan: 'Khoá lúc', gt: `${l.luc} · ${l.ai}` }] : [])]}
+      nut={{ ten: `Mở khoá tháng ${ky.thang}`, onClick: mo }} onDong={onDong}>
+      <label className="ks-tb-nhan" htmlFor="ks-ly-do-mo">Lý do mở khoá</label>
+      <textarea id="ks-ly-do-mo" className="inp ks-ly-do" rows={3} placeholder={`Vd bổ sung hoá đơn điện tháng ${ky.thang}`} value={lyDo} onChange={e => setLyDo(e.target.value)} />
+    </ThongBao>
   )
 }
 
@@ -256,6 +241,7 @@ function HopKhoaDen({ onDong }: { onDong: () => void }) {
   const tatCaHien = chonDuoc.length > 0 && chonDuoc.every(id => chon.includes(id))
   const chonHet = (on: boolean) => setChon(x => on ? [...new Set([...x, ...chonDuoc])] : x.filter(id => !chonDuoc.includes(id)))
   const khoa = () => {
+    if (!seKhoa.length) { toast('Chọn cửa hàng cần khoá', { loai: 'loi' }); return }
     for (;;) {
       const con = seKhoa.filter(id => soKy(den(id)) < dich)
       if (!con.length) break
@@ -265,7 +251,9 @@ function HopKhoaDen({ onDong }: { onDong: () => void }) {
     onDong()
   }
   return (
-    <KhungHop tieuDe="Khoá sổ hàng loạt" rong onDong={onDong}>
+    <ThongBao loai="hoi" hinh="khoa" nhan="Khoá sổ hàng loạt" tieuDe={`Khoá tháng ${nhanKy(kyDich)} cho ${seKhoa.length} cửa hàng`}
+      nut={{ ten: `Khoá ${seKhoa.length} cửa hàng`, onClick: khoa }} onDong={onDong}>
+      <div className="ks-tb-rong">
       <div className="ks-den-thang">
         <span>Khoá đến hết</span>
         <Select aria-label="Tháng khoá đến" value={String(dich)} onChange={e => setDich(Number(e.target.value))} ds={dsKy.map(k => ({ v: String(soKy(k)), t: `Tháng ${nhanKy(k)}` }))} />
@@ -293,12 +281,9 @@ function HopKhoaDen({ onDong }: { onDong: () => void }) {
         })}
         {!hien.length && <p className="muted">Không có cửa hàng nào</p>}
       </div>
-      <Note kind="warn" icon="alert">Khoá hàng loạt không hiện bước kiểm tra từng tháng. Muốn xem bước kiểm tra thì chọn cửa hàng trên màn Khoá sổ rồi bấm Khoá sổ ở từng tháng.</Note>
-      <div className="ks-nut">
-        <button className="btn" onClick={onDong}>Huỷ</button>
-        <button className="btn acc" disabled={!seKhoa.length} onClick={khoa}><Icon n="lock" kieu="net" className="ic sm" />Khoá {seKhoa.length} cửa hàng</button>
+      <p className="tb-mota">Cửa hàng còn bước chưa xong vẫn khoá được. Muốn xem từng bước thì khoá từng tháng trên màn Khoá sổ.</p>
       </div>
-    </KhungHop>
+    </ThongBao>
   )
 }
 
@@ -330,7 +315,8 @@ function HopMoDen({ onDong }: { onDong: () => void }) {
   const tatCaHien = chonDuoc.length > 0 && chonDuoc.every(id => chon.includes(id))
   const chonHet = (on: boolean) => setChon(x => on ? [...new Set([...x, ...chonDuoc])] : x.filter(id => !chonDuoc.includes(id)))
   const mo = () => {
-    if (!lyDo.trim()) { toast('Nhập lý do mở khoá'); return }
+    if (!seMo.length) { toast('Chọn cửa hàng cần mở khoá', { loai: 'loi' }); return }
+    if (!lyDo.trim()) { toast('Nhập lý do mở khoá', { loai: 'loi' }); return }
     for (;;) {
       const con = seMo.filter(id => soKy(den(id)) >= tu)
       if (!con.length) break
@@ -340,7 +326,10 @@ function HopMoDen({ onDong }: { onDong: () => void }) {
     onDong()
   }
   return (
-    <KhungHop tieuDe="Mở khoá hàng loạt" rong onDong={onDong}>
+    <ThongBao loai="hoi" hinh="moKhoa" nhan="Mở khoá hàng loạt" tieuDe={`Mở khoá từ tháng ${nhanKy(kyTu)} cho ${seMo.length} cửa hàng`}
+      moTa="Chứng từ từ tháng chọn trở về sau sửa, xoá được lại. Báo cáo đã nộp có thể khác số trên phần mềm."
+      nut={{ ten: `Mở khoá ${seMo.length} cửa hàng`, onClick: mo }} onDong={onDong}>
+      <div className="ks-tb-rong">
       <div className="ks-den-thang">
         <span>Mở khoá từ</span>
         <Select aria-label="Tháng mở khoá từ" value={String(tu)} onChange={e => setTu(Number(e.target.value))} ds={dsKy.map(k => ({ v: String(soKy(k)), t: `Tháng ${nhanKy(k)}` }))} />
@@ -369,12 +358,10 @@ function HopMoDen({ onDong }: { onDong: () => void }) {
         })}
         {!hien.length && <p className="muted">Không có cửa hàng nào</p>}
       </div>
-      <textarea className="inp ks-ly-do" rows={2} placeholder={`Lý do mở khoá, vd bổ sung hoá đơn điện tháng ${kyTu.thang}`} value={lyDo} onChange={e => setLyDo(e.target.value)} />
-      <div className="ks-nut">
-        <button className="btn" onClick={onDong}>Huỷ</button>
-        <button className="btn pri" disabled={!seMo.length} onClick={mo}><Icon n="lock" kieu="net" className="ic sm" />Mở khoá {seMo.length} cửa hàng</button>
+      <label className="ks-tb-nhan" htmlFor="ks-ly-do-den">Lý do mở khoá</label>
+      <textarea id="ks-ly-do-den" className="inp ks-ly-do" rows={2} placeholder={`Vd bổ sung hoá đơn điện tháng ${kyTu.thang}`} value={lyDo} onChange={e => setLyDo(e.target.value)} />
       </div>
-    </KhungHop>
+    </ThongBao>
   )
 }
 
@@ -388,11 +375,13 @@ function HopLichSu({ onDong }: { onDong: () => void }) {
     return !dangLoc(g) || khopLoc(kieuCot(k), g, v, undefined, k === 'luc' ? docNgay(v.split(' ')[0]) : undefined)
   }))
   return (
-    <KhungHop tieuDe="Lịch sử khoá sổ" rong="lich-su" onDong={onDong}>
+    <ThongBao loai="thongTin" nhan="Lịch sử" tieuDe="Lịch sử khoá sổ" nut={{ ten: 'Đóng', onClick: onDong }} nutPhu={null} onDong={onDong}>
+      <div className="ks-tb-rong">
       <Table cols={[{ k: 'ky', t: 'Tháng', w: 90 }, { k: 'ch', t: 'Cửa hàng', w: 170 }, { k: 'viec', t: 'Thao tác' }, { k: 'ai', t: 'Người làm', w: 130 }, { k: 'luc', t: 'Lúc', w: 170 }]}
         rows={rows} maxH={420}
         loc={{ gt: locCot, dat: (k, g) => setLocCot(x => ({ ...x, [k]: g })), kieu: c => kieuCot(c.k), layLuaChon: k => dsGiaTri(tatCa, r => String((r as Record<string, unknown>)[k] ?? '')) }} />
       <small className="muted ks-dem-ls">{rows.length}/{tatCa.length} dòng</small>
-    </KhungHop>
+      </div>
+    </ThongBao>
   )
 }

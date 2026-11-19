@@ -7,7 +7,8 @@ import { useSession } from '../app/session'
 import { MenuHead, MenuItem, MenuSep, Popover } from './Dropdown'
 import { Icon } from './Icon'
 import { IconFigmaFunnel, IconFigmaLayers, IconFigmaSliders, IconFigmaAlert, IconFigmaPrinter, IconFigmaDownload, IconFigmaTrash, IconFigmaCheck, IconFigmaX } from './IconFigma'
-import { fold } from './format'
+import { fold, money } from './format'
+import { ThongBao } from './ThongBao'
 import { daKhoaSo } from '../data/mock'
 import { ttThamChieu } from './generic/daXoa'
 
@@ -714,7 +715,12 @@ export function NutHangLoat({
   const nKhoaRieng = khoaXoa ? selectedRows.filter(khoaXoa.la).length : 0
   const dsXoa = selectedRows.filter(r => !daKhoaSo(r.ngay, r.cn) && (!ghi || r.tt === 'nhap') && !ttThamChieu(r) && !khoaXoa?.la(r))
   const nXoa = dsXoa.length
+  // Hộp xoá hàng loạt: mỗi phiếu giữ lại đếm theo một lý do, tổng các ô bằng số phiếu giữ lại (T889)
+  const lyDoGiu = (r: Row) => ghi && r.tt !== 'nhap' ? 'ghi' : daKhoaSo(r.ngay, r.cn) ? 'khoa' : ttThamChieu(r) ? 'thamChieu' : 'rieng'
+  const giu = selectedRows.filter(r => !dsXoa.includes(r))
+  const demGiu = (k: string) => giu.filter(r => lyDoGiu(r) === k).length
   const tenXoa = `Xoá ${nXoa} phiếu${ghi ? ' chưa ghi' : ''}`
+  const nTheCp = dsXoa.reduce((t, r) => t + (Array.isArray(r._theCp) ? r._theCp.length : 0), 0)   // thẻ chi phí xoá theo phiếu chi
 
   const lam = (m: string) => {
     toast(m)
@@ -797,38 +803,38 @@ export function NutHangLoat({
         </button>
       </Popover>
       {hoiXoa && (
-        <HopXacNhan
-          tieuDe={`${tenXoa}?`}
-          nut={tenXoa}
-          onDong={() => setHoiXoa(false)}
-          onDongY={() => {
-            setHoiXoa(false)
-            onXoa?.(dsXoa.map(r => String(r.id)))
-            lam(`Đã xoá ${nXoa} phiếu`)
+        <ThongBao
+          loai="xoa"
+          nhan="Xoá nhiều chứng từ"
+          tieuDe={nXoa < so ? `Xoá ${nXoa} trong ${so} phiếu đã chọn?` : `Xoá ${nXoa} phiếu đã chọn?`}
+          moTa={nXoa < so ? `${so - nXoa} phiếu giữ lại vì không xoá được:` : 'Phiếu đã xoá không lấy lại được.'}
+          duKien={[
+            ...(demGiu('ghi') > 0 ? [{ nhan: 'Đã ghi sổ', gt: <b>{demGiu('ghi')} phiếu</b> }] : []),
+            ...(demGiu('khoa') > 0 ? [{ nhan: 'Thuộc tháng đã khoá sổ', gt: <b>{demGiu('khoa')} phiếu</b> }] : []),
+            ...(demGiu('thamChieu') > 0 ? [{ nhan: 'Còn chứng từ khác tham chiếu', gt: <b>{demGiu('thamChieu')} phiếu</b> }] : []),
+            ...(demGiu('rieng') > 0 && khoaXoa ? [{ nhan: `Phiếu ${khoaXoa.ly}`, gt: <b>{demGiu('rieng')} phiếu</b> }] : []),
+          ]}
+          anhHuong={[
+            { nhan: 'Sẽ xoá', gt: `${nXoa} phiếu`, mau: 'do' },
+            ...(dsXoa.some(r => typeof r.tong === 'number') ? [{ nhan: 'Tổng tiền', gt: money(dsXoa.reduce((t, r) => t + (Number(r.tong) || 0), 0)) }] : []),
+            ...(nTheCp > 0 ? [{ nhan: 'Thẻ chi phí xoá theo', gt: `${nTheCp} thẻ` }] : []),
+          ]}
+          nut={{
+            ten: `Xoá ${nXoa} phiếu`,
+            onClick: () => {
+              setHoiXoa(false)
+              onXoa?.(dsXoa.map(r => String(r.id)))
+              lam(`Đã xoá ${nXoa} phiếu`)
+            },
           }}
-        >
-          {dsXoa.some(r => Array.isArray(r._theCp) && r._theCp.length > 0) && 'Xoá phiếu chi đã tạo thẻ sẽ xoá thẻ chi phí đã tạo. Bạn có muốn thực hiện không? '}Phiếu đã xoá không lấy lại được.{ghi && ' Phiếu đã ghi sổ không xoá được.'}{nKhoa > 0 && ` ${nKhoa} phiếu thuộc kỳ đã khoá sổ, giữ nguyên.`}{nThamChieu > 0 && ` ${nThamChieu} phiếu còn phiếu thu, chi tham chiếu, giữ nguyên; xoá phiếu thu, chi trước.`}{nKhoaRieng > 0 && ` ${nKhoaRieng} phiếu ${khoaXoa!.ly}, giữ nguyên.`}
-        </HopXacNhan>
+          onDong={() => setHoiXoa(false)}
+        />
       )}
     </>
   )
 }
 
-export function HopXacNhan({ tieuDe, nut, nutHuy = 'Huỷ', nutDo = true, children, onDong, onDongY }: { tieuDe: string; nut: string; nutHuy?: string | null; nutDo?: boolean; children: ReactNode; onDong: () => void; onDongY: () => void }) {
-  useDongEsc(onDong)
-  return createPortal(
-    <div className="overlay ds-hop-nen" onMouseDown={e => { if (e.target === e.currentTarget) onDong() }}>
-      <div className="ds-hop ds-hop-nho" role="alertdialog" aria-modal="true" aria-label={tieuDe}>
-        <div className="ds-hop-dau"><b>{tieuDe}</b></div>
-        <p className="ds-hop-than">{children}</p>
-        <div className="ds-chan">
-          <span className="grow" />
-          {/* nutHuy=null: hộp thông báo một nút, Esc hoặc bấm ra ngoài vẫn đóng (T419) */}
-          {nutHuy !== null && <button type="button" className="btn" onClick={onDong}>{nutHuy}</button>}
-          <button type="button" className={`btn pri${nutDo ? ' ds-nut-xoa' : ''}`} autoFocus onClick={onDongY}>{nut}</button>   {/* nutDo=false: nút xanh cho câu hỏi không xoá (T250) */}
-        </div>
-      </div>
-    </div>,
-    document.body,
-  )
+// Giữ cho chỗ chưa đổi sang ThongBao (T889): hai nút là hỏi xoá, một nút là thông báo
+export function HopXacNhan({ tieuDe, nut, nutHuy = 'Huỷ', children, onDong, onDongY }: { tieuDe: string; nut: string; nutHuy?: string | null; children: ReactNode; onDong: () => void; onDongY: () => void }) {
+  return <ThongBao loai={nutHuy === null ? 'thongTin' : 'xoa'} tieuDe={tieuDe} moTa={children} nut={{ ten: nut, onClick: onDongY }} nutPhu={nutHuy} onDong={onDong} />
 }

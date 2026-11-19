@@ -31,6 +31,7 @@ import { DS_PTTT, TAI_KHOAN } from '../../modules/danh-muc/data'
 import { tinhButToan } from './butToan'
 import { quyDoiTuDanhMuc } from '../../modules/danh-muc/QuyDoiDvt'
 import { goSoVN, docSoVN } from '../OSoGo'
+import { ThongBao } from '../ThongBao'
 
 const DS_TK_CHI_TIET = TAI_KHOAN.filter(
   t => !TAI_KHOAN.some(other => other.so !== t.so && other.so.startsWith(t.so))
@@ -1874,7 +1875,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
       const dauTienKey = Object.keys(loiMoi)[0]
       cuonDenO(`m-lp-o-${dauTienKey}`)
       const thongBao = Object.values(loiMoi)[0]
-      toast(thongBao)
+      toast(thongBao, { loai: 'loi' })
       return
     }
 
@@ -1882,7 +1883,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
 
     const ngayChiTiet = thoiGian.split(' ')[0]
     if (!dangSua && truocDauNam(s, ngayChiTiet)) {
-      toast(`Ngày chứng từ phải từ ngày đầu năm ${ngayDauNam(s)} trở đi`)
+      toast(`Ngày chứng từ phải từ ngày đầu năm ${ngayDauNam(s)} trở đi`, { loai: 'loi' })
       return
     }
 
@@ -4037,20 +4038,23 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
       )}
 
       {/* ── HỘP THÔNG BÁO TẠO THẺ CHI PHÍ PHÂN BỔ (T419: một nút Tiếp tục) ── */}
+      {/* Bấm nền hoặc Esc: về phiếu vừa lưu như lưu thường (T889, như bản máy tính) */}
       {hoiThe && (
-        <div className="m-tam-overlay" style={{ zIndex: 1200 }}>
-          <div className="m-tam-hop m-lp-hop-hoi-the">
-            <div className="m-tam-dau">
-              <h3 className="m-tam-tieu" style={{ fontSize: 16 }}>Tạo thẻ chi phí phân bổ</h3>
-            </div>
-            <div className="m-lp-hop-nd" style={{ padding: '14px 16px', fontSize: 14, color: 'var(--ink)' }}>
-              <b>{hoiThe.soCt}</b> có khoản chi phí phân bổ nhiều kỳ. Phần mềm mở màn Tạo thẻ chi phí phân bổ, điền sẵn tên, số tiền, ngày, chứng từ gốc từ phiếu. Bạn vẫn sửa lại được.
-            </div>
-            <div className="m-tam-day" style={{ padding: '10px 16px' }}>
-              <button
-                type="button"
-                className="m-tam-btn-apdung"
-                onClick={() => {
+        <ThongBao
+          loai="thongTin"
+          nhan="Bước tiếp theo"
+          tieuDe="Khoản chi này chia dần vào chi phí nhiều tháng"
+          duKien={[
+            { nhan: 'Phiếu', gt: hoiThe.soCt },
+            { nhan: 'Khoản chi', gt: ghiChu || dsDong[0]?.ten || 'Chi phí chờ phân bổ' },
+            { nhan: 'Số tiền', gt: money(khongKho ? tongTien - tongCk : tongThanhToan) },
+          ]}
+          moTa="Phần mềm mở màn Tạo thẻ chi phí phân bổ, điền sẵn số trên. Bạn sửa lại được."
+          nutPhu={null}
+          onDong={() => { const h = hoiThe; setHoiThe(null); nav(`${path}/${h.idMoi}`, { replace: true }) }}
+          nut={{
+            ten: 'Mở màn tạo thẻ',
+            onClick: () => {
                   const h = hoiThe
                   setHoiThe(null)
                   // Hoá đơn mua hàng: mỗi dòng một dòng thẻ, tiền trước thuế; mọi dòng là công cụ dụng cụ thì thẻ loại CCDC (T826, như web T821, T822)
@@ -4085,13 +4089,9 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                       },
                     },
                   })
-                }}
-              >
-                Tiếp tục
-              </button>
-            </div>
-          </div>
-        </div>
+            },
+          }}
+        />
       )}
 
       {/* ── SHEET CHỌN ĐƠN VỊ TÍNH QUY ĐỔI ── */}
