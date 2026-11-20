@@ -2,6 +2,9 @@
 
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
+## 21/11/2026
+- T892: Nhập Excel ở Hàng hoá, Nhóm hàng hoá, Đối tượng, Nhóm đối tượng, Quỹ tiền, Lý do nghiệp vụ mở hộp lớn 3 bước, có ở cả 3 gói. Bước 1 kéo thả file, tải file mẫu, hoặc tải dữ liệu đang có để sửa hàng loạt. Bước 2 xem từng dòng sẽ thêm mới, cập nhật hay bị bỏ qua, kèm lý do lỗi. Mã đã có thì cập nhật, mã để trống thì tự sinh. Nhập xong hiện kết quả, tải được file lỗi. Danh sách tô các dòng vừa thêm, vừa sửa.
+
 ## 20/11/2026
 - T890: Gói Standard, nút Excel > Nhập Excel ở Hàng hoá, Nhóm hàng hoá, Đối tượng, Nhóm đối tượng, Quỹ tiền, Lý do nghiệp vụ mở hộp nhập. Tải file mẫu có cột theo form Thêm mới, chọn file đã điền, hộp báo số dòng đạt và bảng lỗi theo dòng, cột. Bấm Nhập để thêm các dòng đạt.
 
