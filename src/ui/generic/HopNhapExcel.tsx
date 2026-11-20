@@ -8,6 +8,8 @@ export interface HopNhapExcelProps {
   sc: ScreenProps['sc']
   cfg: CatalogCfg
   all: Row[]
+  rowsLoc: Row[]     // danh sách theo bộ lọc đang áp (T892)
+  rowsTrang: Row[]   // các dòng ở trang đang xem (T892)
   onDong: () => void
 }
 

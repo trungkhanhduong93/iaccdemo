@@ -691,6 +691,8 @@ export function CatalogScreen({ sc }: ScreenProps) {
           sc={sc}
           cfg={cfg}
           all={all}
+          rowsLoc={rowsHien}
+          rowsTrang={rowsTrang}
           onDong={() => setMoNhapExcel(false)}
         />
       )}
