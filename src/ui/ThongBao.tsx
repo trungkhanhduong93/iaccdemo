@@ -6,7 +6,7 @@ import { useDongEsc } from './LocNangCao'
 // Loại quyết định biểu tượng, màu, nhãn, màu nút chính. Chỉ loai 'xoa' có nút đỏ.
 export type LoaiThongBao = 'chan' | 'xoa' | 'canhBao' | 'hoi' | 'xong' | 'thongTin'
 
-export interface NutThongBao { ten: string; onClick: () => void }
+export interface NutThongBao { ten: string; onClick: () => void; tat?: boolean }
 export interface DuKienThongBao { nhan: string; gt: ReactNode; di?: () => void; chip?: string }
 export interface AnhHuongThongBao { nhan: string; gt: ReactNode; mau?: 'do' | 'xanh' | 'vang' }
 
@@ -111,7 +111,7 @@ export function ThongBao({ loai, nhan, hinh, tieuDe, moTa, duKien, anhHuong, buo
           {nutThem && <button type="button" className={`btn tb-nut-them${nutThem.do ? ' tb-nut-do' : ''}`} onClick={nutThem.onClick}>{nutThem.ten}</button>}
           <span className="grow" />
           {phuNut && <button type="button" className="btn tb-nut-phu" onClick={phuNut.onClick}>{phuNut.ten}</button>}
-          {nut && <button type="button" className={`btn pri tb-nut-chinh${loai === 'xoa' ? ' tb-nut-xoa' : ''}`} autoFocus onClick={nut.onClick}>{nut.ten}</button>}
+          {nut && <button type="button" className={`btn pri tb-nut-chinh${loai === 'xoa' ? ' tb-nut-xoa' : ''}`} autoFocus disabled={nut.tat} onClick={nut.onClick}>{nut.ten}</button>}
         </div>
       </div>
     </div>,

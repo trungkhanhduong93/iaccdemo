@@ -48937,3 +48937,24 @@ textarea.m-tpb-inp { height: auto; padding: 8px 12px; }
 .ccht-tb-dong { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 44px; padding: 0 14px; border: 1px solid var(--line); border-radius: 10px; background: transparent; color: var(--ink); font: inherit; font-size: 15px; font-weight: 600; text-align: left; cursor: pointer; }
 .ccht-tb-dong:hover, .ccht-tb-dong:focus-visible { border-color: var(--blue); background: var(--tint); }
 .ccht-tb-dong .ic { color: var(--muted); }
+
+/* ── Hộp nhập danh mục từ Excel (T890) ── */
+.tb:has(.hop-nhap-excel) { width: min(640px, calc(100vw - 32px)); }
+.hop-nhap-excel { display: flex; flex-direction: column; gap: 16px; font-size: 14px; color: var(--body); }
+.nhap-xl-buoc { display: flex; gap: 12px; align-items: flex-start; }
+.nhap-xl-buoc-so { flex: none; font-weight: 600; color: var(--ink); padding-top: 3px; min-width: 55px; }
+.nhap-xl-buoc-nd { flex: 1 1 auto; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.nhap-xl-mota { color: var(--body); line-height: 1.4; }
+.nhap-xl-chon-hang { display: flex; align-items: center; gap: 10px; }
+.nhap-xl-nut-chon { cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
+.nhap-xl-ten-file { font-size: 13px; color: var(--ink); font-weight: 500; word-break: break-all; }
+.nhap-xl-loi-chung { padding: 8px 12px; border-radius: 8px; background: var(--red-t, rgba(239, 68, 68, 0.1)); color: var(--red, #dc2626); font-size: 13px; font-weight: 500; }
+.nhap-xl-ket-qua-dong { font-weight: 600; color: var(--ink); }
+.nhap-xl-bang-cuon { max-height: 220px; overflow-y: auto; border: 1px solid var(--line); border-radius: 8px; margin-top: 4px; }
+.nhap-xl-bang { width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; }
+.nhap-xl-bang th { background: var(--tint); color: var(--ink); font-weight: 600; padding: 6px 10px; position: sticky; top: 0; border-bottom: 1px solid var(--line); z-index: 1; }
+.nhap-xl-bang td { padding: 6px 10px; border-bottom: 1px solid var(--line); color: var(--body); }
+.nhap-xl-bang tr:last-child td { border-bottom: 0; }
+.nhap-xl-o-so { text-align: center; }
+.nhap-xl-o-cot { font-weight: 500; color: var(--ink); }
+.nhap-xl-o-ly-do { color: var(--red, #dc2626); }

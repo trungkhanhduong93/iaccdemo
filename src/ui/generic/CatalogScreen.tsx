@@ -41,6 +41,8 @@ import { HOM_NAY } from '../../data/mock'
 import { dmy } from '../format'
 import { addCatalogRow, suaCatalogRow, useAddedCatalogRows, sinhMaKeTiep } from './danhMucStore'
 import { suaPhieu, useDaXoa, xoaPhieu } from './daXoa'
+import { HopNhapExcel } from './HopNhapExcel'
+import { CAT_KEYS_NHAP_EXCEL } from './mauNhapDm'
 
 
 /** Dòng có khoảng ngày "dd/mm/yyyy - dd/mm/yyyy" giao khoảng lọc "tu|den" (để trống một đầu là không giới hạn đầu đó, T812) */
@@ -55,6 +57,7 @@ export function CatalogScreen({ sc }: ScreenProps) {
   const { s, set, toast } = useSession()
   const catKey = sc.code ?? sc.slug ?? ''
   const addedRows = useAddedCatalogRows(catKey)
+  const [moNhapExcel, setMoNhapExcel] = useState(false)
   const cfg = sc.catalog ?? { cols: [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Tên' }], rows: () => [] }
   const dsct = cfg.dsChungTu
   // Kỳ số liệu (yyyymm): màn có kySoLieu tính số liệu tới hết kỳ đang chọn
@@ -579,7 +582,13 @@ export function CatalogScreen({ sc }: ScreenProps) {
                 <span className="muted" style={{ fontSize: 12, marginRight: 4 }}>{rows.length}/{all.length} dòng</span>
                 {!cfg.khongExcel?.includes(s.goi) && (
                   <NutExcel
-                    onNhap={() => toast('Nhập danh mục từ Excel')}
+                    onNhap={() => {
+                      if (s.goi === 'S' && CAT_KEYS_NHAP_EXCEL.includes(catKey)) {
+                        setMoNhapExcel(true)
+                      } else {
+                        toast('Nhập danh mục từ Excel')
+                      }
+                    }}
                     onXuat={() => toast(`Đã xuất ${rows.length} dòng ra Excel`)}
                   />
                 )}
@@ -676,6 +685,14 @@ export function CatalogScreen({ sc }: ScreenProps) {
       {moFormThem && cfg.formThem && (
         <cfg.formThem tab={tabGt || undefined} sua={suaFormThem ?? undefined}
           onDong={() => { setMoFormThem(false); setSuaFormThem(null) }} />
+      )}
+      {moNhapExcel && (
+        <HopNhapExcel
+          sc={sc}
+          cfg={cfg}
+          all={all}
+          onDong={() => setMoNhapExcel(false)}
+        />
       )}
     </div>
   )

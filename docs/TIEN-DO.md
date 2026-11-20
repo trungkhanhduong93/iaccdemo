@@ -11,7 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T890 | Gói Standard: mẫu import 6 danh mục (Hàng hoá, Nhóm hàng hoá, Đối tượng, Nhóm đối tượng, Quỹ tiền, Lý do nghiệp vụ). Nhập Excel mở hộp nhập: tải file mẫu .xlsx theo form Thêm mới, chọn file, đọc và thêm dòng vào danh sách, báo dòng đạt, dòng lỗi. Trừ Cửa hàng | Trum | Đang làm | Sửa `CatalogScreen.tsx`, tạo `src/ui/generic/HopNhapExcel.tsx`, cuối `app.css` (mục T890). Plus, Pro giữ toast. Spec `backup/spec-T890.md` |
+| T891 | Dữ liệu mẫu Hàng hoá (`src/data/mock.ts`) có nhóm `Món nước` không nằm trong danh mục Nhóm hàng hoá (`NHOM_HANG`). File mẫu nhập Excel lấy 2 dòng ví dụ từ đây nên báo thêm lỗi Nhóm hàng hoá ngoài lỗi trùng mã | Trum | Chưa làm | Thấy khi nghiệm thu T890. Sửa `mock.ts` hoặc thêm nhóm vào `data.ts` |
 | T886 | Xuất kho định lượng: hàng lọc giống Xuất huỷ (kỳ, ô tìm, phễu, Excel, đếm phiếu), bỏ ô chọn cửa hàng riêng | Trum | Đang làm | Sửa `XuatDinhLuong.tsx`, cuối `app.css` (mục T886). Spec `backup/spec-T886-T888.md` |
 | T887 | Chuyển Xuất kho định lượng từ Kho sang Bán hàng, đứng ngay sau tab Bán hàng (Plus) hoặc Xuất bán POS (Pro), bỏ khỏi Kho | Trum | Đang làm | Sửa `kho/index.ts`, `ban-hang/index.ts`, `ChungTuBanHang.tsx` (link tham chiếu), `SidebarFlyout.tsx`, `thaoTacNhanh.ts`, `kho/quy-trinh.ts`. Spec `backup/spec-T886-T888.md` |
 | T888 | Kho gói Plus: bỏ Xuất chuyển kho, mở lại Xuất điều chuyển, Nhập điều chuyển; Pro giữ cả 3 (QD112) | Trum | Đang làm | Sửa `kho/index.ts`, `SidebarFlyout.tsx`, `kho/quy-trinh.ts`. Spec `backup/spec-T886-T888.md` |

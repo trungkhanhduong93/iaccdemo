@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T890 | Gói Standard: Nhập Excel ở 6 danh mục (Hàng hoá, Nhóm hàng hoá, Đối tượng, Nhóm đối tượng, Quỹ tiền, Lý do nghiệp vụ) mở hộp nhập: tải file mẫu theo form Thêm mới, chọn file, báo dòng đạt, bảng lỗi, nhập dòng đạt | Trum | 20/11/2026 | 2026-11-20-trum-mau-import-danh-muc.md |
 | T889 | Component thông báo chung `ThongBao` 6 loại thay 45 hộp thoại cả 3 gói, máy tính và điện thoại; toast có loại; toast chặn có số phiếu thành hộp chặn; CSS hộp cũ không còn dùng đã xoá | Trum | 19/11/2026 | `2026-11-19-trum-thong-bao-chung.md` |
 | T885 | Hàng bán trả lại: số tổng danh sách, form web, xem và lập điện thoại lấy từ dòng chi tiết; GTGT theo % doanh thu ghi giảm thuế từng dòng | dinhlanphuongipacc | 15/11/2026 | [2026-11-15-dinhlanphuongipacc-tong-tra-ban-theo-dong](../nhat-ky/2026-11-15-dinhlanphuongipacc-tong-tra-ban-theo-dong.md) |
 | T884 | Điện thoại, xem Hàng bán trả lại: mặt hàng và khối Tổng cộng cuối phiếu như xem phiếu mua | dinhlanphuongipacc | 15/11/2026 | [2026-11-15-dinhlanphuongipacc-tong-xem-tra-ban](../nhat-ky/2026-11-15-dinhlanphuongipacc-tong-xem-tra-ban.md) |

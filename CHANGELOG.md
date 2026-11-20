@@ -2,6 +2,9 @@
 
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
+## 20/11/2026
+- T890: Gói Standard, nút Excel > Nhập Excel ở Hàng hoá, Nhóm hàng hoá, Đối tượng, Nhóm đối tượng, Quỹ tiền, Lý do nghiệp vụ mở hộp nhập. Tải file mẫu có cột theo form Thêm mới, chọn file đã điền, hộp báo số dòng đạt và bảng lỗi theo dòng, cột. Bấm Nhập để thêm các dòng đạt.
+
 ## 19/11/2026
 - T889: Mọi hộp thông báo, xác nhận cả 3 gói dùng một khuôn mới: biểu tượng và nhãn theo loại, tiêu đề nói lý do, số phiếu bấm mở được. Chỉ hộp xoá có nút đỏ. Toast thành thẻ trắng có loại, có nút. Lỗi chặn có số phiếu hiện thành hộp, kèm cách gỡ. Sửa phiếu nhập đã có phiếu chi trên máy tính giờ bị chặn như trên điện thoại. Đóng phiếu chưa lưu có nút Lưu rồi đóng. Điện thoại hiện hộp dạng tấm trượt từ đáy.
 
