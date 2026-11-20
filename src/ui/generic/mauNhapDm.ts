@@ -740,7 +740,10 @@ function parseVaKiemTraGiaTri(
 
   if (c.kieu === 'chonNhieu') {
     const parts = strVal.split(',').map(p => p.trim()).filter(Boolean)
-    if (c.ds && c.ds.length > 0) {
+    // Chọn đủ danh sách thì form lưu "Tất cả" (T144)
+    if (strVal.trim().toLowerCase() === 'tất cả') {
+      gt[c.k] = 'Tất cả'
+    } else if (c.ds && c.ds.length > 0) {
       const invalid = parts.filter(p => !c.ds!.some(item => {
         if (item.toLowerCase() === p.toLowerCase()) return true
         if (c.nhanDs && c.nhanDs(item).toLowerCase() === p.toLowerCase()) return true
@@ -996,12 +999,13 @@ export async function kiemFileNhapDm(
             if (c.kieu === 'tien' || c.kieu === 'so') {
               const numParsed = Number(strVal.replace(/\./g, '').replace(',', '.'))
               khac = isNaN(numParsed) || numParsed !== Number(dongCu[c.k])
+            } else if (c.k === '_tt') {
+              // _tt kiểu tích nhưng thiếu giá trị là đang sử dụng, nên xét trước nhánh tích
+              const ttParsed = ['không', '0', 'false'].includes(strVal.toLowerCase()) ? 0 : 1
+              khac = ttParsed !== (dongCu._tt === 0 ? 0 : 1)
             } else if (c.kieu === 'tich') {
               const boolParsed = ['x', 'có', '1', 'true'].includes(strVal.toLowerCase())
               khac = boolParsed !== Boolean(dongCu[c.k])
-            } else if (c.k === '_tt') {
-              const ttParsed = ['không', '0', 'false'].includes(strVal.toLowerCase()) ? 0 : 1
-              khac = ttParsed !== (dongCu._tt === 0 ? 0 : 1)
             } else {
               khac = strVal.trim() !== String(dongCu[c.k] ?? '').trim()
             }

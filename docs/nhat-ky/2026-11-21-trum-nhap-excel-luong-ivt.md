@@ -22,9 +22,16 @@
 - File lưu lại qua Excel thật đọc được. File ghi bằng openpyxl có ghi chú ô thì exceljs báo "Không đọc được file".
 - Chưa kiểm luồng nhập ở 5 danh mục còn lại, chưa so ảnh từng điểm ảnh với bản vẽ.
 
+## Làm thêm T891 cùng phiên
+
+- `data.ts`: thêm 11 nhóm hàng hoá NHH11–NHH21, 5 nhóm đối tượng NDT15–NDT19 theo bộ phận nhân viên.
+- `mauNhapDm.ts`: ô chọn nhiều nhận "Tất cả"; cột Đang sử dụng ở dòng khoá so đúng (trước đây mọi lý do FABi báo "không sửa được").
+- Thử khứ hồi bằng Playwright (tải dữ liệu đang có, sửa 1 tên, thêm 1 dòng mã trống, nhập lại) ở 6 danh mục × 3 gói: chỉ còn lỗi đúng ý là THU01 nguồn FABi sửa tên bị chặn.
+- Còn lệch nhỏ: sau khi nhập, Hàng hoá tô 34/35 dòng sửa, Đối tượng 18/20. Chưa tìm gốc.
+
 ## Dở dang, việc tiếp theo
 
-- Không. Việc phát sinh: T891 (nhóm hàng trong dữ liệu mẫu nằm ngoài danh mục, nên tải dữ liệu đang có rồi nhập lại thì báo lỗi), T893 (form Sửa không lưu dòng mẫu).
+- Không. Việc phát sinh: T893 (form Sửa không lưu dòng mẫu).
 
 ## Bẫy, quyết định mới
 

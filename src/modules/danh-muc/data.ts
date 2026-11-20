@@ -91,6 +91,18 @@ export const NHOM_HANG: NhomHang[] = [
   { ma: 'NHH08', ten: 'Rau củ', dienGiai: 'Rau sạch, nấm, củ quả tươi', tkKho: '152', tkDt: '', tkGv: '632', tkCp: '6421', tkTraLai: '', mucCp: '', ppGia: 'Bình quân cuối kỳ', ts: '0', nganhNghe: '', nganhNgheDn: '' },
   { ma: 'NHH09', ten: 'Gia vị', dienGiai: 'Dầu ăn, nước mắm, sốt, đồ khô', tkKho: '152', tkDt: '', tkGv: '632', tkCp: '6421', tkTraLai: '', mucCp: '', ppGia: 'Bình quân cuối kỳ', ts: '8', nganhNghe: '', nganhNgheDn: '' },
   { ma: 'NHH10', ten: 'Bia, nước ngọt', dienGiai: 'Bia lon, nước đóng chai', tkKho: '1561', tkDt: '5111', tkGv: '632', tkCp: '6421', tkTraLai: '', mucCp: 'Quảng cáo, khuyến mãi', ppGia: 'Bình quân cuối kỳ', ts: '10', nganhNghe: '101-1', nganhNgheDn: 'DN1-1' },
+  // Nhóm còn thiếu so với dữ liệu mẫu Hàng hoá, nguyên vật liệu, CCDC (T891)
+  { ma: 'NHH11', ten: 'Món nước', dienGiai: 'Phở, bún, miến các loại', tkKho: '', tkDt: '5111', tkGv: '632', tkCp: '6421', tkTraLai: '', mucCp: 'Quảng cáo, khuyến mãi', ppGia: 'Bình quân cuối kỳ', ts: '8', nganhNghe: '301-5', nganhNgheDn: 'DN3-5' },
+  { ma: 'NHH12', ten: 'Món cơm', dienGiai: 'Cơm phần, cơm rang', tkKho: '', tkDt: '5111', tkGv: '632', tkCp: '6421', tkTraLai: '', mucCp: 'Quảng cáo, khuyến mãi', ppGia: 'Bình quân cuối kỳ', ts: '8', nganhNghe: '301-5', nganhNgheDn: 'DN3-5' },
+  { ma: 'NHH13', ten: 'Khai vị', dienGiai: 'Gỏi, nộm, đồ chiên ăn kèm', tkKho: '', tkDt: '5111', tkGv: '632', tkCp: '6421', tkTraLai: '', mucCp: 'Quảng cáo, khuyến mãi', ppGia: 'Bình quân cuối kỳ', ts: '8', nganhNghe: '301-5', nganhNgheDn: 'DN3-5' },
+  { ma: 'NHH14', ten: 'Bia, rượu', dienGiai: 'Bia, rượu bán thẳng và dùng chế biến', tkKho: '1561', tkDt: '5111', tkGv: '632', tkCp: '6421', tkTraLai: '', mucCp: 'Quảng cáo, khuyến mãi', ppGia: 'Bình quân cuối kỳ', ts: '10', nganhNghe: '101-1', nganhNgheDn: 'DN1-1' },
+  { ma: 'NHH15', ten: 'Tinh bột', dienGiai: 'Gạo, bún, bánh phở, mì', tkKho: '152', tkDt: '', tkGv: '632', tkCp: '6421', tkTraLai: '', mucCp: '', ppGia: 'Bình quân cuối kỳ', ts: '8', nganhNghe: '', nganhNgheDn: '' },
+  { ma: 'NHH16', ten: 'Pha chế', dienGiai: 'Nguyên liệu quầy bar, siro, trà, cà phê', tkKho: '152', tkDt: '', tkGv: '632', tkCp: '6421', tkTraLai: '', mucCp: '', ppGia: 'Bình quân cuối kỳ', ts: '8', nganhNghe: '', nganhNgheDn: '' },
+  { ma: 'NHH17', ten: 'Dụng cụ bếp', dienGiai: 'Nồi, chảo, dao thớt', tkKho: '153', tkDt: '', tkGv: '', tkCp: '6421', tkTraLai: '', mucCp: '', ppGia: 'Bình quân cuối kỳ', ts: '10', nganhNghe: '', nganhNgheDn: '' },
+  { ma: 'NHH18', ten: 'Nội thất', dienGiai: 'Bàn ghế, kệ tủ', tkKho: '153', tkDt: '', tkGv: '', tkCp: '6421', tkTraLai: '', mucCp: '', ppGia: 'Bình quân cuối kỳ', ts: '10', nganhNghe: '', nganhNgheDn: '' },
+  { ma: 'NHH19', ten: 'Thiết bị', dienGiai: 'Tủ lạnh, bếp, máy pha', tkKho: '153', tkDt: '', tkGv: '', tkCp: '6421', tkTraLai: '', mucCp: '', ppGia: 'Bình quân cuối kỳ', ts: '10', nganhNghe: '', nganhNgheDn: '' },
+  { ma: 'NHH20', ten: 'Dụng cụ quầy', dienGiai: 'Ly, bình, dụng cụ pha chế', tkKho: '153', tkDt: '', tkGv: '', tkCp: '6421', tkTraLai: '', mucCp: '', ppGia: 'Bình quân cuối kỳ', ts: '10', nganhNghe: '', nganhNgheDn: '' },
+  { ma: 'NHH21', ten: 'Đồ ăn vặt', dienGiai: 'Bánh, snack đóng gói bán thẳng', tkKho: '', tkDt: '5111', tkGv: '632', tkCp: '6421', tkTraLai: '', mucCp: 'Quảng cáo, khuyến mãi', ppGia: 'Bình quân cuối kỳ', ts: '8', nganhNghe: '301-5', nganhNgheDn: 'DN3-5' },
 ]
 export const TEN_NHOM_HANG = NHOM_HANG.map(n => n.ten)
 
@@ -117,6 +129,12 @@ export const NHOM_DOI_TUONG: NhomDoiTuong[] = [
   { ma: 'NDT12', ten: 'Công cụ, thiết bị', dienGiai: 'Nhà cung cấp bếp, bát đĩa, thiết bị POS', tkThu: '131', tkTra: '331' },
   { ma: 'NDT13', ten: 'Điện nước', dienGiai: 'Điện lực, cấp nước, viễn thông', tkThu: '131', tkTra: '331' },
   { ma: 'NDT14', ten: 'Nhân viên', dienGiai: 'Cán bộ công nhân viên nội bộ', tkThu: '141', tkTra: '334' },
+  // Bộ phận của nhân viên mẫu, đối tượng nhân viên lấy bộ phận làm nhóm (T891)
+  { ma: 'NDT15', ten: 'Kế toán', dienGiai: 'Nhân viên bộ phận kế toán', tkThu: '141', tkTra: '334' },
+  { ma: 'NDT16', ten: 'Thu ngân', dienGiai: 'Nhân viên bộ phận thu ngân', tkThu: '141', tkTra: '334' },
+  { ma: 'NDT17', ten: 'Bếp', dienGiai: 'Nhân viên bộ phận bếp', tkThu: '141', tkTra: '334' },
+  { ma: 'NDT18', ten: 'Kho', dienGiai: 'Nhân viên bộ phận kho', tkThu: '141', tkTra: '334' },
+  { ma: 'NDT19', ten: 'Quản lý cửa hàng', dienGiai: 'Nhân viên bộ phận quản lý cửa hàng', tkThu: '141', tkTra: '334' },
 ]
 export const TEN_NHOM_DOI_TUONG = NHOM_DOI_TUONG.map(n => n.ten)
 

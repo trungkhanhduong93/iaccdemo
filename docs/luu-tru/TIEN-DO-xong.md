@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T891 | Dữ liệu mẫu: thêm 11 nhóm hàng hoá, 5 nhóm đối tượng theo bộ phận nhân viên còn thiếu; nhập Excel nhận "Tất cả" ở ô chọn nhiều, sửa so sánh Đang sử dụng ở dòng khoá. Tải dữ liệu đang có rồi nhập lại sạch ở 6 danh mục, 3 gói | Trum | 21/11/2026 | 2026-11-21-trum-nhap-excel-luong-ivt.md |
 | T892 | Hộp Nhập Excel danh mục 3 bước theo luồng IVT ở 6 danh mục, cả 3 gói: kéo thả, tải file mẫu, tải dữ liệu đang có, kiểm tra có tab và bảng 2 tầng, mã trùng thì cập nhật, mã trống tự sinh, màn Đang nhập, kết quả, file lỗi, tô dòng vừa nhập | Trum | 21/11/2026 | 2026-11-21-trum-nhap-excel-luong-ivt.md |
 | T890 | Gói Standard: Nhập Excel ở 6 danh mục (Hàng hoá, Nhóm hàng hoá, Đối tượng, Nhóm đối tượng, Quỹ tiền, Lý do nghiệp vụ) mở hộp nhập: tải file mẫu theo form Thêm mới, chọn file, báo dòng đạt, bảng lỗi, nhập dòng đạt | Trum | 20/11/2026 | 2026-11-20-trum-mau-import-danh-muc.md |
 | T889 | Component thông báo chung `ThongBao` 6 loại thay 45 hộp thoại cả 3 gói, máy tính và điện thoại; toast có loại; toast chặn có số phiếu thành hộp chặn; CSS hộp cũ không còn dùng đã xoá | Trum | 19/11/2026 | `2026-11-19-trum-thong-bao-chung.md` |
