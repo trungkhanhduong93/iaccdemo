@@ -11,6 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T892 | Hộp Nhập Excel danh mục theo luồng IVT: hộp lớn 3 bước (Chọn file, Kiểm tra dữ liệu, Kết quả), màn Đang nhập, tải dữ liệu đang có để sửa hàng loạt, mã trống tự sinh, file lỗi chỉ dòng lỗi, đánh dấu dòng vừa nhập. 6 danh mục, cả 3 gói | Trum | Đang làm | Sửa `src/ui/generic/HopNhapExcel.tsx`, `src/ui/generic/mauNhapDm.ts`, màn danh mục gọi hộp, cuối `app.css` (mục T892). Bản vẽ https://claude.ai/artifact/URAL9XkFKkkXtywSG5iY16 |
 | T891 | Dữ liệu mẫu Hàng hoá (`src/data/mock.ts`) có nhóm `Món nước` không nằm trong danh mục Nhóm hàng hoá (`NHOM_HANG`). File mẫu nhập Excel lấy 2 dòng ví dụ từ đây nên báo thêm lỗi Nhóm hàng hoá ngoài lỗi trùng mã | Trum | Chưa làm | Thấy khi nghiệm thu T890. Sửa `mock.ts` hoặc thêm nhóm vào `data.ts` |
 | T886 | Xuất kho định lượng: hàng lọc giống Xuất huỷ (kỳ, ô tìm, phễu, Excel, đếm phiếu), bỏ ô chọn cửa hàng riêng | Trum | Đang làm | Sửa `XuatDinhLuong.tsx`, cuối `app.css` (mục T886). Spec `backup/spec-T886-T888.md` |
 | T887 | Chuyển Xuất kho định lượng từ Kho sang Bán hàng, đứng ngay sau tab Bán hàng (Plus) hoặc Xuất bán POS (Pro), bỏ khỏi Kho | Trum | Đang làm | Sửa `kho/index.ts`, `ban-hang/index.ts`, `ChungTuBanHang.tsx` (link tham chiếu), `SidebarFlyout.tsx`, `thaoTacNhanh.ts`, `kho/quy-trinh.ts`. Spec `backup/spec-T886-T888.md` |
