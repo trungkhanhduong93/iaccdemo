@@ -1,6 +1,7 @@
 import { taiFile } from '../xuatBangExcel'
 import { fold } from '../format'
-import type { Row } from '../../modules/types'
+import type { Row, CatalogCfg } from '../../modules/types'
+import type { KetQuaKiem, KetQuaNhap, BaoTienDo } from './nhapDmKieu'
 import type { Session } from '../../app/session'
 import { TRUONG_DM, hopPp, type TruongDM, type KhoiDM, type CauHinhDM, type KieuTruong } from '../../modules/danh-muc/truong-dm'
 import { addCatalogRow } from './danhMucStore'
@@ -541,4 +542,29 @@ export function nhapCacDongDat(
   if (Object.keys(accumulatedPatch).length > 0) {
     set(accumulatedPatch)
   }
+}
+
+// ── Hợp đồng T892: gói 1 viết thân các hàm dưới ──
+
+/** Tải dữ liệu đang có (cùng cột file mẫu) để sửa hàng loạt rồi nhập lại (T892) */
+export async function taiDuLieuDm(_catKey: string, _tenNgan: string, _s: Session, _rows: Row[]): Promise<void> {
+  throw new Error('T892: chưa làm')
+}
+
+/** Đọc, kiểm file: xếp từng dòng vào thêm mới, cập nhật, lỗi (T892) */
+export async function kiemFileNhapDm(_file: File, _catKey: string, _s: Session, _all: Row[]): Promise<KetQuaKiem> {
+  throw new Error('T892: chưa làm')
+}
+
+/** Tải file chỉ gồm dòng lỗi, thêm cột Lý do lỗi cuối (T892) */
+export async function taiFileLoi(_catKey: string, _tenNgan: string, _s: Session, _kq: KetQuaKiem): Promise<void> {
+  throw new Error('T892: chưa làm')
+}
+
+/** Ghi dòng thêm mới, cập nhật theo lô, báo tiến độ từng lô (T892) */
+export async function nhapDm(
+  _catKey: string, _kq: KetQuaKiem, _s: Session, _set: (p: Partial<Session>) => void,
+  _cfgPhien: CatalogCfg['phien'], _baoTienDo: BaoTienDo
+): Promise<KetQuaNhap> {
+  throw new Error('T892: chưa làm')
 }

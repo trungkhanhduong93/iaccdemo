@@ -284,3 +284,19 @@ export function getDmMeta(dm: string, nhan?: string, tenGoc?: string): DmMeta {
 
   return { catKey: normKey, scSlug, cauHinh, dienSan, ten, tenNgan, all, sc }
 }
+
+// ── Hợp đồng T892: gói 2 viết thân các hàm dưới ──
+
+/** Cập nhật dòng theo mã khi nhập Excel: dòng thêm trong phiên sửa thẳng, dòng mẫu lưu bản ghi đè (T892) */
+export function ghiDeCatalogRow(_dm: string, _ma: string, _row: Row): void {
+  throw new Error('T892: chưa làm')
+}
+
+/** Đánh dấu mã vừa thêm, vừa sửa ở lần nhập Excel gần nhất, mất khi tải lại trang (T892) */
+export function danhDauNhap(_dm: string, _moi: string[], _sua: string[]): void {
+  throw new Error('T892: chưa làm')
+}
+
+export function useDanhDauNhap(_dm: string): { moi: Set<string>; sua: Set<string> } {
+  return { moi: new Set(), sua: new Set() }
+}
