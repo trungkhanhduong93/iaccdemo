@@ -48958,3 +48958,618 @@ textarea.m-tpb-inp { height: auto; padding: 8px 12px; }
 .nhap-xl-o-so { text-align: center; }
 .nhap-xl-o-cot { font-weight: 500; color: var(--ink); }
 .nhap-xl-o-ly-do { color: var(--red, #dc2626); }
+
+/* ── Hộp nhập Excel danh mục: khung (T892) ── */
+.nxh-nen { position: fixed; inset: 0; z-index: 1000; background: rgba(15, 23, 42, .42); display: flex; align-items: center; justify-content: center; }
+.nxh-hop { width: 1220px; height: 740px; max-width: calc(100vw - 32px); max-height: calc(100vh - 32px); background: var(--white); border-radius: 14px; box-shadow: 0 18px 50px rgba(14, 26, 43, .18), 0 2px 6px rgba(14, 26, 43, .08); display: flex; flex-direction: column; overflow: hidden; font-size: 13.5px; color: var(--body); }
+.nxh-dau { display: grid; grid-template-columns: 200px minmax(0, 1fr) 200px; align-items: center; height: 64px; flex: none; padding: 0 20px; background: #fafbfc; }
+.nxh-dong { width: 34px; height: 34px; border-radius: 50%; border: 0; background: #eef1f5; color: #475569; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0; }
+.nxh-dong:disabled { color: #c0c7d0; cursor: default; }
+.nxh-td { margin: 0; text-align: center; font-size: 18px; font-weight: 700; color: var(--ink); }
+.nxh-dau-phai { text-align: right; }
+.nxh-b { height: 34px; padding: 0 14px; border-radius: 8px; border: 1px solid #cfd6df; background: var(--white); color: var(--ink); font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 7px; box-sizing: border-box; white-space: nowrap; }
+.nxh-b.p { background: var(--blue); border-color: var(--blue); color: #fff; }
+.nxh-b.p:disabled { background: #a9c2d8; border-color: #a9c2d8; cursor: not-allowed; }
+.nxh-b.hd { height: 36px; padding: 0 18px; font-size: 13.5px; }
+.nxh-lk { border: 0; background: none; padding: 0; color: var(--blue); font: inherit; font-size: 12.5px; font-weight: 600; cursor: pointer; }
+.nxh-vach { height: 3px; flex: none; background: var(--line); }
+.nxh-vach > div { height: 100%; background: var(--blue); transition: width .2s; }
+.nxh-vach.het > div { background: #138a52; }
+.nxh-than { flex: 1; min-height: 0; display: flex; }
+.nxh-buoc { width: 196px; flex: none; border-right: 1px solid var(--line); padding: 24px 18px; display: flex; flex-direction: column; box-sizing: border-box; }
+.nxh-buoc ol { list-style: none; margin: 0; padding: 0; }
+.nxh-bc { display: flex; gap: 12px; }
+.nxh-bc-cot { display: flex; flex-direction: column; align-items: center; }
+.nxh-bc-so { width: 30px; height: 30px; flex: none; border-radius: 50%; box-sizing: border-box; border: 1.5px solid #d6dde6; color: var(--faint); font-weight: 700; font-size: 13px; display: flex; align-items: center; justify-content: center; }
+.nxh-bc-noi { width: 2px; height: 30px; background: var(--line); margin: 6px 0; }
+.nxh-bc-chu { padding-top: 5px; }
+.nxh-bc-ten { font-weight: 500; color: var(--muted); }
+.nxh-bc-phu { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.nxh-bc.dang .nxh-bc-so { border: 0; background: var(--blue); color: #fff; box-shadow: 0 0 0 4px var(--tint); }
+.nxh-bc.dang .nxh-bc-ten { font-weight: 600; color: var(--blue); }
+.nxh-bc.xong .nxh-bc-so { border: 0; background: #e3f4ea; color: #138a52; }
+.nxh-bc.xong .nxh-bc-noi { background: #9fd3b6; }
+.nxh-bc.xong .nxh-bc-ten { font-weight: 600; color: var(--ink); }
+.nxh-bc.het .nxh-bc-so { border: 0; background: #138a52; color: #fff; box-shadow: 0 0 0 4px #e3f4ea; }
+.nxh-bc.het .nxh-bc-ten { font-weight: 600; color: #138a52; }
+.nxh-tep { margin-top: auto; padding-top: 12px; border-top: 1px solid var(--line-2); font-size: 12.5px; color: var(--muted); line-height: 1.55; }
+.nxh-tep-ten { color: var(--ink); font-weight: 600; font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.nxh-phai { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.nxh-b1 { flex: 1; min-width: 0; padding: 24px 28px; display: flex; flex-direction: column; gap: 22px; overflow: auto; }
+.nxh-tha { border: 1.5px dashed #b6c7d8; border-radius: 12px; background: #f8fbfd; height: 236px; flex: none; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; cursor: pointer; }
+.nxh-tha.keo { border-color: var(--blue); background: var(--tint); }
+.nxh-tha-td { font-size: 15px; font-weight: 600; color: var(--ink); }
+.nxh-tha-phu { color: var(--muted); }
+.nxh-tha-nut { margin-top: 6px; }
+.nxh-loi { margin-top: -10px; padding: 10px 14px; border-radius: 8px; background: var(--redt); color: #c2362b; font-weight: 500; }
+.nxh-chua-co { font-weight: 700; color: var(--ink); margin-bottom: 10px; }
+.nxh-the { border: 1px solid var(--line); border-radius: 10px; }
+.nxh-the-dong { display: flex; align-items: center; gap: 16px; padding: 16px 20px; }
+.nxh-the-dong + .nxh-the-dong { border-top: 1px solid var(--line-2); }
+.nxh-the-ic { flex: none; }
+.nxh-the-chu { flex: 1; min-width: 0; }
+.nxh-the-td { font-weight: 600; color: var(--ink); }
+.nxh-the-phu { color: var(--muted); margin-top: 3px; }
+.nxh-the-nut { width: 372px; flex: none; display: flex; justify-content: flex-end; gap: 8px; }
+.nxh-b-tai { width: 136px; flex: none; }
+.nxh-chon { width: 212px; height: 34px; border: 1px solid #cfd6df; border-radius: 8px; font: inherit; font-size: 13px; color: var(--body); padding: 0 8px; background: var(--white); box-sizing: border-box; }
+
+/* ── Hộp nhập Excel danh mục: kiểm tra (T892) ── */
+:root {
+  --nxk-warn: #b45309;
+  --nxk-border-loi: #f2c4bf;
+  --nxk-border-th: #d6e2ee;
+  --nxk-border-sel: #cfd6df;
+  --nxk-bg-doi: #eef5fb;
+}
+
+.nxk-wrap {
+  flex: 1;
+  min-width: 0;
+  padding: 16px 20px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.nxk-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.nxk-canh-bao {
+  flex: 1;
+  min-width: 0;
+  color: var(--nxk-warn);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.nxk-canh-bao-txt {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.nxk-btn-loi {
+  height: 34px;
+  padding: 0 14px;
+  border-radius: 8px;
+  border: 1px solid var(--nxk-border-loi);
+  background: var(--white);
+  color: var(--red);
+  font: 600 13px var(--fs);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  box-sizing: border-box;
+  white-space: nowrap;
+}
+
+.nxk-btn-loi:hover {
+  background: #fffafa;
+}
+
+.nxk-tabs {
+  display: flex;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 9px;
+  background: var(--fr-t);
+  flex: none;
+}
+
+.nxk-tab {
+  border: 0;
+  background: none;
+  height: 30px;
+  padding: 0 12px;
+  border-radius: 7px;
+  font: 500 13px var(--fs);
+  color: #4b5563;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.nxk-tab.on {
+  background: var(--white);
+  color: var(--ink);
+  font-weight: 600;
+  box-shadow: 0 1px 2px rgba(14, 26, 43, .12), 0 0 0 1px rgba(14, 26, 43, .06);
+}
+
+.nxk-dem {
+  min-width: 20px;
+  height: 18px;
+  padding: 0 6px;
+  border-radius: 9px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--white);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.nxk-tbl-wrap {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.nxk-tbl {
+  width: 100%;
+  table-layout: auto;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.nxk-tbl th {
+  background: var(--th);
+  color: var(--ink);
+  font-weight: 600;
+  padding: 0 10px;
+  height: 34px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border-bottom: 1px solid var(--nxk-border-th);
+  border-right: 1px solid var(--nxk-border-th);
+  text-align: left;
+  font-size: 13px;
+}
+
+.nxk-tbl tr.loc-hang th {
+  background: var(--white);
+  height: 36px;
+  padding: 0 4px 0 6px;
+  border-bottom: 1px solid var(--luoi-vien);
+  border-right: 1px solid var(--line-2);
+}
+
+.nxk-tbl tr.loc-hang th:last-child {
+  border-right: 0;
+}
+
+.nxk-tbl tr.loc-hang .loc-cell {
+  display: flex;
+  align-items: center;
+  height: 30px;
+  min-width: 0;
+}
+
+.nxk-tbl tr.loc-hang .loc-o-cot {
+  flex: 1;
+  min-width: 0;
+  width: 48px;
+  height: 30px;
+  border: 0;
+  outline: 0;
+  background: var(--white);
+  padding: 0 2px 0 4px;
+  font: 13px var(--fs);
+  color: var(--body);
+}
+
+.nxk-tbl tr.loc-hang .loc-o-cot::placeholder {
+  color: var(--faint);
+}
+
+.nxk-tbl tr.loc-hang .loc-pheu-btn {
+  width: 24px;
+  height: 24px;
+  border: 0;
+  background: none;
+  color: var(--faint);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  flex: none;
+}
+
+.nxk-tbl tr.loc-hang .loc-pheu-btn:hover {
+  color: var(--blue);
+}
+
+.nxk-tbl tr.loc-hang .loc-pheu-btn.on {
+  color: var(--blue);
+}
+
+.nxk-tbl td {
+  height: 40px;
+  box-sizing: border-box;
+  padding: 0 10px;
+  border-bottom: 1px solid var(--luoi-dong);
+  border-right: 1px solid var(--line-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 13px;
+}
+
+.nxk-tbl .nxk-ld {
+  width: 100%;
+  max-width: 0;
+}
+
+.nxk-foot {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--muted);
+  font-size: 12.5px;
+}
+
+.nxk-foot select {
+  height: 28px;
+  border: 1px solid var(--nxk-border-sel);
+  border-radius: 6px;
+  font: 12.5px var(--fs);
+  padding: 0 4px;
+  background: var(--white);
+  color: var(--body);
+}
+
+.nxk-trang-nav {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.nxk-btn-trang {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: 1px solid var(--nxk-border-sel);
+  border-radius: 4px;
+  background: var(--white);
+  color: #4b5563;
+  cursor: pointer;
+  padding: 0;
+}
+
+.nxk-btn-trang:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.nxk-btn-trang:not(:disabled):hover {
+  border-color: var(--blue);
+  color: var(--blue);
+}
+
+/* ── Hộp nhập Excel danh mục: kết quả (T892) ── */
+
+/* Màn Đang nhập (Bước 3 - ghi dữ liệu) */
+.nxq-dang-nhap {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  padding: 22px 24px;
+  box-sizing: border-box;
+}
+
+.nxq-dn-hop {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  padding: 28px 32px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  box-sizing: border-box;
+}
+
+.nxq-dn-tieude {
+  font-size: 17px;
+  font-weight: 700;
+  color: #1f2225;
+}
+
+.nxq-dn-phu {
+  color: #6b7280;
+  margin-top: 4px;
+  font-size: 13.5px;
+}
+
+.nxq-dn-thanh-so {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-variant-numeric: tabular-nums;
+}
+
+.nxq-dn-dem {
+  font-weight: 600;
+  color: #1f2225;
+  font-size: 13.5px;
+}
+
+.nxq-dn-phantram {
+  color: var(--blue, #0560a6);
+  font-weight: 600;
+  font-size: 13.5px;
+}
+
+.nxq-dn-thanh-day {
+  height: 10px;
+  border-radius: 5px;
+  background: #e6eff7;
+  overflow: hidden;
+}
+
+.nxq-dn-thanh-chay {
+  height: 100%;
+  border-radius: 5px;
+  background: var(--blue, #0560a6);
+  transition: width 0.15s ease-out;
+}
+
+.nxq-dn-dang-ghi {
+  font-size: 12.5px;
+  color: #6b7280;
+}
+
+/* Màn Bước 3 Kết quả */
+.nxq-ket-qua {
+  flex: 1;
+  min-width: 0;
+  padding: 22px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-sizing: border-box;
+}
+
+.nxq-kq-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  background: #e3f4ea;
+  color: #0f6b40;
+  font-weight: 600;
+  font-size: 13.5px;
+  box-sizing: border-box;
+}
+
+.nxq-kq-banner-chu {
+  flex: 1;
+}
+
+.nxq-kq-luc {
+  font-weight: 500;
+  color: #3d7a5a;
+  font-size: 12.5px;
+  flex: none;
+}
+
+.nxq-kq-thong-ke {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  box-sizing: border-box;
+}
+
+.nxq-kq-o-dem {
+  padding: 14px 20px;
+  border-right: 1px solid #e5e7eb;
+  box-sizing: border-box;
+}
+
+.nxq-kq-o-dem:last-child {
+  border-right: 0;
+}
+
+.nxq-kq-nhan {
+  color: #6b7280;
+  font-size: 13.5px;
+}
+
+.nxq-kq-so {
+  font-size: 24px;
+  font-weight: 700;
+  margin-top: 2px;
+  font-variant-numeric: tabular-nums;
+}
+
+.nxq-kq-so-moi {
+  font-size: 24px;
+  font-weight: 700;
+  color: #138a52;
+  margin-top: 2px;
+  font-variant-numeric: tabular-nums;
+}
+
+.nxq-kq-so-sua {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--blue, #0560a6);
+  margin-top: 2px;
+  font-variant-numeric: tabular-nums;
+}
+
+.nxq-kq-so-loi {
+  font-size: 24px;
+  font-weight: 700;
+  color: #c2362b;
+  margin-top: 2px;
+  font-variant-numeric: tabular-nums;
+}
+
+.nxq-kq-donvi {
+  font-size: 13px;
+  font-weight: 500;
+  color: #6b7280;
+}
+
+.nxq-kq-o-loi {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #fffafa;
+  border-radius: 0 10px 10px 0;
+}
+
+.nxq-btn-tai-loi {
+  height: 34px;
+  padding: 0 14px;
+  border-radius: 8px;
+  border: 1px solid #f2c4bf;
+  background: #fff;
+  color: #c2362b;
+  font: 600 13px var(--fs, 'Be Vietnam Pro', sans-serif);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  box-sizing: border-box;
+  white-space: nowrap;
+}
+
+.nxq-btn-tai-loi:hover {
+  background: #fff5f5;
+}
+
+.nxq-kq-tieu-de-hang {
+  display: flex;
+  align-items: center;
+}
+
+.nxq-kq-tieu-de-ds {
+  flex: 1;
+  font-weight: 700;
+  color: #1f2225;
+  font-size: 13.5px;
+}
+
+.nxq-link {
+  border: 0;
+  background: none;
+  padding: 0;
+  color: var(--blue, #0560a6);
+  font: 600 13px var(--fs, 'Be Vietnam Pro', sans-serif);
+  cursor: pointer;
+}
+
+.nxq-link:hover {
+  color: var(--blue-d, #044a80);
+}
+
+.nxq-kq-phan-cach {
+  width: 1px;
+  height: 14px;
+  background: #d6dde6;
+  margin: 0 12px;
+  flex: none;
+}
+
+.nxq-kq-bang-hop {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-sizing: border-box;
+}
+
+.nxq-kq-bang-hop table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.nxq-kq-bang-hop th {
+  background: #e6eff7;
+  color: #1f2225;
+  font-weight: 600;
+  padding: 0 12px;
+  height: 34px;
+  text-align: left;
+  font-size: 13px;
+  border-bottom: 1px solid #d6e2ee;
+  white-space: nowrap;
+  box-sizing: border-box;
+}
+
+.nxq-kq-bang-hop td {
+  height: 40px;
+  padding: 0 12px;
+  border-bottom: 1px solid rgb(221, 226, 235);
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-sizing: border-box;
+}
+
+.nxq-kq-tag-xu-ly {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+}
+
+.nxq-kq-cham-xu-ly {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex: none;
+}
+
+/* ── Đánh dấu dòng vừa nhập Excel danh mục (T892 gói 2) ── */
+.tbl tr.dm-vua-them td,
+.tbl tr.dm-vua-them td.dinh {
+  background: #eaf6ef;
+}
+.tbl tbody tr.dm-vua-them:hover td,
+.tbl tbody tr.dm-vua-them:hover td.dinh {
+  background: #def0e5;
+}
+
+.tbl tr.dm-vua-sua td,
+.tbl tr.dm-vua-sua td.dinh {
+  background: #eef5fb;
+}
+.tbl tbody tr.dm-vua-sua:hover td,
+.tbl tbody tr.dm-vua-sua:hover td.dinh {
+  background: #e3effa;
+}

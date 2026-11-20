@@ -39,7 +39,7 @@ import { TEN_DVT } from '../../modules/danh-muc/data'
 import { GoiYLapPhieu } from './GoiYLapPhieu'
 import { HOM_NAY } from '../../data/mock'
 import { dmy } from '../format'
-import { addCatalogRow, suaCatalogRow, useAddedCatalogRows, sinhMaKeTiep } from './danhMucStore'
+import { addCatalogRow, suaCatalogRow, useAddedCatalogRows, sinhMaKeTiep, apGhiDe, useCatalogVersion, useDanhDauNhap } from './danhMucStore'
 import { suaPhieu, useDaXoa, xoaPhieu } from './daXoa'
 import { HopNhapExcel } from './HopNhapExcel'
 import { CAT_KEYS_NHAP_EXCEL } from './mauNhapDm'
@@ -57,6 +57,8 @@ export function CatalogScreen({ sc }: ScreenProps) {
   const { s, set, toast } = useSession()
   const catKey = sc.code ?? sc.slug ?? ''
   const addedRows = useAddedCatalogRows(catKey)
+  const ver = useCatalogVersion()
+  const danhDau = useDanhDauNhap(catKey)
   const [moNhapExcel, setMoNhapExcel] = useState(false)
   const cfg = sc.catalog ?? { cols: [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Tên' }], rows: () => [] }
   const dsct = cfg.dsChungTu
@@ -93,8 +95,8 @@ export function CatalogScreen({ sc }: ScreenProps) {
   }
   const allGoc = useMemo(() => {
     const goc = cfg.rows(s.cheDo, ky).filter(r => !cfg.locGoi || cfg.locGoi(s.goi, r)).map(r => cfg.phien ? cfg.phien.gan(r, s) : r).map(r => hauXuLy ? hauXuLy(r) : r)
-    return [...goc, ...addedRows]
-  }, [sc, s.cheDo, ky, s.goi, cfg.phien ? s : null, addedRows, hauXuLy])
+    return [...apGhiDe(catKey, goc), ...addedRows]
+  }, [sc, s.cheDo, ky, s.goi, cfg.phien ? s : null, addedRows, hauXuLy, ver, catKey])
   const all = useMemo((): Row[] => {
     return allGoc.map((r, i) => {
       const k = String(r.ma ?? r.so ?? r.username ?? r.id ?? (cols0[0]?.k ? r[cols0[0].k] : undefined) ?? r.ten ?? `_r_${i}`)
@@ -294,13 +296,21 @@ export function CatalogScreen({ sc }: ScreenProps) {
   const cong = (ds: Row[]) => Object.fromEntries((dsct?.cotCong ?? []).map(k => [k, ds.reduce((a, r) => a + (Number(r[k]) || 0), 0)]))
   // Dòng đang xem ở khung dưới: dòng đã chọn nếu còn trong danh sách, không thì dòng đầu
   const dangChon = (chon && rowsHien.find(r => r[cols0[0].k] === chon[cols0[0].k])) ?? rowsHien[0]
+  const layRowCls = useCallback((r: Row) => {
+    const ma = String(r.ma ?? '')
+    const dsCls: string[] = []
+    if (dsct && dangChon && r[cols0[0].k] === dangChon[cols0[0].k]) dsCls.push('dang-chon')
+    if (ma && danhDau.moi.has(ma)) dsCls.push('dm-vua-them')
+    else if (ma && danhDau.sua.has(ma)) dsCls.push('dm-vua-sua')
+    return dsCls.join(' ')
+  }, [dsct, dangChon, cols0, danhDau])
   const bang = useMemo(() => dsct
     ? <Table cols={cot.colsHien.map(c => c.k === dsct.cotSo ? { ...c, r: (r: Row) => (
           <button type="button" className="ds-link-so" title={String(r[c.k] ?? '')} onClick={e => { e.stopPropagation(); moSua(r) }}>{r[c.k]}</button>
         ) } : c)} doRong={cot.doRong} rows={rowsTrang} motDong keDoc onRow={setChon} onDbl={moSua}
-        rowCls={r => dangChon && r[cols0[0].k] === dangChon[cols0[0].k] ? 'dang-chon' : ''}
+        rowCls={layRowCls}
         sum={{ [cols[0].k]: `Tổng: ${rowsTrang.length}`, ...cong(rowsTrang) }} />
-    : <Table cols={anTheoTab.size ? cot.colsHien.filter(c => !anTheoTab.has(c.k)) : cot.colsHien} doRong={cot.doRong} rows={rowsTrang} motDong onRow={moSua} />, [dsct, anTheoTab, cot.colsHien, cot.doRong, rowsTrang, dangChon, cols0, cols, moSua])
+    : <Table cols={anTheoTab.size ? cot.colsHien.filter(c => !anTheoTab.has(c.k)) : cot.colsHien} doRong={cot.doRong} rows={rowsTrang} motDong onRow={moSua} rowCls={layRowCls} />, [dsct, anTheoTab, cot.colsHien, cot.doRong, rowsTrang, dangChon, cols0, cols, moSua, layRowCls])
   const ten = tenMan(sc)
 
 
@@ -583,7 +593,7 @@ export function CatalogScreen({ sc }: ScreenProps) {
                 {!cfg.khongExcel?.includes(s.goi) && (
                   <NutExcel
                     onNhap={() => {
-                      if (s.goi === 'S' && CAT_KEYS_NHAP_EXCEL.includes(catKey)) {
+                      if (CAT_KEYS_NHAP_EXCEL.includes(catKey)) {
                         setMoNhapExcel(true)
                       } else {
                         toast('Nhập danh mục từ Excel')

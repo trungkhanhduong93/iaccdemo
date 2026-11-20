@@ -3,10 +3,12 @@ import { useSyncExternalStore } from 'react'
 import type { Row, ScreenDef } from '../../modules/types'
 import { CCDC_HANG, HANG, KHACH, KHO, LY_DO, NCC, NHAN_VIEN, NVL, ganLyDo } from '../../data/mock'
 import type { Session } from '../../app/session'
-import { DON_VI_TINH, DS_CONG_VIEC_17, DS_MUC_CHI_PHI_16, DS_QUY_TIEN_112 } from '../../modules/danh-muc/data'
+import { DON_VI_TINH, DS_CONG_VIEC_17, DS_MUC_CHI_PHI_16, DS_QUY_TIEN_112, NHOM_HANG, NHOM_DOI_TUONG } from '../../modules/danh-muc/data'
 import { TRUONG_DM, type CauHinhDM } from '../../modules/danh-muc/truong-dm'
 
 const daThemRows = new Map<string, Row[]>()
+const ghiDeRows = new Map<string, Map<string, Row>>() // bản ghi đè theo mã cho dòng mẫu (T892)
+const danhDauMap = new Map<string, { moi: Set<string>; sua: Set<string> }>() // đánh dấu dòng vừa nhập Excel (T892)
 const listeners = new Set<() => void>()
 let version = 0
 
@@ -18,6 +20,7 @@ function emitChange() {
 /** Chuẩn hoá mã danh mục về mã chuẩn (1.2, 1.3, 1.5, 1.6, 1.7, 1.8, 1.12, 1.16) */
 export function chieuKhoa(dm: string): string {
   const k = dm.toLowerCase().trim()
+  if (k.startsWith('nhom-') || k.includes('nhóm')) return dm
   if (k === '1.5' || k === '1-5' || k === 'doituong' || k === 'kh' || k === 'ncc' || k === 'nv' || k.includes('đối tượng') || k.includes('doi-tuong')) return '1.5'
   if (k === '1.2' || k === '1-2' || k === 'hang' || k === 'nvl' || k === 'ccdc' || k.includes('hàng') || k.includes('nguyên vật liệu')) return '1.2'
   if (k === '1.6' || k === '1-6' || k === 'khoanmuc' || k.includes('mục chi phí') || k.includes('khoản mục')) return '1.6'
@@ -63,15 +66,38 @@ export function getBaseCatalogRows(normKey: string): Row[] {
   if (normKey === '1.3') {
     return DON_VI_TINH.map(([ma, ten, mota]) => ({ ma, ten, mota, _tt: 1 }))
   }
+  if (normKey === 'nhom-hang-hoa') {
+    return NHOM_HANG.map(x => ({ ...x, _tt: 1 }))
+  }
+  if (normKey === 'nhom-doi-tuong') {
+    return NHOM_DOI_TUONG.map(x => ({ ...x, _tt: 1 }))
+  }
   return []
+}
+
+/** Áp bản ghi đè lên các dòng mẫu của danh mục (T892) */
+export function apGhiDe(dm: string, rows: Row[]): Row[] {
+  const normKey = chieuKhoa(dm)
+  const map = ghiDeRows.get(normKey)
+  if (!map || map.size === 0) return rows
+  return rows.map(r => {
+    const ma = String(r.ma ?? '').trim()
+    const ghiDe = map.get(ma)
+    return ghiDe ? { ...r, ...ghiDe } : r
+  })
 }
 
 /** Lấy tất cả dòng (mẫu + đã thêm trong phiên) của danh mục */
 export function getAllCatalogRows(dm: string): Row[] {
   const normKey = chieuKhoa(dm)
-  const base = getBaseCatalogRows(normKey)
+  const base = apGhiDe(normKey, getBaseCatalogRows(normKey))
   const added = daThemRows.get(normKey) ?? []
   return [...base, ...added]
+}
+
+/** Hook lấy version kho danh mục, kích hoạt vẽ lại khi có bất kỳ thay đổi nào (T892) */
+export function useCatalogVersion(): number {
+  return useSyncExternalStore(cb => { listeners.add(cb); return () => { listeners.delete(cb) } }, () => version)
 }
 
 /** Hook lấy các dòng đã thêm của một danh mục trong phiên */
@@ -288,15 +314,46 @@ export function getDmMeta(dm: string, nhan?: string, tenGoc?: string): DmMeta {
 // ── Hợp đồng T892: gói 2 viết thân các hàm dưới ──
 
 /** Cập nhật dòng theo mã khi nhập Excel: dòng thêm trong phiên sửa thẳng, dòng mẫu lưu bản ghi đè (T892) */
-export function ghiDeCatalogRow(_dm: string, _ma: string, _row: Row): void {
-  throw new Error('T892: chưa làm')
+export function ghiDeCatalogRow(dm: string, ma: string, row: Row): void {
+  const normKey = chieuKhoa(dm)
+  const kMa = String(ma).trim()
+  const cur = daThemRows.get(normKey) ?? []
+  const idx = cur.findIndex(r => String(r.ma ?? '').trim() === kMa)
+  if (idx >= 0) {
+    // Dòng thêm trong phiên: sửa thẳng
+    const next = [...cur]
+    next[idx] = { ...next[idx], ...row }
+    daThemRows.set(normKey, next)
+  } else {
+    // Dòng mẫu: lưu bản ghi đè theo mã trong Map riêng
+    let map = ghiDeRows.get(normKey)
+    if (!map) {
+      map = new Map<string, Row>()
+      ghiDeRows.set(normKey, map)
+    }
+    const old = map.get(kMa)
+    map.set(kMa, { ...(old ?? {}), ...row })
+  }
+  emitChange()
 }
 
 /** Đánh dấu mã vừa thêm, vừa sửa ở lần nhập Excel gần nhất, mất khi tải lại trang (T892) */
-export function danhDauNhap(_dm: string, _moi: string[], _sua: string[]): void {
-  throw new Error('T892: chưa làm')
+export function danhDauNhap(dm: string, moi: string[], sua: string[]): void {
+  const normKey = chieuKhoa(dm)
+  danhDauMap.set(normKey, {
+    moi: new Set(moi.map(x => String(x ?? '').trim()).filter(Boolean)),
+    sua: new Set(sua.map(x => String(x ?? '').trim()).filter(Boolean)),
+  })
+  emitChange()
 }
 
-export function useDanhDauNhap(_dm: string): { moi: Set<string>; sua: Set<string> } {
-  return { moi: new Set(), sua: new Set() }
+const EMPTY_DANH_DAU: { moi: Set<string>; sua: Set<string> } = {
+  moi: new Set<string>(),
+  sua: new Set<string>(),
+}
+
+export function useDanhDauNhap(dm: string): { moi: Set<string>; sua: Set<string> } {
+  useSyncExternalStore(cb => { listeners.add(cb); return () => { listeners.delete(cb) } }, () => version)
+  const normKey = chieuKhoa(dm)
+  return danhDauMap.get(normKey) ?? EMPTY_DANH_DAU
 }
