@@ -1227,3 +1227,5 @@ Trum chốt 18/11/2026 (T889), theo bản vẽ `backup/mau-T889/`.
 - Toast có loại: `toast(m, { loai, phu, nut })`. Không truyền thì `xong` (3 giây). `loi`, `thongTin` 5 giây, `canhBao` đứng tới khi bấm đóng. Báo thiếu, sai ô nhập dùng `loi`.
 - Khoá sổ giữ nghiệp vụ cũ: còn bước chưa xong vẫn khoá được, hộp chỉ liệt kê bước thiếu.
 - Điện thoại: hộp thành tấm trượt từ đáy, nút xếp dọc, nút chính trên cùng.
+
+## QD114. Số chứng từ, mã hoá đơn bán hàng POS và hộp đồng bộ theo IVT (đang soạn)
