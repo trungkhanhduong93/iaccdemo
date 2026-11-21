@@ -192,8 +192,8 @@ function taoGhiChuCot(c: CotMau, sheet?: string): string {
   return ghiChu.join('\n')
 }
 
-type ODm = string | number | null
-interface SheetDs { ten: string; dong: [string, string][]; cot: 'A' | 'B' }
+export type ODm = string | number | null
+export interface SheetDs { ten: string; dong: (string | number)[][]; cot: string; tieuDe?: string[] }
 
 const thuongDau = (t: string) => /^[A-ZĐ]{2,}/.test(t) ? t : t.charAt(0).toLowerCase() + t.slice(1)
 const TO_TIEU_DE = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE8EEF7' } }
@@ -203,7 +203,7 @@ const tenFileDm = (tenNgan: string) => {
   const t = fold(tenNgan).replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '')
   return t.charAt(0).toUpperCase() + t.slice(1)
 }
-const ngayFile = () => dmy(HOM_NAY).replace(/\//g, '-')
+export const ngayFile = () => dmy(HOM_NAY).replace(/\//g, '-')
 
 /** Dòng Mã, Tên của sheet DS cho một cột, và cột (A Mã, B Tên) chứa đúng giá trị file xuất ghi ra để ô thả xuống trỏ vào (T895) */
 function dongTraCuu(c: CotMau): { dong: [string, string][]; cot: 'A' | 'B' } | null {
@@ -262,12 +262,12 @@ function dongTuRow(cotMau: CotMau[], r: Row): ODm[] {
   })
 }
 
-/** Dựng và tải workbook chung cho file mẫu, Tải xuống, file lỗi, Xuất Excel: Dữ liệu nhập, Dữ liệu mẫu (chỉ file mẫu), Hướng dẫn, các sheet DS (T895) */
-async function taiFileDm(s: Session, tenNgan: string, cotMau: CotMau[], dong: ODm[][], tenFile: string, them: { viDu?: ODm[][]; cotLoi?: boolean } = {}) {
+/** Dựng và tải workbook chung cho file mẫu, Tải xuống, file lỗi, Xuất Excel: Dữ liệu nhập, Dữ liệu mẫu (chỉ file mẫu), Hướng dẫn, các sheet DS (T895, T896) */
+export async function taiFileDm(s: Session, tenNgan: string, cotMau: CotMau[], dong: ODm[][], tenFile: string, them: { viDu?: ODm[][]; cotLoi?: boolean; dsRieng?: Map<string, SheetDs>; tieuDeHd?: string } = {}) {
   const ExcelJS = await import('exceljs')
   const Workbook = ExcelJS.Workbook ?? ExcelJS.default?.Workbook
   const wb = new Workbook()
-  const dsSheet = lapSheetDs(cotMau)
+  const dsSheet = them.dsRieng ?? lapSheetDs(cotMau)
   const tieuDe = [...cotMau.map(c => c.nhan), ...(them.cotLoi ? ['Lý do lỗi'] : [])]
 
   const veBang = (ws: any, cacDong: ODm[][], ghiChu: boolean) => {
@@ -307,7 +307,7 @@ async function taiFileDm(s: Session, tenNgan: string, cotMau: CotMau[], dong: OD
   }
 
   const wsHd = wb.addWorksheet('Hướng dẫn')
-  wsHd.addRow([`Mẫu nhập danh mục ${tenNgan}. Dùng cho màn Danh mục > ${tenNgan}, gói ${GOI[s.goi].ten}.`]).font = { bold: true }
+  wsHd.addRow([them.tieuDeHd ?? `Mẫu nhập danh mục ${tenNgan}. Dùng cho màn Danh mục > ${tenNgan}, gói ${GOI[s.goi].ten}.`]).font = { bold: true }
   wsHd.addRow([])
   const hangHd = wsHd.addRow(['Cột', 'Bắt buộc', 'Kiểu', 'Giá trị hợp lệ'])
   hangHd.font = { bold: true }
@@ -319,12 +319,15 @@ async function taiFileDm(s: Session, tenNgan: string, cotMau: CotMau[], dong: OD
 
   for (const sh of new Set(dsSheet.values())) {
     const ws = wb.addWorksheet(sh.ten)
-    const hang = ws.addRow(['Mã', 'Tên'])
+    const tieuDeDs = sh.tieuDe ?? ['Mã', 'Tên']
+    const hang = ws.addRow(tieuDeDs)
     hang.font = { bold: true }
     hang.eachCell((o: any) => { o.fill = TO_TIEU_DE })
     for (const d of sh.dong) ws.addRow(d)
     ws.views = [{ state: 'frozen', xSplit: 0, ySplit: 1 }]
-    ;[0, 1].forEach(i => { ws.getColumn(i + 1).width = Math.min(80, Math.max(8, ...sh.dong.map(d => d[i].length)) + 2) })
+    tieuDeDs.forEach((_, i) => {
+      ws.getColumn(i + 1).width = Math.min(80, Math.max(8, ...sh.dong.map(d => String(d[i] ?? '').length)) + 2)
+    })
   }
 
   const buf = await wb.xlsx.writeBuffer()

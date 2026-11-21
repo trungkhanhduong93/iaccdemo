@@ -49579,3 +49579,22 @@ body:has(.nxh-nen) .pop { z-index: 1001; }
 .tbl tbody tr.dm-vua-sua:hover td.dinh {
   background: #e3effa;
 }
+
+/* ── Nhập Excel tồn kho ban đầu (T896) ── */
+.nxh-chon-kho {
+  margin-bottom: 16px;
+}
+.nxh-chon-kho-nhan {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-base, #1e293b);
+}
+.nxh-chon-kho-nhan span {
+  white-space: nowrap;
+}
+.nxh-chon-kho-nhan .inp {
+  max-width: 260px;
+}

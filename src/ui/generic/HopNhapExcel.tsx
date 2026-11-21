@@ -1,19 +1,35 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import type { ScreenProps, Row, CatalogCfg } from '../../modules/types'
 import { useSession } from '../../app/session'
 import { taiMauNhapDm, taiDuLieuDm, kiemFileNhapDm, taiFileLoi, nhapDm } from './mauNhapDm'
-import type { DongKiem, KetQuaKiem, KetQuaNhap, PhamViTai } from './nhapDmKieu'
+import type { DongKiem, KetQuaKiem, KetQuaNhap, PhamViTai, BaoTienDo } from './nhapDmKieu'
 import { NhapXlKiemTra } from './NhapXlKiemTra'
 import { NhapXlDangNhap, NhapXlKetQua } from './NhapXlKetQua'
 import { Select } from '../Dropdown'
 
+export interface BoHamNhap {
+  tieuDe?: string
+  tenNgan?: string
+  tenThuong?: string
+  taiMau: () => void | Promise<void>
+  taiDuLieu?: (phamVi: PhamViTai) => void | Promise<void>
+  kiemFile: (file: File) => Promise<KetQuaKiem>
+  ghi: (kq: KetQuaKiem, baoTienDo: BaoTienDo) => Promise<KetQuaNhap>
+  taiLoi: (kq: KetQuaKiem) => void | Promise<void>
+  noiDungThemB1?: ReactNode
+  lyDoChan?: string | null
+  thongBaoXong?: (kq: KetQuaNhap) => string
+  khoKey?: string
+}
+
 export interface HopNhapExcelProps {
-  sc: ScreenProps['sc']
-  cfg: CatalogCfg
-  all: Row[]
-  rowsLoc: Row[]     // danh sách theo bộ lọc đang áp (T892)
-  rowsTrang: Row[]   // các dòng ở trang đang xem (T892)
+  sc?: ScreenProps['sc']
+  cfg?: CatalogCfg
+  all?: Row[]
+  rowsLoc?: Row[]     // danh sách theo bộ lọc đang áp (T892)
+  rowsTrang?: Row[]   // các dòng ở trang đang xem (T892)
   onDong: () => void
+  boHam?: BoHamNhap
 }
 
 type Buoc = 'chon' | 'kiem' | 'nhap' | 'xong'
@@ -25,12 +41,13 @@ const IconTich = () => (
   <svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12l5 5 9-10" /></svg>
 )
 
-/** Hộp nhập danh mục từ Excel 3 bước theo luồng IVT, bản vẽ backup/mau-T892 (T892) */
-export function HopNhapExcel({ sc, cfg, all, rowsLoc, rowsTrang, onDong }: HopNhapExcelProps) {
+/** Hộp nhập danh mục từ Excel 3 bước theo luồng IVT, bản vẽ backup/mau-T892 (T892, T896) */
+export function HopNhapExcel({ sc, cfg, all, rowsLoc, rowsTrang, onDong, boHam }: HopNhapExcelProps) {
   const { s, set, toast } = useSession()
-  const catKey = sc.code ?? sc.slug ?? ''
-  const tenNgan = (sc.ngan ?? 'danh mục').trim()
-  const tenThuong = tenNgan.charAt(0).toLowerCase() + tenNgan.slice(1)
+  const catKey = sc?.code ?? sc?.slug ?? ''
+  const tenNgan = (boHam?.tenNgan ?? sc?.ngan ?? 'danh mục').trim()
+  const tenThuong = boHam?.tenThuong ?? (tenNgan.charAt(0).toLowerCase() + tenNgan.slice(1))
+  const tieuDeHop = boHam?.tieuDe ?? `Nhập ${tenThuong} từ Excel`
 
   const [buoc, setBuoc] = useState<Buoc>('chon')
   const [file, setFile] = useState<File | null>(null)
@@ -42,6 +59,14 @@ export function HopNhapExcel({ sc, cfg, all, rowsLoc, rowsTrang, onDong }: HopNh
   const [tienDo, setTienDo] = useState<{ xong: number; tong: number; dangGhi?: DongKiem }>({ xong: 0, tong: 0 })
   const [kqNhap, setKqNhap] = useState<KetQuaNhap | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+
+  const khoCu = useRef(boHam?.khoKey)
+  useEffect(() => {
+    if (khoCu.current !== boHam?.khoKey) {
+      khoCu.current = boHam?.khoKey
+      setFile(null); setKq(null); setKqNhap(null); setLoiChung(''); setBuoc('chon')
+    }
+  }, [boHam?.khoKey])
 
   const dongDuoc = buoc !== 'nhap'
   useEffect(() => {
@@ -60,13 +85,20 @@ export function HopNhapExcel({ sc, cfg, all, rowsLoc, rowsTrang, onDong }: HopNh
   }
 
   const kiemTra = async () => {
-    if (!file) return
+    if (!file || boHam?.lyDoChan) return
     setDangDoc(true)
     try {
-      const k = await kiemFileNhapDm(file, catKey, s, all)
-      if (k.loiChung) { setLoiChung(k.loiChung); return }
-      setKq(k)
-      setBuoc('kiem')
+      if (boHam) {
+        const k = await boHam.kiemFile(file)
+        if (k.loiChung) { setLoiChung(k.loiChung); return }
+        setKq(k)
+        setBuoc('kiem')
+      } else {
+        const k = await kiemFileNhapDm(file, catKey, s, all ?? [])
+        if (k.loiChung) { setLoiChung(k.loiChung); return }
+        setKq(k)
+        setBuoc('kiem')
+      }
     } finally {
       setDangDoc(false)
     }
@@ -77,18 +109,37 @@ export function HopNhapExcel({ sc, cfg, all, rowsLoc, rowsTrang, onDong }: HopNh
     if (!kq || soNhap <= 0) return
     setTienDo({ xong: 0, tong: soNhap })
     setBuoc('nhap')
-    const k = await nhapDm(catKey, kq, s, set, cfg.phien, (xong, tong, dangGhi) => setTienDo({ xong, tong, dangGhi }))
-    setKqNhap(k)
-    setBuoc('xong')
-    toast(`Đã nhập ${k.moi.length + k.sua.length} ${tenThuong}`)
+    if (boHam) {
+      const k = await boHam.ghi(kq, (xong, tong, dangGhi) => setTienDo({ xong, tong, dangGhi }))
+      setKqNhap(k)
+      setBuoc('xong')
+      toast(boHam.thongBaoXong ? boHam.thongBaoXong(k) : `Đã nhập ${k.moi.length + k.sua.length} ${tenThuong}`)
+    } else {
+      const k = await nhapDm(catKey, kq, s, set, cfg?.phien, (xong, tong, dangGhi) => setTienDo({ xong, tong, dangGhi }))
+      setKqNhap(k)
+      setBuoc('xong')
+      toast(`Đã nhập ${k.moi.length + k.sua.length} ${tenThuong}`)
+    }
   }
 
-  const taiLoi = () => { if (kq) void taiFileLoi(catKey, tenNgan, s, kq) }
-  const rowsTai = phamVi === 'loc' ? rowsLoc : phamVi === 'trang' ? rowsTrang : all
+  const taiLoi = () => {
+    if (!kq) return
+    if (boHam) void boHam.taiLoi(kq)
+    else void taiFileLoi(catKey, tenNgan, s, kq)
+  }
+  const rowsTai = phamVi === 'loc' ? (rowsLoc ?? []) : phamVi === 'trang' ? (rowsTrang ?? []) : (all ?? [])
+  const taiMau = () => {
+    if (boHam) void boHam.taiMau()
+    else void taiMauNhapDm(catKey, tenNgan, s, (all ?? []).slice(0, 2))
+  }
+  const taiDuLieu = () => {
+    if (boHam) void boHam.taiDuLieu?.(phamVi)
+    else void taiDuLieuDm(catKey, tenNgan, s, rowsTai)
+  }
 
   const phanTram = buoc === 'chon' ? 33.3 : buoc === 'kiem' ? 66.6
     : buoc === 'nhap' ? 66.6 + 33.4 * (tienDo.tong ? tienDo.xong / tienDo.tong : 0) : 100
-  const nut = buoc === 'chon' ? { ten: dangDoc ? 'Đang kiểm tra…' : 'Kiểm tra dữ liệu', tat: !file || dangDoc, bam: kiemTra }
+  const nut = buoc === 'chon' ? { ten: dangDoc ? 'Đang kiểm tra…' : 'Kiểm tra dữ liệu', tat: !file || dangDoc || Boolean(boHam?.lyDoChan), bam: kiemTra }
     : buoc === 'kiem' ? { ten: `Nhập ${soNhap} dòng`, tat: soNhap <= 0, bam: nhap }
     : buoc === 'nhap' ? { ten: 'Đang nhập…', tat: true, bam: () => {} }
     : { ten: 'Xong', tat: false, bam: onDong }
@@ -108,7 +159,7 @@ export function HopNhapExcel({ sc, cfg, all, rowsLoc, rowsTrang, onDong }: HopNh
           <button type="button" className="nxh-dong" aria-label="Đóng" disabled={!dongDuoc} onClick={onDong}>
             <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round"><path d="M6 6l12 12M18 6L6 18" /></svg>
           </button>
-          <h1 id="nxh-td" className="nxh-td">Nhập {tenThuong} từ Excel</h1>
+          <h1 id="nxh-td" className="nxh-td">{tieuDeHop}</h1>
           <div className="nxh-dau-phai">
             <button type="button" className="nxh-b p hd" disabled={nut.tat} onClick={nut.bam}>{nut.ten}</button>
           </div>
@@ -144,6 +195,8 @@ export function HopNhapExcel({ sc, cfg, all, rowsLoc, rowsTrang, onDong }: HopNh
 
           {buoc === 'chon' && (
             <div className="nxh-b1">
+              {boHam?.noiDungThemB1}
+              {boHam?.lyDoChan && <div className="nxh-loi" role="alert">{boHam.lyDoChan}</div>}
               <label className={`nxh-tha${keo ? ' keo' : ''}`}
                 onDragOver={e => { e.preventDefault(); setKeo(true) }}
                 onDragLeave={() => setKeo(false)}
@@ -183,7 +236,7 @@ export function HopNhapExcel({ sc, cfg, all, rowsLoc, rowsTrang, onDong }: HopNh
                       <div className="nxh-the-phu">Cột theo form Thêm mới, ghi chú cách điền ở tiêu đề cột. Dòng ví dụ để ở sheet riêng.</div>
                     </div>
                     <div className="nxh-the-nut">
-                      <button type="button" className="nxh-b nxh-b-tai" onClick={() => void taiMauNhapDm(catKey, tenNgan, s, all.slice(0, 2))}><IconTai />Tải file mẫu</button>
+                      <button type="button" className="nxh-b nxh-b-tai" onClick={taiMau}><IconTai />Tải file mẫu</button>
                     </div>
                   </div>
                   <div className="nxh-the-dong">
@@ -199,12 +252,14 @@ export function HopNhapExcel({ sc, cfg, all, rowsLoc, rowsTrang, onDong }: HopNh
                       <div className="nxh-the-phu">Sửa trong Excel rồi nhập lại. Dòng trùng mã được cập nhật. Ô bắt buộc hoặc đã khoá mà để trống thì giữ giá trị cũ.</div>
                     </div>
                     <div className="nxh-the-nut">
-                      <Select className="inp nxh-chon" aria-label={`Lấy ${tenThuong} nào`} value={phamVi} onChange={e => setPhamVi(e.target.value as PhamViTai)}>
-                        <option value="tat">Tất cả {all.length} {tenThuong}</option>
-                        <option value="loc">{rowsLoc.length} {tenThuong} theo bộ lọc</option>
-                        <option value="trang">{rowsTrang.length} {tenThuong} ở trang đang xem</option>
-                      </Select>
-                      <button type="button" className="nxh-b nxh-b-tai" onClick={() => void taiDuLieuDm(catKey, tenNgan, s, rowsTai)}><IconTai />Tải xuống</button>
+                      {!boHam && (
+                        <Select className="inp nxh-chon" aria-label={`Lấy ${tenThuong} nào`} value={phamVi} onChange={e => setPhamVi(e.target.value as PhamViTai)}>
+                          <option value="tat">Tất cả {all?.length ?? 0} {tenThuong}</option>
+                          <option value="loc">{rowsLoc?.length ?? 0} {tenThuong} theo bộ lọc</option>
+                          <option value="trang">{rowsTrang?.length ?? 0} {tenThuong} ở trang đang xem</option>
+                        </Select>
+                      )}
+                      <button type="button" className="nxh-b nxh-b-tai" onClick={taiDuLieu}><IconTai />Tải xuống</button>
                     </div>
                   </div>
                 </div>

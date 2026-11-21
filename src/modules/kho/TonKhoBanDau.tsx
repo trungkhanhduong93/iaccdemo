@@ -15,6 +15,8 @@ import { tenMan } from '../../app/registry'
 import { fold, money, soQT } from '../../ui/format'
 import { NGAY_SO_DU, dsTonDau, giaNhapGanNhat, khoaTonDau, locChip, luuTonDau, useTonDau, type DongTonDau, type LyDoKhoa, type TrangThaiTd } from './ton-dau'
 import { HopChepTonDau, HopKhoaTonDau, HopThietLapTonDau, HopXoaTonDau } from './HopTonDau'
+import { HopNhapExcel, type BoHamNhap } from '../../ui/generic/HopNhapExcel'
+import { taiMauTonDau, taiDuLieuTonDau, kiemFileNhapTonDau, ghiTonDau, taiFileLoiTonDau, moTaKhoaTonDau } from './nhapTonDauExcel'
 
 const COLS: Col[] = [
   { k: 'ma', t: 'Mã hàng' }, { k: 'ten', t: 'Tên hàng hoá' }, { k: 'dvt', t: 'ĐVT' }, { k: 'nhom', t: 'Nhóm hàng hoá' },
@@ -35,9 +37,11 @@ function OSo({ v, thieu, nhan }: { v: number | null; thieu: boolean; nhan: strin
 }
 
 export function TonKhoBanDau({ sc, mod }: ScreenProps) {
-  const { toast } = useSession()
+  const { s, toast } = useSession()
   const phienBan = useTonDau()
   const [kho, setKho] = useState(KHO[0])
+  const [khoNhap, setKhoNhap] = useState(KHO[0])
+  const [moNhapExcel, setMoNhapExcel] = useState(false)
   const [chip, setChip] = useState<TrangThaiTd>('co')
   const [q, setQ] = useState(''), [nhom, setNhom] = useState(''), [hang, setHang] = useState('')
   const [ap, setAp] = useState({ q: '', nhom: '', hang: '' })   // bộ lọc chỉ áp khi bấm Lọc
@@ -120,7 +124,14 @@ export function TonKhoBanDau({ sc, mod }: ScreenProps) {
             ))}
           </div>
           <div className="td-cong-cu">
-            <NutExcel onNhap={() => toast('Nhập tồn kho ban đầu từ Excel')} onXuat={() => toast(`Đã xuất ${hien.length} dòng ra Excel`)} />
+            <NutExcel
+              onNhap={() => { setKhoNhap(kho); setMoNhapExcel(true) }}
+              onXuat={async () => {
+                const dongCo = ds.filter(d => d.co)
+                await taiDuLieuTonDau(s, kho)
+                toast(`Đã xuất ${dongCo.length} dòng ra Excel`)
+              }}
+            />
             <NutTuyChinhCot cols={cot.colsDu} an={cot.an} coDinh={COT_CO_DINH} macDinh={cot.macDinh} dongBang={cot.dongBang} onLuu={cot.luu} onDoRongTuDong={cot.datDoRongTuDong} />
           </div>
         </div>
@@ -164,6 +175,38 @@ export function TonKhoBanDau({ sc, mod }: ScreenProps) {
       {hop?.loai === 'chep' && <HopChepTonDau kho={kho} ma={hop.ma} onDong={dongHop} />}
       {hop?.loai === 'xoa' && <HopXoaTonDau kho={kho} ma={hop.ma} onDong={dongHop} />}
       {khoa && <HopKhoaTonDau lyDo={khoa} onDong={() => setKhoa(null)} />}
+      {moNhapExcel && (
+        <HopNhapExcel
+          onDong={() => setMoNhapExcel(false)}
+          boHam={{
+            tieuDe: 'Nhập tồn kho ban đầu từ Excel',
+            tenNgan: 'Tồn kho ban đầu',
+            tenThuong: 'tồn kho ban đầu',
+            taiMau: () => taiMauTonDau(s, khoNhap),
+            taiDuLieu: () => taiDuLieuTonDau(s, khoNhap),
+            kiemFile: (f: File) => kiemFileNhapTonDau(f, khoNhap),
+            ghi: (k, bao) => ghiTonDau(khoNhap, k, bao),
+            taiLoi: k => taiFileLoiTonDau(s, k),
+            khoKey: khoNhap,
+            lyDoChan: moTaKhoaTonDau(khoaTonDau(khoNhap)),
+            thongBaoXong: k => `Đã nhập ${k.moi.length + k.sua.length} dòng tồn kho ban đầu`,
+            noiDungThemB1: (
+              <div className="nxh-chon-kho">
+                <label className="nxh-chon-kho-nhan">
+                  <span>Chọn kho cần nhập</span>
+                  <Select
+                    className="inp"
+                    value={khoNhap}
+                    onChange={e => setKhoNhap(e.target.value)}
+                    aria-label="Chọn kho cần nhập"
+                    ds={DS_KHO}
+                  />
+                </label>
+              </div>
+            ),
+          }}
+        />
+      )}
     </div>
   )
 }

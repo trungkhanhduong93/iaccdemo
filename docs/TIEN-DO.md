@@ -11,7 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T896 | Nhập Excel Tồn kho ban đầu: file mẫu, kiểm tra, nhập cập nhật theo kho và mã hàng, dùng lại hộp 3 bước của T892 | Trum | Đang làm | Trum đã chốt, xem nhật ký 2026-11-21-trum-ton-dau-excel. Sửa `TonKhoBanDau.tsx`, `ton-dau.ts`, `HopNhapExcel.tsx` (thêm prop tuỳ chọn) |
 | T893 | Form Sửa danh mục không lưu được thay đổi của dòng mẫu (chỉ lưu dòng thêm trong phiên, `CatalogScreen.tsx` dòng ~660). Nhập Excel T892 đã có lớp ghi đè `ghiDeCatalogRow` trong `danhMucStore.ts`, form Sửa có thể dùng lại | Trum | Chưa làm | Thấy khi làm T892 |
 | T886 | Xuất kho định lượng: hàng lọc giống Xuất huỷ (kỳ, ô tìm, phễu, Excel, đếm phiếu), bỏ ô chọn cửa hàng riêng | Trum | Đang làm | Sửa `XuatDinhLuong.tsx`, cuối `app.css` (mục T886). Spec `backup/spec-T886-T888.md` |
 | T887 | Chuyển Xuất kho định lượng từ Kho sang Bán hàng, đứng ngay sau tab Bán hàng (Plus) hoặc Xuất bán POS (Pro), bỏ khỏi Kho | Trum | Đang làm | Sửa `kho/index.ts`, `ban-hang/index.ts`, `ChungTuBanHang.tsx` (link tham chiếu), `SidebarFlyout.tsx`, `thaoTacNhanh.ts`, `kho/quy-trinh.ts`. Spec `backup/spec-T886-T888.md` |

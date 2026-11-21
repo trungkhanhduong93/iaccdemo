@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 21/11/2026
+- T896: Kho > Tồn kho ban đầu, nút Excel > Nhập Excel mở hộp 3 bước. Chọn kho cần nhập ở bước 1, kho đã có phiếu kiểm kê hoặc đã khoá sổ thì bị chặn. Trùng mã hàng thì ghi đè, số lượng 0 xoá tồn đầu mã đó, đơn giá bắt buộc. Xuất Excel tải tồn đầu kho đang xem theo cùng khuôn.
 - T895: File Excel ở Hàng hoá, Nhóm hàng hoá, Đối tượng, Nhóm đối tượng, Quỹ tiền, Lý do nghiệp vụ đổi khuôn. Tên file ghi danh mục và gói, vd Mau_nhap_Hang_hoa_Plus.xlsx. Có sheet Hướng dẫn và mỗi cột có danh sách một sheet DS (Mã, Tên) để tra, ô thả xuống chọn từ đó. Nút Xuất Excel ở danh sách tải đúng khuôn này, sửa xong nhập lại được.
 - T894: Hộp Nhập Excel, nút Tải file mẫu và Tải xuống đổi màu khi rê chuột. Ô chọn tải tất cả, theo bộ lọc hay trang đang xem dùng kiểu ô chọn chung như các form khác.
 - T891: Danh mục Nhóm hàng hoá có thêm 11 nhóm (Món nước, Món cơm, Tinh bột, Pha chế, Đồ ăn vặt...), Nhóm đối tượng thêm 5 nhóm theo bộ phận nhân viên. Tải dữ liệu đang có rồi nhập lại không còn báo lỗi nhóm. Quỹ tiền áp dụng tất cả cửa hàng, lý do FABi để nguyên trạng thái nhập lại không còn báo lỗi.

@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T896 | Nhập Excel Tồn kho ban đầu theo từng kho: hộp 3 bước dùng lại của T892, ô chọn kho, chặn kho đã khoá; file Mã hàng, Tên hàng, Mã ĐVT, Số lượng, Đơn giá, Thành tiền, sheet DS hàng hoá, DS đơn vị tính; Xuất Excel đúng khuôn | Trum | 21/11/2026 | 2026-11-21-trum-ton-dau-excel |
 | T895 | File Excel danh mục theo mẫu IVT ở 6 danh mục, cả 3 gói: tên file ghi danh mục và gói, sheet có dấu (Dữ liệu nhập, Dữ liệu mẫu, Hướng dẫn), mỗi cột có danh sách một sheet DS hiện rõ (Mã, Tên), ô thả xuống trỏ vào DS. Một hàm dựng chung cho file mẫu, Tải xuống, file lỗi; nút Xuất Excel ở danh sách xuất đúng khuôn này. Hộp nhập vẫn đọc file bản cũ sheet Du lieu | Trum | 21/11/2026 | [2026-11-21-trum-excel-danh-muc-mau-ivt](../nhat-ky/2026-11-21-trum-excel-danh-muc-mau-ivt.md) |
 | T894 | Hộp Nhập Excel danh mục: nút Tải file mẫu, Tải xuống đổi nền xanh nhạt khi rê chuột; ô chọn phạm vi tải dùng ô chọn chung của demo, danh sách nổi trên hộp | Trum | 21/11/2026 | 2026-11-21-trum-hover-nhap-excel.md |
 | T891 | Dữ liệu mẫu: thêm 11 nhóm hàng hoá, 5 nhóm đối tượng theo bộ phận nhân viên còn thiếu; nhập Excel nhận "Tất cả" ở ô chọn nhiều, sửa so sánh Đang sử dụng ở dòng khoá. Tải dữ liệu đang có rồi nhập lại sạch ở 6 danh mục, 3 gói | Trum | 21/11/2026 | 2026-11-21-trum-nhap-excel-luong-ivt.md |
