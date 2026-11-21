@@ -12,6 +12,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
 | T893 | Form Sửa danh mục không lưu được thay đổi của dòng mẫu (chỉ lưu dòng thêm trong phiên, `CatalogScreen.tsx` dòng ~660). Nhập Excel T892 đã có lớp ghi đè `ghiDeCatalogRow` trong `danhMucStore.ts`, form Sửa có thể dùng lại | Trum | Chưa làm | Thấy khi làm T892 |
+| T900 | Tồn kho ban đầu: thêm hàng lọc cột dưới hàng tiêu đề bảng như các màn danh sách khác | Trum | Đang làm | Sửa `TonKhoBanDau.tsx`, cuối `app.css` nếu cần (mục T900) |
 | T897 | Bán hàng POS tách 2 cột: Số chứng từ kế toán dãy riêng XB2610-0001, Mã hoá đơn FABi hiện #5 ký tự cuối; áp mọi nơi (form, điện thoại, tham chiếu Xuất kho định lượng, báo cáo) | Trum | Đang làm | Sửa `ChungTuBanHang.tsx`, `MXuatBanPos.tsx`, `xuat-dinh-luong.ts`, `XuatDinhLuong.tsx`, `ban-hang/bao-cao.ts`, `SoChungTu.tsx`, `huong-dan.ts`. Spec `backup/spec-T886-T899.md` |
 | T898 | Hộp đồng bộ dùng chung (POS, thu chi FABi, Tiện ích) theo bố cục IVT: rộng, thẻ cửa hàng có ô tích, tìm, Chọn tất cả, dòng Lưu ý, mọi ô tích cùng kiểu | Trum | Đang làm | Sửa `HopDongBo.tsx`, cuối `app.css` (mục T898). Spec `backup/spec-T886-T899.md` |
 | T899 | Thu chi tab Chuyển quỹ bỏ nút Đồng bộ lại, Tiền mặt, Ngân hàng giữ | Trum | Đang làm | Sửa `VoucherScreen.tsx` dòng 704. Spec `backup/spec-T886-T899.md` |
