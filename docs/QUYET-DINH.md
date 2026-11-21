@@ -1213,7 +1213,13 @@ Trum chốt 15/11/2026 (T849, T850).
 - Kho gói Plus, Pro có Xuất kho định lượng thay tab Xuất bán POS ở Kho, mỗi phiếu Xuất bán POS sinh một phiếu.
 - Gói Plus dùng Xuất chuyển kho (một phiếu, mọi kho, không hạch toán), Pro có thêm Xuất, Nhập điều chuyển (T850).
 
-## QD112. Kho gói Plus dùng Xuất, Nhập điều chuyển; Xuất kho định lượng sang Bán hàng (đang soạn)
+## QD112. Kho gói Plus dùng Xuất, Nhập điều chuyển; Xuất kho định lượng sang Bán hàng (21/11/2026)
+
+Trum chốt 21/11/2026 (T886, T887, T888). Đảo một phần QD111.
+
+- Kho gói Plus có Xuất điều chuyển, Nhập điều chuyển, không có Xuất chuyển kho. Xuất chuyển kho chỉ còn ở gói Pro.
+- Xuất kho định lượng nằm ở phân hệ Bán hàng, ngay sau tab Bán hàng (Plus) hoặc Xuất bán POS (Pro). Kho không còn tab này.
+- Hàng lọc Xuất kho định lượng giống Xuất huỷ, không có ô chọn cửa hàng riêng.
 
 ## QD113. Thông báo dùng chung ThongBao: 6 loại, chỉ xoá có nút đỏ, toast có loại (19/11/2026)
 
@@ -1228,4 +1234,12 @@ Trum chốt 18/11/2026 (T889), theo bản vẽ `backup/mau-T889/`.
 - Khoá sổ giữ nghiệp vụ cũ: còn bước chưa xong vẫn khoá được, hộp chỉ liệt kê bước thiếu.
 - Điện thoại: hộp thành tấm trượt từ đáy, nút xếp dọc, nút chính trên cùng.
 
-## QD114. Số chứng từ, mã hoá đơn bán hàng POS và hộp đồng bộ theo IVT (đang soạn)
+## QD114. Số chứng từ, mã hoá đơn bán hàng POS và hộp đồng bộ theo IVT (21/11/2026)
+
+Trum chốt 21/11/2026 (T897, T898, T899).
+
+- Phiếu bán hàng đồng bộ từ POS có số chứng từ kế toán dãy riêng XB, vd XB2610-0001, tăng theo ngày, giờ trong tháng. Phiếu lập tay giữ dãy BH.
+- Mã hoá đơn FABi là trường riêng, cột Mã hoá đơn đứng sau Số chứng từ. Màn hình hiện # và 5 ký tự cuối, rê chuột xem đủ. Bản in, Excel ghi đủ 12 ký tự.
+- Mọi nơi nhắc tới phiếu bán POS (form, điện thoại, tham chiếu Xuất kho định lượng, báo cáo) dùng số XB làm số chứng từ.
+- Hộp đồng bộ dùng chung theo bố cục hộp đồng bộ IVT: thẻ từng cửa hàng có ô tích, ô tìm, Chọn tất cả, dòng Lưu ý tóm tắt kỳ. Màu, phông giữ của app (QD12).
+- Thu chi tab Chuyển quỹ không có nút Đồng bộ lại, vì FABi chỉ đẩy phiếu thu, chi.

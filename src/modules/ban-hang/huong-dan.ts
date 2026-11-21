@@ -19,7 +19,7 @@ export const huongDan: Record<string, HuongDanMan> = {
       { chu: 'Xem sổ doanh thu ở tab Báo cáo.', o: 'tab' },
     ],
     luuY: [
-      'Số chứng từ là mã hoá đơn trên FABi, dùng để tra lại trên máy POS.',
+      'Số chứng từ là số kế toán dãy XB, vd XB2610-0001. Mã hoá đơn là mã trên FABi, dùng để tra lại trên máy POS.',
     ],
     soDo: [
       [{ k: 'tab', ten: 'Xuất bán POS · Báo cáo', kieu: 'tab' }],

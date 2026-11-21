@@ -3,6 +3,12 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 21/11/2026
+- T897: Bán hàng, phiếu đồng bộ từ POS có số chứng từ kế toán riêng dạng XB2610-0001. Cột Mã hoá đơn mới ghi # và 5 ký tự cuối mã FABi, rê chuột xem đủ. Điện thoại, tham chiếu Xuất kho định lượng cũng ghi số XB.
+- T898: Hộp đồng bộ (máy POS, thu chi FABi, Tiện ích) làm lại: mỗi cửa hàng một thẻ có ô tích, ô tìm, Chọn tất cả, Xoá lựa chọn, dòng Lưu ý ghi số cửa hàng và kỳ.
+- T899: Thu chi, tab Chuyển quỹ không còn nút Đồng bộ lại.
+- T887, T888: Xuất kho định lượng chuyển sang Bán hàng, ngay sau tab đầu. Kho gói Plus có lại Xuất điều chuyển, Nhập điều chuyển, bỏ Xuất chuyển kho.
+- T886: Xuất kho định lượng có hàng lọc như Xuất huỷ: kỳ, ô tìm, phễu, lọc từng cột, Excel.
+- T900: Tồn kho ban đầu có hàng lọc từng cột dưới tiêu đề bảng.
 - T896: Kho > Tồn kho ban đầu, nút Excel > Nhập Excel mở hộp 3 bước. Chọn kho cần nhập ở bước 1, kho đã có phiếu kiểm kê hoặc đã khoá sổ thì bị chặn. Trùng mã hàng thì ghi đè, số lượng 0 xoá tồn đầu mã đó, đơn giá bắt buộc. Xuất Excel tải tồn đầu kho đang xem theo cùng khuôn.
 - T895: File Excel ở Hàng hoá, Nhóm hàng hoá, Đối tượng, Nhóm đối tượng, Quỹ tiền, Lý do nghiệp vụ đổi khuôn. Tên file ghi danh mục và gói, vd Mau_nhap_Hang_hoa_Plus.xlsx. Có sheet Hướng dẫn và mỗi cột có danh sách một sheet DS (Mã, Tên) để tra, ô thả xuống chọn từ đó. Nút Xuất Excel ở danh sách tải đúng khuôn này, sửa xong nhập lại được.
 - T894: Hộp Nhập Excel, nút Tải file mẫu và Tải xuống đổi màu khi rê chuột. Ô chọn tải tất cả, theo bộ lọc hay trang đang xem dùng kiểu ô chọn chung như các form khác.

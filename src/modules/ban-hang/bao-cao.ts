@@ -103,7 +103,7 @@ export const tongHopBanHang = {
 
 /** Chi tiết bán hàng: mỗi dòng món của chứng từ một dòng; mặc định gom theo kênh bán, xem Chi tiết (T455, TC_MAC_DINH ở tuyChinhBC.ts) */
 export const chiTietBanHang = {
-  cols: [{ k: 'ngay', t: 'Ngày', w: 88 }, { k: 'so', t: 'Số hoá đơn', cls: 'code', w: 120 }, { k: 'kenh', t: 'Kênh bán', w: 120 }, { k: 'kh', t: 'Khách hàng' }, { k: 'ma', t: 'Mã hàng', cls: 'code', w: 70 },
+  cols: [{ k: 'ngay', t: 'Ngày', w: 88 }, { k: 'so', t: 'Mã hoá đơn', cls: 'code', w: 120 }, { k: 'kenh', t: 'Kênh bán', w: 120 }, { k: 'kh', t: 'Khách hàng' }, { k: 'ma', t: 'Mã hàng', cls: 'code', w: 70 },
     { k: 'ten', t: 'Tên hàng' }, { k: 'dvt', t: 'ĐVT', c: true, w: 50 }, { k: 'sl', t: 'Số lượng', num: true }, { k: 'gia', t: 'Đơn giá', num: true },
     ...COT_TIEN] as Col[],
   rows: (thang: number, cn?: string, loc?: Record<string, string[]>, tyLe?: boolean): Row[] => {

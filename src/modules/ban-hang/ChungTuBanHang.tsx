@@ -343,6 +343,25 @@ export function theoDon(x: NgayPOS): XPos[] {
   })
 }
 
+let SO_XB: Map<string, string> | undefined
+/** Số chứng từ kế toán của phiếu POS (T897): dãy riêng XB + YYMM + thứ tự 4 số theo ngày, giờ trong tháng, chung mọi cửa hàng.
+ *  seed là hạt giống của theoDon, cùng hạt giống truyền vào soFabi; seed lạ trả chuỗi rỗng */
+export function soXb(seed: string): string {
+  if (!SO_XB) {
+    SO_XB = new Map()
+    const dem = new Map<string, number>()
+    DAILY.filter(x => x.date.getMonth() >= 8).flatMap(x => theoDon(x))
+      .sort((a, b) => a.date.getTime() - b.date.getTime() || a.gio.localeCompare(b.gio) || a.seed.localeCompare(b.seed))
+      .forEach(p => {
+        const yymm = `${String(p.date.getFullYear()).slice(2)}${String(p.date.getMonth() + 1).padStart(2, '0')}`
+        const n = (dem.get(yymm) ?? 0) + 1
+        dem.set(yymm, n)
+        SO_XB!.set(p.seed, `XB${yymm}-${String(n).padStart(4, '0')}`)
+      })
+  }
+  return SO_XB.get(seed) ?? ''
+}
+
 export function ChungTuBanHang({ sc, mod }: ScreenProps) {
   const { id } = useParams()
   const { s, toast } = useSession()
@@ -356,7 +375,7 @@ export function ChungTuBanHang({ sc, mod }: ScreenProps) {
   const tatCa = useMemo(() => DAILY.filter(x => x.date.getMonth() >= 8).slice().reverse().flatMap(x => theoDon(x).reverse())   // đồng bộ FABi chỉ kéo chi tiết, mỗi hoá đơn một chứng từ (T247)
    
     .map((x, i) => ({
-      id: String(i), so: soFabi(`fabi-${x.seed}`), ngay: dmy(x.date), gio: x.gio, thang: x.date.getMonth() + 1, cn: cnTen(x.cn), x, kenh: x.kenh,
+      id: String(i), so: soXb(x.seed), maHd: soFabi(`fabi-${x.seed}`), ngay: dmy(x.date), gio: x.gio, thang: x.date.getMonth() + 1, cn: cnTen(x.cn), x, kenh: x.kenh,
       dienGiai: x.loai === 'don' ? `Hoá đơn FABi ${x.kenh.toLowerCase()} ${x.gio} ngày ${dmy(x.date).slice(0, 5)}` : `Doanh thu ${x.kenh.toLowerCase()} ${x.don} đơn POS ngày ${dmy(x.date).slice(0, 5)}`,
       doiTuong: donPosCua(x).khach?.ten ?? 'Khách lẻ POS',
       tenHang: tomTatTenHang(monCua(x).map(m => m.ten)), _tenHangDu: [...new Set(monCua(x).map(m => m.ten))].join(', '),   // cột Diễn giải là tên món trong phiếu (T286)
@@ -557,7 +576,7 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
     if (ap.hang.length && !monR(r).some(m => ap.hang.includes(m.ma))) return false
     if (ap.tonKho.length && !monR(r).some(m => ap.tonKho.includes(m.tonKho ? 'co' : 'khong'))) return false
     if (ap.pttt.length && !ptttR(r).some(p => ap.pttt.includes(p))) return false
-    if (ap.tim.trim() && !fold(`${r.so} ${r.dienGiai} ${r._tenHangDu}`).includes(fold(ap.tim.trim()))) return false
+    if (ap.tim.trim() && !fold(`${r.so} ${r.maHd ?? ''} ${r.dienGiai} ${r._tenHangDu}`).includes(fold(ap.tim.trim()))) return false
     for (const [k, g] of Object.entries(locCot)) {
       if (dangLoc(g) && !khopLoc(kieuCot(k), g, chuCot(k, r), typeof r[k] === 'number' ? r[k] : undefined, k === 'ngay' ? d : undefined)) return false
     }
@@ -606,8 +625,7 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
             nav(`${path}/${r.id}`)
           }}
         >
-          {/* Chứng từ Xuất bán POS: số FABi 12 ký tự chỉ hiện 5 ký tự cuối, rê chuột xem đủ (T802) */}
-          {r.nguon === 'FABi' ? `...${String(r.so).slice(-5)}` : r.so}
+          {r.so}
           {/* Đã xuất hoá đơn điện tử: nhãn VAT trên số chứng từ, thay cột Trạng thái xuất HĐĐT (T802) */}
           {hdDong(r) && <span className="ds-so-vat" title={`Đã xuất hoá đơn ${tenHd(hdDong(r)!)}`}>VAT</span>}
           {/* Hoá đơn thay thế, điều chỉnh chưa phát hành: nhãn đỏ Dự thảo cùng chỗ nhãn VAT (T839) */}
@@ -615,6 +633,8 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
         </button>
       ),
     },
+    // Mã hoá đơn FABi tách khỏi số chứng từ: hiện # và 5 ký tự cuối, rê chuột xem đủ; chứng từ lập tay để trống (T897)
+    { k: 'maHd', t: 'Mã hoá đơn', cls: 'code', w: 110, r: r => r.maHd ? <span title={String(r.maHd)}>#{String(r.maHd).slice(-5)}</span> : '' },
     // Loại chứng từ: Bán hàng, Hoá đơn thay thế, Huỷ bán, Hoá đơn điều chỉnh, lọc ở hàng lọc của cột (T787)
     ...(plus ? [{ k: 'tenLoaiCt', t: 'Loại chứng từ', w: 150 } as Col] : []),
     // T286: Diễn giải là tên món trong phiếu, diễn giải cũ đổi tên Ghi chú
@@ -1053,8 +1073,8 @@ function ChiTiet({ sc, mod, row }: ScreenProps & { row: Row }) {
             <div className="xp637-tieu">ĐƠN HÀNG POS</div>
             <div className="xp637-ds">
               <div className="xp637-o">
-                <span className="xp637-nhan">Mã đơn POS</span>
-                <div className="xp637-tri">{row.so ? <span className="xp637-code">{row.so}</span> : <span className="xp637-trong">—</span>}</div>
+                <span className="xp637-nhan">Mã hoá đơn</span>
+                <div className="xp637-tri">{row.maHd ? <span className="xp637-code">{String(row.maHd)}</span> : <span className="xp637-trong">—</span>}</div>
               </div>
               <div className="xp637-cap">
                 <div className="xp637-o">

@@ -17,6 +17,7 @@ import {
   hdFabi,
   ptttCua,
   soFabi,
+  soXb,
   theoDon,
   POS_OK_MAU,
   POS_LOI_MAU,
@@ -97,7 +98,8 @@ const MXuatBanPosFabi: FC<ScreenProps> = ({ sc, mod }) => {
       .flatMap(x => theoDon(x).reverse())   // FABi kéo chi tiết theo hoá đơn (T247)
       .map((x, i) => ({
         id: String(i),
-        so: soFabi(`fabi-${x.seed}`),
+        so: soXb(x.seed),   // số chứng từ kế toán dãy XB; mã hoá đơn FABi ở maHd (T897)
+        maHd: soFabi(`fabi-${x.seed}`),
         ngay: dmy(x.date),   // chứng từ chỉ ghi ngày, không ghi giờ phút (T823)
         gio: x.gio,
         thang: x.date.getMonth() + 1,
@@ -136,7 +138,7 @@ const MXuatBanPosFabi: FC<ScreenProps> = ({ sc, mod }) => {
       if (loc.pttt && !ptttCua(r.x).includes(loc.pttt)) return false
       if (loc.hang && !r.mon.some(m => m.ma === loc.hang)) return false
       if (loc.tonKho && !r.mon.some(m => m.tonKho === (loc.tonKho === 'co'))) return false
-      if (q && !fold(`${r.so} ${r.dienGiai} ${r.mon.map(m => m.ten).join(' ')}`).includes(q)) return false
+      if (q && !fold(`${r.so} ${r.maHd} ${r.dienGiai} ${r.mon.map(m => m.ten).join(' ')}`).includes(q)) return false
       return true
     })
   }, [rows, thoiGian, cnChon, loc, tim])
@@ -442,7 +444,7 @@ const MXuatBanPosFabi: FC<ScreenProps> = ({ sc, mod }) => {
             <MDsDongPhieu
               key={r.id ?? i}
               so={r.so}
-              tieuDe={`#${String(r.so).slice(-5)}`}
+              tieuDe={r.maHd ? `${r.so} · #${String(r.maHd).slice(-5)}` : String(r.so)}
               dongPhu={r.dongPhu}
               dongPhu2={r.dongPhu2}
               tien={Number(r.tong ?? 0)}
@@ -605,7 +607,7 @@ const MXuatBanPosFabi: FC<ScreenProps> = ({ sc, mod }) => {
                     <O nhan="Số hoá đơn" ma>{hdPos ? <button type="button" className="m-t835-so-hd" onClick={() => setXemHd(true)}>{dp.hoaDon.so}<Icon n="chevr" className="ic sm" /></button> : dp.hoaDon.so}</O>
                     <O nhan="Ký hiệu" ma>{dp.hoaDon.kyHieu}</O>
                     <O nhan="Ngày hoá đơn">{dp.hoaDon.ngay}</O>
-                    <O nhan="Mã đơn POS" ma>{donDangXem.so}</O>
+                    <O nhan="Mã hoá đơn" ma>{donDangXem.maHd ?? donDangXem.so}</O>
                     <div className="m-xb651-o full m-xb651-o-chep">
                       <div>
                         <small>Mã tra cứu</small>

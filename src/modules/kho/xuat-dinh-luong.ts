@@ -4,7 +4,7 @@
 import { useMemo } from 'react'
 import { DAILY, cnTen } from '../../data/mock'
 import { dmy, pad } from '../../ui/format'
-import { dongCuaPhieu, soFabi, theoDon } from '../ban-hang/ChungTuBanHang'
+import { dongCuaPhieu, soXb, theoDon } from '../ban-hang/ChungTuBanHang'
 import { CONG_THUC_CB, hangCua, tron3 } from './san-xuat'
 import { giaVonBq, useGiaVonBq } from './tinh-gia-von/giaVonBq'
 
@@ -54,7 +54,7 @@ export function useDsPhieuXdl(): PhieuXdl[] {
 
     return posList.map((p, idx): PhieuXdl => {
       const posId = String(idx)
-      const posSo = soFabi(`fabi-${p.seed}`)
+      const posSo = soXb(p.seed)   // tham chiếu ghi số chứng từ XB của phiếu bán (T897)
       const yy = String(p.date.getFullYear()).slice(2)
       const mm = pad(p.date.getMonth() + 1)
       const so = `XDL${yy}${mm}-${pad(idx + 1, 4)}`

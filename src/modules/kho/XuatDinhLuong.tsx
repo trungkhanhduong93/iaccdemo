@@ -11,6 +11,11 @@ import { PhanTrang } from '../../ui/PhanTrang'
 import { ChonKhoangNgay, docNgay, thangMacDinh, trongKhoang, type KhoangNgay } from '../../ui/ChonNgay'
 import { FormToanMan, useDong } from '../../ui/FormToanMan'
 import { fold, money, moneyD, soLuong } from '../../ui/format'
+import { BoLoc, useCauHinhLoc, useLocNhap, type OLocDef } from '../../ui/LocNangCao'
+import { dangLoc, dsGiaTri, khopLoc, type GiaTriLoc, type KieuLoc } from '../../ui/LocCot'
+import { IconFigmaSearch } from '../../ui/IconFigma'
+import { NutExcel } from '../../ui/CongCuDs'
+import { Select } from '../../ui/Dropdown'
 import { useDsPhieuXdl, type PhieuXdl } from './xuat-dinh-luong'
 
 export function XuatDinhLuong({ sc, mod }: ScreenProps) {
@@ -26,32 +31,55 @@ export function XuatDinhLuong({ sc, mod }: ScreenProps) {
 }
 
 function DanhSachXuatDinhLuong({ sc, mod, rows }: ScreenProps & { rows: PhieuXdl[] }) {
-  const { s } = useSession()
+  const { s, toast } = useSession()
   const nav = useNavigate()
   const path = duongDan(mod, sc)
   const cnChon = cuaHangHienTai(s)
 
-  const [thoiGian, setThoiGian] = useState<KhoangNgay>(thangMacDinh)
-  const [tim, setTim] = useState('')
-  const [cn, setCn] = useState('')
+  // Hàng lọc giống Xuất huỷ (T886): kỳ, ô tìm, phễu (cửa hàng), lọc cột; giá trị nháp, bấm Lọc mới áp
+  const loc0 = useLocNhap(() => ({ thoiGian: thangMacDinh() as KhoangNgay, tim: '', cn: '' }))
+  const { nhap, dat, ap } = loc0
+  const [locCot, setLocCot] = useState<Record<string, GiaTriLoc>>({})
   const [trang, setTrang] = useState(1)
   const [coTrang, setCoTrang] = useState(50)
 
   const dsCn = useMemo(() => [...new Set(rows.map(r => r.cn))].sort(), [rows])
+  const kieuCot = (k: string): KieuLoc => (k === 'ngay' ? 'ngay' : k === 'tong' ? 'so' : 'chon')
+  const giaTri = (r: PhieuXdl, k: string): unknown => (k === 'thamChieu' ? r.posSo : (r as unknown as Row)[k])
 
   const rowsLoc = useMemo(() => {
     return rows.filter(r => {
-      if (!trongKhoang(docNgay(r.ngay), thoiGian)) return false
+      if (!trongKhoang(docNgay(r.ngay), ap.thoiGian)) return false
       if (cnChon && r.cn !== cnChon.ten) return false
-      if (cn && r.cn !== cn) return false
-      if (tim.trim()) {
-        const kw = fold(tim.trim())
+      if (ap.cn && r.cn !== ap.cn) return false
+      if (ap.tim.trim()) {
+        const kw = fold(ap.tim.trim())
         const text = fold(`${r.so} ${r.posSo} ${r.ghiChu} ${r.cn} ${r.nguon} ${r.dong.map(m => m.ten).join(' ')}`)
         if (!text.includes(kw)) return false
       }
+      for (const [k, g] of Object.entries(locCot)) {
+        const v = giaTri(r, k)
+        if (dangLoc(g) && !khopLoc(kieuCot(k), g, typeof v === 'number' ? `${money(v)} ${v}` : String(v ?? ''), typeof v === 'number' ? v : undefined,
+          k === 'ngay' ? docNgay(r.ngay) : undefined)) return false
+      }
       return true
     })
-  }, [rows, thoiGian, cnChon, cn, tim])
+  }, [rows, ap, cnChon, locCot])   // eslint-disable-line react-hooks/exhaustive-deps
+  const layLuaChon = (k: string) => dsGiaTri(rows, r => String(giaTri(r, k) ?? ''))
+
+  const apLoc = () => { loc0.loc(); setTrang(1) }
+  const oLoc: OLocDef[] = [
+    { k: 'thoiGian', ten: 'Thời gian', coGiaTri: true, o: <ChonKhoangNgay value={nhap.thoiGian} onChange={k => dat('thoiGian', k)} /> },
+    { k: 'tim', ten: 'Tìm kiếm', coGiaTri: Boolean(nhap.tim.trim()), o: <input className="ds-o-inp" value={nhap.tim} placeholder="Số phiếu, tham chiếu, món" aria-label="Tìm kiếm"
+      onChange={e => dat('tim', e.target.value)} onKeyDown={e => { if (e.key === 'Enter') apLoc() }} /> },
+    ...(!cnChon && dsCn.length > 1 ? [{ k: 'cn', ten: 'Cửa hàng', coGiaTri: Boolean(nhap.cn), o: (
+      <Select className="ds-o-sel" value={nhap.cn} aria-label="Cửa hàng" onChange={e => dat('cn', e.target.value)}>
+        <option value="">Tất cả</option>
+        {dsCn.map(c => <option key={c} value={c}>{c}</option>)}
+      </Select>
+    ) }] : []),
+  ]
+  const [cauHinhLoc, datCauHinhLoc] = useCauHinhLoc(path, oLoc.map(o => o.k), ['thoiGian', 'tim'])
 
   const batDau = (trang - 1) * coTrang
   const rowsTrang = rowsLoc.slice(batDau, batDau + coTrang)
@@ -116,50 +144,55 @@ function DanhSachXuatDinhLuong({ sc, mod, rows }: ScreenProps & { rows: PhieuXdl
   const tongTien = rowsLoc.reduce((a, r) => a + r.tong, 0)
 
   return (
-    <div className="page xdl-page">
+    <div className="page page-voucher page-dm xdl-page">
       <h1 className="sr-only">{tenMan(sc)}</h1>
-      <div className="xdl-thanh-loc">
-        <ChonKhoangNgay value={thoiGian} onChange={k => { setThoiGian(k); setTrang(1) }} />
-        <div className="ds-tim">
-          <Icon n="search" className="ic sm" />
-          <input
-            className="ds-o-inp"
-            value={tim}
-            placeholder="Tìm theo số phiếu, tham chiếu, món..."
-            title="Tìm kiếm"
-            aria-label="Tìm kiếm"
-            onChange={e => { setTim(e.target.value); setTrang(1) }}
+      <div className="dm-khung">
+        <section className="card dm-bang">
+          <div className="ds-toolbar-figma">
+            <BoLoc
+              ds={oLoc}
+              cauHinh={cauHinhLoc}
+              datCauHinh={datCauHinhLoc}
+              dangLoc={loc0.dangLoc}
+              khacNhap={loc0.khacNhap}
+              onLoc={apLoc}
+              onXoaHet={loc0.xoaNhap}
+              chiNutPheu
+              ngoaiRieng={{
+                tim: (
+                  <div key="tim" className="ds-tim-figma">
+                    <IconFigmaSearch size={16} />
+                    <input
+                      value={nhap.tim}
+                      placeholder="Số phiếu, tham chiếu, món"
+                      title="Tìm theo số phiếu, tham chiếu, món"
+                      aria-label="Tìm kiếm"
+                      onChange={e => dat('tim', e.target.value)}
+                      onKeyDown={e => {
+                        if (e.key === 'Enter') apLoc()
+                      }}
+                    />
+                  </div>
+                ),
+              }}
+            />
+          </div>
+          <div className="ds-hang-trang-thai">
+            <span className="dim xdl-dem-phieu">{rowsLoc.length} phiếu</span>
+            <div className="ds-toolbar-phai ds-cong-cu-h2">
+              <NutExcel onXuat={() => toast(`Đã xuất ${rowsLoc.length} phiếu ra Excel`)} />
+            </div>
+          </div>
+          <Table
+            cols={cols}
+            rows={rowsBang}
+            onRow={r => nav(`${path}/${r.id}`)}
+            loc={{ gt: locCot, dat: (k, g) => { setLocCot(x => ({ ...x, [k]: g })); setTrang(1) }, bo: new Set(['stt']), kieu: c => kieuCot(c.k), layLuaChon }}
+            sum={{ ngay: `Tổng (${rowsLoc.length} phiếu)`, tong: tongTien }}
           />
-          {tim && (
-            <button type="button" className="icon-btn sm" onClick={() => { setTim(''); setTrang(1) }} title="Xoá tìm kiếm">
-              <Icon n="x" className="ic sm" />
-            </button>
-          )}
-        </div>
-        {!cnChon && dsCn.length > 1 && (
-          <select
-            className="ds-o-sel"
-            value={cn}
-            aria-label="Chọn cửa hàng"
-            onChange={e => { setCn(e.target.value); setTrang(1) }}
-          >
-            <option value="">Tất cả cửa hàng</option>
-            {dsCn.map(c => <option key={c} value={c}>{c}</option>)}
-          </select>
-        )}
-        <span className="dim xdl-dem-phieu">{rowsLoc.length} phiếu</span>
+          <PhanTrang trang={trang} tong={rowsLoc.length} coTrang={coTrang} onTrang={setTrang} onCoTrang={ct => { setCoTrang(ct); setTrang(1) }} />
+        </section>
       </div>
-
-      <div className="card" style={{ padding: 0, borderTopLeftRadius: 0, borderTopRightRadius: 0 }}>
-        <Table
-          cols={cols}
-          rows={rowsBang}
-          onRow={r => nav(`${path}/${r.id}`)}
-          sum={{ ngay: `Tổng (${rowsLoc.length} phiếu)`, tong: tongTien }}
-        />
-      </div>
-
-      <PhanTrang trang={trang} tong={rowsLoc.length} coTrang={coTrang} onTrang={setTrang} onCoTrang={setCoTrang} />
     </div>
   )
 }

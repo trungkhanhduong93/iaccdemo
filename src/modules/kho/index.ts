@@ -10,7 +10,6 @@ import { SO_BO_SUNG } from '../bao-cao/so-bo-sung'
 import { MAN_KK, mauDieuChinh, mauKiemKe } from './dieu-chinh'
 import { PhieuSanXuat } from './PhieuSanXuat'
 import { CongThucScreen } from './CongThuc'
-import { XuatDinhLuong } from './XuatDinhLuong'
 import { TinhGiaVon } from './tinh-gia-von/TinhGiaVon'
 import { cauHinhSx, type LoaiSx } from './san-xuat'
 import { baoCaoKiemKe, chiTietKho, tongHopKho, tongHopTra, type NguonPhieu } from './bao-cao'
@@ -74,7 +73,8 @@ const phieuCua = (m: ModuleDef, ma: string, loai: string): NguonPhieu => {
 }
 const phieuDc = (loai: LoaiDcn): NguonPhieu => ({ loai: DCN[loai].ten, cfg: cauHinhDcn(loai), seed: DCN[loai].man, di: DCN[loai].man, ds: () => phieuMauDcn(loai) })
 const NHAP = () => [phieuCua(muaHang, '4.1.1', 'Nhập mua'), phieuCua(kho, '5.1.1', 'Nhập khác'), phieuCua(banHang, '3.1.4', 'Khách trả lại'), phieuDc('ndc')]
-const XUAT = () => [phieuCua(kho, '5.1.2', 'Xuất bán POS'), phieuCua(kho, '5.1.2-2', 'Xuất bán hàng'), phieuCua(kho, '5.1.2-3', 'Xuất huỷ'),
+const XUAT = () => [phieuCua(banHang, '5.1.2', 'Xuất bán POS'),   // Xuất kho định lượng đã sang Bán hàng (T887)
+  phieuCua(kho, '5.1.2-2', 'Xuất bán hàng'), phieuCua(kho, '5.1.2-3', 'Xuất huỷ'),
   phieuCua(kho, '5.1.2-4', 'Xuất khác'), phieuDc('xdc'), phieuCua(muaHang, '4.1.4', 'Trả nhà cung cấp')]
 const TRA = () => [phieuCua(banHang, '3.1.4', 'Khách trả lại'), phieuCua(muaHang, '4.1.4', 'Trả nhà cung cấp')]
 const baoCaoMoi = (slug: string, ten: string, report: Omit<ReportCfg, 'kieu'>): ScreenDef =>
@@ -89,9 +89,9 @@ const BAO_CAO_MOI = [
 /** Nhãn ngắn trên thanh tab */
 const NGAN: Record<string, string> = { '5.1.2': 'Xuất kho định lượng', '5.1.2-2': 'Xuất bán hàng', '5.1.2-3': 'Xuất huỷ', '5.1.2-4': 'Xuất khác', '5.1.1': 'Nhập kho', '5.1.4': 'Xuất điều chuyển', '5-1-4-3': 'Xuất chuyển kho', '9.1.3': 'Công thức chế biến', '5.1.3': 'Xuất chế biến', '5.1.5': 'Công thức sơ chế', '5.1.6': 'Xuất sơ chế', '5.1.7': 'Tính giá vốn', '5.1.8': 'Giá thành đơn giản', '5.1.10': 'Kiểm kê', '5.1.11': 'Bổ sung giá nhập', '5.1.12': 'Tồn kho ban đầu', '5.1.13': 'Định mức tồn' }
 
-/** Gói Plus bỏ ở Kho (T721, T850): Xuất bán POS, Xuất bán hàng đã có ở Bán hàng; Xuất/Nhập điều chuyển vì chỉ chuyển kho nội bộ;
+/** Gói Plus bỏ ở Kho (T721, T850, T888): Xuất bán hàng đã có ở Bán hàng; Xuất chuyển kho (Plus dùng Xuất, Nhập điều chuyển, QD112);
  *  Công thức chế biến đã ở Danh mục; Tính giá thành đơn giản. Chỉ còn gói Pro, gói Standard vốn không có */
-const CHI_GOI_PRO = ['5.1.2-2', '5.1.4', '5-1-4-2', '9.1.3', '5.1.8']
+const CHI_GOI_PRO = ['5.1.2-2', '5-1-4-3', '9.1.3', '5.1.8']
 const chiGoiPro = (ds: ScreenDef[]) => ds.map(sc => CHI_GOI_PRO.includes(sc.code ?? sc.slug) ? { ...sc, goi: ['PR' as const] } : sc)
 
 const sauKiemKe = (ds: ScreenDef[]) => { const i = ds.findIndex(x => x.slug === '5-1-10'); return [...ds.slice(0, i + 1), DIEU_CHINH, ...ds.slice(i + 1)] }
@@ -100,12 +100,10 @@ const kho: ModuleDef = {
   key: 'kho', ten: 'Kho hàng', ngan: 'Kho', icon: 'box', mod: 4,
   mota: 'Nhập, xuất, điều chuyển, kiểm kê kho; giá vốn, thẻ kho, tồn kho',
   quyTrinh,
-  // Gói Plus xếp theo luồng: Tồn kho ban đầu, Nhập kho, Xuất chuyển kho, Xuất kho định lượng, Xuất huỷ, Xuất khác, Kiểm kê, Tính giá vốn (T721, T850)
-  xepTab: { PL: ['quy-trinh', '5-1-12', '5-1-1', '5-1-4-3', '5-1-2', '5-1-2-3', '5-1-2-4', '5-1-10', '5-1-7'] },
+  // Gói Plus xếp theo luồng: Tồn kho ban đầu, Nhập kho, Xuất điều chuyển, Nhập điều chuyển, Xuất huỷ, Xuất khác, Kiểm kê, Tính giá vốn (T721, T888)
+  xepTab: { PL: ['quy-trinh', '5-1-12', '5-1-1', '5-1-4', '5-1-4-2', '5-1-2-3', '5-1-2-4', '5-1-10', '5-1-7'] },
   // Màn Điều chỉnh kho đứng ngay sau Kiểm kê (T126); nhóm sản xuất xếp theo IVT (T152); ba tab điều chuyển liền nhau (T155)
   screens: chiGoiPro([...sauKiemKe(xepSanXuat(sauDieuChuyen(tuExcel(4, {
-    // Xuất kho định lượng (T849): thay tab Xuất bán POS ở Kho, gói Plus và Pro; phiếu sinh từ Xuất bán POS của Bán hàng
-    '5.1.2': { ten: 'Xuất kho định lượng', kind: 'custom', comp: XuatDinhLuong, ...phieu('XDL', 'Thêm phiếu xuất kho định lượng', ['Xuất kho theo định lượng món bán'], [['632', '152', 'Giá vốn xuất bán theo định lượng']], 'cn', 'Cửa hàng') },
     '5.1.2-2': phieu('XBH', 'Thêm phiếu xuất bán hàng', ['Xuất bán nguyên liệu cho đối tác', 'Xuất bán set quà Trung thu'], [['632', '156', 'Giá vốn hàng bán']], 'kh', 'Khách hàng'),
     '5.1.2-3': phieu('XH', 'Thêm phiếu xuất huỷ', ['Huỷ rau héo cuối ngày', 'Huỷ thịt quá hạn bảo quản', 'Huỷ bánh phở hỏng'], [['632', '152', 'Hao hụt, huỷ hàng hỏng']]),
     '5.1.2-4': phieu('XK', 'Thêm phiếu xuất khác', ['Xuất dùng cho bữa ăn nhân viên', 'Xuất làm món thử cho thực đơn mới'], [['6421', '152', 'Xuất dùng nội bộ']], 'nv', 'Người nhận'),
@@ -130,6 +128,6 @@ const kho: ModuleDef = {
     '5.2.6': { report: { kieu: 'dinhmuc' } },
     '5.2.7': { report: { kieu: 'dinhmuc' } },
     '5.2.8': { report: SO_BO_SUNG['5.2.8'] },
-  }, NGAN)))), ...BAO_CAO_MOI]),
+  }, NGAN).filter(sc => sc.code !== '5.1.2')))), ...BAO_CAO_MOI]),   // Xuất kho định lượng 5.1.2 ở Bán hàng (T887)
 }
 export default kho

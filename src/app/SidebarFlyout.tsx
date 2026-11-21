@@ -131,7 +131,7 @@ export const FLYOUT_CONFIG: Record<string, FlyoutData> = {
       tieuDe: 'Nghiệp vụ',
       items: [
         { ten: 'Phiếu nhập kho', di: '/app/kho/5-1-1' },
-        { ten: 'Phiếu xuất kho', di: '/app/kho/5-1-2' },
+        { ten: 'Phiếu xuất kho', di: '/app/ban-hang/5-1-2' },
         { ten: 'Phiếu chế biến', di: '/app/kho/5-1-3' },
         { ten: 'Xuất điều chuyển', di: '/app/kho/5-1-4' },
         { ten: 'Nhập điều chuyển', di: '/app/kho/5-1-4-2' },

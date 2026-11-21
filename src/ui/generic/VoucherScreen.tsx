@@ -701,7 +701,8 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
               )}
               {/* Excel, Tuỳ chỉnh cột, Thao tác hàng loạt nằm dưới nút Thêm mới (T510) */}
               <div className="ds-toolbar-phai ds-cong-cu-h2">
-                {mod.key === 'tien' && <NutDongBoThuChiFabi />}
+                {/* FABi chỉ đẩy phiếu thu, chi: tab Chuyển quỹ không có nút Đồng bộ lại (T899) */}
+                {mod.key === 'tien' && nhomChon?.k !== 'cq' && <NutDongBoThuChiFabi />}
                 <NutExcel
                   label={<IconExcel />}
                   onNhap={() => toast('Nhập chứng từ từ file Excel')}

@@ -16,6 +16,7 @@ import { fold, money, soQT } from '../../ui/format'
 import { NGAY_SO_DU, dsTonDau, giaNhapGanNhat, khoaTonDau, locChip, luuTonDau, useTonDau, type DongTonDau, type LyDoKhoa, type TrangThaiTd } from './ton-dau'
 import { HopChepTonDau, HopKhoaTonDau, HopThietLapTonDau, HopXoaTonDau } from './HopTonDau'
 import { HopNhapExcel, type BoHamNhap } from '../../ui/generic/HopNhapExcel'
+import { OLoc, dangLoc, dsGiaTri, khopLoc, type GiaTriLoc, type LocCot } from '../../ui/LocCot'
 import { taiMauTonDau, taiDuLieuTonDau, kiemFileNhapTonDau, ghiTonDau, taiFileLoiTonDau, moTaKhoaTonDau } from './nhapTonDauExcel'
 
 const COLS: Col[] = [
@@ -28,6 +29,8 @@ type Lenh = 'xoa' | 'thiet-lap' | 'chep' | 'gia'
 const LENH: Record<TrangThaiTd, Lenh[]> = { co: ['xoa', 'thiet-lap', 'chep'], chua: ['thiet-lap', 'gia'], xem: ['gia', 'xoa'] }
 const TEN_LENH: Record<Lenh, string> = { xoa: 'Xoá hàng loạt', 'thiet-lap': 'Thiết lập hàng loạt', chep: 'Chép sang kho khác', gia: 'Lấy giá nhập gần nhất' }
 const DS_KHO = KHO.map(k => ({ v: k, t: k }))
+/** Giá trị một cột để lọc ở hàng lọc dưới tiêu đề (T900): số để trống thì chuỗi rỗng */
+const giaTriCot = (d: DongTonDau, k: string) => { const v = d[k as keyof DongTonDau]; return v == null ? '' : String(v) }
 const maTen = (ma: string, ten: string) => <><span className="td-ma">{ma ? `${ma} - ` : ''}</span><span className="td-ten">{ten}</span></>
 
 /** Ô số chỉ xem: trống thì "-", dòng thiếu một nửa thì nhãn vàng */
@@ -46,14 +49,20 @@ export function TonKhoBanDau({ sc, mod }: ScreenProps) {
   const [q, setQ] = useState(''), [nhom, setNhom] = useState(''), [hang, setHang] = useState('')
   const [ap, setAp] = useState({ q: '', nhom: '', hang: '' })   // bộ lọc chỉ áp khi bấm Lọc
   const [tich, setTich] = useState<Set<string>>(new Set())
+  const [gtLoc, setGtLoc] = useState<Record<string, GiaTriLoc>>({})
   const [hop, setHop] = useState<{ loai: 'thiet-lap' | 'chep' | 'xoa'; ma: string[]; tichSan: boolean } | null>(null)
   const [khoa, setKhoa] = useState<LyDoKhoa | null>(null)
   const cot = useCotDs('/kho/5-1-12', COLS, COT_CO_DINH)
 
   const ds = useMemo(() => dsTonDau(kho), [kho, phienBan])   // eslint-disable-line react-hooks/exhaustive-deps
   const dsNhom = useMemo(() => [...new Map(ds.map(d => [d.nhom, d.nhomMa])).entries()].map(([t, m]) => ({ v: t, t: m ? `${m} - ${t}` : t })), [ds])
+  // Hàng lọc cột như các màn danh sách khác (T900): cột số lọc theo điều kiện, cột chữ tích giá trị
+  const laSo = (k: string) => COLS.some(c => c.k === k && c.num)
+  const loc: LocCot = { gt: gtLoc, dat: (k, g) => { setGtLoc(t => ({ ...t, [k]: g })); setTich(new Set()) }, kieu: c => laSo(c.k) ? 'so' : 'chon',
+    layLuaChon: k => dsGiaTri(ds, d => giaTriCot(d, k)) }
   const hien = useMemo(() => locChip(ds, chip).filter(d =>
-    (!ap.nhom || d.nhom === ap.nhom) && (!ap.hang || d.ma === ap.hang) && (!ap.q.trim() || fold(`${d.ma} ${d.ten}`).includes(fold(ap.q.trim())))), [ds, chip, ap])
+    (!ap.nhom || d.nhom === ap.nhom) && (!ap.hang || d.ma === ap.hang) && (!ap.q.trim() || fold(`${d.ma} ${d.ten}`).includes(fold(ap.q.trim())))
+    && Object.entries(gtLoc).every(([k, g]) => { const v = d[k as keyof DongTonDau]; return !dangLoc(g) || khopLoc(laSo(k) ? 'so' : 'chon', g, giaTriCot(d, k), typeof v === 'number' ? v : undefined) })), [ds, chip, ap, gtLoc])
   const tichHet = hien.length > 0 && hien.every(d => tich.has(d.ma))
   const doiTich = (ma: string) => setTich(t => { const n = new Set(t); if (n.has(ma)) n.delete(ma); else n.add(ma); return n })
   const doiKho = (k: string) => { setKho(k); setTich(new Set()) }
@@ -147,6 +156,10 @@ export function TonKhoBanDau({ sc, mod }: ScreenProps) {
                 <th className="c td-cot-tich"><input type="checkbox" aria-label="Chọn tất cả dòng đang hiện" checked={tichHet} onChange={() => setTich(tichHet ? new Set() : new Set(hien.map(d => d.ma)))} /></th>
                 <th className="c td-cot-stt">#</th>
                 {cols.map(c => <th key={c.k} className={`td-cot-${c.k}${c.num ? ' num' : ''}`}>{c.t}</th>)}
+              </tr>
+              <tr className="loc-hang">
+                <th /><th />
+                {cols.map(c => <th key={c.k}><OLoc c={c} loc={loc} /></th>)}
               </tr>
             </thead>
             <tbody>

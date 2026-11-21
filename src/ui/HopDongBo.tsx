@@ -43,6 +43,13 @@ export interface HopDongBoProps {
   onDongBo: (ketQua: KetQuaDongBo) => void
 }
 
+function fNgay(d: Date): string {
+  const dd = String(d.getDate()).padStart(2, '0')
+  const mm = String(d.getMonth() + 1).padStart(2, '0')
+  const yyyy = d.getFullYear()
+  return `${dd}/${mm}/${yyyy}`
+}
+
 export function HopDongBo({
   tieuDe,
   phu,
@@ -110,6 +117,14 @@ export function HopDongBo({
     if (dangChay) return
     onDong()
   }
+
+  const tenNhanDs = useMemo(() => {
+    const s = nhanDs.toLowerCase().trim()
+    if (s.includes('kho')) return 'kho'
+    if (s.includes('cửa hàng')) return 'cửa hàng'
+    if (s.includes('đơn vị')) return 'đơn vị nhận hoá đơn'
+    return s.replace(' đồng bộ', '')
+  }, [nhanDs])
 
   const dsHienThi = useMemo(() => {
     const q = tim.trim().toLowerCase()
@@ -238,16 +253,26 @@ export function HopDongBo({
           )}
 
           <div className="hdb-muc" data-hd="hdbDs">
-
-            <div className="hdb-nhan">{nhanDs}</div>
             <div className="hdb-ds-khoi">
+              <div className="hdb-ds-dau">
+                <div className="hdb-nhan">{nhanDs}</div>
+                <button
+                  type="button"
+                  className="hdb-nut-chu"
+                  disabled={dangChay || chon.length === 0}
+                  onClick={boChon}
+                >
+                  Xoá lựa chọn
+                </button>
+              </div>
+
               <div className="hdb-tim-o">
                 <Icon n="search" className="ic sm hdb-tim-ic" />
                 <input
                   ref={timRef}
                   type="text"
                   className="hdb-tim-inp"
-                  placeholder="Tìm theo tên hoặc mã…"
+                  placeholder={`Tìm theo tên hoặc mã ${tenNhanDs}…`}
                   value={tim}
                   disabled={dangChay}
                   onChange={e => setTim(e.target.value)}
@@ -256,25 +281,14 @@ export function HopDongBo({
 
               <div className="hdb-thong-ke">
                 <span className="hdb-so-luong">Tổng đã chọn {chon.length}</span>
-                <div className="hdb-tac-vu">
-                  <button
-                    type="button"
-                    className="hdb-nut-chu"
-                    disabled={dangChay}
-                    onClick={chonTatCa}
-                  >
-                    Chọn tất cả
-                  </button>
-                  <span className="hdb-ngan">·</span>
-                  <button
-                    type="button"
-                    className="hdb-nut-chu"
-                    disabled={dangChay}
-                    onClick={boChon}
-                  >
-                    Bỏ chọn
-                  </button>
-                </div>
+                <button
+                  type="button"
+                  className="hdb-nut-chu"
+                  disabled={dangChay}
+                  onClick={chonTatCa}
+                >
+                  Chọn tất cả
+                </button>
               </div>
 
               <div className="hdb-ds-cuon">
@@ -433,6 +447,10 @@ export function HopDongBo({
               </Popover>
             </div>
           )}
+
+          <div className="hdb-luu-y">
+            Lưu ý: Hệ thống sẽ đồng bộ dữ liệu cho {chon.length} {tenNhanDs} đã chọn từ {fNgay(khoangNgay.tu)} 00:00 đến {fNgay(khoangNgay.den)} 23:59
+          </div>
         </div>
 
         <footer className="hdb-chan">
@@ -441,7 +459,6 @@ export function HopDongBo({
               <label className="hdb-chan-trai" data-hd="hdbLamLai">
                 <input
                   type="checkbox"
-                  className="bat-tat"
                   checked={lamLai}
                   disabled={dangChay}
                   onChange={e => setLamLai(e.target.checked)}
@@ -451,7 +468,6 @@ export function HopDongBo({
               <label className="hdb-chan-trai">
                 <input
                   type="checkbox"
-                  className="bat-tat"
                   checked={tichPhuVal}
                   disabled={dangChay}
                   onChange={e => setTichPhuVal(e.target.checked)}
@@ -463,7 +479,6 @@ export function HopDongBo({
             <label className="hdb-chan-trai" data-hd="hdbLamLai">
               <input
                 type="checkbox"
-                className="bat-tat"
                 checked={lamLai}
                 disabled={dangChay}
                 onChange={e => setLamLai(e.target.checked)}
@@ -474,7 +489,7 @@ export function HopDongBo({
           <div className="hdb-chan-phai">
             <button
               type="button"
-              className="btn"
+              className="btn hdb-nut-huy"
               disabled={dangChay}
               onClick={dongAnToan}
             >
@@ -482,7 +497,7 @@ export function HopDongBo({
             </button>
             <button
               type="button"
-              className="btn pri"
+              className="btn pri hdb-nut-chinh"
               disabled={chon.length === 0 || dangChay || (coLoaiPhieu && !loaiThu && !loaiChi)}
               data-hd="hdbNut"
               onClick={handleDongBo}

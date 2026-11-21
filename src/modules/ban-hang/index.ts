@@ -9,6 +9,7 @@ import { baoCaoBanHang, baoCaoDoanhThu } from './data'
 import { SO_BO_SUNG } from '../bao-cao/so-bo-sung'
 import { banHangTheoNgay, chiTietBanHang, tongHopBanHang } from './bao-cao'
 import { colsCongNo, rowsCongNo } from '../bao-cao/cong-no'
+import { XuatDinhLuong } from '../kho/XuatDinhLuong'
 
 /** Báo cáo bán hàng ngoài Excel (T157): lấy dòng món của chứng từ Xuất bán POS, cửa hàng theo thanh trên; mọi gói, mọi thông tư (T185).
  *  Mã trên đường dẫn 3-2-6, 3-2-7, 3-2-8 là khoá cấu hình mẫu trong bao-cao/danh-sach.ts */
@@ -25,11 +26,19 @@ const NGAN: Record<string, string> = { '3.1.1': 'Xuất bán POS', '3.1.7': 'Bá
 /** Tab Hoá đơn điện tử 3.1.5, Điều chỉnh thay thế 3.1.6 chuyển sang menu Hoá đơn điện tử (QD106, T786) */
 const CHUYEN_DI = ['3.1.5', '3.1.6']
 
+/** Xuất kho định lượng (T849) chuyển từ Kho sang Bán hàng, gói Plus và Pro (T887, QD112): giữ mã Excel 5.1.2 nên gói, quyền như cũ;
+ *  đứng ngay sau tab đầu (Plus: Bán hàng, Pro: Xuất bán POS) */
+const XUAT_DINH_LUONG = tuExcel(4, {
+  '5.1.2': { ten: 'Xuất kho định lượng', kind: 'custom', comp: XuatDinhLuong, voucher: { prefix: 'XDL', them: 'Thêm phiếu xuất kho định lượng', dienGiai: ['Xuất kho theo định lượng món bán'],
+    noCo: [['632', '152', 'Giá vốn xuất bán theo định lượng']], doiTuong: 'cn', nhan: 'Cửa hàng', dong: 'nvl', tien: [0, 0], thue: 0, nguon: 'IVT', soTT58: 'Sổ chi tiết vật liệu, dụng cụ, hàng hoá' } },
+}, { '5.1.2': 'Xuất kho định lượng' }).find(sc => sc.code === '5.1.2')!
+const sauXuatBan = (ds: ScreenDef[]) => { const i = ds.findIndex(x => x.code === '3.1.1'); return [...ds.slice(0, i + 1), XUAT_DINH_LUONG, ...ds.slice(i + 1)] }
+
 const banHang: ModuleDef = {
   key: 'ban-hang', ten: 'Kế toán bán hàng', ngan: 'Bán hàng', icon: 'cart', mod: 2,
   mota: 'Doanh thu tự về từ FABi, hoá đơn điện tử, hàng bán trả lại',
   quyTrinh,
-  screens: [...tuExcel(2, {
+  screens: [...sauXuatBan(tuExcel(2, {
     // Xuất bán POS: chứng từ chỉ đổ về từ phần mềm bán hàng, không lập tay (T52)
     '3.1.1': { kind: 'custom', comp: ChungTuBanHang, ten: 'Xuất bán POS', nganGoi: { PL: 'Bán hàng' } },   // gói Plus gọi Bán hàng, thêm lập tay, nhập Excel (T753)
     // Bán hàng lập tay ngoài POS: tiệc, khách công ty; từ gói Plus (T52)
@@ -46,6 +55,6 @@ const banHang: ModuleDef = {
     '3.2.3': { report: { kieu: 'bangke', theoGtgt: true, ...baoCaoDoanhThu } },
     '3.2.4': { report: { kieu: 'bangke' } },
     '3.2.5': { report: SO_BO_SUNG['3.2.5'] },
-  }, NGAN).filter(sc => !CHUYEN_DI.includes(sc.code ?? '')), ...BAO_CAO_MOI],
+  }, NGAN).filter(sc => !CHUYEN_DI.includes(sc.code ?? ''))), ...BAO_CAO_MOI],
 }
 export default banHang
