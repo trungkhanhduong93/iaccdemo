@@ -11,6 +11,8 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T895 | File Excel danh mục theo mẫu IVT: tên file ghi danh mục và gói, sheet có dấu (Dữ liệu nhập, Dữ liệu mẫu, Hướng dẫn), mỗi cột tra cứu một sheet DS hiện rõ (Mã, Tên), ô thả xuống trỏ vào DS. Áp cho file mẫu, Tải xuống, file lỗi; nút Xuất Excel ở danh sách xuất đúng khuôn này để sửa rồi nhập cập nhật lại | Trum | Đang làm | Sửa `mauNhapDm.ts`, `CatalogScreen.tsx` (nút Xuất). Mẫu IVT ở `backup/ivt/` |
+| T896 | Nhập Excel Tồn kho ban đầu: file mẫu, kiểm tra, nhập cập nhật theo kho và mã hàng, dùng lại hộp 3 bước của T892 | Trum | Chờ | Chờ Trum chốt câu hỏi. Sửa `TonKhoBanDau.tsx`, `ton-dau.ts` |
 | T893 | Form Sửa danh mục không lưu được thay đổi của dòng mẫu (chỉ lưu dòng thêm trong phiên, `CatalogScreen.tsx` dòng ~660). Nhập Excel T892 đã có lớp ghi đè `ghiDeCatalogRow` trong `danhMucStore.ts`, form Sửa có thể dùng lại | Trum | Chưa làm | Thấy khi làm T892 |
 | T886 | Xuất kho định lượng: hàng lọc giống Xuất huỷ (kỳ, ô tìm, phễu, Excel, đếm phiếu), bỏ ô chọn cửa hàng riêng | Trum | Đang làm | Sửa `XuatDinhLuong.tsx`, cuối `app.css` (mục T886). Spec `backup/spec-T886-T888.md` |
 | T887 | Chuyển Xuất kho định lượng từ Kho sang Bán hàng, đứng ngay sau tab Bán hàng (Plus) hoặc Xuất bán POS (Pro), bỏ khỏi Kho | Trum | Đang làm | Sửa `kho/index.ts`, `ban-hang/index.ts`, `ChungTuBanHang.tsx` (link tham chiếu), `SidebarFlyout.tsx`, `thaoTacNhanh.ts`, `kho/quy-trinh.ts`. Spec `backup/spec-T886-T888.md` |
