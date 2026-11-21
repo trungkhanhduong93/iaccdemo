@@ -42,7 +42,7 @@ import { dmy } from '../format'
 import { addCatalogRow, suaCatalogRow, useAddedCatalogRows, sinhMaKeTiep, apGhiDe, useCatalogVersion, useDanhDauNhap } from './danhMucStore'
 import { suaPhieu, useDaXoa, xoaPhieu } from './daXoa'
 import { HopNhapExcel } from './HopNhapExcel'
-import { CAT_KEYS_NHAP_EXCEL } from './mauNhapDm'
+import { CAT_KEYS_NHAP_EXCEL, taiDuLieuDm } from './mauNhapDm'
 
 
 /** Dòng có khoảng ngày "dd/mm/yyyy - dd/mm/yyyy" giao khoảng lọc "tu|den" (để trống một đầu là không giới hạn đầu đó, T812) */
@@ -599,7 +599,14 @@ export function CatalogScreen({ sc }: ScreenProps) {
                         toast('Nhập danh mục từ Excel')
                       }
                     }}
-                    onXuat={() => toast(`Đã xuất ${rows.length} dòng ra Excel`)}
+                    onXuat={() => {
+                      // Danh mục nhập được Excel xuất đúng khuôn file mẫu, nhập lại được (T895)
+                      if (CAT_KEYS_NHAP_EXCEL.includes(catKey)) {
+                        void taiDuLieuDm(catKey, (sc.ngan ?? 'danh mục').trim(), s, rowsHien).then(() => toast(`Đã xuất ${rowsHien.length} dòng`))
+                      } else {
+                        toast(`Đã xuất ${rows.length} dòng ra Excel`)
+                      }
+                    }}
                   />
                 )}
                 <NutTuyChinhCot cols={cot.colsDu} an={cot.an} coDinh={COT_CO_DINH} macDinh={cot.macDinh} dongBang={cot.dongBang}

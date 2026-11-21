@@ -1,10 +1,13 @@
 import { taiFile } from '../xuatBangExcel'
-import { fold } from '../format'
+import { dmy, fold } from '../format'
 import type { Row, CatalogCfg } from '../../modules/types'
 import type { KetQuaKiem, KetQuaNhap, BaoTienDo, DongKiem, NhomCot, XuLyDong } from './nhapDmKieu'
 import type { Session } from '../../app/session'
+import { GOI } from '../../app/plan'
+import { HOM_NAY } from '../../data/mock'
 import { TRUONG_DM, hopPp, type TruongDM, type KhoiDM, type CauHinhDM, type KieuTruong } from '../../modules/danh-muc/truong-dm'
-import { addCatalogRow, ghiDeCatalogRow, danhDauNhap, sinhMaKeTiep } from './danhMucStore'
+import { heThongTk } from '../../modules/danh-muc/he-thong-tk'
+import { addCatalogRow, ghiDeCatalogRow, danhDauNhap, sinhMaKeTiep, getAllCatalogRows } from './danhMucStore'
 
 export interface CotMau {
   k: string
@@ -14,6 +17,8 @@ export interface CotMau {
   kieu: KieuTruong | 'kieuDt'
   ds?: string[]
   nhanDs?: (v: string) => string
+  maDs?: (v: string) => string
+  dsTraCuu?: string[]   // ô TK: file nhận mọi TK như form, sheet DS chỉ liệt kê TK chi tiết (T895)
   hien?: (v: Record<string, any>) => boolean
   rong: number
   so?: boolean
@@ -36,6 +41,8 @@ export interface KetQuaDocFile {
 }
 
 export const CAT_KEYS_NHAP_EXCEL = ['1.2', 'nhom-hang-hoa', '1.5', 'nhom-doi-tuong', '1.12', '1.16']
+/** Ô Nhóm tham chiếu danh mục nhóm, lấy mã cho sheet DS (T895) */
+const DM_NHOM: Record<string, string> = { '1.2': 'nhom-hang-hoa', '1.5': 'nhom-doi-tuong' }
 
 export function layCotMauDm(catKey: string, s: Session): CotMau[] {
   const cfg = TRUONG_DM[catKey]
@@ -78,7 +85,20 @@ export function layCotMauDm(catKey: string, s: Session): CotMau[] {
       const batBuocDau = Boolean(t.batBuoc && !t.hien && t.k !== '_tt')
       const nhan = batBuocDau ? `${nhanGoc} *` : nhanGoc
       const laSo = t.kieu === 'tien' || t.kieu === 'so'
-      const ds = t.dsGoi?.[s.goi] ?? t.ds
+      let ds = t.dsGoi?.[s.goi] ?? t.ds
+      let nhanDs = t.nhanDs
+      let maDs = t.maDs
+      let dsTraCuu: string[] | undefined
+      if (!ds?.length && t.k.toLowerCase().startsWith('tk')) {
+        // Ô TK lấy hệ thống TK theo thông tư như form Thêm mới (getOptions ở CatalogScreen)
+        const tk = heThongTk(s.cheDo)
+        const tenTk = new Map(tk.map(x => [x.so, x.ten]))
+        ds = tk.map(x => x.so)
+        nhanDs = so => `${so} - ${tenTk.get(so) ?? ''}`
+        dsTraCuu = tk.filter(x => !x.laCha).map(x => x.so)
+      }
+      const dmNhom = t.k === 'nhom' ? DM_NHOM[catKey] : undefined
+      if (dmNhom && !maDs) maDs = ten => getAllCatalogRows(dmNhom).find(r => r.ten === ten)?.ma ?? ''
       const chuThich = typeof t.chuThich === 'function' ? t.chuThich({}, s) : t.chuThich
 
       cot.push({
@@ -88,7 +108,9 @@ export function layCotMauDm(catKey: string, s: Session): CotMau[] {
         batBuoc: Boolean(t.batBuoc),
         kieu: t.kieu,
         ds,
-        nhanDs: t.nhanDs,
+        nhanDs,
+        maDs,
+        dsTraCuu,
         hien: t.hien,
         rong: laSo ? 16 : 24,
         so: laSo,
@@ -138,17 +160,6 @@ function layTruongDmDef(catKey: string): Map<string, TruongDM> {
   return map
 }
 
-function layCotLetter(colIdx: number): string {
-  let temp = ''
-  let n = colIdx
-  while (n > 0) {
-    const rem = (n - 1) % 26
-    temp = String.fromCharCode(65 + rem) + temp
-    n = Math.floor((n - 1) / 26)
-  }
-  return temp
-}
-
 function kieuHienThi(c: CotMau): string {
   if (c.k === 'kieuDt') return 'Chọn một'
   if (c.kieu === 'chu') return 'Chữ'
@@ -160,23 +171,20 @@ function kieuHienThi(c: CotMau): string {
   return 'Chữ'
 }
 
-function giaTriHopLe(c: CotMau): string {
+function giaTriHopLe(c: CotMau, sheet?: string): string {
   if (c.k === 'kieuDt') return 'Tổ chức, Cá nhân'
   if (c.k === '_tt') return 'Để trống là đang sử dụng; 0 hoặc Không là ngừng sử dụng'
   if (c.kieu === 'tich') return 'x, Có hoặc 1'
   if (c.kieu === 'tien' || c.kieu === 'so') return 'Số nguyên hoặc số thập phân'
-  if (c.ds && c.ds.length > 0) {
-    const hien = c.nhanDs ? c.ds.map(v => c.nhanDs!(v)) : c.ds
-    return hien.slice(0, 10).join(', ') + (hien.length > 10 ? ', ...' : '')
-  }
+  if (sheet) return `Xem sheet ${sheet}` + (c.kieu === 'chonNhieu' ? '. Chọn nhiều thì cách nhau dấu phẩy, chọn hết thì ghi Tất cả' : '')
   return ''
 }
 
-function taoGhiChuCot(c: CotMau): string {
+function taoGhiChuCot(c: CotMau, sheet?: string): string {
   const ghiChu: string[] = []
   ghiChu.push(c.batBuoc ? 'Bắt buộc' : 'Không bắt buộc')
   ghiChu.push(`Kiểu: ${kieuHienThi(c)}`)
-  const hopLe = giaTriHopLe(c)
+  const hopLe = giaTriHopLe(c, sheet)
   if (hopLe) ghiChu.push(`Giá trị hợp lệ: ${hopLe}`)
   if (c.chuThich) ghiChu.push(`Chú thích: ${c.chuThich}`)
   if (c.goiY) ghiChu.push(`Gợi ý: ${c.goiY}`)
@@ -184,66 +192,143 @@ function taoGhiChuCot(c: CotMau): string {
   return ghiChu.join('\n')
 }
 
-function themSheetHuongDan(wb: any, cotMau: CotMau[]): void {
-  const wsHd = wb.addWorksheet('Huong dan')
-  const hangTieuDeHd = wsHd.addRow(['Cột', 'Bắt buộc', 'Kiểu', 'Giá trị hợp lệ'])
-  hangTieuDeHd.font = { bold: true }
-  hangTieuDeHd.eachCell((c: any) => {
-    c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE8EEF7' } }
+type ODm = string | number | null
+interface SheetDs { ten: string; dong: [string, string][]; cot: 'A' | 'B' }
+
+const thuongDau = (t: string) => /^[A-ZĐ]{2,}/.test(t) ? t : t.charAt(0).toLowerCase() + t.slice(1)
+const TO_TIEU_DE = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE8EEF7' } }
+
+/** Tên danh mục không dấu cho tên file, vd "Lý do nghiệp vụ" thành Ly_do_nghiep_vu (T895) */
+const tenFileDm = (tenNgan: string) => {
+  const t = fold(tenNgan).replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '')
+  return t.charAt(0).toUpperCase() + t.slice(1)
+}
+const ngayFile = () => dmy(HOM_NAY).replace(/\//g, '-')
+
+/** Dòng Mã, Tên của sheet DS cho một cột, và cột (A Mã, B Tên) chứa đúng giá trị file xuất ghi ra để ô thả xuống trỏ vào (T895) */
+function dongTraCuu(c: CotMau): { dong: [string, string][]; cot: 'A' | 'B' } | null {
+  if (c.kieu === 'tich') return { dong: [['1', 'Có'], ['0', 'Không']], cot: 'B' }
+  const ds = c.dsTraCuu ?? c.ds
+  if (!ds?.length) return null
+  const dong = ds.map((v): [string, string] => {
+    if (c.maDs) return [c.maDs(v), v]
+    const nhan = c.nhanDs?.(v)
+    if (!nhan || nhan === v) return [v, v]
+    if (nhan.endsWith(` - ${v}`)) return [nhan.slice(0, -v.length - 3), v]   // ĐVT: nhãn "TO - Tô", lưu tên
+    if (nhan.startsWith(`${v} - `)) return [v, nhan.slice(v.length + 3)]   // TK: nhãn "1561 - Giá mua hàng hoá", lưu số TK
+    return [v, nhan]   // ngành nghề: lưu mã, nhãn là tên
   })
-
-  cotMau.forEach(c => {
-    wsHd.addRow([
-      c.nhan,
-      c.batBuoc ? 'Có' : '',
-      kieuHienThi(c),
-      giaTriHopLe(c),
-    ])
-  })
-
-  wsHd.addRow([])
-  wsHd.addRow(['Quy ước ô Có/Không: gõ x, Có hoặc 1 là có, để trống là không.'])
-
-  wsHd.getColumn(1).width = 28
-  wsHd.getColumn(2).width = 14
-  wsHd.getColumn(3).width = 16
-  wsHd.getColumn(4).width = 45
+  const ghi = c.kieu === 'chonTim' && c.nhanDs ? c.nhanDs(ds[0]) : ds[0]
+  return { dong, cot: dong[0][1] === ghi ? 'B' : 'A' }
 }
 
-function themValidationChoSheet(wb: any, ws: any, cotMau: CotMau[], soDong: number = 200): void {
-  let wsDs: any = wb.getWorksheet('Danh sach')
-  let cotDsIndex = wsDs ? wsDs.columnCount + 1 : 1
+/** Mỗi cột có danh sách một sheet DS; cột trùng nội dung (ĐVT, ĐVT phụ, các ô TK) dùng chung một sheet (T895) */
+function lapSheetDs(cotMau: CotMau[]): Map<string, SheetDs> {
+  const theoCot = new Map<string, SheetDs>()
+  const theoNoiDung = new Map<string, SheetDs>()
+  const daDung = new Set<string>()
+  for (const c of cotMau) {
+    const tc = dongTraCuu(c)
+    if (!tc) continue
+    const khoa = JSON.stringify(tc)
+    let sh = theoNoiDung.get(khoa)
+    if (!sh) {
+      const goc = c.kieu === 'tich' ? 'có không' : c.dsTraCuu ? 'tài khoản' : c.nhanGoc.split(' ').map(thuongDau).join(' ')
+      // Excel cấm / \ ? * [ ] : trong tên sheet, tối đa 31 ký tự; trùng sau khi cắt thì thêm số
+      const base = `DS ${goc}`.replace(/[/\\?*[\]:]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 31)
+      let ten = base
+      for (let i = 2; daDung.has(ten.toLowerCase()); i++) ten = `${base.slice(0, 30 - String(i).length)} ${i}`
+      daDung.add(ten.toLowerCase())
+      sh = { ten, ...tc }
+      theoNoiDung.set(khoa, sh)
+    }
+    theoCot.set(c.k, sh)
+  }
+  return theoCot
+}
 
-  cotMau.forEach((c, idx) => {
-    if (c.ds && c.ds.length > 0) {
-      const dsGiaTri = c.nhanDs ? c.ds.map(v => c.nhanDs!(v)) : c.ds
-      const chuoiDs = dsGiaTri.join(',')
-      let formula = ''
+/** Một dòng dữ liệu theo cột mẫu, đúng dạng phần đọc file chấp nhận (T892) */
+function dongTuRow(cotMau: CotMau[], r: Row): ODm[] {
+  return cotMau.map(c => {
+    if (c.k === 'kieuDt') return r.kieuDt ?? (r.mst ? 'Tổ chức' : 'Cá nhân')
+    if (c.k === '_tt') return r._tt === 0 ? 'Không' : 'Có'
+    if (c.kieu === 'tich') return r[c.k] ? 'Có' : 'Không'
+    if (c.kieu === 'tien' || c.kieu === 'so') {
+      const num = Number(r[c.k])
+      return isNaN(num) ? null : num
+    }
+    if (c.kieu === 'chonTim' && c.nhanDs) return r[c.k] ? c.nhanDs(String(r[c.k])) : null
+    return r[c.k] !== undefined && r[c.k] !== null ? r[c.k] : null
+  })
+}
 
-      if (chuoiDs.length <= 255) {
-        formula = `"${chuoiDs.replace(/"/g, '""')}"`
-      } else {
-        if (!wsDs) {
-          wsDs = wb.addWorksheet('Danh sach')
-          wsDs.state = 'hidden'
-        }
-        const dsColLetter = layCotLetter(cotDsIndex)
-        dsGiaTri.forEach((val, valIdx) => {
-          wsDs.getCell(valIdx + 1, cotDsIndex).value = val
-        })
-        formula = `'Danh sach'!$${dsColLetter}$1:$${dsColLetter}$${dsGiaTri.length}`
-        cotDsIndex++
-      }
+/** Dựng và tải workbook chung cho file mẫu, Tải xuống, file lỗi, Xuất Excel: Dữ liệu nhập, Dữ liệu mẫu (chỉ file mẫu), Hướng dẫn, các sheet DS (T895) */
+async function taiFileDm(s: Session, tenNgan: string, cotMau: CotMau[], dong: ODm[][], tenFile: string, them: { viDu?: ODm[][]; cotLoi?: boolean } = {}) {
+  const ExcelJS = await import('exceljs')
+  const Workbook = ExcelJS.Workbook ?? ExcelJS.default?.Workbook
+  const wb = new Workbook()
+  const dsSheet = lapSheetDs(cotMau)
+  const tieuDe = [...cotMau.map(c => c.nhan), ...(them.cotLoi ? ['Lý do lỗi'] : [])]
 
-      for (let r = 2; r <= soDong; r++) {
-        ws.getCell(r, idx + 1).dataValidation = {
-          type: 'list',
-          allowBlank: true,
-          formulae: [formula],
-        }
-      }
+  const veBang = (ws: any, cacDong: ODm[][], ghiChu: boolean) => {
+    const hang = ws.addRow(tieuDe)
+    hang.font = { bold: true }
+    hang.eachCell((o: any, n: number) => {
+      o.fill = TO_TIEU_DE
+      const c = cotMau[n - 1]
+      if (ghiChu && c) o.note = taoGhiChuCot(c, dsSheet.get(c.k)?.ten)
+    })
+    ws.views = [{ state: 'frozen', xSplit: 0, ySplit: 1 }]
+    for (const d of cacDong) ws.addRow(d)
+    cotMau.forEach((c, i) => {
+      const col = ws.getColumn(i + 1)
+      col.width = c.rong
+      if (c.so) col.numFmt = '#,##0'
+    })
+    if (them.cotLoi) ws.getColumn(cotMau.length + 1).width = 40
+  }
+
+  const wsNhap = wb.addWorksheet('Dữ liệu nhập')
+  veBang(wsNhap, dong, true)
+  const soDong = Math.max(200, dong.length + 50)
+  cotMau.forEach((c, i) => {
+    const sh = dsSheet.get(c.k)
+    if (!sh) return
+    const congThuc = `'${sh.ten}'!$${sh.cot}$2:$${sh.cot}$${sh.dong.length + 1}`
+    for (let r = 2; r <= soDong; r++) {
+      wsNhap.getCell(r, i + 1).dataValidation = { type: 'list', allowBlank: true, formulae: [congThuc] }
     }
   })
+
+  if (them.viDu) {
+    const wsMau = wb.addWorksheet('Dữ liệu mẫu')
+    veBang(wsMau, them.viDu, false)
+    for (let r = 2; r <= wsMau.rowCount; r++) wsMau.getRow(r).font = { italic: true, color: { argb: 'FF888888' } }
+  }
+
+  const wsHd = wb.addWorksheet('Hướng dẫn')
+  wsHd.addRow([`Mẫu nhập danh mục ${tenNgan}. Dùng cho màn Danh mục > ${tenNgan}, gói ${GOI[s.goi].ten}.`]).font = { bold: true }
+  wsHd.addRow([])
+  const hangHd = wsHd.addRow(['Cột', 'Bắt buộc', 'Kiểu', 'Giá trị hợp lệ'])
+  hangHd.font = { bold: true }
+  hangHd.eachCell((o: any) => { o.fill = TO_TIEU_DE })
+  for (const c of cotMau) wsHd.addRow([c.nhan, c.batBuoc ? 'Có' : '', kieuHienThi(c), giaTriHopLe(c, dsSheet.get(c.k)?.ten)])
+  wsHd.addRow([])
+  wsHd.addRow(['Quy ước ô Có/Không: gõ x, Có hoặc 1 là có, để trống là không.'])
+  ;[28, 14, 16, 60].forEach((w, i) => { wsHd.getColumn(i + 1).width = w })
+
+  for (const sh of new Set(dsSheet.values())) {
+    const ws = wb.addWorksheet(sh.ten)
+    const hang = ws.addRow(['Mã', 'Tên'])
+    hang.font = { bold: true }
+    hang.eachCell((o: any) => { o.fill = TO_TIEU_DE })
+    for (const d of sh.dong) ws.addRow(d)
+    ws.views = [{ state: 'frozen', xSplit: 0, ySplit: 1 }]
+    ;[0, 1].forEach(i => { ws.getColumn(i + 1).width = Math.min(80, Math.max(8, ...sh.dong.map(d => d[i].length)) + 2) })
+  }
+
+  const buf = await wb.xlsx.writeBuffer()
+  taiFile(new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }), tenFile)
 }
 
 export async function taiMauNhapDm(
@@ -254,76 +339,7 @@ export async function taiMauNhapDm(
 ) {
   const cotMau = layCotMauDm(catKey, s)
   if (!cotMau.length) return
-
-  const ExcelJS = await import('exceljs')
-  const Workbook = ExcelJS.Workbook ?? ExcelJS.default?.Workbook
-  const wb = new Workbook()
-
-  // Sheet 1 "Du lieu": chỉ tiêu đề (không dòng ví dụ), có ghi chú Excel (T892)
-  const wsDuLieu = wb.addWorksheet('Du lieu')
-  const tieuDeCacCot = cotMau.map(c => c.nhan)
-  const hangTieuDe = wsDuLieu.addRow(tieuDeCacCot)
-  hangTieuDe.font = { bold: true }
-  hangTieuDe.eachCell((c, colNumber) => {
-    c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE8EEF7' } }
-    const cotDef = cotMau[colNumber - 1]
-    if (cotDef) {
-      c.note = taoGhiChuCot(cotDef)
-    }
-  })
-  wsDuLieu.views = [{ state: 'frozen', xSplit: 0, ySplit: 1 }]
-
-  cotMau.forEach((c, idx) => {
-    const col = wsDuLieu.getColumn(idx + 1)
-    col.width = c.rong
-    if (c.so) col.numFmt = '#,##0'
-  })
-
-  themValidationChoSheet(wb, wsDuLieu, cotMau, 200)
-
-  // Sheet 2 "Du lieu mau": cùng tiêu đề + 2 dòng ví dụ (T892)
-  const wsMau = wb.addWorksheet('Du lieu mau')
-  const hangTieuDeMau = wsMau.addRow(tieuDeCacCot)
-  hangTieuDeMau.font = { bold: true }
-  hangTieuDeMau.eachCell(c => {
-    c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE8EEF7' } }
-  })
-  wsMau.views = [{ state: 'frozen', xSplit: 0, ySplit: 1 }]
-
-  for (const r of rowsViDu.slice(0, 2)) {
-    const dongViDu: (string | number | null)[] = []
-    for (const c of cotMau) {
-      if (c.k === 'kieuDt') {
-        dongViDu.push(r.kieuDt ?? (r.mst ? 'Tổ chức' : 'Cá nhân'))
-      } else if (c.k === '_tt') {
-        dongViDu.push(r._tt === 0 ? 'Không' : 'Có')
-      } else if (c.kieu === 'tich') {
-        dongViDu.push(r[c.k] ? 'Có' : 'Không')
-      } else if (c.kieu === 'tien' || c.kieu === 'so') {
-        const num = Number(r[c.k])
-        dongViDu.push(isNaN(num) ? null : num)
-      } else if (c.kieu === 'chonTim' && c.nhanDs) {
-        dongViDu.push(r[c.k] ? c.nhanDs(String(r[c.k])) : null)
-      } else {
-        dongViDu.push(r[c.k] !== undefined && r[c.k] !== null ? r[c.k] : null)
-      }
-    }
-    const hangViDu = wsMau.addRow(dongViDu)
-    hangViDu.font = { italic: true, color: { argb: 'FF888888' } }
-  }
-
-  cotMau.forEach((c, idx) => {
-    const col = wsMau.getColumn(idx + 1)
-    col.width = c.rong
-    if (c.so) col.numFmt = '#,##0'
-  })
-
-  // Sheet 3 "Huong dan"
-  themSheetHuongDan(wb, cotMau)
-
-  const tenFile = `mau-nhap-${fold(tenDm).replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}.xlsx`
-  const buf = await wb.xlsx.writeBuffer()
-  taiFile(new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }), tenFile)
+  await taiFileDm(s, tenDm, cotMau, [], `Mau_nhap_${tenFileDm(tenDm)}_${GOI[s.goi].ten}.xlsx`, { viDu: rowsViDu.slice(0, 2).map(r => dongTuRow(cotMau, r)) })
 }
 
 export async function docFileNhapDm(
@@ -624,64 +640,11 @@ export function nhapCacDongDat(
 
 // ── Hợp đồng T892: logic đọc, kiểm, ghi của hộp Nhập Excel danh mục ──
 
-/** Tải dữ liệu đang có (cùng cột file mẫu) để sửa hàng loạt rồi nhập lại (T892) */
+/** Tải dữ liệu đang có (cùng khuôn file mẫu) để sửa hàng loạt rồi nhập lại; nút Xuất Excel ở danh sách dùng chung (T892, T895) */
 export async function taiDuLieuDm(catKey: string, tenNgan: string, s: Session, rows: Row[]): Promise<void> {
   const cotMau = layCotMauDm(catKey, s)
   if (!cotMau.length) return
-
-  const ExcelJS = await import('exceljs')
-  const Workbook = ExcelJS.Workbook ?? ExcelJS.default?.Workbook
-  const wb = new Workbook()
-
-  // Sheet 1 "Du lieu": dòng dữ liệu từ rows, không có sheet Du lieu mau (T892)
-  const wsDuLieu = wb.addWorksheet('Du lieu')
-  const tieuDeCacCot = cotMau.map(c => c.nhan)
-  const hangTieuDe = wsDuLieu.addRow(tieuDeCacCot)
-  hangTieuDe.font = { bold: true }
-  hangTieuDe.eachCell((c, colNumber) => {
-    c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE8EEF7' } }
-    const cotDef = cotMau[colNumber - 1]
-    if (cotDef) {
-      c.note = taoGhiChuCot(cotDef)
-    }
-  })
-  wsDuLieu.views = [{ state: 'frozen', xSplit: 0, ySplit: 1 }]
-
-  for (const r of rows) {
-    const dongDuLieu: (string | number | null)[] = []
-    for (const c of cotMau) {
-      if (c.k === 'kieuDt') {
-        dongDuLieu.push(r.kieuDt ?? (r.mst ? 'Tổ chức' : 'Cá nhân'))
-      } else if (c.k === '_tt') {
-        dongDuLieu.push(r._tt === 0 ? 'Không' : 'Có')
-      } else if (c.kieu === 'tich') {
-        dongDuLieu.push(r[c.k] ? 'Có' : 'Không')
-      } else if (c.kieu === 'tien' || c.kieu === 'so') {
-        const num = Number(r[c.k])
-        dongDuLieu.push(isNaN(num) ? null : num)
-      } else if (c.kieu === 'chonTim' && c.nhanDs) {
-        dongDuLieu.push(r[c.k] ? c.nhanDs(String(r[c.k])) : null)
-      } else {
-        dongDuLieu.push(r[c.k] !== undefined && r[c.k] !== null ? r[c.k] : null)
-      }
-    }
-    wsDuLieu.addRow(dongDuLieu)
-  }
-
-  cotMau.forEach((c, idx) => {
-    const col = wsDuLieu.getColumn(idx + 1)
-    col.width = c.rong
-    if (c.so) col.numFmt = '#,##0'
-  })
-
-  themValidationChoSheet(wb, wsDuLieu, cotMau, Math.max(200, rows.length + 50))
-
-  // Sheet "Huong dan"
-  themSheetHuongDan(wb, cotMau)
-
-  const tenFile = `du-lieu-${fold(tenNgan).replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}.xlsx`
-  const buf = await wb.xlsx.writeBuffer()
-  taiFile(new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }), tenFile)
+  await taiFileDm(s, tenNgan, cotMau, rows.map(r => dongTuRow(cotMau, r)), `Du_lieu_${tenFileDm(tenNgan)}_${ngayFile()}.xlsx`)
 }
 
 function parseVaKiemTraGiaTri(
@@ -808,7 +771,9 @@ export async function kiemFileNhapDm(
     }
   }
 
-  const ws = wb.worksheets[0]
+  // Sheet dữ liệu theo tên bản T895, rồi bản T892, rồi sheet đầu không phải sheet phụ (T895)
+  const ws = wb.getWorksheet('Dữ liệu nhập') ?? wb.getWorksheet('Du lieu')
+    ?? wb.worksheets.find(w => !/^(DS |Hướng dẫn$|Huong dan$|Dữ liệu mẫu$|Du lieu mau$|Danh sach$)/i.test(w.name))
   if (!ws || ws.rowCount < 1) {
     return {
       loiChung: 'Không đọc được file. Chọn file .xlsx tải từ nút Tải file mẫu.',
@@ -1165,55 +1130,11 @@ export async function kiemFileNhapDm(
   }
 }
 
-/** Tải file chỉ gồm dòng lỗi, thêm cột Lý do lỗi cuối (T892) */
+/** Tải file chỉ gồm dòng lỗi, thêm cột Lý do lỗi cuối (T892, khuôn chung T895) */
 export async function taiFileLoi(catKey: string, tenNgan: string, s: Session, kq: KetQuaKiem): Promise<void> {
   const cotMau = kq.cot.length > 0 ? kq.cot : layCotMauDm(catKey, s)
-  const dongLoi = kq.dong.filter(d => d.xuLy === 'loi')
-
-  const ExcelJS = await import('exceljs')
-  const Workbook = ExcelJS.Workbook ?? ExcelJS.default?.Workbook
-  const wb = new Workbook()
-
-  // Sheet 1 "Du lieu": chữ gốc chu, cột "Lý do lỗi" cuối (T892)
-  const wsDuLieu = wb.addWorksheet('Du lieu')
-  const tieuDeCacCot = [...cotMau.map(c => c.nhan), 'Lý do lỗi']
-  const hangTieuDe = wsDuLieu.addRow(tieuDeCacCot)
-  hangTieuDe.font = { bold: true }
-  hangTieuDe.eachCell((c, colNumber) => {
-    c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE8EEF7' } }
-    if (colNumber <= cotMau.length) {
-      const cotDef = cotMau[colNumber - 1]
-      if (cotDef) {
-        c.note = taoGhiChuCot(cotDef)
-      }
-    }
-  })
-  wsDuLieu.views = [{ state: 'frozen', xSplit: 0, ySplit: 1 }]
-
-  for (const d of dongLoi) {
-    const hangLoi: string[] = []
-    for (const c of cotMau) {
-      hangLoi.push(d.chu[c.k] ?? '')
-    }
-    hangLoi.push(d.lyDo.join('. '))
-    wsDuLieu.addRow(hangLoi)
-  }
-
-  cotMau.forEach((c, idx) => {
-    const col = wsDuLieu.getColumn(idx + 1)
-    col.width = c.rong
-    if (c.so) col.numFmt = '#,##0'
-  })
-  wsDuLieu.getColumn(cotMau.length + 1).width = 40
-
-  themValidationChoSheet(wb, wsDuLieu, cotMau, Math.max(200, dongLoi.length + 50))
-
-  // Sheet "Huong dan"
-  themSheetHuongDan(wb, cotMau)
-
-  const tenFile = `loi-nhap-${fold(tenNgan).replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}.xlsx`
-  const buf = await wb.xlsx.writeBuffer()
-  taiFile(new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }), tenFile)
+  const dong = kq.dong.filter(d => d.xuLy === 'loi').map(d => [...cotMau.map(c => d.chu[c.k] ?? ''), d.lyDo.join('. ')])
+  await taiFileDm(s, tenNgan, cotMau, dong, `Loi_nhap_${tenFileDm(tenNgan)}_${ngayFile()}.xlsx`, { cotLoi: true })
 }
 
 /** Ghi dòng thêm mới, cập nhật theo lô, báo tiến độ từng lô (T892) */

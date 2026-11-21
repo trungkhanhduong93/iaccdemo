@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 21/11/2026
+- T895: File Excel ở Hàng hoá, Nhóm hàng hoá, Đối tượng, Nhóm đối tượng, Quỹ tiền, Lý do nghiệp vụ đổi khuôn. Tên file ghi danh mục và gói, vd Mau_nhap_Hang_hoa_Plus.xlsx. Có sheet Hướng dẫn và mỗi cột có danh sách một sheet DS (Mã, Tên) để tra, ô thả xuống chọn từ đó. Nút Xuất Excel ở danh sách tải đúng khuôn này, sửa xong nhập lại được.
 - T894: Hộp Nhập Excel, nút Tải file mẫu và Tải xuống đổi màu khi rê chuột. Ô chọn tải tất cả, theo bộ lọc hay trang đang xem dùng kiểu ô chọn chung như các form khác.
 - T891: Danh mục Nhóm hàng hoá có thêm 11 nhóm (Món nước, Món cơm, Tinh bột, Pha chế, Đồ ăn vặt...), Nhóm đối tượng thêm 5 nhóm theo bộ phận nhân viên. Tải dữ liệu đang có rồi nhập lại không còn báo lỗi nhóm. Quỹ tiền áp dụng tất cả cửa hàng, lý do FABi để nguyên trạng thái nhập lại không còn báo lỗi.
 - T892: Nhập Excel ở Hàng hoá, Nhóm hàng hoá, Đối tượng, Nhóm đối tượng, Quỹ tiền, Lý do nghiệp vụ mở hộp lớn 3 bước, có ở cả 3 gói. Bước 1 kéo thả file, tải file mẫu, hoặc tải dữ liệu đang có để sửa hàng loạt. Bước 2 xem từng dòng sẽ thêm mới, cập nhật hay bị bỏ qua, kèm lý do lỗi. Mã đã có thì cập nhật, mã để trống thì tự sinh. Nhập xong hiện kết quả, tải được file lỗi. Danh sách tô các dòng vừa thêm, vừa sửa.
