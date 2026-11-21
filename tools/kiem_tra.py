@@ -255,8 +255,8 @@ def tim_cac_man_dot_3():
     mans.append(('Nhập kho', f'/app/kho/{slug_nk}'))
 
     m_xk = re.search(r"'([0-9\.\-]+)':\s*phieu\('XB'", kho_txt)
-    slug_xk = m_xk.group(1).replace('.', '-') if m_xk else '5-1-2'
-    mans.append(('Xuất kho', f'/app/kho/{slug_xk}'))
+    # Xuất kho định lượng 5.1.2 ở Bán hàng từ T887
+    mans.append(('Xuất kho', f"/app/kho/{m_xk.group(1).replace('.', '-')}" if m_xk else '/app/ban-hang/5-1-2'))
 
     m_kk = re.search(r"'([0-9\.\-]+)':\s*KK", kho_txt)
     slug_kk = m_kk.group(1).replace('.', '-') if m_kk else '5-1-10'
@@ -1942,7 +1942,7 @@ def kiem_tra_dot_11_b():
             pg.wait_for_selector('.m-ds-khung', timeout=6000)
             kiem_man('Danh sách Thu chi từ Nghiệp vụ')
 
-        for idx, (path, ten, dich_url) in enumerate([('tien/quy-trinh', 'Thu chi', 'tien/2-1-1'), ('kho/quy-trinh', 'Kho', 'kho/5-1-2')]):
+        for idx, (path, ten, dich_url) in enumerate([('tien/quy-trinh', 'Thu chi', 'tien/2-1-1'), ('kho/quy-trinh', 'Kho', 'kho/5-1-2-2')]   # T887: 5-1-2 sang Bán hàng, Kho gói Pro mở tab đầu Xuất bán hàng):
             pg.goto(f'{URL}?goi=PR#/app/{path}')
             pg.wait_for_selector('.m-app')
             pg.wait_for_timeout(300)
