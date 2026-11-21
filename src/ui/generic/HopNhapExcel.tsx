@@ -5,6 +5,7 @@ import { taiMauNhapDm, taiDuLieuDm, kiemFileNhapDm, taiFileLoi, nhapDm } from '.
 import type { DongKiem, KetQuaKiem, KetQuaNhap, PhamViTai } from './nhapDmKieu'
 import { NhapXlKiemTra } from './NhapXlKiemTra'
 import { NhapXlDangNhap, NhapXlKetQua } from './NhapXlKetQua'
+import { Select } from '../Dropdown'
 
 export interface HopNhapExcelProps {
   sc: ScreenProps['sc']
@@ -198,11 +199,11 @@ export function HopNhapExcel({ sc, cfg, all, rowsLoc, rowsTrang, onDong }: HopNh
                       <div className="nxh-the-phu">Sửa trong Excel rồi nhập lại. Dòng trùng mã được cập nhật. Ô bắt buộc hoặc đã khoá mà để trống thì giữ giá trị cũ.</div>
                     </div>
                     <div className="nxh-the-nut">
-                      <select className="nxh-chon" aria-label={`Lấy ${tenThuong} nào`} value={phamVi} onChange={e => setPhamVi(e.target.value as PhamViTai)}>
+                      <Select className="inp nxh-chon" aria-label={`Lấy ${tenThuong} nào`} value={phamVi} onChange={e => setPhamVi(e.target.value as PhamViTai)}>
                         <option value="tat">Tất cả {all.length} {tenThuong}</option>
                         <option value="loc">{rowsLoc.length} {tenThuong} theo bộ lọc</option>
                         <option value="trang">{rowsTrang.length} {tenThuong} ở trang đang xem</option>
-                      </select>
+                      </Select>
                       <button type="button" className="nxh-b nxh-b-tai" onClick={() => void taiDuLieuDm(catKey, tenNgan, s, rowsTai)}><IconTai />Tải xuống</button>
                     </div>
                   </div>

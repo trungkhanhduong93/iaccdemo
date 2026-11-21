@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T894 | Hộp Nhập Excel danh mục: nút Tải file mẫu, Tải xuống đổi nền xanh nhạt khi rê chuột; ô chọn phạm vi tải dùng ô chọn chung của demo, danh sách nổi trên hộp | Trum | 21/11/2026 | 2026-11-21-trum-hover-nhap-excel.md |
 | T891 | Dữ liệu mẫu: thêm 11 nhóm hàng hoá, 5 nhóm đối tượng theo bộ phận nhân viên còn thiếu; nhập Excel nhận "Tất cả" ở ô chọn nhiều, sửa so sánh Đang sử dụng ở dòng khoá. Tải dữ liệu đang có rồi nhập lại sạch ở 6 danh mục, 3 gói | Trum | 21/11/2026 | 2026-11-21-trum-nhap-excel-luong-ivt.md |
 | T892 | Hộp Nhập Excel danh mục 3 bước theo luồng IVT ở 6 danh mục, cả 3 gói: kéo thả, tải file mẫu, tải dữ liệu đang có, kiểm tra có tab và bảng 2 tầng, mã trùng thì cập nhật, mã trống tự sinh, màn Đang nhập, kết quả, file lỗi, tô dòng vừa nhập | Trum | 21/11/2026 | 2026-11-21-trum-nhap-excel-luong-ivt.md |
 | T890 | Gói Standard: Nhập Excel ở 6 danh mục (Hàng hoá, Nhóm hàng hoá, Đối tượng, Nhóm đối tượng, Quỹ tiền, Lý do nghiệp vụ) mở hộp nhập: tải file mẫu theo form Thêm mới, chọn file, báo dòng đạt, bảng lỗi, nhập dòng đạt | Trum | 20/11/2026 | 2026-11-20-trum-mau-import-danh-muc.md |
