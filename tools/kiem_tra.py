@@ -1942,7 +1942,7 @@ def kiem_tra_dot_11_b():
             pg.wait_for_selector('.m-ds-khung', timeout=6000)
             kiem_man('Danh sách Thu chi từ Nghiệp vụ')
 
-        for idx, (path, ten, dich_url) in enumerate([('tien/quy-trinh', 'Thu chi', 'tien/2-1-1'), ('kho/quy-trinh', 'Kho', 'kho/5-1-2-2')]   # T887: 5-1-2 sang Bán hàng, Kho gói Pro mở tab đầu Xuất bán hàng):
+        for idx, (path, ten, dich_url) in enumerate([('tien/quy-trinh', 'Thu chi', 'tien/2-1-1'), ('kho/quy-trinh', 'Kho', 'kho/5-1-2-2')]):   # T887: 5-1-2 sang Bán hàng, Kho gói Pro mở tab đầu Xuất bán hàng
             pg.goto(f'{URL}?goi=PR#/app/{path}')
             pg.wait_for_selector('.m-app')
             pg.wait_for_timeout(300)
