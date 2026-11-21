@@ -45,7 +45,8 @@ def khoi_luat(file_luat: Path) -> str:
     s = (DICH / 'scripts' / 'soi_repo.py').as_posix()
     dong = [f'{MO} (cài từ iaccdemo, gỡ bằng python tools/cai_skill_ban_do.py --go) -->',
             '## Bản đồ repo',
-            f'- **Repo git chưa quen** → chạy `python "{s}" tong-quan` trước khi đọc file nào (khoảng 1k token, thay cho dò thư mục).',
+            f'- **Repo git chưa quen** → chạy `python "{s}" hieu` trước khi đọc file nào (khoảng 100–150 dòng, nắm cả repo).',
+            f'- **Bắt đầu một việc sửa code** → chạy `python "{s}" viec "<mô tả>"`: chỗ sửa file:dòng, file dính, QD, bẫy, skill, lệnh kiểm. Giao agent khác thì dán khối này vào spec.',
             f'- **Sắp sửa file chưa rõ dính tới đâu** → chạy `python "{s}" lien-quan <file>` (hoặc `vung <thư mục>`) trước khi mở file khác. Chỉ mở file nó chỉ ra, bỏ qua "lõi chung" và vùng "không dính".',
             '- Repo có `tools/ban_do.py` → dùng nó theo luật của repo. Lệnh `don` chỉ chạy khi người dùng gọi ("dọn rác repo").']
     if file_luat.parent.name == '.gemini' and sys.platform == 'win32':

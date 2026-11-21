@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T901 | Bản đồ repo: lệnh `hieu` (tóm tắt cả repo khoảng 150 dòng) và `viec "<mô tả>"` (gói ngữ cảnh cho một việc: file:dòng, file dính, bẫy, QD, skill, lệnh kiểm); SKILL.md tách phần dùng và phần dựng | Trum | 21/11/2026 | 2026-11-21-trum-ban-do-hieu-viec.md |
 | T900 | Tồn kho ban đầu: thêm hàng lọc cột dưới hàng tiêu đề bảng như các màn danh sách khác | Trum | 21/11/2026 | 2026-11-21-trum-so-ct-pos-hop-dong-bo.md |
 | T897 | Bán hàng POS tách 2 cột: Số chứng từ kế toán dãy riêng XB2610-0001, Mã hoá đơn FABi hiện #5 ký tự cuối; áp mọi nơi (form, điện thoại, tham chiếu Xuất kho định lượng, báo cáo) | Trum | 21/11/2026 | 2026-11-21-trum-so-ct-pos-hop-dong-bo.md |
 | T898 | Hộp đồng bộ dùng chung (POS, thu chi FABi, Tiện ích) theo bố cục IVT: rộng, thẻ cửa hàng có ô tích, tìm, Chọn tất cả, dòng Lưu ý, mọi ô tích cùng kiểu | Trum | 21/11/2026 | 2026-11-21-trum-so-ct-pos-hop-dong-bo.md |

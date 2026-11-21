@@ -30,12 +30,14 @@ Làm đủ các bước, theo thứ tự:
    - Ghi vào cột Ghi chú các file dùng chung sẽ sửa, nhất là `VoucherScreen.tsx`, `ChungTuForm.tsx`, `app.css`. Thấy việc khác đang ghi cùng file thì hỏi người đó trước.
    - Việc có thể sinh quyết định mới thì giữ chỗ ngay trong commit này: thêm dòng `## QDxx. <tên> (đang soạn)` cuối `docs/QUYET-DINH.md`.
    - Commit nhận việc chỉ sửa `docs/TIEN-DO.md`, `docs/QUYET-DINH.md`. Push ngay kể cả khi người dùng dặn chỉ push khi được bảo.
-6. Sắp sửa phần nào thì đọc mục tương ứng trong `docs/KIEN-TRUC.md`, tra bẫy bằng `python tools/ban_do.py bay <từ>`. Định đổi bố cục, nghiệp vụ hay thư viện thì tra `python tools/ban_do.py qd <từ>` rồi đọc đúng QD đó.
+6. Sắp sửa phần nào thì chạy `viec` (mục Tìm code), đọc mục tương ứng trong `docs/KIEN-TRUC.md`, tra bẫy bằng `python tools/ban_do.py bay <từ>`. Định đổi bố cục, nghiệp vụ hay thư viện thì tra `python tools/ban_do.py qd <từ>` rồi đọc đúng QD đó.
 
 ## Tìm code (QD74)
 
 Không đọc nguyên file lớn. `tools/ban_do.py` đọc thay và in kết quả dạng `file:dòng`.
 
+- Chưa quen repo: `python tools/skill-ban-do-repo/scripts/soi_repo.py hieu` in khung cả repo: vùng code, thành phần dùng chung, phân hệ, tab, màn tự viết, luật, lệnh kiểm (T901).
+- Bắt đầu một việc: `python tools/skill-ban-do-repo/scripts/soi_repo.py viec "<mô tả việc>"` in chỗ sửa `file:dòng`, file dính kèm, mục CSS, QD, bẫy, việc cũ giống, skill nên nạp. Giao việc cho agent khác thì dán khối này vào spec.
 - Chưa biết sửa ở đâu: `python tools/ban_do.py tim <từ khoá>`. Lệnh tìm màn hình, hàm, class CSS, QD, bẫy. Gõ không dấu cũng được.
 - File trên 20 KB: chạy `python tools/ban_do.py file <đường dẫn>` lấy dàn ý, rồi chỉ đọc khúc cần sửa, mỗi lần tối đa 400 dòng.
 - `src/styles/app.css` dài hơn 31.000 dòng. Tra mục bằng `python tools/ban_do.py css <class hoặc mã việc>`.

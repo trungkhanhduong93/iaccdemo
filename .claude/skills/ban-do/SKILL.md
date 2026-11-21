@@ -8,7 +8,7 @@ description: Tra repo iaccdemo bằng tools/ban_do.py thay vì đọc nguyên fi
 Luật gốc ở mục "Đầu phiên" và "Tìm code" của `AGENTS.md` (QD74). Skill này chỉ nhắc thứ tự lệnh.
 
 1. Đầu phiên: `python tools/ban_do.py dau-phien <tên GitHub>`. Không đọc nguyên `docs/TIEN-DO.md`.
-2. Chưa biết chỗ sửa: `python tools/ban_do.py tim <từ khoá>`.
+2. Bắt đầu một việc: `python tools/skill-ban-do-repo/scripts/soi_repo.py viec "<mô tả>"`. Cần tìm thêm: `python tools/ban_do.py tim <từ khoá>`. Chưa quen repo: `soi_repo.py hieu`.
 3. File trên 20 KB: `python tools/ban_do.py file <path>`, rồi Read có `offset` và `limit` tối đa 400.
 4. CSS: `python tools/ban_do.py css <class hoặc Txx>`. Thêm CSS mới thì đọc 40 dòng cuối `app.css`.
 5. Quyết định, bẫy: `python tools/ban_do.py qd <số hoặc từ>`, `python tools/ban_do.py bay <từ>`.

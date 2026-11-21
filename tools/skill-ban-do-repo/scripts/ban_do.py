@@ -9,7 +9,7 @@ from functools import lru_cache
 from collections import defaultdict
 from pathlib import Path
 
-BAN_DO_VERSION = 3  # bằng tools/skill-ban-do-repo/VERSION của iaccdemo; repo khác so số này để biết cần cập nhật (T490)
+BAN_DO_VERSION = 5  # bằng tools/skill-ban-do-repo/VERSION của iaccdemo; repo khác so số này để biết cần cập nhật (T490)
 
 
 # Cấu hình encoding cho Windows console
@@ -775,6 +775,32 @@ def lenh_nhanh(args):
     print(f"Số nhánh đã gộp hết: {da_gop}")
 
 
+def lenh_hieu_them(args):
+    """Phần riêng iaccdemo cho lệnh hieu của soi_repo.py (T901): phân hệ, tab, màn tự viết, kiến trúc, QD, bẫy."""
+    import json
+    feats = json.loads((ROOT / 'src' / 'app' / 'features.json').read_text(encoding='utf-8'))['feats']
+    print('Phân hệ (src/modules/<key>/index.ts; tab sinh từ features.json theo số mod, ghi đè trong index.ts):')
+    for idx in sorted((ROOT / 'src' / 'modules').glob('*/index.ts')):
+        txt = idx.read_text(encoding='utf-8')
+        m = re.search(r"key:\s*'([^']+)',\s*ten:\s*'([^']+)'(?:.*?mod:\s*(\d+))?", txt)
+        if not m:
+            continue
+        key, ten, mod = m.group(1), m.group(2), m.group(3)
+        nhap = {ten_c.split(' as ')[-1].strip(): duong for nhom, duong in re.findall(r"import \{([^}]*)\} from '(\.[^']+)'", txt) for ten_c in nhom.split(',') if ten_c.strip()}
+        comp = sorted({c for c in re.findall(r"comp:\s*([A-Z]\w*)", txt)})
+        tab = [f['n'] for f in feats if mod is not None and f['m'] == int(mod) and f.get('grp') != 'Báo cáo'][:14]
+        print(f"  {key} ({ten}{', mod ' + mod if mod else ''}): {', '.join(tab)[:230] or 'không lấy tab từ Excel'}")
+        if comp:
+            print('    màn tự viết: ' + ', '.join(f"{c}→{nhap.get(c, '?').lstrip('./')}" for c in comp)[:230])
+    kt = ROOT / 'docs' / 'KIEN-TRUC.md'
+    if kt.exists():
+        td = [f"{l.lstrip('# ').strip()}:{i}" for i, l in enumerate(kt.read_text(encoding='utf-8').splitlines(), 1) if re.match(r'#{2,3} ', l)]
+        print('Kiến trúc docs/KIEN-TRUC.md: ' + ', '.join(td)[:500])
+    qd = re.findall(r'^## (QD\d+\. .*)$', (ROOT / 'docs' / 'QUYET-DINH.md').read_text(encoding='utf-8'), re.M)
+    print(f'Quyết định: {len(qd)} QD, mới nhất: ' + ' | '.join(x[:60] for x in qd[-4:]))
+    print('Tra cứu: ban_do.py dau-phien <tên>, tim <từ>, file <đường dẫn>, css <class|Txxx>, qd <từ>, bay <từ>, nhanh')
+
+
 def main():
     parser = argparse.ArgumentParser(
         prog='ban_do.py',
@@ -811,6 +837,10 @@ def main():
     p_bay = subparsers.add_parser('bay', help='Tra cứu bẫy đã gặp trong docs/BAY.md')
     p_bay.add_argument('tu', nargs='*', default=[], help='Từ khoá tra cứu bẫy (để trống: xem mục lục)')
     p_bay.set_defaults(func=lenh_bay)
+
+    # hieu-them: phần riêng repo, soi_repo.py hieu tự gọi
+    p_ht = subparsers.add_parser('hieu-them', help='Phần riêng iaccdemo cho soi_repo.py hieu: phân hệ, tab, màn tự viết, kiến trúc, QD')
+    p_ht.set_defaults(func=lenh_hieu_them)
 
     # nhanh
     p_nhanh = subparsers.add_parser('nhanh', help='Xem git worktree và các nhánh có commit chưa vào origin/main')
