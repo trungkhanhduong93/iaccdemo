@@ -19,6 +19,8 @@ import { soLieuKiemKe } from '../../modules/home/khoStandard'
 import { tonQuyTheoSo } from '../../modules/home/LichSuQuy'
 import { useChoGhiTang } from '../../modules/ccdc/GhiTangHangLoat'
 import { tinhToanTongQuan } from '../../modules/home/chiSo'
+import { canKiemKeCuoiThang, cnChuaKiemKe } from '../../modules/home/chi-phi-nvl'
+import { HopChotTonHt } from '../../modules/home/HopChotTonHt'
 
 export const MKhoaSo: FC<ScreenProps> = () => {
   const { s, set, toast } = useSession()
@@ -36,6 +38,7 @@ export const MKhoaSo: FC<ScreenProps> = () => {
   // ── 1. Logic cho gói Free (đồng bộ với KhoaSoStandard.tsx) ──
   const [moKhoaStandard, setMoKhoaStandard] = useState(false)
   const [lyDoStandard, setLyDoStandard] = useState('')
+  const [moChotStandard, setMoChotStandard] = useState(false)
 
   // Khoá theo cửa hàng đang chọn (T19): tất cả thì mỗi cửa hàng khoá tiếp tháng kế của nó
   const { cns, ds, cungMoc, daKhoa, canKhoa, khoaTiep, cnKiem, pham } = mocKhoaSo(s.cuaHang)
@@ -43,26 +46,38 @@ export const MKhoaSo: FC<ScreenProps> = () => {
   const nhanStandard = nhanKy(canKhoa)
   const nutMo = cungMoc ? `Mở khoá ${nhanKy(daKhoa)}` : 'Mở khoá tháng gần nhất'
   const nutKhoa = cungMoc ? `Khoá sổ ${nhanStandard}` : `Khoá tháng kế (${khoaTiep.length})`
+  const idsKiem = cnKiem.map(c => c.id)
+  const canKkStandard = canKiemKeCuoiThang(s, canKhoa.thang)
+  const cnsChuaKkStandard = cnChuaKiemKe(canKhoa.thang, idsKiem)
   const kk = soLieuKiemKe(canKhoa.thang, new Set(cnKiem.map(c => c.ten)))
-  const tonQuy = tonQuyTheoSo(canKhoa.thang, cnKiem.map(c => c.id)).reduce((a, r) => a + r.cuoi, 0)
+  const tonQuy = tonQuyTheoSo(canKhoa.thang, idsKiem).reduce((a, r) => a + r.cuoi, 0)
   const cho = useChoGhiTang(canKhoa.nam * 100 + canKhoa.thang)
   const pbThang = tinhToanTongQuan(
     canKhoa.thang === KY_MO.thang ? 'thang-nay' : 'thang-truoc',
-    cnKiem.map(c => c.id),
+    idsKiem,
     s.cheDo,
     canKhoa.thang
   ).cpPhanBo
   const phieuCho: number = 3
 
+  const kkXongStandard = canKkStandard ? cnsChuaKkStandard.length === 0 : kk.chuaKiem.length === 0
+  const tenChuaKkStandard = CUA_HANG.filter(c => cnsChuaKkStandard.includes(c.id)).map(c => c.ten).join(', ')
+
   const buocStandard: { xong: boolean; ten: string; phu: string; to: string }[] = [
     {
-      xong: kk.chuaKiem.length === 0,
+      xong: kkXongStandard,
       ten: 'Kiểm kê cuối tháng',
-      phu: kk.chuaKiem.length
-        ? `Chưa kiểm kê: ${kk.chuaKiem.join(', ')}`
-        : cnKiem.length > 1
-          ? `Đủ ${cnKiem.length} cửa hàng, lệch ${kk.thieu + kk.thua} mặt hàng`
-          : `${cnKiem[0]?.ten} đã kiểm kê, lệch ${kk.thieu + kk.thua} mặt hàng`,
+      phu: canKkStandard
+        ? cnsChuaKkStandard.length
+          ? `Chưa kiểm kê: ${tenChuaKkStandard}`
+          : cnKiem.length > 1
+            ? `Đủ ${cnKiem.length} cửa hàng, lệch ${kk.thieu + kk.thua} mặt hàng`
+            : `${cnKiem[0]?.ten} đã kiểm kê, lệch ${kk.thieu + kk.thua} mặt hàng`
+        : kk.chuaKiem.length
+          ? `Chưa kiểm kê: ${kk.chuaKiem.join(', ')}`
+          : cnKiem.length > 1
+            ? `Đủ ${cnKiem.length} cửa hàng, lệch ${kk.thieu + kk.thua} mặt hàng`
+            : `${cnKiem[0]?.ten} đã kiểm kê, lệch ${kk.thieu + kk.thua} mặt hàng`,
       to: '/app/kho/5-1-10',
     },
     {
@@ -287,26 +302,45 @@ export const MKhoaSo: FC<ScreenProps> = () => {
         {laStandard ? (
           khoaDuocStandard ? (
             <div className="m-tacvu-bc-ds">
-              {buocStandard.map(b => (
-                <div key={b.ten} className={`m-tacvu-bc-dong${!b.xong ? ' mo' : ''}`}>
-                  <span className={`m-tacvu-bc-ic ${b.xong ? 'ok' : 'now'}`}>
-                    {b.xong ? <Icon n="check" className="ic sm" /> : null}
-                  </span>
-                  <div className="m-tacvu-bc-info">
-                    <span className="m-tacvu-bc-ten">{b.ten}</span>
-                    <span className="m-tacvu-bc-sub">{b.phu}</span>
+              {buocStandard.map(b => {
+                const laKkChuaXong = !b.xong && b.ten === 'Kiểm kê cuối tháng' && canKkStandard
+                return (
+                  <div key={b.ten} className={`m-tacvu-bc-dong${!b.xong ? ' mo' : ''}`}>
+                    <span className={`m-tacvu-bc-ic ${b.xong ? 'ok' : 'now'}`}>
+                      {b.xong ? <Icon n="check" className="ic sm" /> : null}
+                    </span>
+                    <div className="m-tacvu-bc-info" style={{ flex: 1 }}>
+                      <span className="m-tacvu-bc-ten">{b.ten}</span>
+                      <span className="m-tacvu-bc-sub" style={laKkChuaXong ? { color: 'var(--amber, #a86a0c)' } : undefined}>
+                        {b.phu}
+                      </span>
+                      {laKkChuaXong && (
+                        <div className="m-ks-bc-nut-doc">
+                          <button
+                            type="button"
+                            className="btn sm nhat"
+                            onClick={() => setMoChotStandard(true)}
+                          >
+                            Chốt theo tồn hệ thống
+                          </button>
+                          <Link to="/app/kho/5-1-10/moi" className="btn sm pri">
+                            Lập phiếu kiểm kê
+                          </Link>
+                        </div>
+                      )}
+                    </div>
+                    {b.to && !laKkChuaXong && (
+                      <Link
+                        to={b.to}
+                        className="btn sm ghost"
+                        style={{ flexShrink: 0, padding: '2px 8px', fontSize: 12 }}
+                      >
+                        Xem
+                      </Link>
+                    )}
                   </div>
-                  {b.to && (
-                    <Link
-                      to={b.to}
-                      className="btn sm ghost"
-                      style={{ flexShrink: 0, padding: '2px 8px', fontSize: 12 }}
-                    >
-                      Xem
-                    </Link>
-                  )}
-                </div>
-              ))}
+                )
+              })}
             </div>
           ) : (
             <p style={{ margin: 0, fontSize: 13, color: 'var(--muted)' }}>
@@ -418,6 +452,15 @@ export const MKhoaSo: FC<ScreenProps> = () => {
           ds={dsKyPro}
           chon={kyChonPro}
           onChon={k => setKyChonPro(k)}
+        />
+      )}
+
+      {/* Hộp chốt tồn hệ thống (T902) */}
+      {moChotStandard && (
+        <HopChotTonHt
+          thang={canKhoa.thang}
+          cns={cnsChuaKkStandard}
+          onDong={() => setMoChotStandard(false)}
         />
       )}
     </div>

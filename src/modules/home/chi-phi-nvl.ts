@@ -3,10 +3,12 @@
 // - nhap: tổng chi phí mua hàng trong tháng, tức tổng tiền phiếu mua hàng (4.1.1) trong tháng, gồm cả thuế GTGT (PhuongXT chốt 14/10/2026)
 // Đổi cách tính chỉ áp dụng từ tháng đầu chưa khoá sổ; tháng đã khoá giữ cách cũ.
 import type { Session } from '../../app/session'
-import { CUA_HANG, KHOA_SO_DEN, NVL, tongKy } from '../../data/mock'
+import { CUA_HANG, KHOA_SO_DEN, KY_MO, NVL, tongKy } from '../../data/mock'
 import { between, rng } from '../../ui/format'
 import { chungTu } from '../../ui/generic/gen'
 import { PHIEU_MUA } from '../mua-hang/bao-cao'
+import { apKhoPhieu, banPhieuHienTai, ghiNhatKy, soKeTiep, themPhieu } from '../../ui/generic/daXoa'
+import { soLieuKiemKe } from './khoStandard'
 
 export type CachNvl = 'kk' | 'nhap'
 /** Một lần đặt cách tính: áp dụng từ kỳ tu (yyyymm) cho tới lần đặt sau */
@@ -70,16 +72,61 @@ const tyTrong = (cn: string) => {
 const slMuaKy = (cn: string, thang: number) => { const m = muaKy(cn, thang), w = tyTrong(cn); return NVL.map((h, i) => slDvt(m * w[i] / h.gia, i)) }
 /** Số lượng tồn theo phiếu kiểm kê cuối tháng (dữ liệu giả). Tháng 6 lấy quanh 50% lượng mua tháng 7; các tháng sau còn 35–45% của tồn đầu cộng mua */
 function slTonKk(cn: string, thang: number, nam = NAM): number[] {
+  // Lập, xoá phiếu chốt theo tồn hệ thống làm đổi tồn cuối tháng đó và tồn đầu các tháng sau (T902)
+  if (banTon !== banPhieuHienTai()) { TON_KK.clear(); banTon = banPhieuHienTai() }
   const k = `${cn}-${nam}-${thang}`
   const c = TON_KK.get(k); if (c) return c
   const kq = thang <= 6
     ? slMuaKy(cn, 7).map((x, i) => slDvt(x * between(rng(`ton-kk-${cn}-${nam}-6-${NVL[i].ma}`), 0.4, 0.6), i))
     : (() => { const dau = slTonKk(cn, thang - 1, nam), mua = slMuaKy(cn, thang)
+      if (daChotHt(cn, thang)) return slTonHt(cn, thang, dau, mua, nam)
       return NVL.map((h, i) => slDvt((dau[i] + mua[i]) * between(rng(`ton-kk-${cn}-${nam}-${thang}-${h.ma}`), 0.35, 0.45), i)) })()
   TON_KK.set(k, kq)
   return kq
 }
 const TON_KK = new Map<string, number[]>()
+let banTon = -1
+
+/** Tồn hệ thống cuối tháng gói Standard: tồn đầu + mua − xuất huỷ, xuất khác (dữ liệu giả 0–1,2%), không có xuất định lượng (T902) */
+const slTonHt = (cn: string, thang: number, dau: number[], mua: number[], nam = NAM) =>
+  NVL.map((h, i) => slDvt((dau[i] + mua[i]) * (1 - between(rng(`xuat-ht-${cn}-${nam}-${thang}-${h.ma}`), 0, 0.012)), i))
+const MAN_KK = 'kho/5-1-10'
+const tenCh = (cn: string) => CUA_HANG.find(c => c.id === cn)?.ten ?? cn
+/** Cửa hàng đã có phiếu kiểm kê chốt theo tồn hệ thống trong tháng (phiếu lập trong phiên, chưa xoá) */
+const daChotHt = (cn: string, thang: number) => apKhoPhieu(MAN_KK, []).some(r => r._chotHt && r.cn === tenCh(cn) && Number(r.thang) === thang)
+
+/** Id cửa hàng chưa có phiếu kiểm kê trong tháng (cns rỗng là mọi cửa hàng), tính cả phiếu lập trong phiên, bỏ phiếu đã xoá (T902) */
+export function cnChuaKiemKe(thang: number, cns?: string[]): string[] {
+  const ids = cns?.length ? cns : CUA_HANG.map(c => c.id)
+  const chua = soLieuKiemKe(thang, new Set(ids.map(tenCh))).chuaKiem
+  return ids.filter(id => chua.includes(tenCh(id)))
+}
+/** Tháng phải có phiếu kiểm kê: cách Kiểm kê định kỳ, tháng đã qua, chưa khoá sổ (T902) */
+export const canKiemKeCuoiThang = (s: SNvl, thang: number) => cachNvlCua(s, thang) === 'kk' && thang < KY_MO.thang && !daKhoaThang(thang)
+
+export interface XemTruocChot { cn: string; ten: string; tonCuoi: number; tien: number; dt: number }
+/** Số sẽ ra nếu chốt tồn cuối bằng tồn hệ thống: tồn cuối, chi phí NVL theo giá gần nhất (T902) */
+export function xemTruocChotHt(_s: SNvl, cns: string[], thang: number): XemTruocChot[] {
+  return cns.map(cn => {
+    const dau = slTonKk(cn, thang - 1), mua = slMuaKy(cn, thang), cuoi = slTonHt(cn, thang, dau, mua)
+    const tien = (f: (i: number) => number) => Math.round(NVL.reduce((a, h, i) => a + f(i) * h.gia, 0))
+    return { cn, ten: tenCh(cn), tonCuoi: tien(i => cuoi[i]), tien: tien(i => sl1(dau[i] + mua[i] - cuoi[i])), dt: tongKy(thang, NAM, cn).dt }
+  })
+}
+/** Tạo phiếu kiểm kê ngày cuối tháng cho từng cửa hàng, tồn thực tế bằng tồn hệ thống, không lệch nên không sinh phiếu điều chỉnh (T902) */
+export function chotTonHeThong(cns: string[], thang: number, ai: string) {
+  const ngay = `${new Date(NAM, thang, 0).getDate()}/${String(thang).padStart(2, '0')}/${NAM}`
+  for (const cn of cns) {
+    const dau = slTonKk(cn, thang - 1), cuoi = slTonHt(cn, thang, dau, slMuaKy(cn, thang))
+    const id = `kk-chot-${cn}-${thang}-${Date.now()}`, so = soKeTiep(MAN_KK, 'KK')
+    themPhieu(MAN_KK, {
+      id, so, cn: tenCh(cn), nguon: 'tay', tt: 'ghi', ngay, thang, dienGiai: 'Chốt theo tồn hệ thống, không kiểm thực tế',
+      tien: 0, tong: 0, _chotHt: true,
+      _dong: NVL.map((h, i) => ({ ma: h.ma, ten: h.ten, dvt: h.dvt, tonHt: cuoi[i], tonTt: cuoi[i] })),
+    }, ai)
+    ghiNhatKy(MAN_KK, id, so, ai, 'Chốt tồn cuối tháng theo tồn hệ thống')
+  }
+}
 
 /** Danh sách mặt hàng NVL trong tháng của các cửa hàng (cns rỗng là mọi cửa hàng), cộng số lượng các cửa hàng */
 export function nvlHangKy(s: SNvl, cns: string[], thang: number): NvlHang[] {
@@ -98,7 +145,7 @@ export function nvlHangKy(s: SNvl, cns: string[], thang: number): NvlHang[] {
   })
 }
 
-export interface NvlCn { cn: string; ten: string; cach: CachNvl; tien: number; dt: number; tonDau?: number; mua: number; tonCuoi?: number }
+export interface NvlCn { cn: string; ten: string; cach: CachNvl; tien: number; dt: number; tonDau?: number; mua: number; tonCuoi?: number; chuaKk?: boolean }
 
 /** Chi phí NVL một cửa hàng trong tháng theo cách tính của công ty ở tháng đó */
 export function nvlCuaHang(s: SNvl, cn: string, thang: number): NvlCn {
@@ -111,6 +158,8 @@ export function nvlCuaHang(s: SNvl, cn: string, thang: number): NvlCn {
   const hang = nvlHangKy(s, [cn], thang)
   const tien = (f: (h: NvlHang) => number) => Math.round(hang.reduce((a, h) => a + f(h) * h.gia, 0))
   const tonDau = tien(h => h.slDau), muaKk = tien(h => h.slMua), tonCuoi = tien(h => h.slCuoi)
+  // Tháng đã qua chưa kiểm kê: không tính chi phí (T902)
+  if (canKiemKeCuoiThang(s, thang) && cnChuaKiemKe(thang, [cn]).length) return { cn, ten, cach, tien: 0, dt, tonDau, mua: muaKk, chuaKk: true }
   return { cn, ten, cach, tien: hang.reduce((a, h) => a + h.tien, 0), dt, tonDau, mua: muaKk, tonCuoi }
 }
 
@@ -118,7 +167,8 @@ export function nvlCuaHang(s: SNvl, cn: string, thang: number): NvlCn {
 export function nvlKy(s: SNvl, cns: string[], thang: number) {
   const ds = (cns.length ? cns : CUA_HANG.map(c => c.id)).map(cn => nvlCuaHang(s, cn, thang))
   const cong = (f: (x: NvlCn) => number | undefined) => ds.reduce((a, x) => a + (f(x) ?? 0), 0)
-  return { tien: cong(x => x.tien), ds, cach: cachNvlCua(s, thang), tonDau: cong(x => x.tonDau), mua: cong(x => x.mua), tonCuoi: cong(x => x.tonCuoi) }
+  return { tien: cong(x => x.tien), ds, cach: cachNvlCua(s, thang), tonDau: cong(x => x.tonDau), mua: cong(x => x.mua), tonCuoi: cong(x => x.tonCuoi),
+    chuaKk: ds.filter(x => x.chuaKk).map(x => x.cn) }
 }
 
 /** Dòng phụ dưới Chi phí NVL: tính theo cách nào (một cách chung cả công ty) */

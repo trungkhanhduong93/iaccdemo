@@ -2,6 +2,7 @@
 // Gói Free: công nợ không có hạn thanh toán, kiểm kê chỉ theo dõi số lượng (không tính tiền thừa, thiếu).
 import { timMan } from '../../app/registry'
 import { chungTu, dongCua } from '../../ui/generic/gen'
+import { apKhoPhieu } from '../../ui/generic/daXoa'
 import { PHIEU_MUA } from '../mua-hang/bao-cao'
 import { rowsCongNo } from '../bao-cao/cong-no'
 import { NVL } from '../../data/mock'
@@ -81,10 +82,11 @@ export function soLieuCongNo(thang: number, motCn?: string) {
  *  số mặt hàng lệch theo cửa hàng, cửa hàng chưa kiểm kê tháng này */
 export function soLieuKiemKe(thang: number, tenCn: Set<string>) {
   const cfg = timMan('kho', '5-1-10').sc?.voucher
-  const phieu = cfg ? chungTu(cfg, '5.1.10').filter(r => Number(r.thang) === thang && tenCn.has(String(r.cn))) : []
+  // Tính cả phiếu lập trong phiên, bỏ phiếu đã xoá (T902)
+  const phieu = cfg ? apKhoPhieu('kho/5-1-10', chungTu(cfg, '5.1.10')).filter(r => Number(r.thang) === thang && tenCn.has(String(r.cn))) : []
   const dong = new Map<string, { cn: string; ma: string; ten: string; dvt: string; lech: number }>()
   for (const p of phieu) {
-    for (const d of dongCua(cfg!, `5.1.10-${p.id}`)) {
+    for (const d of (p._dong as ReturnType<typeof dongCua> | undefined) ?? dongCua(cfg!, `5.1.10-${p.id}`)) {
       const k = `${p.cn}|${d.ma}`
       const cu = dong.get(k) ?? { cn: String(p.cn), ma: d.ma, ten: d.ten, dvt: String(d.dvt ?? ''), lech: 0 }
       cu.lech += (Number(d.tonTt) || 0) - (Number(d.tonHt) || 0)

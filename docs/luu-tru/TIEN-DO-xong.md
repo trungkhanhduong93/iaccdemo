@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T902 | Cảnh báo chưa kiểm kê cuối tháng khi tính chi phí NVL theo kiểm kê định kỳ: khung cảnh báo ở Chi phí NVL web và điện thoại, hộp Chốt theo tồn hệ thống, 2 nút ở bước Kiểm kê cuối tháng của Khoá sổ (QD115) | Trum | 23/11/2026 | 2026-11-23-trum-canh-bao-kiem-ke.md |
 | T901 | Bản đồ repo: lệnh `hieu` (tóm tắt cả repo khoảng 150 dòng) và `viec "<mô tả>"` (gói ngữ cảnh cho một việc: file:dòng, file dính, bẫy, QD, skill, lệnh kiểm); SKILL.md tách phần dùng và phần dựng | Trum | 21/11/2026 | 2026-11-21-trum-ban-do-hieu-viec.md |
 | T900 | Tồn kho ban đầu: thêm hàng lọc cột dưới hàng tiêu đề bảng như các màn danh sách khác | Trum | 21/11/2026 | 2026-11-21-trum-so-ct-pos-hop-dong-bo.md |
 | T897 | Bán hàng POS tách 2 cột: Số chứng từ kế toán dãy riêng XB2610-0001, Mã hoá đơn FABi hiện #5 ký tự cuối; áp mọi nơi (form, điện thoại, tham chiếu Xuất kho định lượng, báo cáo) | Trum | 21/11/2026 | 2026-11-21-trum-so-ct-pos-hop-dong-bo.md |

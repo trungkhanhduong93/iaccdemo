@@ -136,6 +136,8 @@ export function apKhoPhieu(man: string, goc: Row[]): Row[] {
     .map(r => { const s = daSua.get(`${man}|${r.id}`); return s ? { ...r, ...s } : r })
 }
 /** Số lần kho phiếu đổi: màn tính từ phiếu (vd chi phí trang chủ) dùng để tính lại khi lập, sửa, xoá phiếu (T483) */
+/** Số lần kho phiếu đổi, đọc ngoài React: cache tính từ phiếu tự xoá khi số này đổi (T902) */
+export const banPhieuHienTai = () => banSo
 export const useBanPhieu = () => useSyncExternalStore(f => { nghe.add(f); return () => { nghe.delete(f) } }, () => banSo)
 
 /** Nhật ký trong phiên: của một phiếu (man, id), hoặc tất cả khi không truyền */

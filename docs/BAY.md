@@ -128,3 +128,10 @@ Lỗi đã từng làm mất thời gian, kèm cách tránh. Đọc trước khi
 - Hiện tượng: bật tắt hoặc sửa một công thức, rồi bấm Sửa: console báo `Maximum update depth exceeded`, màn đứng. Công thức chưa sửa lần nào thì bình thường.
 - Nguyên nhân: `useDsCongThuc` qua `apSua` trả object mới mỗi lần vẽ với dòng đã sửa. Effect nạp form để object đó trong phụ thuộc nên chạy lại liên tục, đồng thời xoá chữ đang nhập.
 - Cách tránh: effect nạp form phụ thuộc vào `id` và `location.key`, không phụ thuộc vào object dòng lấy từ `useDsCongThuc` hay `useDaXoa`. Kiểm form sửa phải có ca sửa cùng một dòng 2 lần.
+
+## Script Playwright sửa kho phiếu trong trình duyệt mà màn không đổi (T902)
+
+- Hiện tượng: script gọi `await import('/src/ui/generic/daXoa.ts')` rồi xoá phiếu, nhưng màn vẫn như cũ.
+- Nguyên nhân: (1) Vite đã nạp lại file sau khi sửa, app dùng `daXoa.ts?t=<số>`, script import URL trần nên ra một bản module khác, kho phiếu khác. (2) `page.goto` sang URL khác query (bỏ `?goi=S…`) làm trang tải lại, mất phiếu lập, xoá trong phiên.
+- Cách tránh: khởi động lại `npm run dev` trước khi chạy script import module. Chuyển màn bằng URL giữ nguyên query, chỉ đổi phần `#/…`.
+

@@ -22,6 +22,8 @@ import { soLieuKiemKe } from '../home/khoStandard'
 import { tonQuyTheoSo } from '../home/LichSuQuy'
 import { useChoGhiTang } from '../ccdc/GhiTangHangLoat'
 import { tinhToanTongQuan } from '../home/chiSo'
+import { canKiemKeCuoiThang, cnChuaKiemKe } from '../home/chi-phi-nvl'
+import { HopChotTonHt } from '../home/HopChotTonHt'
 
 const soKy = (k: KyKhoa) => k.nam * 100 + k.thang
 export const nhanKy = (k: KyKhoa) => `${k.thang}/${k.nam}`
@@ -148,10 +150,13 @@ const tenCh = (ids: string[]) => ids.length === CUA_HANG.length ? 'tất cả c�
  *  Tháng trước còn chưa khoá thì khoá luôn, vì phải khoá lần lượt */
 function HopKhoa({ id, ky, onDong }: { id: string; ky: KyKhoa; onDong: () => void }) {
   const { s, toast } = useSession()
+  const [moChot, setMoChot] = useState(false)
   const ids = [id]
   const cns = CUA_HANG.filter(c => c.id === id)
   const truoc: KyKhoa[] = []
   for (let k = kySau(khoaSoDenCua(id)); soKy(k) < soKy(ky); k = kySau(k)) truoc.push(k)
+  const canKk = canKiemKeCuoiThang(s, ky.thang)
+  const cnsChuaKk = cnChuaKiemKe(ky.thang, ids)
   const kk = soLieuKiemKe(ky.thang, new Set(cns.map(c => c.ten)))
   const tonQuy = tonQuyTheoSo(ky.thang, ids).reduce((a, r) => a + r.cuoi, 0)
   const cho = useChoGhiTang(soKy(ky))   // khoản chờ phân bổ chưa ghi tăng thẻ tới hết tháng cần khoá
@@ -159,8 +164,25 @@ function HopKhoa({ id, ky, onDong }: { id: string; ky: KyKhoa; onDong: () => voi
   const pbThang = tinhToanTongQuan(ky.thang === KY_MO.thang ? 'thang-nay' : 'thang-truoc', ids, s.cheDo, ky.thang).cpPhanBo
   // Dữ liệu mẫu (T317): mặc định còn bước chưa xong để thấy cảnh báo, link đi xử lý; bỏ bước Đồng bộ đủ doanh thu FABi (PhuongXT chốt 17/10/2026)
   const phieuCho: number = 3               // phiếu thu, chi FABi chưa map phương thức thanh toán
+  const kkXong = canKk ? cnsChuaKk.length === 0 : kk.chuaKiem.length === 0
+  const tenChuaKk = CUA_HANG.filter(c => cnsChuaKk.includes(c.id)).map(c => c.ten).join(', ')
   const buoc: { xong: boolean; ten: string; phu: string; to: string }[] = [
-    { xong: kk.chuaKiem.length === 0, ten: 'Kiểm kê cuối tháng', phu: kk.chuaKiem.length ? `Chưa kiểm kê: ${kk.chuaKiem.join(', ')}` : cns.length > 1 ? `Đủ ${cns.length} cửa hàng, lệch ${kk.thieu + kk.thua} mặt hàng` : `Đã kiểm kê, lệch ${kk.thieu + kk.thua} mặt hàng`, to: '/app/kho/5-1-10' },
+    {
+      xong: kkXong,
+      ten: 'Kiểm kê cuối tháng',
+      phu: canKk
+        ? cnsChuaKk.length
+          ? `Chưa kiểm kê: ${tenChuaKk}`
+          : cns.length > 1
+            ? `Đủ ${cns.length} cửa hàng, lệch ${kk.thieu + kk.thua} mặt hàng`
+            : `Đã kiểm kê, lệch ${kk.thieu + kk.thua} mặt hàng`
+        : kk.chuaKiem.length
+          ? `Chưa kiểm kê: ${kk.chuaKiem.join(', ')}`
+          : cns.length > 1
+            ? `Đủ ${cns.length} cửa hàng, lệch ${kk.thieu + kk.thua} mặt hàng`
+            : `Đã kiểm kê, lệch ${kk.thieu + kk.thua} mặt hàng`,
+      to: '/app/kho/5-1-10',
+    },
     { xong: true, ten: 'Phân bổ chi phí trong tháng', phu: `Đã phân bổ ${moneyD(pbThang)}`, to: '/app/ccdc/8-1-1' },
     { xong: cho.so === 0, ten: 'Chi phí chờ phân bổ chưa ghi tăng thẻ', phu: cho.so ? `Còn ${cho.so} khoản · ${moneyD(cho.tong)}` : 'Không còn khoản nào', to: '/app/ccdc/8-1-1' },
     { xong: true, ten: 'Đối chiếu tồn quỹ cuối tháng', phu: `Tồn quỹ ${moneyD(tonQuy)}`, to: `/app/trang-chu/lich-su-quy?quy=tat-ca&thang=${ky.thang}` },
@@ -181,12 +203,25 @@ function HopKhoa({ id, ky, onDong }: { id: string; ky: KyKhoa; onDong: () => voi
         {buoc.map(b => (
           <li key={b.ten} className={b.xong ? 'xong' : 'thieu'}>
             <span className="ks-tb-dau" aria-label={b.xong ? 'Đã xong' : 'Chưa xong'}><Icon n={b.xong ? 'check' : 'alert'} className="ic sm" /></span>
-            <b>{b.ten}</b><small className="muted">{b.phu}</small>
-            {!b.xong && <Link className="ks-tb-lam" to={b.to}>Làm ngay</Link>}
+            <div className="ks-tb-nd">
+              <b>{b.ten}</b>
+              <small className={!b.xong && b.ten === 'Kiểm kê cuối tháng' ? 'phu-cam' : 'muted'}>{b.phu}</small>
+            </div>
+            {!b.xong && (
+              b.ten === 'Kiểm kê cuối tháng' && canKk ? (
+                <div className="ks-tb-nut">
+                  <button type="button" className="btn sm nhat" onClick={() => setMoChot(true)}>Chốt theo tồn hệ thống</button>
+                  <Link to="/app/kho/5-1-10/moi" className="btn sm pri">Lập phiếu kiểm kê</Link>
+                </div>
+              ) : (
+                <Link className="ks-tb-lam" to={b.to}>Làm ngay</Link>
+              )
+            )}
           </li>
         ))}
       </ul>
       {soXong < buoc.length && <p className="ks-tb-canh">Còn bước chưa xong thì số liệu tháng {nhanKy(ky)} có thể chưa đủ. Vẫn khoá được, hệ thống ghi người khoá và thời điểm.</p>}
+      {moChot && <HopChotTonHt thang={ky.thang} cns={cnsChuaKk} onDong={() => setMoChot(false)} />}
     </ThongBao>
   )
 }

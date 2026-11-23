@@ -1244,4 +1244,14 @@ Trum chốt 21/11/2026 (T897, T898, T899).
 - Hộp đồng bộ dùng chung theo bố cục hộp đồng bộ IVT: thẻ từng cửa hàng có ô tích, ô tìm, Chọn tất cả, dòng Lưu ý tóm tắt kỳ. Màu, phông giữ của app (QD12).
 - Thu chi tab Chuyển quỹ không có nút Đồng bộ lại, vì FABi chỉ đẩy phiếu thu, chi.
 
-## QD115. Cảnh báo kiểm kê cuối tháng và chốt theo tồn hệ thống (đang soạn)
+## QD115. Cảnh báo kiểm kê cuối tháng và chốt theo tồn hệ thống (23/11/2026)
+
+Trum chốt 23/11/2026 (T902). Bản vẽ `backup/mau-T902/ban-ve.html`, spec `backup/spec-T902.md`.
+
+- Áp khi chi phí NVL tính theo kiểm kê định kỳ. Tháng đã qua, chưa khoá sổ mà còn cửa hàng chưa có phiếu kiểm kê thì cảnh báo ở màn Chi phí NVL (web, điện thoại) và ở bước Kiểm kê cuối tháng của hộp Khoá sổ. Tháng đang chạy chỉ ghi chú "tạm tính".
+- Cửa hàng chưa kiểm kê không tính chi phí NVL. Bảng ghi chip "Chưa kiểm kê", tổng ghi "Chưa gồm N cửa hàng chưa kiểm kê".
+- Hai cách xử lý: Lập phiếu kiểm kê, hoặc Chốt theo tồn hệ thống. Chốt tạo phiếu kiểm kê ngày cuối tháng, tồn thực tế bằng tồn hệ thống, diễn giải "Chốt theo tồn hệ thống, không kiểm thực tế". Không tạo ngầm lúc khoá sổ.
+- Hộp chốt hiện trước chi phí sẽ ra. Gói Standard không có xuất kho định lượng nên số này gần 0, hộp gợi ý đổi cách tính sang tổng chi phí mua hàng.
+- Bước kiểm kê chưa xong không chặn khoá sổ.
+
+Lý do: không có phiếu kiểm kê thì không có số chi phí đúng. Phiếu chốt để lại dấu vết ai chốt, lúc nào, và giữ một nguồn tồn cuối duy nhất là phiếu kiểm kê.

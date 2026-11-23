@@ -2,6 +2,9 @@
 
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
+## 23/11/2026
+- T902: Chi phí NVL theo kiểm kê định kỳ, tháng đã qua mà cửa hàng chưa có phiếu kiểm kê thì hiện cảnh báo vàng, cửa hàng đó chưa tính chi phí. Có 2 nút: Lập phiếu kiểm kê, Chốt theo tồn hệ thống. Hộp chốt hiện trước chi phí sẽ ra rồi tạo phiếu kiểm kê ngày cuối tháng. Hộp Khoá sổ có cùng 2 nút ở bước Kiểm kê cuối tháng. Có trên cả điện thoại.
+
 ## 21/11/2026
 - T897: Bán hàng, phiếu đồng bộ từ POS có số chứng từ kế toán riêng dạng XB2610-0001. Cột Mã hoá đơn mới ghi # và 5 ký tự cuối mã FABi, rê chuột xem đủ. Điện thoại, tham chiếu Xuất kho định lượng cũng ghi số XB.
 - T898: Hộp đồng bộ (máy POS, thu chi FABi, Tiện ích) làm lại: mỗi cửa hàng một thẻ có ô tích, ô tìm, Chọn tất cả, Xoá lựa chọn, dòng Lưu ý ghi số cửa hàng và kỳ.
