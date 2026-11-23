@@ -235,6 +235,9 @@ let ngayLamViecHt = ''
 export const ngayLamViecHienTai = () => ngayLamViecHt
 /** Ngày bắt đầu làm việc của đơn vị: ngày chọn lúc khởi tạo; đơn vị cũ chưa lưu thì lấy ngày lên sổ của cửa hàng khởi tạo, không có thì ngày đầu năm */
 export const ngayLamViec = (s: Session) => s.ngayLamViec?.[s.donVi] ?? s.cnThem?.[s.donVi]?.find(c => c.banDau)?.tuNgay ?? ngayDauNam(s)
+/** Ngày bắt đầu làm việc của một đơn vị bất kỳ theo mã, như ngayLamViec; cửa hàng chuyển đến đơn vị lên sổ từ ngày này (T906) */
+export const ngayLamViecDv = (s: Session, dv: string) =>
+  s.ngayLamViec?.[dv] ?? s.cnThem?.[dv]?.find(c => c.banDau)?.tuNgay ?? s.ngayDauNam?.[dv] ?? `01/01/${s.namTaiChinh?.[dv] ?? new Date().getFullYear()}`
 /** Các kỳ (tháng) của năm tài chính, từ tháng của ngày đầu năm, 12 tháng. so = yyyymm để so sánh */
 export function dsKyNam(s: Session): { nhan: string; so: number }[] {
   const [, mm, yy] = ngayDauNam(s).split('/').map(Number)

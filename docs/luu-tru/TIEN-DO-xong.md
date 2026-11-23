@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T906 | Trang Quản lý đơn vị kế toán `/don-vi` ở tầng tài khoản FABi: tab Đơn vị kế toán, tab Cửa hàng FABi (đã gán, chưa gán, mã POS), Chuyển đơn vị, Gán vào đơn vị; chỉ chuyển, bớt cửa hàng chưa có chứng từ tạo thủ công; lên sổ từ ngày bắt đầu làm việc của đơn vị nhận; lối vào ở menu đơn vị và menu avatar | dinhlanphuongipacc | 23/11/2026 | 2026-11-23-dinhlanphuongipacc-quan-ly-don-vi.md |
 | T905 | Điện thoại, Chi phí NVL xem một cửa hàng: nút Xem danh sách phiếu mua hàng thành nút viền cuối danh sách, không ghim đáy đè thanh tab; dòng phiếu mua bỏ số tiền hàng, chỉ giữ tổng tiền | Trum | 23/11/2026 | 2026-11-23-trum-nvl-dien-thoai-nut.md |
 | T904 | Màn Danh sách đơn vị (Xem tất cả đơn vị ở thanh trên): MST, tên, địa chỉ, cửa hàng, loại hình, gói dịch vụ; Chủ doanh nghiệp sửa tên, MST, địa chỉ, thêm, bớt cửa hàng FABi chưa gán; vai trò khác chỉ xem | dinhlanphuongipacc | 23/11/2026 | 2026-11-23-dinhlanphuongipacc-danh-sach-don-vi.md |
 | T903 | Bộ nguồn NotebookLM: 14 Google Docs chắt kiến thức iaccdemo (kế toán, phân hệ, định khoản, báo cáo, UI/UX, QD, bẫy, FE và BE dự kiến, quy trình team, tiện ích, tiến độ, hỏi đáp, changelog) trên Drive; làm mới khi Trum gõ "làm mới notebook" theo `docs/notebooklm/LAM-MOI.md` | Trum | 23/11/2026 | 2026-11-23-trum-bo-nguon-notebooklm.md |

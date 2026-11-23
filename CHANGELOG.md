@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 23/11/2026
+- T906: Trang Quản lý đơn vị kế toán, mở từ menu đơn vị hoặc menu avatar. Tab Đơn vị kế toán có nút Vào làm việc. Tab Cửa hàng FABi xem mọi cửa hàng của tài khoản, lọc đã gán, chưa gán, gán vào đơn vị, chuyển đơn vị. Chỉ chuyển hoặc bớt được cửa hàng chưa có chứng từ tạo thủ công. Cửa hàng lên sổ từ ngày bắt đầu làm việc của đơn vị nhận.
 - T905: Điện thoại, Chi phí NVL xem một cửa hàng: nút Xem danh sách phiếu mua hàng nằm cuối danh sách, không đè thanh tab dưới. Dòng phiếu mua chỉ hiện tổng tiền, bỏ tiền hàng.
 - T904: Thanh trên, menu đơn vị, "Xem tất cả đơn vị" mở màn Danh sách đơn vị: MST, tên, địa chỉ, cửa hàng, loại hình, gói dịch vụ. Chủ doanh nghiệp sửa được tên, MST, địa chỉ, thêm hoặc bớt cửa hàng FABi. Vai trò khác chỉ xem.
 - T902: Chi phí NVL theo kiểm kê định kỳ, tháng đã qua mà cửa hàng chưa có phiếu kiểm kê thì hiện cảnh báo vàng, cửa hàng đó chưa tính chi phí. Có 2 nút: Lập phiếu kiểm kê, Chốt theo tồn hệ thống. Hộp chốt hiện trước chi phí sẽ ra rồi tạo phiếu kiểm kê ngày cuối tháng. Hộp Khoá sổ có cùng 2 nút ở bước Kiểm kê cuối tháng. Có trên cả điện thoại.

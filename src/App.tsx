@@ -4,6 +4,7 @@ import { KhungApp } from './app/KhungApp'
 import { HomeRedirect, NotFound, ScreenRoute } from './app/Screen'
 import { Login, QuenMatKhau } from './modules/auth/Login'
 import { ChonDonVi } from './modules/auth/ChonDonVi'
+import { QuanLyDonVi } from './modules/don-vi/QuanLyDonVi'
 import { KhoiTao } from './modules/onboarding/KhoiTao'
 import { KhoiTaoFabi } from './modules/onboarding/KhoiTaoFabi'
 import { useLaMobile } from './ui/mobile/useLaMobile'
@@ -42,6 +43,7 @@ export default function App() {
           <Route path="/dang-nhap" element={<Login />} />
           <Route path="/quen-mat-khau" element={<QuenMatKhau />} />
           <Route path="/chon-don-vi" element={<ChonDonVi />} />
+          <Route path="/don-vi" element={<QuanLyDonVi />} />{/* Quản lý đơn vị kế toán, tầng tài khoản FABi (T906) */}
           <Route path="/khoi-tao" element={<KhoiTao />} />
           <Route path="/khoi-tao-fabi" element={<KhoiTaoFabi />} />
           <Route path="/app" element={<KhungApp />}>

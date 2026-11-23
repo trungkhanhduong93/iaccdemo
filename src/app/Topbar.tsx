@@ -46,7 +46,7 @@ export function Topbar({ onSearch }: { onSearch?: () => void }) {
           ))}
           <MenuSep />
           <MenuItem icon="plus" onClick={() => { dong(); themDv() }} desc="Kết nối cửa hàng FABi chưa dùng kế toán">Thêm đơn vị kế toán</MenuItem>
-          <MenuItem icon="swap" to="/app/he-thong/don-vi">Xem tất cả đơn vị</MenuItem>{/* Danh sách đơn vị (T904) */}
+          <MenuItem icon="doc" to="/don-vi">Quản lý đơn vị kế toán</MenuItem>{/* trang của tài khoản FABi (T906) */}
         </>}
       </Dropdown>
 
@@ -110,6 +110,7 @@ export function Topbar({ onSearch }: { onSearch?: () => void }) {
           <MenuSep />
           {s.goi !== 'S' && <MenuItem icon="layers" to="/app/he-thong/goi-thue-bao">Gói thuê bao</MenuItem>}   {/* gói Standard ẩn Gói thuê bao */}
           <MenuItem icon="swap" to="/chon-don-vi">Đổi đơn vị kế toán</MenuItem>
+          <MenuItem icon="doc" to="/don-vi" right={<small className="mh-n">{dsDonVi(s).length} đơn vị</small>}>Quản lý đơn vị kế toán</MenuItem>
           {s.goi !== 'S' && <MenuItem icon="users" to="/app/he-thong/nguoi-dung">Người sử dụng</MenuItem>}   {/* gói Standard mới không có Người dùng (T472) */}
           <MenuItem icon="cog" to="/app/he-thong/cau-hinh">Cấu hình kế toán</MenuItem>
           <MenuSep />

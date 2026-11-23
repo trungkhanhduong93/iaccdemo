@@ -3,7 +3,6 @@ import type { ModuleDef } from '../types'
 import { CauHinh, GoiThueBao, NguoiDung, PhanQuyen, ThongTinDonVi } from './HeThong'
 import { NhatKyThaoTac } from '../tien-ich/TienIch'
 import { KhoaSoStandard } from '../tong-hop/KhoaSoStandard'
-import { DanhSachDonVi } from './DanhSachDonVi'
 
 const heThong: ModuleDef = {
   key: 'he-thong', ten: 'Hệ thống', ngan: 'Hệ thống', icon: 'cog',
@@ -18,8 +17,6 @@ const heThong: ModuleDef = {
     { slug: 'khoa-so', ten: 'Khoá sổ', nhom: 'Cài đặt', goi: ['S', 'PL'], kind: 'custom', comp: KhoaSoStandard },
     // Gói thuê bao xuống tab cuối (T472); gói Standard ẩn tab, vẫn mở từ nút Nâng cấp, nhãn gói
     { slug: 'goi-thue-bao', ten: 'Gói thuê bao', nhom: 'Thuê bao', anTab: ['S'], kind: 'custom', comp: GoiThueBao },
-    // Danh sách đơn vị mở từ Xem tất cả đơn vị ở thanh trên, không có tab (T904)
-    { slug: 'don-vi', ten: 'Danh sách đơn vị', nhom: 'Quản trị', anTab: ['S', 'PL', 'PR'], kind: 'custom', comp: DanhSachDonVi },
     // Nhật ký thao tác xuống tab cuối cùng
     { slug: 'nhat-ky', ten: 'Nhật ký thao tác', nhom: 'Quản trị', can: ['X2'], kind: 'custom', comp: NhatKyThaoTac },
   ],

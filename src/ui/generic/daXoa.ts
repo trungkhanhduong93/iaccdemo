@@ -105,6 +105,13 @@ export function boPhieuMoi(man: string, id: string) {
   nghe.forEach(f => f())
 }
 
+/** Số phiếu lập tay trong phiên của một cửa hàng (theo mã hoặc tên), bỏ phiếu đã xoá; dùng khi chặn chuyển cửa hàng sang đơn vị khác (T906) */
+export function demPhieuMoiCuaHang(id: string, ten: string) {
+  let n = 0
+  for (const [man, ds] of phieuMoi) for (const r of ds) if ((r.cn === id || r.cn === ten || r.cuaHang === id) && !laDaXoa(man, r.id)) n++
+  return n
+}
+
 /** Phiếu đã có sửa trên form rồi lưu: danh sách hiện nội dung mới */
 export function suaPhieu(man: string, id: string, moi: Partial<Row>) {
   daSua.set(`${man}|${id}`, { ...daSua.get(`${man}|${id}`), ...moi })

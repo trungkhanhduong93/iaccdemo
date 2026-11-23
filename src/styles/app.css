@@ -50057,3 +50057,54 @@ body:has(.nxh-nen) .pop { z-index: 1001; }
 .dsdv-moi { margin-left: 8px; background: var(--tint); color: var(--blue); }
 .dsdv-trong { padding: 10px 12px; font-size: 12.5px; }
 .dsdv-chan { display: flex; justify-content: flex-end; gap: 8px; padding: 12px 16px; border-top: 1px solid var(--line); }
+
+/* ── Trang Quản lý đơn vị kế toán (T906) ── */
+.qldv { min-height: 100vh; background: var(--bg); display: flex; flex-direction: column; }
+.qldv-dau { height: 60px; flex: none; box-sizing: border-box; padding: 0 28px; background: var(--white); border-bottom: 1px solid var(--line); display: flex; align-items: center; gap: 16px; }
+.qldv-vach { width: 1px; height: 28px; background: var(--line); }
+.qldv-tk { display: flex; flex-direction: column; line-height: 1.25; }
+.qldv-tk small { font-size: 11.5px; color: var(--muted); }
+.qldv-tk b { color: var(--ink); }
+.qldv-than { flex: 1; min-height: 0; padding: 22px 28px; display: flex; flex-direction: column; gap: 16px; }
+.qldv-tieu-de { display: flex; align-items: flex-end; gap: 16px; }
+.qldv-tieu-de h1 { margin: 0 0 4px; font-size: 22px; font-weight: 800; color: var(--ink); }
+.qldv-tieu-de p { margin: 0; font-size: 13.5px; }
+.qldv-quyen { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 10px; border-radius: 14px; background: var(--tint); color: var(--blue); font-size: 12.5px; font-weight: 600; }
+.qldv-quyen.xem { background: var(--soft); color: var(--muted); }
+.qldv-bang { display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
+.qldv-tab { display: flex; gap: 24px; padding: 0 14px; border-bottom: 1px solid var(--line-2); }
+.qldv-tab button { padding: 12px 4px; border: 0; border-bottom: 2px solid transparent; background: none; font: inherit; font-weight: 600; color: var(--muted); cursor: pointer; }
+.qldv-tab button.on { border-bottom-color: var(--blue); color: var(--blue); font-weight: 700; }
+.qldv-bang .ds-toolbar-figma { padding: 12px 14px; }
+.qldv-chan { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-top: 1px solid var(--line-2); color: var(--muted); font-size: 13px; }
+.qldv-chan b { color: var(--ink); }
+.qldv-canh { display: inline-flex; align-items: center; gap: 6px; border: 0; background: none; padding: 0; font: inherit; color: var(--amber); cursor: pointer; }
+.qldv-canh:hover { text-decoration: underline; }
+.qldv-luu-y { display: inline-flex; align-items: center; gap: 6px; }
+.qldv-vao { background: var(--tint); color: var(--blue); border-color: transparent; font-weight: 600; }
+.qldv-dang-mo { display: inline-flex; align-items: center; height: 28px; padding: 0 8px; color: var(--muted); font-size: 12.5px; }
+.qldv-khoa { width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center; color: var(--faint); }
+.qldv-chip { display: inline-flex; gap: 6px; }
+.qldv-chip button { height: 32px; padding: 0 12px; border: 1px solid var(--line); border-radius: 16px; background: var(--white); font: inherit; font-size: 13px; font-weight: 600; color: var(--body); cursor: pointer; }
+.qldv-chip button.on { border-color: var(--blue); background: var(--tint); color: var(--blue); }
+.qldv-tt { display: inline-block; padding: 2px 9px; border-radius: 10px; font-size: 12px; font-weight: 600; }
+.qldv-tt.da { background: var(--green-t); color: var(--green); }
+.qldv-tt.chua { background: var(--amber-t); color: var(--amber); }
+.tbl tr.qldv-chua-gan td { background: var(--orange-t); }
+.qldv-hop { width: 580px; }
+.qldv-the-ch { display: flex; flex-direction: column; gap: 4px; padding: 12px; border-radius: 10px; background: var(--hdb-bg); color: var(--ink); }
+.qldv-the-ch > div { font-size: 12.5px; }
+.qldv-dam { color: var(--ink); font-weight: 600; }
+.qldv-ok { display: inline-flex; align-items: center; gap: 6px; color: var(--green); }
+.qldv-chon-dv { display: flex; flex-direction: column; gap: 8px; color: var(--ink); }
+.qldv-chon-dv button { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--white); font: inherit; text-align: left; cursor: pointer; }
+.qldv-chon-dv button > .grow { display: flex; flex-direction: column; min-width: 0; }
+.qldv-chon-dv button small { font-size: 11.5px; }
+.qldv-chon-dv button.on { border-color: var(--blue); background: var(--hdb-bg); }
+.qldv-radio { flex: none; width: 16px; height: 16px; border: 2px solid var(--line); border-radius: 50%; box-sizing: border-box; }
+.qldv-chon-dv button.on .qldv-radio { border-color: var(--blue); box-shadow: inset 0 0 0 3px var(--white); background: var(--blue); }
+.qldv-ngay { display: flex; flex-direction: column; gap: 4px; font-size: 12.5px; }
+.qldv-ngay > div { display: flex; align-items: center; gap: 10px; }
+.qldv-ngay-o { flex: none; min-width: 120px; height: 34px; padding: 0 10px; box-sizing: border-box; border: 1px solid var(--line); border-radius: 8px; background: var(--soft); display: inline-flex; align-items: center; color: var(--ink); font-size: 13.5px; font-variant-numeric: tabular-nums; }
+.qldv-ngay-o.trong { color: var(--faint); }
+.qldv-tom-tat { display: flex; flex-direction: column; gap: 4px; padding: 10px 12px; border-radius: 8px; background: var(--tint); color: var(--ink); font-size: 12.5px; line-height: 1.5; }
