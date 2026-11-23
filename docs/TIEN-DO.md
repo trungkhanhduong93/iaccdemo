@@ -11,6 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T911 | Skill bản đồ lên "siêu bản đồ" (học graphify): cache đồ thị, nhãn độ tin trong `viec`, lệnh `explain` cấp ký hiệu, nối mã việc/QD trong comment với code, hook nhắc mềm có giới hạn, sửa `lien-quan` lỗi mã hoá và gợi ý tên gần đúng | Trum | Đang làm | Sửa `tools/skill-ban-do-repo/` (`soi_repo.py`, `SKILL.md`, hook mới), `VERSION` lên 6 |
 | T908 | Sửa 2 điểm VÀNG sau T907: Xuất chế biến kéo NVL theo ĐVT của công thức (Trà đào theo Bình), thêm ĐVT Bình vào danh mục ĐVT | Trum | Đang làm | Sửa `kho/san-xuat.ts` (`keoNvlCb`), `danh-muc/data.ts` |
 | T893 | Form Sửa danh mục không lưu được thay đổi của dòng mẫu (chỉ lưu dòng thêm trong phiên, `CatalogScreen.tsx` dòng ~660). Nhập Excel T892 đã có lớp ghi đè `ghiDeCatalogRow` trong `danhMucStore.ts`, form Sửa có thể dùng lại | Trum | Chưa làm | Thấy khi làm T892 |
 | T882 | Tồn kho ban đầu trên điện thoại: danh sách thẻ, chọn nhiều, Thiết lập hàng loạt, Xoá | | Chờ | Trum dời sang phiên sau (18/11/2026). Mẫu `backup/mau-T879/Dt*.dc.html`, spec mục Việc T882 trong `backup/spec-T879-T882.md` |
