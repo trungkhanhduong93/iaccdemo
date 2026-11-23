@@ -105,7 +105,8 @@ export function keoNvlCb(tpMa: string, tpSl: number): DongSx[] {
   if (!ct || !tp) return []
   return ct.nvl.map(n => {
     const d = dongTrong(n.ma), slKh = tron3(n.sl * tpSl)
-    return { ...d, tpMa, tp: tp.ten, tpDvt: tp.dvt, tpSl, slKh, sl: slKh, tien: Math.round(slKh * d.gia) }
+    // Định lượng tính theo ĐVT của công thức (vd Bình), nên thành phẩm cũng ghi ĐVT đó (T908)
+    return { ...d, tpMa, tp: tp.ten, tpDvt: ct.dvt || tp.dvt, tpSl, slKh, sl: slKh, tien: Math.round(slKh * d.gia) }
   })
 }
 

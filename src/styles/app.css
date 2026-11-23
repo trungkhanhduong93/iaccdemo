@@ -50059,3 +50059,8 @@ td.xdl-cat > span { display: block; overflow: hidden; text-overflow: ellipsis; w
 .xdl-canh-bao b { color: var(--ink); }
 .xdl-canh-bao > span { font-weight: 600; }
 .xdl-luoi .tbl tbody tr.xdl-dong-loi td { background: var(--orange-t); }
+
+/* ── Bảng tiêu đề 2 tầng trong form toàn màn: hai hàng cùng màu, cột lẻ liền một khối (T908) ── */
+/* .fsf tô riêng hàng đầu #eef1f5 !important nên hàng cột phải tô theo, ô trống trên cột lẻ bỏ kẻ dưới */
+.fsf .tbl thead tr.tbl-nhom + tr.tbl-cot th { background: #eef1f5 !important; }
+.fsf .tbl thead tr.tbl-nhom th.trong { border-bottom: 0; }

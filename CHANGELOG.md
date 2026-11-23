@@ -6,6 +6,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 - T910: Báo cáo mới Tổng hợp mua hàng theo hàng hoá ở nhóm báo cáo Mua hàng: mỗi mặt hàng một dòng với số lượng, đơn giá bình quân, thành tiền, chiết khấu, thuế, tổng tiền. Bấm mã hàng mở Bảng kê chi tiết mua hàng ở tab mới, cùng kỳ, lọc sẵn mặt hàng đó.
 - T910: Bảng kê chi tiết mua hàng chỉ còn kiểu xem Chi tiết, bỏ nút Tổng hợp. Nút Bảng kê mua hàng ở trang chủ (web, điện thoại) mở báo cáo tổng hợp mới.
 - T910: Đầu mọi báo cáo, bấm tên nhóm trên đường dẫn (vd Báo cáo / Mua hàng) về đúng nhóm báo cáo đó.
+- T908: Xuất kho định lượng, bấm mã công thức mở công thức chế biến. Bảng tiêu đề 2 tầng trong form không còn tách màu ở cột #, Ghi chú, Xử lý. Xuất chế biến ghi đúng ĐVT của công thức (vd Bình). Danh mục ĐVT có thêm Bình.
 - T907: Bán hàng, Xuất kho định lượng làm lại. Danh sách bỏ dòng đếm phiếu, thêm cột Mã hoá đơn (# và 5 ký tự cuối), cột Ghi chú gọn một dòng. Chi tiết phiếu có đầu phiếu 2 nhóm như Xuất bán POS, lưới chia nhóm cột Món bán, Hàng hoá. Món không trừ được nguyên vật liệu ghi rõ lý do và có nút đi sửa.
 - T912: Kho gói Plus, Xuất điều chuyển và Nhập điều chuyển gom vào một tab Điều chuyển trên thanh tab, bên trong vẫn có hai tab con Xuất điều chuyển, Nhập điều chuyển.
 

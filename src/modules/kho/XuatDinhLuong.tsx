@@ -216,7 +216,7 @@ function ChiTietXuatDinhLuong({ sc, mod, row }: ScreenProps & { row?: PhieuXdl }
 
   // Lưới phẳng như mẫu Chi tiết tiêu hao: mỗi dòng một NVL của một món, phần Món bán lặp lại để lọc từng cột đúng
   const dongLuoi = useMemo<Row[]>(() => (row?.dong ?? []).flatMap((m, i) => {
-    const mon = { _mon: i, maCt: m.maCt ?? '', tenMon: m.ten, maMon: m.maFabi ? `FABi: ${m.maFabi}` : m.ma, dvtMon: m.dvt, slMon: m.sl, giaMon: m.gia, tienMon: m.tien }
+    const mon = { _mon: i, maCt: m.maCt ?? '', _ctId: m.ctId, tenMon: m.ten, maMon: m.maFabi ? `FABi: ${m.maFabi}` : m.ma, dvtMon: m.dvt, slMon: m.sl, giaMon: m.gia, tienMon: m.tien }
     if (!m.nvl.length) return [{ ...mon, id: `${i}`, ghiChu: m.lyDo?.text ?? '', _lyDo: m.lyDo }]
     return m.nvl.map((n, j) => ({ ...mon, id: `${i}-${j}`, tenNvl: n.ten, maNvl: n.ma, dvtNvl: n.dvt, soLo: '', slNvl: n.sl, giaNvl: n.gia, tienNvl: n.tien, ghiChu: n.lyDo?.text ?? '', _lyDo: n.lyDo }))
   }), [row])
@@ -261,7 +261,12 @@ function ChiTietXuatDinhLuong({ sc, mod, row }: ScreenProps & { row?: PhieuXdl }
   const soHoacTrong = (v: unknown) => (typeof v === 'number' ? money(v) : '')
   const cols: Col[] = [
     { k: 'stt', t: '#', w: 45, cls: 'dim' },
-    { k: 'maCt', t: 'Mã công thức', nhom: 'Món bán', w: 100, cls: 'code', r: r => r.maCt ? String(r.maCt) : r.tenMon ? <span className="dim">—</span> : '' },
+    {
+      k: 'maCt', t: 'Mã công thức', nhom: 'Món bán', w: 100, cls: 'code',
+      // Bấm mã mở công thức chế biến đó (T908)
+      r: r => r._ctId ? <button type="button" className="ds-link-so" title="Mở công thức chế biến" onClick={e => { e.stopPropagation(); nav(`${congThuc}/${String(r._ctId)}`) }}>{String(r.maCt)}</button>
+        : r.tenMon ? <span className="dim">—</span> : String(r.maCt ?? ''),   // dòng tổng: nhãn "Tổng cộng" không phải link
+    },
     { k: 'tenMon', t: 'Tên', nhom: 'Món bán', w: 180, r: r => r.tenMon ? tenMa(r.tenMon, r.maMon) : '' },
     { k: 'dvtMon', t: 'ĐVT', nhom: 'Món bán', c: true, w: 60 },
     { k: 'slMon', t: 'Số lượng', nhom: 'Món bán', num: true, w: 85, r: r => typeof r.slMon === 'number' ? soLuong(r.slMon) : '' },

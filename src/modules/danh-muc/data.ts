@@ -55,7 +55,7 @@ export const DON_VI_TINH: [string, string, string][] = [
   ['KET', 'Két', 'Bia, nước ngọt nhập hàng'], ['THUNG', 'Thùng', 'Đóng gói nhập hàng'], ['HOP', 'Hộp', 'Đồ hộp'],
   ['GOI', 'Gói', 'Gia vị, đồ khô'], ['BICH', 'Bịch', 'Đá, đồ khô'], ['BAO', 'Bao', 'Gạo, bột'],
   ['TUI', 'Túi', 'Đóng gói mang về'], ['CAN', 'Can', 'Dầu ăn, nước mắm'], ['KG', 'kg', 'Nguyên liệu tươi'],
-  ['G', 'g', 'Định lượng công thức'], ['LIT', 'Lít', 'Dầu ăn, sữa tươi'], ['ML', 'ml', 'Định lượng pha chế'],
+  ['G', 'g', 'Định lượng công thức'], ['LIT', 'Lít', 'Dầu ăn, sữa tươi'], ['BINH', 'Bình', 'Đồ uống pha sẵn theo bình'], ['ML', 'ml', 'Định lượng pha chế'],
   ['CON', 'Con', 'Hải sản, gia cầm'], ['QUA', 'Quả', 'Trái cây, trứng'], ['VI', 'Vỉ', 'Trứng'],
   ['KHAY', 'Khay', 'Thịt đóng khay'], ['MIENG', 'Miếng', 'Bánh, thịt cắt'], ['XIEN', 'Xiên', 'Món nướng'],
   ['CAI', 'Cái', 'Công cụ dụng cụ'], ['CHIEC', 'Chiếc', 'Công cụ dụng cụ'], ['BO', 'Bộ', 'Bộ dụng cụ, set'],

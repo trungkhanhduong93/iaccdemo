@@ -31,6 +31,7 @@ export interface DongMonXdl {
   gia: number        // đơn giá bán trên phiếu POS
   tien: number       // thành tiền bán
   maCt?: string      // mã công thức chế biến đã dùng
+  ctId?: string      // id công thức để mở màn Công thức chế biến (T908)
   maFabi?: string    // mã món FABi khi khác mã danh mục
   lyDo?: LyDoXdl     // món không trừ được NVL
   coCongThuc: boolean
@@ -79,7 +80,7 @@ export function useDsPhieuXdl(): PhieuXdl[] {
       const dong: DongMonXdl[] = dongCuaPhieu(p).map(m => {
         const maFabi = MA_FABI[m.ma]
         const chung = { ma: m.ma, ten: m.ten, dvt: m.dvt, sl: m.sl, gia: m.gia, tien: m.tien, maFabi }
-        const loi = (lyDo: LyDoXdl, maCt?: string): DongMonXdl => ({ ...chung, maCt, lyDo, coCongThuc: false, tienVon: 0, nvl: [] })
+        const loi = (lyDo: LyDoXdl, ct?: { ma: string; id: string }): DongMonXdl => ({ ...chung, maCt: ct?.ma, ctId: ct?.id, lyDo, coCongThuc: false, tienVon: 0, nvl: [] })
         if (maFabi && !hangCua(maFabi)) return loi({ loai: 2, text: 'Món trên FABi chưa khớp mã hàng trong danh mục' })
         const dsCt = CONG_THUC_CB.filter(c => c.spMa === m.ma && c.nvl.length)
         if (!dsCt.length) return loi({ loai: 1, text: 'Chưa có công thức chế biến' })
@@ -87,9 +88,9 @@ export function useDsPhieuXdl(): PhieuXdl[] {
         if (!ct) {
           const c = dsCt[0]
           return loi({ loai: 4, text: c.tt !== 'on' ? `Công thức ${c.ma} đang ngừng áp dụng`
-            : docNgay(c.ngay) > p.date ? `Công thức ${c.ma} áp dụng từ ${c.ngay}` : `Công thức ${c.ma} không áp dụng cho cửa hàng này` }, c.ma)
+            : docNgay(c.ngay) > p.date ? `Công thức ${c.ma} áp dụng từ ${c.ngay}` : `Công thức ${c.ma} không áp dụng cho cửa hàng này` }, c)
         }
-        if (ct.dvt && ct.dvt !== m.dvt) return loi({ loai: 3, text: `Công thức chỉ có ĐVT ${ct.dvt}, chưa có ${m.dvt}` }, ct.ma)
+        if (ct.dvt && ct.dvt !== m.dvt) return loi({ loai: 3, text: `Công thức chỉ có ĐVT ${ct.dvt}, chưa có ${m.dvt}` }, ct)
 
         const nvl: DongNvlXdl[] = ct.nvl.map(n => {
           const h = hangCua(n.ma)
@@ -106,7 +107,7 @@ export function useDsPhieuXdl(): PhieuXdl[] {
             lyDo: gia ? undefined : { loai: 5, text: 'NVL chưa có giá vốn, tiền vốn tạm ghi 0' },
           }
         })
-        return { ...chung, maCt: ct.ma, coCongThuc: true, tienVon: nvl.reduce((sum, item) => sum + item.tien, 0), nvl }
+        return { ...chung, maCt: ct.ma, ctId: ct.id, coCongThuc: true, tienVon: nvl.reduce((sum, item) => sum + item.tien, 0), nvl }
       })
 
       const tong = dong.reduce((sum, m) => sum + m.tienVon, 0)
