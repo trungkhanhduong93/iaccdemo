@@ -8,6 +8,10 @@ export type CuaHangFabi = { id: string; ten: string; khuVuc: string; donVi?: str
 export const CUA_HANG_FABI: CuaHangFabi[] = [
   ...CUA_HANG.map(c => ({ id: c.id, ten: c.ten, khuVuc: 'TP.HCM', donVi: 'pm' })),
   { id: 'gn1', ten: 'Cà phê Góc Nhỏ Tân Định', khuVuc: 'TP.HCM', donVi: 'gn' },
+  // Chuỗi Trà Lá: vài cửa hàng mẫu cho màn Danh sách đơn vị (T904), chưa có số liệu chứng từ
+  { id: 'tl1', ten: 'Trà Lá Nguyễn Văn Linh', khuVuc: 'TP.HCM', donVi: 'tl' },
+  { id: 'tl2', ten: 'Trà Lá Phú Mỹ Hưng', khuVuc: 'TP.HCM', donVi: 'tl' },
+  { id: 'tl3', ten: 'Trà Lá Thủ Đức', khuVuc: 'TP.HCM', donVi: 'tl' },
   { id: 'q7', ten: 'Phố Mây Quận 7', khuVuc: 'TP.HCM' },
   { id: 'gv', ten: 'Phố Mây Gò Vấp', khuVuc: 'TP.HCM' },
   { id: 'hk', ten: 'Phố Mây Hoàn Kiếm', khuVuc: 'Hà Nội' },
@@ -16,8 +20,17 @@ export const CUA_HANG_FABI: CuaHangFabi[] = [
 
 /** Cửa hàng FABi chưa dùng kế toán ở đơn vị nào, kể cả cửa hàng đã lên sổ thêm trong phiên.
  *  Đơn vị dùng thử từ FABi (fabi) là tài khoản FABi khác: chỉ có các cửa hàng Phố Mây, chưa dùng là cửa hàng bỏ tích lúc dùng thử */
-export const cuaHangChuaDung = (s: Pick<Session, 'cnThem' | 'donVi'>): CuaHangFabi[] => {
+export const cuaHangChuaDung = (s: Pick<Session, 'cnThem' | 'donVi' | 'cnBo'>): CuaHangFabi[] => {
   const daDung = (id: string) => Object.values(s.cnThem ?? {}).some(ds => ds.some(x => x.id === id))
   if (s.donVi === 'fabi') return CUA_HANG.filter(c => !(s.cnThem?.fabi ?? []).some(x => x.id === c.id)).map(c => ({ id: c.id, ten: c.ten, khuVuc: 'TP.HCM' }))
-  return CUA_HANG_FABI.filter(c => !c.donVi && !daDung(c.id))
+  return CUA_HANG_FABI.filter(c => (!c.donVi || daBo(s, c)) && !daDung(c.id)).map(({ donVi: _, ...c }) => c)
 }
+
+/** Cửa hàng có sẵn của đơn vị mẫu đã bớt ở màn Danh sách đơn vị (T904) */
+const daBo = (s: Pick<Session, 'cnBo'>, c: CuaHangFabi) => Boolean(c.donVi && s.cnBo?.[c.donVi]?.includes(c.id))
+
+/** Cửa hàng FABi đang thuộc một đơn vị: cửa hàng có sẵn trừ cửa hàng đã bớt, cộng cửa hàng lên sổ thêm (T904) */
+export const cuaHangCuaDv = (s: Pick<Session, 'cnThem' | 'cnBo'>, dv: string): CuaHangFabi[] => [
+  ...CUA_HANG_FABI.filter(c => c.donVi === dv && !daBo(s, c)),
+  ...(s.cnThem?.[dv] ?? []).map(c => ({ id: c.id, ten: c.ten, khuVuc: c.khuVuc, donVi: dv })),
+]

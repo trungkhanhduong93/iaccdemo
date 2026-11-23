@@ -46,7 +46,7 @@ export function Topbar({ onSearch }: { onSearch?: () => void }) {
           ))}
           <MenuSep />
           <MenuItem icon="plus" onClick={() => { dong(); themDv() }} desc="Kết nối cửa hàng FABi chưa dùng kế toán">Thêm đơn vị kế toán</MenuItem>
-          <MenuItem icon="swap" to="/chon-don-vi">Xem tất cả đơn vị</MenuItem>
+          <MenuItem icon="swap" to="/app/he-thong/don-vi">Xem tất cả đơn vị</MenuItem>{/* Danh sách đơn vị (T904) */}
         </>}
       </Dropdown>
 

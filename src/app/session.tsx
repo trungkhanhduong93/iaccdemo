@@ -46,6 +46,7 @@ export interface Session {
   dungThu?: Record<string, string>   // ngày bắt đầu dùng thử (dd/mm/yyyy) của đơn vị mới tạo từ FABi, thêm đơn vị (T158)
   ttDv?: Record<string, TtDonVi>   // thông tin kê khai từng đơn vị (T145)
   cnThem?: Record<string, CnThem[]>   // cửa hàng lên sổ thêm từ cửa hàng FABi theo từng đơn vị (T142)
+  cnBo?: Record<string, string[]>   // mã cửa hàng FABi có sẵn của đơn vị mẫu đã bớt khỏi đơn vị ở màn Danh sách đơn vị, về lại cửa hàng FABi chưa gán (T904)
   cnCongTy?: Record<string, Record<string, string>>   // công ty chọn lại cho cửa hàng ở Danh mục cửa hàng theo đơn vị; khoá mã cửa hàng, giá trị mã đơn vị; chưa đặt là đơn vị đang mở (T711)
   cachNvlDv?: Record<string, LichCachNvl[]>   // cách tính chi phí NVL gói Free theo đơn vị, chung mọi cửa hàng; mỗi lần đổi áp dụng từ kỳ đầu chưa khoá sổ (T767)
   dongBoThuChi?: Record<string, Record<string, boolean>>   // tự động đồng bộ phiếu thu, chi lập trên FABi theo đơn vị, từng cửa hàng (mã cửa hàng); chưa đặt là bật (T264)
@@ -219,8 +220,8 @@ export const gtgtTyLe = (s: Session) => loaiHinhDv(s, donViHienTai(s)) === 'hkd'
 /** Cửa hàng đang chọn trên thanh trên; undefined khi đang xem tất cả cửa hàng */
 export const cuaHangHienTai = (s: Session) => CUA_HANG.find(c => c.id === s.cuaHang)
 /** Cửa hàng của đơn vị đang làm việc: đơn vị mẫu có 3 cửa hàng mẫu; đơn vị mới từ FABi chỉ có cửa hàng đã chọn; cộng cửa hàng lên sổ thêm (T142) */
-export const dsCuaHang = (s: Pick<Session, 'donVi' | 'cnThem'>): { id: string; ten: string }[] => [
-  ...(DON_VI.some(d => d.id === s.donVi) ? CUA_HANG.map(c => ({ id: c.id, ten: c.ten })) : []),
+export const dsCuaHang = (s: Pick<Session, 'donVi' | 'cnThem' | 'cnBo'>): { id: string; ten: string }[] => [
+  ...(DON_VI.some(d => d.id === s.donVi) ? CUA_HANG.filter(c => !s.cnBo?.[s.donVi]?.includes(c.id)).map(c => ({ id: c.id, ten: c.ten })) : []),   // bớt ở Danh sách đơn vị thì ẩn (T904)
   ...(s.cnThem?.[s.donVi] ?? []).map(c => ({ id: c.id, ten: c.ten })),
 ]
 

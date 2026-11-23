@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T904 | Màn Danh sách đơn vị (Xem tất cả đơn vị ở thanh trên): MST, tên, địa chỉ, cửa hàng, loại hình, gói dịch vụ; Chủ doanh nghiệp sửa tên, MST, địa chỉ, thêm, bớt cửa hàng FABi chưa gán; vai trò khác chỉ xem | dinhlanphuongipacc | 23/11/2026 | 2026-11-23-dinhlanphuongipacc-danh-sach-don-vi.md |
 | T903 | Bộ nguồn NotebookLM: 14 Google Docs chắt kiến thức iaccdemo (kế toán, phân hệ, định khoản, báo cáo, UI/UX, QD, bẫy, FE và BE dự kiến, quy trình team, tiện ích, tiến độ, hỏi đáp, changelog) trên Drive; làm mới khi Trum gõ "làm mới notebook" theo `docs/notebooklm/LAM-MOI.md` | Trum | 23/11/2026 | 2026-11-23-trum-bo-nguon-notebooklm.md |
 | T902 | Cảnh báo chưa kiểm kê cuối tháng khi tính chi phí NVL theo kiểm kê định kỳ: khung cảnh báo ở Chi phí NVL web và điện thoại, hộp Chốt theo tồn hệ thống, 2 nút ở bước Kiểm kê cuối tháng của Khoá sổ (QD115) | Trum | 23/11/2026 | 2026-11-23-trum-canh-bao-kiem-ke.md |
 | T901 | Bản đồ repo: lệnh `hieu` (tóm tắt cả repo khoảng 150 dòng) và `viec "<mô tả>"` (gói ngữ cảnh cho một việc: file:dòng, file dính, bẫy, QD, skill, lệnh kiểm); SKILL.md tách phần dùng và phần dựng | Trum | 21/11/2026 | 2026-11-21-trum-ban-do-hieu-viec.md |
