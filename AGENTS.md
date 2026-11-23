@@ -91,6 +91,10 @@ Bắt buộc với mọi lần push, kể cả push chỉ sửa tài liệu (QD1
 
 Ai trong 3 người gõ "release" (hoặc "phát hành") thì đọc `docs/RELEASE.md`, làm đúng từng bước trong đó, không cần hỏi Trum.
 
+## Làm mới notebook
+
+Chỉ Trum gõ "làm mới notebook" mới làm. Đọc `docs/notebooklm/LAM-MOI.md`, làm đúng từng bước. Bộ nguồn NotebookLM nằm trong `docs/notebooklm/`, xuất bằng `python tools/xuat_notebooklm.py` (T903).
+
 ## Cuối phiên
 
 Làm cả khi bỏ dở giữa chừng:
@@ -130,4 +134,5 @@ Làm cả khi bỏ dở giữa chừng:
 | `docs/TRIEN-KHAI.md` | Khi đụng build, robot, deploy, dữ liệu sinh từ Excel |
 | `docs/IACC-Cloud-Chi-Tiet-He-Thong.xlsx` | Báo cáo chi tiết toàn bộ tính năng, màn hình, mẫu in, tiến độ task |
 | `docs/RELEASE.md` | Khi có người gõ "release" hoặc "phát hành" |
+| `docs/notebooklm/LAM-MOI.md` | Khi Trum gõ "làm mới notebook" |
 | `CHANGELOG.md` | Khi cần biết bản online có gì mới |
