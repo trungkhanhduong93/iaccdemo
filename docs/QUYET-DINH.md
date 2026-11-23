@@ -1243,3 +1243,5 @@ Trum chốt 21/11/2026 (T897, T898, T899).
 - Mọi nơi nhắc tới phiếu bán POS (form, điện thoại, tham chiếu Xuất kho định lượng, báo cáo) dùng số XB làm số chứng từ.
 - Hộp đồng bộ dùng chung theo bố cục hộp đồng bộ IVT: thẻ từng cửa hàng có ô tích, ô tìm, Chọn tất cả, dòng Lưu ý tóm tắt kỳ. Màu, phông giữ của app (QD12).
 - Thu chi tab Chuyển quỹ không có nút Đồng bộ lại, vì FABi chỉ đẩy phiếu thu, chi.
+
+## QD115. Cảnh báo kiểm kê cuối tháng và chốt theo tồn hệ thống (đang soạn)
