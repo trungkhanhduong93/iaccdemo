@@ -1,0 +1,93 @@
+{
+  "thu_muc": {
+    "ten": "IACC Cloud – NotebookLM",
+    "id": "1Nv7Vy8MzGiWIprZEWNCXmjiNjnyK6cWm"
+  },
+  "lan_xuat": "2941610 23/11/2026",
+  "file": [
+    {
+      "so": "01",
+      "file": "01-tong-quan.md",
+      "google_doc": "IACC Cloud – 01. Tổng quan sản phẩm",
+      "id": "1l0KiuWi5xCnrhxwG3FjLWrwt-1SC9WVthOGmIEABD3A"
+    },
+    {
+      "so": "02",
+      "file": "02-nguyen-ly-ke-toan.md",
+      "google_doc": "IACC Cloud – 02. Nguyên lý kế toán",
+      "id": "1c0faF1RsZQQX12P1jEJ7JOPfKl8Z2BTRH1gope7TKQQ"
+    },
+    {
+      "so": "03",
+      "file": "03-phan-he-man-hinh.md",
+      "google_doc": "IACC Cloud – 03. Phân hệ và màn hình",
+      "id": "1X_X8Yvud0r5jcgiwONZ5g7O4KuqsE0kgMqkuq5lSxX4"
+    },
+    {
+      "so": "04",
+      "file": "04-chung-tu-dinh-khoan.md",
+      "google_doc": "IACC Cloud – 04. Chứng từ và định khoản",
+      "id": "1wEgy82MffTx0g617dQfu2PZcQXe6RGYhnT71niUY-Oc"
+    },
+    {
+      "so": "05",
+      "file": "05-bao-cao-mau-in.md",
+      "google_doc": "IACC Cloud – 05. Báo cáo và mẫu in",
+      "id": "1BvWQZXZ8v45HEoj8LGhBGDSkYv8Dj58xHqPXpUBgDpE"
+    },
+    {
+      "so": "06",
+      "file": "06-giao-dien-ux.md",
+      "google_doc": "IACC Cloud – 06. Giao diện và UX",
+      "id": "1caJ_8MQqYKiG-Wat_z58q9E3jWm_1y3qxeKbg553Opo"
+    },
+    {
+      "so": "07",
+      "file": "07-quyet-dinh.md",
+      "google_doc": "IACC Cloud – 07. Quyết định QD",
+      "id": "1l2uZc4Bs9c4AtYg95dZGHmH1dCPW-esBlia8iFp88m0"
+    },
+    {
+      "so": "08",
+      "file": "08-bay-ky-thuat.md",
+      "google_doc": "IACC Cloud – 08. Bẫy kỹ thuật",
+      "id": "1K2jEM6CK5IaPpyfuRCtkLKle0l-4N0QXbSoMkvqsm48"
+    },
+    {
+      "so": "09",
+      "file": "09-kien-truc-fe-be.md",
+      "google_doc": "IACC Cloud – 09. Kiến trúc FE và BE dự kiến",
+      "id": "1ZFM7G-cg1NM7B1I6jnY_BNaO5f3QZbgPi7CfGIJryeA"
+    },
+    {
+      "so": "10",
+      "file": "10-quy-trinh-team.md",
+      "google_doc": "IACC Cloud – 10. Quy trình team",
+      "id": "1rH6ZAm6G6kuB33lIqB51NislAIUwXEhLT2xh75LDO6k"
+    },
+    {
+      "so": "11",
+      "file": "11-tien-ich.md",
+      "google_doc": "IACC Cloud – 11. Tiện ích và hệ thống",
+      "id": "1wQyzoB4or5PFHeRLwCom_Li8rWgigoGRztAUDRWfIOc"
+    },
+    {
+      "so": "12",
+      "file": "12-tien-do-viec.md",
+      "google_doc": "IACC Cloud – 12. Tiến độ việc",
+      "id": "1KWx9GwruRwM5yjZoffBcKdtFaExT3yAx7aBlDXmO1FE"
+    },
+    {
+      "so": "13",
+      "file": "13-hoi-dap.md",
+      "google_doc": "IACC Cloud – 13. Hỏi đáp mẫu",
+      "id": "1TeQif9vIeMe8YoIe91Ig3iplLhQmBvF1n8H2gFCcxy4"
+    },
+    {
+      "so": "14",
+      "file": "14-nhat-ky-thay-doi.md",
+      "google_doc": "IACC Cloud – 14. Nhật ký thay đổi",
+      "id": "1NWYmAS5RcHBR-0bGMCNo_tX4-lB7m4RHgLe2n9DyeY0"
+    }
+  ]
+}
