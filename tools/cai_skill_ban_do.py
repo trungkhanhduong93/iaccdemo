@@ -48,6 +48,7 @@ def khoi_luat(file_luat: Path) -> str:
             f'- **Repo git chưa quen** → chạy `python "{s}" hieu` trước khi đọc file nào (khoảng 100–150 dòng, nắm cả repo).',
             f'- **Bắt đầu một việc sửa code** → chạy `python "{s}" viec "<mô tả>"`: chỗ sửa file:dòng, file dính, QD, bẫy, skill, lệnh kiểm. Giao agent khác thì dán khối này vào spec.',
             f'- **Sắp sửa file chưa rõ dính tới đâu** → chạy `python "{s}" lien-quan <file>` (hoặc `vung <thư mục>`) trước khi mở file khác. Chỉ mở file nó chỉ ra, bỏ qua "lõi chung" và vùng "không dính".',
+            f'- **Sắp đổi tên, tham số một hàm hay thành phần** → chạy `python "{s}" explain <tên>`, sửa đủ mọi file [import] nó in. Gặp mã việc, QD lạ → `ma <mã>`.',
             '- Repo có `tools/ban_do.py` → dùng nó theo luật của repo. Lệnh `don` chỉ chạy khi người dùng gọi ("dọn rác repo").']
     if file_luat.parent.name == '.gemini' and sys.platform == 'win32':
         wsl = '/mnt/' + s[0].lower() + s[2:]
@@ -78,6 +79,51 @@ def sua_luat(them: bool):
             print(f'{"Thêm" if them else "Gỡ"} mục luật: {f}')
 
 
+DAU_HOOK = 'nhac_ban_do.py'
+
+
+def ds_settings() -> list:
+    """settings.json của Claude Code trên máy: ~/.claude, thư mục CLAUDE_CONFIG_DIR, mọi hồ sơ Orca."""
+    import os
+    ds = [NHA / '.claude' / 'settings.json']
+    if os.environ.get('CLAUDE_CONFIG_DIR'):
+        ds.append(Path(os.environ['CLAUDE_CONFIG_DIR']) / 'settings.json')
+    ds += sorted((NHA / 'AppData' / 'Roaming' / 'orca' / 'claude-profiles').glob('*/home/settings.json'))
+    return [f for f in dict.fromkeys(p.resolve() for p in ds) if f.parent.exists()]
+
+
+def sua_hook(them: bool):
+    for f in ds_settings():
+        sua_hook_1(f, them)
+
+
+def sua_hook_1(SETTINGS: Path, them: bool):
+    """Hook nhắc dùng bản đồ (T911) vào một settings.json, chạy ở mọi repo. Sao lưu trước khi sửa."""
+    import json
+    cu = SETTINGS.read_text(encoding='utf-8') if SETTINGS.exists() else '{}'
+    try:
+        j = json.loads(cu or '{}')
+    except ValueError:
+        print(f'{SETTINGS} không đọc được JSON, bỏ qua bước thêm hook nhắc.')
+        return
+    ds = j.setdefault('hooks', {}).setdefault('PreToolUse', [])
+    ds[:] = [m for m in ds if DAU_HOOK not in json.dumps(m)]
+    if them:
+        f = (DICH / 'scripts' / DAU_HOOK).as_posix()
+        ds.append({'matcher': 'Grep|Glob|Bash', 'hooks': [{'type': 'command', 'timeout': 5, 'command':
+                   f'python -c "import os,runpy;f=r\'{f}\';os.path.isfile(f) and runpy.run_path(f,run_name=\'__main__\')"'}]})
+    if not ds:
+        del j['hooks']['PreToolUse']
+    if not j['hooks']:
+        del j['hooks']
+    moi = json.dumps(j, ensure_ascii=False, indent=2) + '\n'
+    if json.loads(moi) != json.loads(cu or '{}'):
+        if SETTINGS.exists():
+            shutil.copy2(SETTINGS, SETTINGS.with_name('settings.json.bak-ban-do-' + time.strftime('%Y%m%d-%H%M%S')))
+        SETTINGS.write_text(moi, encoding='utf-8')
+        print(f'{"Thêm" if them else "Gỡ"} hook nhắc dùng bản đồ: {SETTINGS}')
+
+
 def cai(ep: bool):
     tt = trang_thai()
     if tt == 'ban-rieng' and not ep:
@@ -91,6 +137,7 @@ def cai(ep: bool):
     DAU_CAI.write_text(str(phien_ban_goi()), encoding='utf-8')
     TU_CHOI.unlink(missing_ok=True)
     sua_luat(them=True)
+    sua_hook(them=True)
     print(f'Đã cài bản {phien_ban_goi()} vào {DICH}. Mở phiên agent mới để luật có hiệu lực.')
 
 
@@ -118,6 +165,7 @@ def cap_nhat():
 
 def go():
     sua_luat(them=False)
+    sua_hook(them=False)
     if DAU_CAI.exists():
         shutil.rmtree(DICH)
         print(f'Đã gỡ {DICH}')

@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T911 | Skill bản đồ lên bản 6 "siêu bản đồ", học từ graphify: cache kết quả đọc file, `viec` nhanh từ 5,86 xuống 2,65 giây và giữ độ trúng 17/20; nhãn độ tin; lệnh `explain`, `ma`, `do`; hook nhắc dùng bản đồ; cài lên máy và mọi hồ sơ Orca | Trum | 24/11/2026 | `docs/nhat-ky/2026-11-24-trum-sieu-ban-do.md` |
 | T910 | Báo cáo Tổng hợp mua hàng theo hàng hoá (mã 4.2.8) ở nhóm báo cáo Mua hàng: cột như Bảng kê chi tiết mua hàng, bỏ ngày, số phiếu, nhà cung cấp; mã hàng là liên kết mở Bảng kê chi tiết mua hàng 4.2.7 ở tab mới, cùng kỳ, lọc theo mặt hàng; Bảng kê chi tiết mua hàng 4.2.7 bỏ kiểu xem Tổng hợp (cờ `chiChiTiet`); đường dẫn đầu báo cáo bấm tên nhóm về nhóm báo cáo | dinhlanphuongipacc | 24/11/2026 | 2026-11-24-dinhlanphuongipacc-tong-hop-mua-theo-hang.md |
 | T908 | Sửa 2 điểm VÀNG sau T907: Xuất chế biến kéo NVL theo ĐVT của công thức, thêm ĐVT Bình. Mã công thức ở Xuất kho định lượng bấm mở công thức. Tiêu đề 2 tầng trong form liền khối | Trum | 24/11/2026 | `2026-11-24-trum-sua-vang-t907.md` |
 | T907 | Xuất kho định lượng làm lại theo mẫu Trum chốt: danh sách cân cột, bỏ dòng đếm phiếu, thêm cột Mã hoá đơn #5 ký tự cuối; chi tiết phiếu đầu phiếu 2 nhóm như Xuất bán POS, lưới phẳng nhóm cột Món bán, Hàng hoá, món không xuất được ghi lý do (5 lý do) và cột Xử lý, dòng tổng 4 cột | Trum | 24/11/2026 | `2026-11-24-trum-xuat-kho-dinh-luong.md` |

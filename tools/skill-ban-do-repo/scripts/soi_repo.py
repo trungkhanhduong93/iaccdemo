@@ -7,12 +7,19 @@ Lệnh:
   lien-quan <file>   file này dùng gì, ai dùng nó, CSS của nó, hay sửa cùng file nào
   vung <thư mục>     thư mục dính với vùng nào, vùng nào bỏ qua được
   don [--chuyen]     phân loại XANH/VÀNG/ĐỎ, ghi báo cáo ra <cha repo>/_can-xoa/; --chuyen mới chuyển file XANH
+  explain <tên>      hàm, màn, kiểu: định nghĩa ở đâu, file nào dùng, nhãn [import]/[chữ] (T911)
+  ma <mã>            mã việc, QD (T907, QD21): code, CSS, tài liệu, commit nào nhắc tới (T911)
+  do [-n 20]         đo viec trên các commit gần nhất: độ trúng top 3, top 6, thời gian (T911)
 
 Không bao giờ xoá file. Chạy trong repo (cwd) hoặc truyền --repo.
+Kết quả đọc file lưu ở .git/soi-repo-cache.pickle, lần sau chỉ đọc lại file đã đổi (T911).
 """
 import argparse
+import hashlib
 import json
 import os
+import pickle
+import posixpath
 import re
 import subprocess
 import sys
@@ -23,6 +30,7 @@ from pathlib import Path
 
 if sys.platform == 'win32':
     sys.stdout.reconfigure(encoding='utf-8')
+    sys.stderr.reconfigure(encoding='utf-8')
 
 DUOI_CODE = ('.ts', '.tsx', '.js', '.jsx', '.mjs', '.cjs', '.py', '.vue', '.svelte')
 DUOI_CHU = DUOI_CODE + ('.css', '.scss', '.html', '.md', '.json', '.yml', '.yaml', '.toml', '.txt', '.ps1', '.sh', '.gs')
@@ -61,6 +69,63 @@ def doc(p):
         return ''
 
 
+# ── Cache (T911): kết quả đọc từng file, khoá theo mtime + cỡ file, nằm trong .git nên không bị commit ──
+
+PHIEN_BAN_CACHE = 1   # đổi cách tính một loại kết quả thì tăng số này
+
+
+class Kho:
+    def __init__(self):
+        self.goc = self.duong = None
+        self.du_lieu, self.ban = {}, False
+
+    def mo(self, goc):
+        if self.goc == goc:
+            return
+        self.goc = goc
+        gp = git(goc, 'rev-parse', '--git-path', 'soi-repo-cache.pickle').strip()
+        self.duong = (goc / gp) if gp else None
+        try:
+            d = pickle.loads(self.duong.read_bytes())
+            self.du_lieu = d['f'] if d.get('v') == PHIEN_BAN_CACHE else {}
+        except Exception:   # chưa có cache hoặc cache hỏng: dựng lại
+            self.du_lieu = {}
+
+    def lay(self, p, loai, ham):
+        """ham(text) -> kết quả; chỉ đọc file khi file đổi từ lần trước."""
+        try:
+            st = p.stat()
+        except OSError:
+            return ham('')
+        k, khoa = str(p), (st.st_mtime_ns, st.st_size)
+        o = self.du_lieu.get(k)
+        if not o or o[0] != khoa:
+            o = self.du_lieu[k] = (khoa, {})
+        if loai not in o[1]:
+            o[1][loai] = ham(doc(p))
+            self.ban = True
+        return o[1][loai]
+
+    def luu(self):
+        if self.ban and self.duong:
+            tam = self.duong.with_suffix('.tmp')
+            tam.write_bytes(pickle.dumps({'v': PHIEN_BAN_CACHE, 'f': self.du_lieu}, protocol=pickle.HIGHEST_PROTOCOL))
+            os.replace(tam, self.duong)
+
+
+KHO = Kho()
+
+
+def dau_dung(goc):
+    """Ghi lúc vừa chạy bản đồ ở repo này; hook nhac_ban_do.py đọc để biết agent đã dùng bản đồ chưa."""
+    try:
+        d = Path.home() / '.claude' / '.soi-repo-dung'
+        d.mkdir(parents=True, exist_ok=True)
+        (d / hashlib.md5(goc.resolve().as_posix().lower().encode()).hexdigest()).write_text(str(time.time()))
+    except OSError:
+        pass
+
+
 def khop(rel, mau_ds):
     ten = rel.rsplit('/', 1)[-1]
     return any(fnmatch(rel, m) or fnmatch(ten, m) for m in mau_ds)
@@ -80,67 +145,73 @@ RE_HTML = re.compile(r'''<(?:script|link)[^>]+(?:src|href)=["']([^"'#?]+)''')
 RE_CSS_IMPORT = re.compile(r"""@import\s+(?:url\()?['"]([^'"]+)['"]""")
 
 
-def giai_js(goc, tu_file, dich, ton_tai):
+def giai_js(tu_rel, dich, ton_tai):
+    """tu_rel, kết quả: đường dẫn posix tính từ gốc repo."""
     if dich.startswith('@/'):
-        co_so = goc / 'src' / dich[2:]
+        co_so = 'src/' + dich[2:]
     elif dich.startswith('.'):
-        co_so = tu_file.parent / dich
+        co_so = posixpath.join(posixpath.dirname(tu_rel), dich)
     else:
         return None
-    co_so = Path(os.path.normpath(co_so))
+    co_so = posixpath.normpath(co_so)
+    if co_so.startswith('..'):
+        return None
     for duoi in ('', '.ts', '.tsx', '.js', '.jsx', '.mjs', '.vue', '.css', '/index.ts', '/index.tsx', '/index.js'):
-        rel = Path(str(co_so) + duoi).relative_to(goc).as_posix() if str(co_so).startswith(str(goc)) else None
-        if rel in ton_tai:
-            return rel
+        if co_so + duoi in ton_tai:
+            return co_so + duoi
     return None
 
 
-def giai_py(goc, tu_file, mod, ton_tai):
+def giai_py(tu_rel, mod, ton_tai):
+    thu_muc = posixpath.dirname(tu_rel)
     if mod.startswith('.'):
         cham = len(mod) - len(mod.lstrip('.'))
-        co_so = tu_file.parent
+        co_so = thu_muc
         for _ in range(cham - 1):
-            co_so = co_so.parent
-        phan = mod.lstrip('.').split('.') if mod.lstrip('.') else []
-        ung_vien = [co_so.joinpath(*phan)] if phan else []
+            co_so = posixpath.dirname(co_so)
+        phan = mod.lstrip('.').replace('.', '/')
+        ung_vien = [posixpath.join(co_so, phan)] if phan else []
     else:
-        phan = mod.split('.')
-        ung_vien = [goc.joinpath(*phan), tu_file.parent.joinpath(*phan)]
+        phan = mod.replace('.', '/')
+        ung_vien = [phan, posixpath.join(thu_muc, phan)]
     for c in ung_vien:
-        for p in (Path(str(c) + '.py'), c / '__init__.py'):
-            try:
-                rel = p.relative_to(goc).as_posix()
-            except ValueError:
-                continue
-            if rel in ton_tai:
-                return rel
+        c = posixpath.normpath(c)
+        for p in (c + '.py', c + '/__init__.py'):
+            if p in ton_tai:
+                return p
     return None
+
+
+def import_tho(rel, txt):
+    """Đích import viết trong file, chưa giải ra đường dẫn: [(kiểu, chuỗi)]."""
+    if rel.endswith('.py'):
+        return [('py', a or b) for a, b in RE_PY.findall(txt)]
+    if rel.endswith('.html'):
+        return [('js', m if m.startswith(('.', '/')) else './' + m) for m in RE_HTML.findall(txt) if '://' not in m and not m.startswith('/')]
+    if rel.endswith(('.css', '.scss')):
+        return [('js', m if m.startswith('.') else './' + m) for m in RE_CSS_IMPORT.findall(txt)]
+    return [('js', m) for m in RE_JS.findall(txt)]
+
+
+_DO_THI = {}
 
 
 def dung_do_thi(goc, ds_file):
+    khoa = (str(goc), len(ds_file))
+    if khoa in _DO_THI:
+        return _DO_THI[khoa]
+    KHO.mo(goc)
     ton_tai = set(ds_file)
     ra, vao = defaultdict(set), defaultdict(set)
     for rel in ds_file:
         if not rel.endswith(DUOI_CODE + ('.css', '.scss', '.html')):
             continue
-        p = goc / rel
-        txt = doc(p)
-        dich_ds = []
-        if rel.endswith('.py'):
-            for a, b in RE_PY.findall(txt):
-                d = giai_py(goc, p, a or b, ton_tai)
-                d and dich_ds.append(d)
-        elif rel.endswith('.html'):
-            dich_ds = [giai_js(goc, p, m if m.startswith(('.', '/')) else './' + m, ton_tai)
-                       for m in RE_HTML.findall(txt) if '://' not in m and not m.startswith('/')]
-        elif rel.endswith(('.css', '.scss')):
-            dich_ds = [giai_js(goc, p, m if m.startswith('.') else './' + m, ton_tai) for m in RE_CSS_IMPORT.findall(txt)]
-        else:
-            dich_ds = [giai_js(goc, p, m, ton_tai) for m in RE_JS.findall(txt)]
-        for d in dich_ds:
+        for kieu, m in KHO.lay(goc / rel, 'imp', lambda t, r=rel: import_tho(r, t)):
+            d = giai_py(rel, m, ton_tai) if kieu == 'py' else giai_js(rel, m, ton_tai)
             if d and d != rel:
                 ra[rel].add(d)
                 vao[d].add(rel)
+    _DO_THI[khoa] = ra, vao
     return ra, vao
 
 
@@ -162,19 +233,41 @@ RE_MUC_CSS = re.compile(r'/\*\s*[─═]+\s*(.*?)\s*[─═]*\s*\*/')
 def chi_muc_css(goc, ds_file):
     """class -> [(file css, dòng, mục)]"""
     bang = defaultdict(list)
+    KHO.mo(goc)
     for rel in ds_file:
-        if not rel.endswith(('.css', '.scss')):
-            continue
-        muc = ''
-        for i, l in enumerate(doc(goc / rel).splitlines(), 1):
-            m = RE_MUC_CSS.search(l)
-            if m:
-                muc = m.group(1)
-                continue
-            if '{' in l:
-                for c in set(RE_CLASS_DN.findall(l.split('{')[0])):
-                    bang[c].append((rel, i, muc))
+        if rel.endswith(('.css', '.scss')):
+            for c, i, muc in KHO.lay(goc / rel, 'css_cls', class_css):
+                bang[c].append((rel, i, muc))
     return bang
+
+
+def class_css(txt):
+    kq, muc = [], ''
+    for i, l in enumerate(txt.splitlines(), 1):
+        m = RE_MUC_CSS.search(l)
+        if m:
+            muc = m.group(1)
+            continue
+        if '{' in l:
+            kq += [(c, i, muc) for c in set(RE_CLASS_DN.findall(l.split('{')[0]))]
+    return kq
+
+
+def muc_css(txt):
+    """[(dòng, tiêu đề mục)] của file CSS."""
+    return [(i, m.group(1)) for i, l in enumerate(txt.splitlines(), 1) for m in [RE_MUC_CSS.search(l)] if m]
+
+
+# Mã việc, quyết định nhắc trong code, comment: T907, QD21, ADR-3, RFC12, kiểu Jira ABC-123 (T911)
+RE_MA = re.compile(r'\b(?:T|QD|ADR|RFC)-?\d{2,4}\b|\b[A-Z]{2,6}-\d{1,5}\b')
+
+
+def goi_y_file(rel, ds):
+    """File gần đúng khi gõ sai đường dẫn: cùng tên file trước, rồi tên giống."""
+    import difflib
+    ten = rel.rsplit('/', 1)[-1].lower()
+    cung = [f for f in ds if f.rsplit('/', 1)[-1].lower() == ten]
+    return cung[:5] or difflib.get_close_matches(rel, ds, n=5, cutoff=0.5)
 
 
 def class_trong_file(txt):
@@ -192,7 +285,8 @@ def lenh_lien_quan(a):
     ds = ds_file_git(goc)
     rel = Path(a.file).resolve().relative_to(goc).as_posix() if Path(a.file).is_absolute() or (Path.cwd() / a.file).exists() else a.file.replace('\\', '/')
     if rel not in ds:
-        sys.exit(f'Không thấy {rel} trong git ls-files.')
+        gy = goi_y_file(rel, ds)
+        sys.exit(f'Không thấy {rel} trong git ls-files.' + (' Ý bạn là: ' + ', '.join(gy) if gy else ''))
     ra, vao = dung_do_thi(goc, ds)
     loi = {f for f, s in vao.items() if len(s) >= NGUONG_LOI}
 
@@ -221,6 +315,10 @@ def lenh_lien_quan(a):
             print('CSS:')
             for (f, m), n in muc.most_common(6):
                 print(f'  {f} [{m}] ({n} class)')
+
+    ma = Counter(RE_MA.findall(doc(goc / rel)))
+    if ma:
+        print('Mã việc, QD nhắc trong file (tra bằng: ma <mã>): ' + ', '.join(f'{m} ({n})' for m, n in ma.most_common(10)))
 
     log = git(goc, 'log', '-n', '300', '--name-only', '--format=format:@@')
     commits = [set(x.split()) for x in log.split('@@') if x.strip()]
@@ -464,8 +562,13 @@ def viet_vang(goc, vang, ra_dir):
 # ── Lệnh tong-quan ──
 
 def mo_ta_code(goc, rel):
+    KHO.mo(goc)
+    return KHO.lay(goc / rel, 'mo_ta', mo_ta_txt)
+
+
+def mo_ta_txt(txt):
     """Comment đầu file, không có thì trả rỗng."""
-    for l in doc(goc / rel).splitlines()[:8]:
+    for l in txt.splitlines()[:8]:
         t = l.strip()
         if not t or t.startswith('#!') or 'coding:' in t:
             continue
@@ -544,9 +647,27 @@ def lenh_tong_quan(a):
 
 import unicodedata
 
+class _BangBoDau(dict):
+    """Bảng cho str.translate: mỗi ký tự tính một lần rồi nhớ, nhanh hơn chuẩn hoá NFD từng dòng (T911)."""
+    def __missing__(self, k):
+        c = chr(k)
+        v = 'd' if c == 'đ' else ''.join(x for x in unicodedata.normalize('NFD', c) if unicodedata.category(x) != 'Mn')
+        self[k] = v
+        return v
+
+
+_BANG_BO_DAU = _BangBoDau()
+RE_CAMEL = re.compile(r'([a-z0-9])([A-Z])')
+RE_KHONG_CHU = re.compile(r'[^0-9a-z]+')
+
+
 def bo_dau(t):
-    t = t.lower().replace('đ', 'd')
-    return ''.join(c for c in unicodedata.normalize('NFD', t) if unicodedata.category(c) != 'Mn')
+    return t.lower().translate(_BANG_BO_DAU)
+
+
+def tach_van(txt):
+    """Mỗi dòng thành ' tu tu ... ': tách camelCase, bỏ dấu, chữ thường; dùng để khớp nguyên từ."""
+    return [' ' + RE_KHONG_CHU.sub(' ', l) + ' ' for l in bo_dau(RE_CAMEL.sub(r'\1 \2', txt)).splitlines()]
 
 
 TU_BO = set('cho cua the khi thi la va voi cac mot nhung duoc trong tren duoi lai nay do de ma se da dang con khong co nhu lam them sua bo '
@@ -569,7 +690,8 @@ def dem_khop(dong_bd, kw):
 
 
 def tieu_de_md(goc, rel):
-    return [(i, l.strip()) for i, l in enumerate(doc(goc / rel).splitlines(), 1) if re.match(r'#{2,3} ', l)]
+    KHO.mo(goc)
+    return KHO.lay(goc / rel, 'tde', lambda t: [(i, l.strip()) for i, l in enumerate(t.splitlines(), 1) if re.match(r'#{2,3} ', l)])
 
 
 def lenh_kiem(goc, ds):
@@ -641,39 +763,36 @@ def skill_goi_y(kw):
         if not td.exists():
             continue
         for sk in td.glob('*/SKILL.md'):
-            dau = doc(sk)[:1500]
-            m = re.search(r'^description:\s*(.+)$', dau, re.M)
+            m = KHO.lay(sk, 'mo_ta_skill', lambda t: (re.findall(r'^description:\s*(.+)$', t[:1500], re.M) or [''])[0])
             if not m:
                 continue
-            n = dem_khop(bo_dau(m.group(1)), kw)
+            n = dem_khop(bo_dau(m), kw)
             if n >= can_khop(kw):
                 diem[sk.parent.name] = max(n, diem.get(sk.parent.name, 0))
     return [k for k, _ in sorted(diem.items(), key=lambda x: -x[1])[:3]]
 
 
-def lenh_viec(a):
-    goc = tim_goc(a.repo)
-    ds = ds_file_git(goc)
-    kw = tu_khoa(a.mo_ta)
-    if not kw:
-        sys.exit('Mô tả chưa có từ khoá nào dài từ 3 chữ cái.')
-    print(f'Từ khoá: {" ".join(kw)}')
-    can = can_khop(kw)
-    re_kb = re.compile(r'^\s*(export\s+)?(default\s+)?(async\s+)?(function|const|class|interface|type|def)\s|\b(ten|slug|title|label|t|n):\s')
+RE_KB = re.compile(r'^\s*(export\s+)?(default\s+)?(async\s+)?(function|const|class|interface|type|def)\s|\b(ten|slug|title|label|t|n):\s')
 
-    # Chấm điểm: khớp nguyên từ (tách camelCase), từ hiếm nặng hơn (idf), cụm từ liền nhau được thưởng,
+
+def xep_hang(goc, ds, mo_ta):
+    """Chấm điểm file cho một mô tả việc. Trả (từ khoá, Counter điểm, {file: [(điểm, dòng, là tên)]})."""
+    # Khớp nguyên từ (tách camelCase), từ hiếm nặng hơn (idf), cụm từ liền nhau được thưởng,
     # mỗi file chỉ cộng 5 dòng tốt nhất để file to không thắng nhờ số lượng
     import math
-    tho = [w for w in re.split(r'[^0-9a-z]+', bo_dau(' '.join(a.mo_ta))) if len(w) >= 2]   # giữ cả từ ngắn, từ bỏ để ghép cụm
+    KHO.mo(goc)
+    kw = tu_khoa(mo_ta)
+    tho = [w for w in re.split(r'[^0-9a-z]+', bo_dau(' '.join(mo_ta))) if len(w) >= 2]   # giữ cả từ ngắn, từ bỏ để ghép cụm
     cum = [tuple(tho[i:i + n]) for n in (3, 2) for i in range(len(tho) - n + 1) if any(w in kw for w in tho[i:i + n])]
-    tach = lambda t: ' ' + ' '.join(re.split(r'[^0-9a-z]+', bo_dau(re.sub(r'([a-z0-9])([A-Z])', r'\1 \2', t)))) + ' '
-    van = {}
+    van, toan_ds = {}, {}
     for f in ds:
-        if f.endswith(DUOI_CODE) and (goc / f).stat().st_size <= 400 * 1024:
-            van[f] = [tach(l) for l in doc(goc / f).splitlines()]
+        if f.endswith(DUOI_CODE):
+            p = goc / f
+            if p.exists() and p.stat().st_size <= 400 * 1024:
+                van[f] = KHO.lay(p, 'tach', tach_van)
+                toan_ds[f] = ''.join(van[f])
     df = Counter()
-    for f, ls in van.items():
-        toan = ''.join(ls)
+    for f, toan in toan_ds.items():
         df.update(w for w in kw if f' {w} ' in toan)
     idf = {w: math.log((len(van) + 1) / (df[w] + 1)) + 0.1 for w in kw}
 
@@ -682,35 +801,46 @@ def lenh_viec(a):
         d += sum(len(c) * sum(idf.get(w, 0.5) for w in c) for c in cum if f' {" ".join(c)} ' in t or f' {"".join(c)} ' in t)
         return d
 
-    diem, dong_tot = Counter(), defaultdict(list)
-    goc_dong = {}
+    diem, dong_tot = Counter(), {}
     for f, ls in van.items():
+        if not any(f' {w} ' in toan_ds[f] for w in kw):
+            continue
         ds_dong = []
         for i, t in enumerate(ls, 1):
             if any(f' {w} ' in t for w in kw):
                 d = cham(t)
-                if re_kb.search(t.replace('  ', ' ')) or ' ten ' in t or ' slug ' in t:
-                    d *= 1.5
-                ds_dong.append((d, i))
-        if not ds_dong:
-            continue
+                la_ten = bool(RE_KB.search(t.replace('  ', ' ')) or ' ten ' in t or ' slug ' in t)
+                ds_dong.append((d * 1.5 if la_ten else d, i, la_ten))
         ds_dong.sort(reverse=True)
-        d = sum(x for x, _ in ds_dong[:5]) + 3 * cham(tach(f.replace('/', ' ')))
+        d = sum(x for x, _, _ in ds_dong[:5]) + 3 * cham(tach_van(f.replace('/', ' '))[0])
         diem[f] = round(d, 1)
         dong_tot[f] = ds_dong[:3]
+    return kw, diem, dong_tot
+
+
+def lenh_viec(a):
+    goc = tim_goc(a.repo)
+    ds = ds_file_git(goc)
+    kw, diem, dong_tot = xep_hang(goc, ds, a.mo_ta)
+    if not kw:
+        sys.exit('Mô tả chưa có từ khoá nào dài từ 3 chữ cái.')
+    print(f'Từ khoá: {" ".join(kw)}')
+    print('Nhãn: [tên] khớp chỗ khai báo hàm, màn, nhãn; [chữ] chỉ khớp chữ, tự kiểm trước khi sửa; '
+          '[import] nối thật qua import; [lịch sử] suy từ git log.')
+    can = can_khop(kw)
     top = [f for f, _ in diem.most_common(6)]
     print('Chỗ sửa (điểm cao trước):')
     for f in top:
         mt = mo_ta_code(goc, f)
         print(f'  {f} ({diem[f]}){" — " + mt if mt else ""}')
         ls = doc(goc / f).splitlines()
-        for _, i in dong_tot[f]:
-            print(f'    :{i} {ls[i - 1].strip()[:100]}')
+        for _, i, la_ten in dong_tot[f]:
+            print(f'    :{i} {"[tên]" if la_ten else "[chữ]"} {ls[i - 1].strip()[:100]}')
 
     if top:
         ra, vao = dung_do_thi(goc, ds)
         loi = {f for f, s in vao.items() if len(s) >= NGUONG_LOI}
-        print('Dính kèm:')
+        print('Dính kèm [import]:')
         for f in top[:3]:
             goi = sorted(vao[f] - loi)
             print(f'  {f}: {len(vao[f])} file dùng' + (f' ({", ".join(goi[:4])}{" …" if len(goi) > 4 else ""})' if goi else '') + (' [LÕI CHUNG]' if f in loi else ''))
@@ -718,12 +848,10 @@ def lenh_viec(a):
     css = []
     for f in ds:
         if f.endswith(('.css', '.scss')):
-            for i, l in enumerate(doc(goc / f).splitlines(), 1):
-                m = RE_MUC_CSS.search(l)
-                if m:
-                    n = dem_khop(bo_dau(m.group(1)), kw)
-                    if n >= can:
-                        css.append((n, f'{f}:{i} {m.group(1)[:90]}'))
+            for i, m in KHO.lay(goc / f, 'css_muc', muc_css):
+                n = dem_khop(bo_dau(m), kw)
+                if n >= can:
+                    css.append((n, f'{f}:{i} {m[:90]}'))
     if css:
         print('Mục CSS:')
         for _, x in sorted(css, key=lambda x: -x[0])[:5]:
@@ -741,13 +869,18 @@ def lenh_viec(a):
         for _, x in sorted(tl, key=lambda x: -x[0])[:7]:
             print('  ' + x)
 
-    cu = [l for l in git(goc, 'log', '-n', '800', '--format=%h %s').splitlines() if dem_khop(bo_dau(l), kw) >= can]
+    # Một lệnh git log thay cho git show từng commit
+    cu = []
+    for khoi in git(goc, 'log', '-n', '800', '--format=@@%h %s', '--name-only').split('@@')[1:]:
+        dong = khoi.strip().splitlines()
+        if dong and dem_khop(bo_dau(dong[0]), kw) >= can:
+            cu.append((dong[0], dong[1:]))
     if cu:
-        print('Việc cũ giống:')
+        print('Việc cũ giống [lịch sử]:')
         tep = Counter()
-        for l in cu[:6]:
+        for l, fs in cu[:6]:
             print('  ' + l[:110])
-            tep.update(f for f in git(goc, 'show', '--name-only', '--format=', l.split()[0]).split() if f.endswith(DUOI_CODE + ('.css',)))
+            tep.update(f for f in fs if f.endswith(DUOI_CODE + ('.css',)))
         if tep:
             print('  File các việc đó hay sửa: ' + ', '.join(f'{f} ({n})' for f, n in tep.most_common(5)))
 
@@ -756,6 +889,135 @@ def lenh_viec(a):
     kiem = lenh_kiem(goc, ds)
     if kiem:
         print('Nghiệm thu: ' + ', '.join(kiem))
+    if top:
+        print(f'Trước khi đổi tên, tham số một hàm hay thành phần: explain <tên> để thấy mọi chỗ gọi.')
+
+
+# ── Lệnh explain, ma, do (T911, học từ graphify: tra cấp ký hiệu, nối mã việc với code, tự đo độ trúng) ──
+
+DUOI_GREP = [f'*{d}' for d in DUOI_CODE]
+
+
+def git_grep(goc, *args, duoi=DUOI_GREP):
+    """[(file, dòng, nội dung)] từ git grep; nhanh vì git đọc file bằng C."""
+    kq = []
+    for l in git(goc, 'grep', '-n', '-I', '--no-color', *args, '--', *duoi).splitlines():
+        p = l.split(':', 2)
+        if len(p) == 3 and p[1].isdigit():
+            kq.append((p[0], int(p[1]), p[2].strip()))
+    return kq
+
+
+def lenh_explain(a):
+    goc = tim_goc(a.repo)
+    ds = ds_file_git(goc)
+    ten = a.ten
+    if not re.fullmatch(r'[A-Za-z_$][\w$]*', ten):
+        sys.exit('Tên chỉ gồm chữ, số, _ (vd ChungTuForm, keoNvlCb).')
+    mau_dn = rf'(function|const|let|var|class|interface|type|enum|def)\s+{ten}\b'
+    dinh_nghia = [x for x in git_grep(goc, '-E', mau_dn) if x[0] in set(ds)]
+    file_ten = [f for f in ds if f.rsplit('/', 1)[-1].rsplit('.', 1)[0] == ten and f.endswith(DUOI_CODE)]
+    if not dinh_nghia and not file_ten:
+        gan = git_grep(goc, '-i', '-o', '-E', rf'(function|const|class|interface|type|def)\s+\w*{ten}\w*')
+        import difflib
+        ten_file = {f.rsplit('/', 1)[-1].rsplit('.', 1)[0] for f in ds if f.endswith(DUOI_CODE)}
+        ten_gan = list(dict.fromkeys([x[2].split()[-1] for x in gan] + difflib.get_close_matches(ten, ten_file, n=5, cutoff=0.7)))[:8]
+        sys.exit(f'Không thấy định nghĩa {ten}.' + (' Tên gần giống: ' + ', '.join(ten_gan) if ten_gan else ' Thử tim <từ> trong tools/ban_do.py hoặc viec "<mô tả>".'))
+    file_dn = list(dict.fromkeys([f for f, _, _ in dinh_nghia] + file_ten))
+    print(f'{ten}')
+    for f, i, t in dinh_nghia[:5]:
+        print(f'  Định nghĩa: {f}:{i} {t[:100]}')
+    for f in file_ten:
+        if f not in {x[0] for x in dinh_nghia}:
+            print(f'  File cùng tên: {f}')
+    mt = mo_ta_code(goc, file_dn[0])
+    if mt:
+        print(f'  Mô tả: {mt}')
+
+    ra, vao = dung_do_thi(goc, ds)
+    nguoi_import = set().union(*(vao[f] for f in file_dn))
+    dung = defaultdict(list)
+    for f, i, t in git_grep(goc, '-w', ten):
+        if (f, i) not in {(x[0], x[1]) for x in dinh_nghia} and not re.match(r'\s*(import|from)\b', t):
+            dung[f].append(i)
+    co_import = sorted((f for f in dung if f in nguoi_import), key=lambda f: -len(dung[f]))
+    chu = sorted((f for f in dung if f not in nguoi_import and f not in file_dn), key=lambda f: -len(dung[f]))
+    trong = sorted(f for f in dung if f in file_dn)
+    print(f'Dùng ở {len(co_import)} file [import], {len(chu)} file [chữ] (không import file định nghĩa, có thể trùng tên):')
+    for f in co_import[:20]:
+        print(f'  [import] {f}: dòng {", ".join(map(str, dung[f][:6]))}{" …" if len(dung[f]) > 6 else ""}')
+    if len(co_import) > 20:
+        print(f'  … còn {len(co_import) - 20} file [import]')
+    for f in chu[:8]:
+        print(f'  [chữ] {f}: dòng {", ".join(map(str, dung[f][:4]))}')
+    for f in trong:
+        print(f'  Trong file định nghĩa {f}: {len(dung[f])} chỗ')
+    chi_import = sorted(nguoi_import - set(dung))
+    if chi_import:
+        print(f'Import file định nghĩa nhưng không gọi {ten} (dùng thứ khác trong file): {len(chi_import)} file')
+    ma = Counter(m for f in file_dn for m in RE_MA.findall(doc(goc / f)))
+    if ma:
+        print('Mã việc, QD trong file định nghĩa: ' + ', '.join(f'{m} ({n})' for m, n in ma.most_common(8)))
+    print(f'Đổi tên, tham số, kiểu trả về của {ten} thì kiểm đủ {len(co_import)} file [import] ở trên.')
+
+
+def lenh_ma(a):
+    goc = tim_goc(a.repo)
+    ma = a.ma.upper()
+    if not re.fullmatch(r'[A-Z]{1,6}-?\d{1,5}', ma):
+        sys.exit('Mã dạng T907, QD21, ABC-123.')
+    bo = ('features.json', 'icon-dac.ts')
+    kq = [x for x in git_grep(goc, '-w', ma, duoi=['*']) if not x[0].endswith(bo) and not x[0].startswith(('dist/', 'docs/luu-tru/'))]
+    code = [x for x in kq if x[0].endswith(DUOI_CODE)]
+    css = [x for x in kq if x[0].endswith(('.css', '.scss'))]
+    tl = [x for x in kq if x not in code and x not in css]
+    print(f'{ma}: {len(code)} chỗ trong code, {len(css)} chỗ CSS, {len(tl)} chỗ tài liệu')
+    for nhan, ds_x, toi_da in (('Code', code, 15), ('CSS', css, 8), ('Tài liệu', tl, 8)):
+        if ds_x:
+            print(f'{nhan}:')
+            for f, i, t in ds_x[:toi_da]:
+                print(f'  {f}:{i} {t[:100]}')
+            if len(ds_x) > toi_da:
+                print(f'  … còn {len(ds_x) - toi_da} chỗ, ở {len({x[0] for x in ds_x[toi_da:]})} file')
+    log = git(goc, 'log', '-n', '30', '-E', f'--grep=^{ma}\\b', '--format=@@%h %ad %s', '--date=format:%d/%m', '--name-only')
+    commits = [k.strip().splitlines() for k in log.split('@@')[1:] if k.strip()]
+    if commits:
+        print(f'Commit ({len(commits)}):')
+        for c in commits[:8]:
+            print('  ' + c[0][:110])
+        tep = Counter(f for c in commits for f in c[1:] if not f.endswith('.md'))
+        if tep:
+            print('  File các commit đó sửa: ' + ', '.join(f'{f} ({n})' for f, n in tep.most_common(8)))
+
+
+def lenh_do(a):
+    """Lấy n commit gần nhất có mã việc và sửa code, chạy xep_hang với câu commit, xem file đã sửa có trong top không."""
+    goc = tim_goc(a.repo)
+    ds = ds_file_git(goc)
+    ca = []
+    for khoi in git(goc, 'log', '-n', '400', '--no-merges', '--format=@@%h %s', '--name-only').split('@@')[1:]:
+        dong = khoi.strip().splitlines()
+        h, sub = (dong[0].split(' ', 1) + [''])[:2]
+        files = {f for f in dong[1:] if f.endswith(DUOI_CODE) and not f.startswith('tools/')}
+        mo_ta = RE_MA.sub('', sub).strip(' :-')
+        if files and len(files) <= 15 and len(tu_khoa([mo_ta])) >= 2:
+            ca.append((h, mo_ta[:160], files))
+        if len(ca) >= a.n:
+            break
+    if not ca:
+        sys.exit('Không có commit sửa code nào để đo.')
+    t3 = t6 = 0
+    t0 = time.time()
+    for h, mo_ta, files in ca:
+        _, diem, _ = xep_hang(goc, ds, [mo_ta])
+        top = [f for f, _ in diem.most_common(6)]
+        t3 += bool(files & set(top[:3]))
+        t6 += bool(files & set(top[:6]))
+        if a.chi_tiet:
+            print(f'{h} {"trúng" if files & set(top[:3]) else "TRƯỢT"} {mo_ta[:70]}')
+    tg = (time.time() - t0) / len(ca)
+    print(f'viec trên {len(ca)} commit gần nhất: file đã sửa nằm trong top 3 ở {t3}/{len(ca)} việc ({t3 * 100 // len(ca)}%), '
+          f'top 6 ở {t6}/{len(ca)} ({t6 * 100 // len(ca)}%). Chấm điểm TB {tg:.2f} giây/việc.')
 
 
 def main():
@@ -779,8 +1041,21 @@ def main():
     s.add_argument('--chuyen', action='store_true', help='Chuyển file XANH vào thư mục báo cáo')
     s.add_argument('--ra', help='Thư mục báo cáo khác mặc định')
     s.set_defaults(ham=lenh_don)
+    s = sub.add_parser('explain', help='Hàm, màn, kiểu: định nghĩa ở đâu, file nào dùng, nhãn [import]/[chữ]')
+    s.add_argument('ten')
+    s.set_defaults(ham=lenh_explain)
+    s = sub.add_parser('ma', help='Mã việc, QD (T907, QD21): code, CSS, tài liệu, commit nhắc tới')
+    s.add_argument('ma')
+    s.set_defaults(ham=lenh_ma)
+    s = sub.add_parser('do', help='Đo viec trên các commit gần nhất: độ trúng top 3, top 6, thời gian')
+    s.add_argument('-n', type=int, default=20)
+    s.add_argument('--chi-tiet', action='store_true', help='In từng commit trúng hay trượt')
+    s.set_defaults(ham=lenh_do)
     a = p.parse_args()
     a.ham(a)
+    KHO.luu()
+    if a.lenh != 'don':
+        dau_dung(tim_goc(a.repo))
 
 
 if __name__ == '__main__':

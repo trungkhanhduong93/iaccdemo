@@ -4,6 +4,8 @@ Không đọc nguyên file lớn. `tools/ban_do.py` đọc thay và in kết qu�
 
 - Repo chưa quen: `python "<skill ban-do-repo>/scripts/soi_repo.py" hieu` in khung cả repo.
 - Bắt đầu một việc: `python "<skill ban-do-repo>/scripts/soi_repo.py" viec "<mô tả>"` in chỗ sửa, file dính, quyết định, bẫy, skill, lệnh kiểm.
+- Sắp đổi tên, tham số một hàm hay thành phần: `python "<skill ban-do-repo>/scripts/soi_repo.py" explain <tên>` in mọi file đang gọi. Sửa đủ các file `[import]` đó.
+- Gặp mã việc, QD lạ: `python "<skill ban-do-repo>/scripts/soi_repo.py" ma <mã>` in code, tài liệu, commit nhắc tới mã.
 - Chưa biết sửa ở đâu: `python tools/ban_do.py tim <từ khoá>`. Gõ không dấu cũng được.
 - File trên 20 KB: `python tools/ban_do.py file <đường dẫn>` lấy dàn ý, rồi chỉ đọc khúc cần sửa, mỗi lần tối đa 400 dòng.
 - CSS: `python tools/ban_do.py css <class hoặc mã việc>`.
