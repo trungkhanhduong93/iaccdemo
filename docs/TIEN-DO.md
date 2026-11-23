@@ -11,6 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T903 | Bộ nguồn NotebookLM: 13 tài liệu chắt toàn bộ kiến thức iaccdemo (nghiệp vụ kế toán, phân hệ, chứng từ định khoản, báo cáo, UI/UX, QD, bẫy, kiến trúc FE và BE dự kiến, quy trình team, tiện ích, tiến độ, hỏi đáp), xuất Google Docs lên Drive; chỉ làm mới khi Trum gõ "làm mới notebook" | Trum | Đang làm | Tạo `docs/notebooklm/`, `tools/xuat_notebooklm.py`, thêm 1 dòng vào `AGENTS.md` (mục Release). Không sửa `src/`. Giao 2 anti |
 | T902 | Cảnh báo chưa kiểm kê cuối tháng khi tính chi phí NVL theo kiểm kê định kỳ (gói Standard): khung cảnh báo ở Chi phí NVL web và điện thoại, hộp Chốt theo tồn hệ thống tạo phiếu kiểm kê tồn thực tế bằng tồn hệ thống, 2 nút ở bước Kiểm kê cuối tháng của Khoá sổ | Trum | Đang làm | Bản vẽ https://claude.ai/artifact/UPWh1G7DiCHDBrhWEpS7qV. Sửa `chi-phi-nvl.ts`, `ChiPhiNvl.tsx`, `MChiPhiNvl.tsx`, `KhoaSoStandard.tsx`, `MKhoaSo.tsx`, cuối `app.css` (mục T902). Giao 2 anti |
 | T893 | Form Sửa danh mục không lưu được thay đổi của dòng mẫu (chỉ lưu dòng thêm trong phiên, `CatalogScreen.tsx` dòng ~660). Nhập Excel T892 đã có lớp ghi đè `ghiDeCatalogRow` trong `danhMucStore.ts`, form Sửa có thể dùng lại | Trum | Chưa làm | Thấy khi làm T892 |
 | T882 | Tồn kho ban đầu trên điện thoại: danh sách thẻ, chọn nhiều, Thiết lập hàng loạt, Xoá | | Chờ | Trum dời sang phiên sau (18/11/2026). Mẫu `backup/mau-T879/Dt*.dc.html`, spec mục Việc T882 trong `backup/spec-T879-T882.md` |
