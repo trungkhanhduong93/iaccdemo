@@ -3,7 +3,7 @@ import { createElement } from 'react'
 import { Link } from 'react-router-dom'
 import type { Col, Row, VoucherCfg } from '../types'
 import { chungTu, dongCua, type Dong } from '../../ui/generic/gen'
-import { datLocDaXem } from '../../ui/bao-cao/tuyChinhBC'
+import { datLocDaXem, daXemTrangHienTai, linkBaoCaoTabMoi } from '../../ui/bao-cao/tuyChinhBC'
 import { CUA_HANG } from '../../data/mock'
 import { KHOA_LOC_NGUON, docLocNguon, quaLocDong, quaLocDt } from '../bao-cao/loc-nguon'
 
@@ -69,6 +69,38 @@ export const bangKeMuaTheoHang = {
   rows: (thang: number, cn?: string, loc?: Record<string, string[]>): Row[] => {
     const ds: Row[] = phieuThang(thang, cn, loc).flatMap(r => r.dong.map(d => ({ ngay: r.ngay, so: r.so, doiTuong: r.doiTuong, ma: d.ma, ten: d.ten, dvt: d.dvt, sl: d.sl, gia: d.gia, ...tienDong(d) })))
     return [...ds, { doiTuong: 'Tổng cộng', ...congTien(ds), _t: 1 }]
+  },
+}
+
+/** Ô mã hàng của Tổng hợp mua hàng theo hàng hoá (T910): bấm mở Bảng kê chi tiết mua hàng 4.2.7 ở tab trình duyệt mới,
+ *  cùng kỳ, bộ lọc đang xem, thêm lọc Hàng hoá theo mặt hàng của dòng (như T814 bên bán hàng); dòng tổng giữ chữ */
+const oMaHang = (x: Row) => {
+  if (x._t || !x.ma || !x.ten) return x.ma
+  const { loc, ky } = daXemTrangHienTai()
+  return createElement('a', {
+    className: 'ds-link-so', href: linkBaoCaoTabMoi('/app/mua-hang/4-2-7', { ...loc, [KHOA_LOC_NGUON.hang]: [String(x.ten)] }, ky),
+    target: '_blank', rel: 'noopener', title: 'Xem Bảng kê chi tiết mua hàng của mặt hàng này ở tab mới',
+    onClick: (e: MouseEvent) => e.stopPropagation(),
+  }, x.ma)
+}
+
+/** Tổng hợp mua hàng theo hàng hoá (T910): cột như Bảng kê chi tiết mua hàng, bỏ ngày, số phiếu, nhà cung cấp; gom theo mặt hàng.
+ *  Đơn giá là đơn giá bình quân (thành tiền / số lượng) */
+export const tongHopMuaTheoHang = {
+  cols: [{ k: 'ma', t: 'Mã hàng', cls: 'code', w: 90, r: oMaHang }, { k: 'ten', t: 'Tên hàng' }, { k: 'dvt', t: 'ĐVT', c: true, w: 60 },
+    { k: 'sl', t: 'Số lượng', num: true }, { k: 'gia', t: 'Đơn giá', num: true }, ...cotTien] as Col[],
+  rows: (thang: number, cn?: string, loc?: Record<string, string[]>): Row[] => {
+    const nhom = new Map<string, Row[]>()
+    const tt = new Map<string, Dong>()
+    for (const r of phieuThang(thang, cn, loc)) for (const d of r.dong) {
+      if (!tt.has(d.ma)) tt.set(d.ma, d)
+      nhom.set(d.ma, [...(nhom.get(d.ma) ?? []), { sl: d.sl, ...tienDong(d) }])
+    }
+    const ds = [...nhom].map(([ma, dong]): Row => {
+      const d = tt.get(ma)!, sl = cong(dong, 'sl'), tien = congTien(dong)
+      return { ma, ten: d.ten, dvt: d.dvt, sl, gia: sl ? Math.round(tien.thanhTien / sl) : 0, ...tien }
+    }).sort((a, b) => b.tong - a.tong)
+    return [...ds, { ten: 'Tổng cộng', ...congTien(ds), _t: 1 }]
   },
 }
 

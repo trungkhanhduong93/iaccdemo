@@ -80,7 +80,8 @@ export function ThanhChonBaoCao({ sc, trongPhanHe }: { sc: ScreenDef; trongPhanH
           <div className="bc-duong">
             {tuTrangChu && <><Link to="/app/trang-chu/tong-quan">Trang chủ</Link><span className="bc-duong-cach">/</span></>}
             <Link className="bc-duong-ve" to={trongPhanHe ? `/app/${trongPhanHe.key}/bao-cao` : '/app/bao-cao/tat-ca'}><Icon n="chevl" className="ic sm" />Báo cáo</Link>
-            {nhom && <><span className="bc-duong-cach">/</span><span>{nhom.ngan ?? nhom.ten}</span></>}
+            {/* Tên nhóm là liên kết về đúng nhóm báo cáo đang xem, không phải Tất cả báo cáo (T910) */}
+            {nhom && <><span className="bc-duong-cach">/</span><Link to={trongPhanHe ? `/app/${trongPhanHe.key}/bao-cao` : `/app/bao-cao/nhom-${nhom.key}`} title={`Về nhóm báo cáo ${nhom.ngan ?? nhom.ten}`}>{nhom.ngan ?? nhom.ten}</Link></>}
             {truoc && <><span className="bc-duong-cach">/</span><button type="button" onClick={() => nav(-1)} title={`Quay lại ${truoc.ten}`}>{truoc.ten}</button></>}
           </div>
           <div className="bc-ten-hang">

@@ -5,7 +5,7 @@ import { quyTrinh } from './quy-trinh'
 import { phieuGocCoTt } from '../tien/tt-mau'
 import { colsCongNo, rowsCongNoNhom } from '../bao-cao/cong-no'
 import { HOA_DON_MUA, hoaDonMuaMau } from './hoa-don-mua'
-import { PHIEU_MUA, bangKeMuaTheoHang, chiTietMua, chiTietNhap, muaHangTheoNgay, tongHopMua, tongHopNhap } from './bao-cao'
+import { PHIEU_MUA, bangKeMuaTheoHang, chiTietMua, chiTietNhap, muaHangTheoNgay, tongHopMua, tongHopMuaTheoHang, tongHopNhap } from './bao-cao'
 
 const MUA = PHIEU_MUA.dienGiai
 
@@ -38,6 +38,8 @@ const muaHang: ModuleDef = {
   }, NGAN).concat([
     // Bảng kê chi tiết mua hàng (trước là Bảng kê mua hàng theo hàng hoá, đổi tên T456), ngoài Excel; mã 4.2.7 lấy theo slug, khoá cấu hình ở bao-cao/danh-sach.ts (T200)
     { slug: '4-2-7', ten: 'Bảng kê chi tiết mua hàng', nhom: 'Sổ sách, báo cáo', kind: 'report', report: { kieu: 'bangke', theoCn: true, ...bangKeMuaTheoHang } },
+    // Tổng hợp mua hàng theo hàng hoá, ngoài Excel; bấm mã hàng mở 4.2.7 ở tab mới (T910)
+    { slug: '4-2-8', ten: 'Tổng hợp mua hàng theo hàng hoá', nhom: 'Sổ sách, báo cáo', kind: 'report', report: { kieu: 'bangke', theoCn: true, ...tongHopMuaTheoHang } },
   ]),
 }
 export default muaHang

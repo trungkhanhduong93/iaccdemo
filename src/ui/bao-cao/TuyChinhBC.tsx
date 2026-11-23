@@ -353,7 +353,7 @@ export function TuyChinhBC({
                   </div>
                 )}
 
-                {nhomDangChon.length > 0 && (
+                {nhomDangChon.length > 0 && !cfg?.chiChiTiet && (   // báo cáo chỉ xem Chi tiết không có Kiểu xem (T910)
                   <div className="tc-cap" style={{ alignItems: 'center' }}>
                     <span className="tc-cap-ten" style={{ paddingTop: 0 }}>Kiểu xem</span>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>

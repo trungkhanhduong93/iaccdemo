@@ -12,7 +12,7 @@ import { Select } from '../../ui/Dropdown'
 import { moneyD, pad, pct, short, locSo } from '../../ui/format'
 import { tonQuyTheoSo } from './LichSuQuy'
 import { soLieuCongNo, soLieuKiemKe, soLieuMua, type CotThang } from './khoStandard'
-import { datLocDaXem, docTuyChinh, luuTuyChinh } from '../../ui/bao-cao/tuyChinhBC'
+import { datLocDaXem } from '../../ui/bao-cao/tuyChinhBC'
 import { tinhToanTongQuan, type TongQuanSoLieu } from './chiSo'
 import { useSession, type Session } from '../../app/session'
 import { LaiLoChart, trucLaiLo } from '../../ui/Charts'
@@ -1301,12 +1301,11 @@ export function BaBaiToanStandard({ d, thang: thangXem, selCns, chonKy }: { d: T
               {moXemMua && (
                 <div className="bbt-menu-xem">
                   <Link
-                    to="/app/bao-cao/4-2-7"
+                    to="/app/bao-cao/4-2-8"
                     className="bbt-menu-item"
                     onClick={() => {
                       setMoXemMua(false)
-                      luuTuyChinh(s.donVi, '4.2.7', { ...(docTuyChinh(s.donVi, '4.2.7') ?? {}), nhom: ['ma'], xemNhom: 'tongHop' })
-                      datLocDaXem('/app/bao-cao/4-2-7', {}, String(thangXem))
+                      datLocDaXem('/app/bao-cao/4-2-8', {}, String(thangXem))   // tổng hợp theo hàng hoá ở 4.2.8, 4.2.7 chỉ xem chi tiết (T910)
                     }}
                   >
                     Bảng kê mua hàng

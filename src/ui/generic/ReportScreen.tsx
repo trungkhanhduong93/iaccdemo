@@ -112,7 +112,7 @@ export function ReportToolbar({ ky, setKy, children, moTa }: { ky: string; setKy
   // Đang gom nhóm (Tuỳ chỉnh › Gom nhóm): chọn xem Tổng hợp hay Chi tiết ngay trên thanh, lưu cùng tuỳ chỉnh báo cáo (T289)
   const tcBC = useTuyChinhBC(s.donVi, slug)
   const coNhom = !cfgBC?.khoa && (tcBC?.nhom?.filter(Boolean).length ?? 0) > 0
-  const xemNhom = tcBC?.xemNhom ?? 'chiTiet'
+  const xemNhom = cfgBC?.chiChiTiet ? 'chiTiet' : tcBC?.xemNhom ?? 'chiTiet'   // báo cáo chỉ xem Chi tiết thì bỏ nút Tổng hợp (T910)
   const doiXemNhom = (v: 'tongHop' | 'chiTiet') => { if (slug && tcBC) luuTuyChinh(s.donVi, slug, { ...tcBC, xemNhom: v }) }
   useLayoutEffect(() => {
     if (!(viTri.state as { hoiLoc?: boolean } | null)?.hoiLoc) return
@@ -378,7 +378,7 @@ export function ReportToolbar({ ky, setKy, children, moTa }: { ky: string; setKy
         <div className="ds-toolbar-figma">
           {boLocEl}
         </div>
-        {coNhom && <div className="ds-hang-trang-thai">{segNhom}</div>}
+        {coNhom && !cfgBC?.chiChiTiet && <div className="ds-hang-trang-thai">{segNhom}</div>}
       </div>
     </>
   )
@@ -388,7 +388,7 @@ export function ReportToolbar({ ky, setKy, children, moTa }: { ky: string; setKy
     <div className="thanh-loc bc-thanh-cong-cu" style={{ padding: 0, border: 0, background: 'transparent' }}>
       <div className="ds-toolbar-figma">{boLocEl}</div>
       <div className="ds-hang-trang-thai">
-        {coNhom && segNhom}
+        {coNhom && !cfgBC?.chiChiTiet && segNhom}
         <div className="ds-toolbar-phai ds-cong-cu-h2">
           <Dropdown btnClass="nut-vuong ds-nut-excel" align="end" width={180} title="Xuất báo cáo" label={<IconExcel />}>
             {menuXuat}
@@ -874,7 +874,7 @@ export function ReportPaper({ title, sub, mau, children, ky = true, kho, theoCn 
         loc: locHienCo,
         anKhongPS: !!cfg?.anKhongPS,   // luôn ẩn dòng không phát sinh, chỉ áp cho báo cáo có cấu hình này (T508, T578)
         nhom: tc?.nhom,
-        tongHop: tc?.xemNhom === 'tongHop',
+        tongHop: !cfg?.chiChiTiet && tc?.xemNhom === 'tongHop',
         cot: tc?.cot,
         tinhLaiTong,
         khoa,
@@ -888,7 +888,7 @@ export function ReportPaper({ title, sub, mau, children, ky = true, kho, theoCn 
           loc: locHienCo,
           anKhongPS: !!cfg?.anKhongPS,
           nhom: tc?.nhom,
-          tongHop: tc?.xemNhom === 'tongHop',
+          tongHop: !cfg?.chiChiTiet && tc?.xemNhom === 'tongHop',
           cot: undefined,
           tinhLaiTong,
           khoa,

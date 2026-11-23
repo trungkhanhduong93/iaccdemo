@@ -5,7 +5,7 @@ import { useSession } from '../../app/session'
 import { CUA_HANG } from '../../data/mock'
 import { tinhToanTongQuan } from '../../modules/home/chiSo'
 import { soLieuCongNo, soLieuKiemKe, soLieuMua } from '../../modules/home/khoStandard'
-import { datLocDaXem, docTuyChinh, luuTuyChinh } from '../bao-cao/tuyChinhBC'
+import { datLocDaXem } from '../bao-cao/tuyChinhBC'
 import { moneyD, pct, short, locSo } from '../format'
 import { Icon } from '../Icon'
 import { FigmaGradientIcon } from '../FigmaIcon'
@@ -51,11 +51,10 @@ export function MKhoStandard({ selCns, thang }: { selCns: string[]; thang: numbe
               )}
             </span>
             <Link
-              to="/app/bao-cao/4-2-7"
+              to="/app/bao-cao/4-2-8"
               className="m-tcf-kpi-link"
               onClick={() => {
-                luuTuyChinh(s.donVi, '4.2.7', { ...(docTuyChinh(s.donVi, '4.2.7') ?? {}), nhom: ['ma'], xemNhom: 'tongHop' })
-                datLocDaXem('/app/bao-cao/4-2-7', {}, String(thang))
+                datLocDaXem('/app/bao-cao/4-2-8', {}, String(thang))   // tổng hợp theo hàng hoá ở 4.2.8, 4.2.7 chỉ xem chi tiết (T910)
               }}
             >
               Bảng kê ›

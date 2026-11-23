@@ -56,9 +56,10 @@ export interface CauHinhBC {
   boTuSinh?: string[]                       // tên bộ lọc tự sinh từ cột không hiện, vd Đối tượng ở Chi tiết xuất kho (T214)
   anKhongPS?: boolean                       // có tuỳ chọn "Ẩn dòng không phát sinh"
   phanTrang?: number                        // báo cáo nhiều dòng: tờ trên màn hình chỉ vẽ ngần ấy dòng mỗi trang, in và xuất vẫn đủ dòng (T157)
+  chiChiTiet?: boolean                      // gom nhóm chỉ xem Chi tiết, không có kiểu xem Tổng hợp vì đã có báo cáo tổng hợp riêng (T910)
 }
 
-const baoCao = (kho: Kho, opt?: { loc?: LocBC[]; nhomDuoc?: string[]; boTuSinh?: string[]; anKhongPS?: boolean; phanTrang?: number }): CauHinhBC => ({ loai: 'baocao', kho, ...opt })
+const baoCao = (kho: Kho, opt?: { loc?: LocBC[]; nhomDuoc?: string[]; boTuSinh?: string[]; anKhongPS?: boolean; phanTrang?: number; chiChiTiet?: boolean }): CauHinhBC => ({ loai: 'baocao', kho, ...opt })
 
 const ALL: CheDo[] = ['TT152', 'TT58', 'TT133', 'TT99']
 
@@ -103,8 +104,10 @@ export const CAU_HINH_BC: Record<string, CauHinhBC> = {
   '4.2.7': baoCao('ngang', {   // Bảng kê mua hàng theo hàng hoá (T200)
     loc: LOC_MUA,
     nhomDuoc: ['doiTuong', 'ten', 'ngay'], anKhongPS: true, phanTrang: 100,
+    chiChiTiet: true,   // tổng hợp theo hàng hoá xem ở 4.2.8 (T910)
   }),
   '4.2.6': baoCao('ngang', { loc: LOC_MUA, nhomDuoc: ['ngay'], anKhongPS: true }),
+  '4.2.8': baoCao('ngang', { loc: LOC_MUA, anKhongPS: true }),   // Tổng hợp mua hàng theo hàng hoá (T910)
   '5.2.1': baoCao('doc', { anKhongPS: true }),   // thẻ kho, xuất nhập tồn là báo cáo quản trị kho kiểu iPOS Inventory, mọi thông tư, không ký hiệu mẫu, Trum chốt 11/10/2026 (T157)
   '5.2.2': baoCao('ngang', { loc: [{ k: 'kho', nhan: 'Kho', kieu: 'chon' }, { k: 'loai', nhan: 'Loại phiếu', kieu: 'chon' }], nhomDuoc: ['kho', 'loai', 'ngay'], anKhongPS: true }),
   '5.2.3': baoCao('ngang', { loc: LOC_KHO_BC, anKhongPS: true }),   // lọc kho chọn nhiều, mặc định tất cả (T412)
@@ -176,7 +179,7 @@ export const chonCuaHang = (loc: Record<string, string[]>) => { const v = loc[K_
 const GIU_MOI_CHE_DO = ['2.2.1', '2.2.3']
 /** Báo cáo lấy theo danh sách iFaster, mở mọi gói, mọi chế độ, PhuongXT chốt 13/10/2026 (T185): quỹ tiền,
  *  công nợ nhà cung cấp 4.2.3, khách hàng 3.2.9, quản trị, kho, mua hàng, bán hàng. Sổ công nợ 2.2.5 bỏ (PhuongXT: thay bằng Công nợ nhà cung cấp, Công nợ khách hàng theo iFaster); TT58 vẫn giữ S4a-DNSN. Không lọc theo anTam, cheDo, trường hợp thuế; muốn ẩn ở gói nào thì bỏ mã khỏi đây hoặc lọc thêm */
-export const MO_IFASTER = ['2.2.8', '2.2.9', '4.2.3', '3.2.9', '4.2.7', '10.2.3', '10.4.3', '5.2.3', '5.2.11', '5.2.12', '5.2.9', '5.2.10', '4.2.2', '4.2.1', '4.2.6', '3.2.7', '3.2.8', '3.2.6',
+export const MO_IFASTER = ['2.2.8', '2.2.9', '4.2.3', '3.2.9', '4.2.7', '10.2.3', '10.4.3', '5.2.3', '5.2.11', '5.2.12', '5.2.9', '5.2.10', '4.2.2', '4.2.8', '4.2.1', '4.2.6', '3.2.7', '3.2.8', '3.2.6',
   '5.2.1', '5.2.15',   // Thẻ kho mở lại mọi gói để bấm hàng hoá ở Xuất nhập tồn mở thẻ kho, PhuongXT chốt 14/10/2026 (T211); Báo cáo kiểm kê mọi gói (T244)
   '3.2.1', '3.2.2', '3.2.3', '5.2.5']   // gói Plus theo roadmap: Báo cáo bán hàng, Đối soát với POS, Báo cáo doanh thu, Đối chiếu xuất kho với định lượng, PhuongXT 04/11/2026 (T721)
 /** Nhóm báo cáo Công nợ riêng, đứng sau nhóm Mua hàng: công nợ nhà cung cấp, khách hàng rời nhóm phân hệ, PhuongXT chốt 14/10/2026 (T217) */
