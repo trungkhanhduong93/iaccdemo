@@ -60,6 +60,11 @@ export const CONG_THUC_CB: CongThucCb[] = [
     nvl: [{ ma: 'NVL002', sl: 0.3, tang: 10, giam: 5 }, { ma: 'NVL026', sl: 0.03 }, { ma: 'NVL028', sl: 0.01 }, { ma: 'NVL027', sl: 0.01 }, { ma: 'NVL029', sl: 0.01 }, { ma: 'NVL030', sl: 0.006 }] },
   { id: 'cb6', ma: 'CTCB006', spMa: 'BTP03', ngay: '01/09/2026', kenh: [], cuaHang: [], moTa: 'Ướp tối thiểu 4 giờ trước khi nướng', tt: 'on',
     nvl: [{ ma: 'NVL004', sl: 1, tang: 5, giam: 5 }, { ma: 'NVL027', sl: 0.04 }, { ma: 'NVL026', sl: 0.03 }, { ma: 'NVL029', sl: 0.05 }, { ma: 'NVL030', sl: 0.04 }, { ma: 'NVL012', sl: 0.02 }] },
+  // T907: hai công thức mẫu để Xuất kho định lượng có lý do "thiếu ĐVT" (định lượng theo bình, bán theo ly) và "thiếu giá vốn" (đá viên chưa có giá)
+  { id: 'cb7', ma: 'CTCB007', spMa: 'TRA01', dvt: 'Bình', ngay: '01/09/2026', kenh: [], cuaHang: [], moTa: 'Pha theo bình 1 lít, chưa quy đổi ra ly', tt: 'on',
+    nvl: [{ ma: 'NVL010', sl: 0.5 }, { ma: 'NVL030', sl: 0.08 }] },
+  { id: 'cb8', ma: 'CTCB008', spMa: 'CF01', ngay: '01/09/2026', kenh: [], cuaHang: [], moTa: 'Ly 250 ml', tt: 'on',
+    nvl: [{ ma: 'NVL008', sl: 0.025 }, { ma: 'NVL009', sl: 0.1 }, { ma: 'NVL033', sl: 0.2 }] },
 ]
 
 /** Tỉ lệ ra cho một đơn vị NVL gốc; phần còn lại là hao hụt */

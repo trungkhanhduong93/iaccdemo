@@ -1,12 +1,12 @@
 // Xuất kho định lượng (T849): mỗi phiếu Xuất bán POS sinh một phiếu xuất kho định lượng,
-// lưới dạng cây món và nguyên vật liệu theo công thức chế biến.
-import { Fragment, useMemo, useState } from 'react'
+// T907: chi tiết đầu phiếu 2 nhóm như Xuất bán POS, lưới phẳng nhóm cột Món bán, Hàng hoá, món không xuất được ghi lý do.
+import { useMemo, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import type { Col, Row, ScreenProps } from '../types'
 import { duongDan, tenMan } from '../../app/registry'
 import { cuaHangHienTai, useSession } from '../../app/session'
 import { Icon } from '../../ui/Icon'
-import { Table } from '../../ui/Table'
+import { Table, useDoRongCot } from '../../ui/Table'
 import { PhanTrang } from '../../ui/PhanTrang'
 import { ChonKhoangNgay, docNgay, thangMacDinh, trongKhoang, type KhoangNgay } from '../../ui/ChonNgay'
 import { FormToanMan, useDong } from '../../ui/FormToanMan'
@@ -16,7 +16,7 @@ import { dangLoc, dsGiaTri, khopLoc, type GiaTriLoc, type KieuLoc } from '../../
 import { IconFigmaSearch } from '../../ui/IconFigma'
 import { NutExcel } from '../../ui/CongCuDs'
 import { Select } from '../../ui/Dropdown'
-import { useDsPhieuXdl, type PhieuXdl } from './xuat-dinh-luong'
+import { useDsPhieuXdl, type LyDoXdl, type PhieuXdl } from './xuat-dinh-luong'
 
 export function XuatDinhLuong({ sc, mod }: ScreenProps) {
   const { id } = useParams()
@@ -42,6 +42,7 @@ function DanhSachXuatDinhLuong({ sc, mod, rows }: ScreenProps & { rows: PhieuXdl
   const [locCot, setLocCot] = useState<Record<string, GiaTriLoc>>({})
   const [trang, setTrang] = useState(1)
   const [coTrang, setCoTrang] = useState(50)
+  const doRong = useDoRongCot('xuat-dinh-luong')   // kéo giãn cột như danh sách Xuất bán POS (T907)
 
   const dsCn = useMemo(() => [...new Set(rows.map(r => r.cn))].sort(), [rows])
   const kieuCot = (k: string): KieuLoc => (k === 'ngay' ? 'ngay' : k === 'tong' ? 'so' : 'chon')
@@ -54,7 +55,7 @@ function DanhSachXuatDinhLuong({ sc, mod, rows }: ScreenProps & { rows: PhieuXdl
       if (ap.cn && r.cn !== ap.cn) return false
       if (ap.tim.trim()) {
         const kw = fold(ap.tim.trim())
-        const text = fold(`${r.so} ${r.posSo} ${r.ghiChu} ${r.cn} ${r.nguon} ${r.dong.map(m => m.ten).join(' ')}`)
+        const text = fold(`${r.so} ${r.maHd} ${r.posSo} ${r.ghiChu} ${r.cn} ${r.nguon} ${r.dong.map(m => m.ten).join(' ')}`)
         if (!text.includes(kw)) return false
       }
       for (const [k, g] of Object.entries(locCot)) {
@@ -70,7 +71,7 @@ function DanhSachXuatDinhLuong({ sc, mod, rows }: ScreenProps & { rows: PhieuXdl
   const apLoc = () => { loc0.loc(); setTrang(1) }
   const oLoc: OLocDef[] = [
     { k: 'thoiGian', ten: 'Thời gian', coGiaTri: true, o: <ChonKhoangNgay value={nhap.thoiGian} onChange={k => dat('thoiGian', k)} /> },
-    { k: 'tim', ten: 'Tìm kiếm', coGiaTri: Boolean(nhap.tim.trim()), o: <input className="ds-o-inp" value={nhap.tim} placeholder="Số phiếu, tham chiếu, món" aria-label="Tìm kiếm"
+    { k: 'tim', ten: 'Tìm kiếm', coGiaTri: Boolean(nhap.tim.trim()), o: <input className="ds-o-inp" value={nhap.tim} placeholder="Số phiếu, mã hoá đơn, tham chiếu, món" aria-label="Tìm kiếm"
       onChange={e => dat('tim', e.target.value)} onKeyDown={e => { if (e.key === 'Enter') apLoc() }} /> },
     ...(!cnChon && dsCn.length > 1 ? [{ k: 'cn', ten: 'Cửa hàng', coGiaTri: Boolean(nhap.cn), o: (
       <Select className="ds-o-sel" value={nhap.cn} aria-label="Cửa hàng" onChange={e => dat('cn', e.target.value)}>
@@ -91,7 +92,7 @@ function DanhSachXuatDinhLuong({ sc, mod, rows }: ScreenProps & { rows: PhieuXdl
       k: 'so',
       t: 'Số chứng từ',
       cls: 'code',
-      w: 140,
+      w: 125,
       r: (r: Row) => (
         <button
           type="button"
@@ -106,13 +107,14 @@ function DanhSachXuatDinhLuong({ sc, mod, rows }: ScreenProps & { rows: PhieuXdl
         </button>
       ),
     },
-    { k: 'ghiChu', t: 'Ghi chú' },
-    ...(cnChon ? [] : [{ k: 'cn', t: 'Cửa hàng', w: 150 } as Col]),
+    // Mã hoá đơn FABi: # và 5 ký tự cuối, rê chuột xem đủ (QD114)
+    { k: 'maHd', t: 'Mã hoá đơn', cls: 'code', w: 95, r: r => <span title={String(r.maHd)}>#{String(r.maHd).slice(-5)}</span> },
+    ...(cnChon ? [] : [{ k: 'cn', t: 'Cửa hàng', w: 140 } as Col]),
     {
       k: 'thamChieu',
       t: 'Tham chiếu',
       cls: 'code',
-      w: 150,
+      w: 120,
       r: (r: Row) => (
         <Link
           to={`/app/ban-hang/3-1-1/${r.posId}`}
@@ -124,15 +126,16 @@ function DanhSachXuatDinhLuong({ sc, mod, rows }: ScreenProps & { rows: PhieuXdl
         </Link>
       ),
     },
-    { k: 'ngayTao', t: 'Ngày tạo', w: 140 },
-    { k: 'nguoiTao', t: 'Người tạo', w: 120 },
+    { k: 'ghiChu', t: 'Ghi chú', w: 200, wCung: true, cls: 'xdl-cat', r: r => <span title={String(r.ghiChu)}>{String(r.ghiChu)}</span> },
+    { k: 'ngayTao', t: 'Ngày tạo', w: 130 },
+    { k: 'nguoiTao', t: 'Người tạo', w: 95 },
     {
       k: 'nguon',
       t: 'Nguồn',
-      w: 90,
+      w: 75,
       r: (r: Row) => <span className="chip info">{String(r.nguon ?? 'FABi')}</span>,
     },
-    { k: 'tong', t: 'Tổng tiền', num: true, w: 130, dinh: 'phai' },
+    { k: 'tong', t: 'Tổng tiền', num: true, w: 115, dinh: 'phai' },
   ]
 
   const rowsBang: Row[] = rowsTrang.map((r, i) => ({
@@ -164,8 +167,8 @@ function DanhSachXuatDinhLuong({ sc, mod, rows }: ScreenProps & { rows: PhieuXdl
                     <IconFigmaSearch size={16} />
                     <input
                       value={nhap.tim}
-                      placeholder="Số phiếu, tham chiếu, món"
-                      title="Tìm theo số phiếu, tham chiếu, món"
+                      placeholder="Số phiếu, mã hoá đơn, tham chiếu, món"
+                      title="Tìm theo số phiếu, mã hoá đơn, tham chiếu, món"
                       aria-label="Tìm kiếm"
                       onChange={e => dat('tim', e.target.value)}
                       onKeyDown={e => {
@@ -176,10 +179,7 @@ function DanhSachXuatDinhLuong({ sc, mod, rows }: ScreenProps & { rows: PhieuXdl
                 ),
               }}
             />
-          </div>
-          <div className="ds-hang-trang-thai">
-            <span className="dim xdl-dem-phieu">{rowsLoc.length} phiếu</span>
-            <div className="ds-toolbar-phai ds-cong-cu-h2">
+            <div className="ds-toolbar-phai">
               <NutExcel onXuat={() => toast(`Đã xuất ${rowsLoc.length} phiếu ra Excel`)} />
             </div>
           </div>
@@ -187,8 +187,9 @@ function DanhSachXuatDinhLuong({ sc, mod, rows }: ScreenProps & { rows: PhieuXdl
             cols={cols}
             rows={rowsBang}
             onRow={r => nav(`${path}/${r.id}`)}
+            doRong={doRong}
             loc={{ gt: locCot, dat: (k, g) => { setLocCot(x => ({ ...x, [k]: g })); setTrang(1) }, bo: new Set(['stt']), kieu: c => kieuCot(c.k), layLuaChon }}
-            sum={{ ngay: `Tổng (${rowsLoc.length} phiếu)`, tong: tongTien }}
+            sum={{ ngay: 'Tổng cộng', tong: tongTien }}
           />
           <PhanTrang trang={trang} tong={rowsLoc.length} coTrang={coTrang} onTrang={setTrang} onCoTrang={ct => { setCoTrang(ct); setTrang(1) }} />
         </section>
@@ -197,11 +198,28 @@ function DanhSachXuatDinhLuong({ sc, mod, rows }: ScreenProps & { rows: PhieuXdl
   )
 }
 
+/** Tên ngắn của lý do cho dải cảnh báo, nút ở cột Xử lý (T907) */
+const LY_DO: Record<LyDoXdl['loai'], { ngan: string; nut: string }> = {
+  1: { ngan: 'Chưa có công thức', nut: 'Tạo công thức' },
+  2: { ngan: 'Chưa khớp mã hàng', nut: 'Khớp mã hàng' },
+  3: { ngan: 'Thiếu ĐVT', nut: 'Thêm ĐVT' },
+  4: { ngan: 'Công thức ngừng áp dụng', nut: 'Mở công thức' },
+  5: { ngan: 'Thiếu giá vốn', nut: 'Tính giá vốn' },
+}
+
 function ChiTietXuatDinhLuong({ sc, mod, row }: ScreenProps & { row?: PhieuXdl }) {
   const { s } = useSession()
+  const nav = useNavigate()
   const dongForm = useDong(duongDan(mod, sc))
   const [tab, setTab] = useState<'ct' | 'ht'>('ct')
-  const [daThu, setDaThu] = useState<Record<string, boolean>>({})
+  const [locCot, setLocCot] = useState<Record<string, GiaTriLoc>>({})
+
+  // Lưới phẳng như mẫu Chi tiết tiêu hao: mỗi dòng một NVL của một món, phần Món bán lặp lại để lọc từng cột đúng
+  const dongLuoi = useMemo<Row[]>(() => (row?.dong ?? []).flatMap((m, i) => {
+    const mon = { _mon: i, maCt: m.maCt ?? '', tenMon: m.ten, maMon: m.maFabi ? `FABi: ${m.maFabi}` : m.ma, dvtMon: m.dvt, slMon: m.sl, giaMon: m.gia, tienMon: m.tien }
+    if (!m.nvl.length) return [{ ...mon, id: `${i}`, ghiChu: m.lyDo?.text ?? '', _lyDo: m.lyDo }]
+    return m.nvl.map((n, j) => ({ ...mon, id: `${i}-${j}`, tenNvl: n.ten, maNvl: n.ma, dvtNvl: n.dvt, soLo: '', slNvl: n.sl, giaNvl: n.gia, tienNvl: n.tien, ghiChu: n.lyDo?.text ?? '', _lyDo: n.lyDo }))
+  }), [row])
 
   if (!row) {
     return (
@@ -212,7 +230,61 @@ function ChiTietXuatDinhLuong({ sc, mod, row }: ScreenProps & { row?: PhieuXdl }
   }
 
   const isPro = s.goi === 'PR'
-  const toggleThu = (k: string) => setDaThu(prev => ({ ...prev, [k]: !prev[k] }))
+  const congThuc = s.goi === 'PL' ? '/app/danh-muc/cong-thuc-che-bien' : '/app/kho/9-1-3'   // gói Plus xem công thức ở Danh mục (T719)
+  const diSua: Record<LyDoXdl['loai'], string> = { 1: congThuc, 2: '/app/danh-muc/1-2', 3: '/app/danh-muc/1-4', 4: congThuc, 5: '/app/kho/5-1-7' }
+
+  const kieuCot = (k: string): KieuLoc => (/^(sl|gia|tien)/.test(k) ? 'so' : 'chon')
+  const rowsLoc = dongLuoi.filter(r => Object.entries(locCot).every(([k, g]) => {
+    const v = r[k]
+    return !dangLoc(g) || khopLoc(kieuCot(k), g, typeof v === 'number' ? `${money(v)} ${v}` : String(v ?? ''), typeof v === 'number' ? v : undefined)
+  }))
+  const rowsBang = rowsLoc.map((r, i) => ({ ...r, stt: i + 1 }))
+
+  // Tổng: món bán cộng mỗi món một lần vì phần Món bán lặp theo dòng NVL
+  const daDem = new Set<unknown>()
+  const tong = { slMon: 0, tienMon: 0, slNvl: 0, tienNvl: 0 }
+  for (const r of rowsLoc) {
+    if (!daDem.has(r._mon)) { daDem.add(r._mon); tong.slMon += Number(r.slMon); tong.tienMon += Number(r.tienMon) }
+    tong.slNvl += Number(r.slNvl ?? 0)
+    tong.tienNvl += Number(r.tienNvl ?? 0)
+  }
+
+  // Dải cảnh báo: đếm món theo lý do; lý do 5 nằm ở dòng NVL nên đếm món có NVL thiếu giá
+  const demLyDo = new Map<LyDoXdl['loai'], number>()
+  for (const m of row.dong) {
+    const loai = m.lyDo?.loai ?? (m.nvl.some(n => n.lyDo) ? 5 : undefined)
+    if (loai) demLyDo.set(loai, (demLyDo.get(loai) ?? 0) + 1)
+  }
+  const monLoi = row.dong.filter(m => m.lyDo).length
+
+  const tenMa = (ten: unknown, ma: unknown) => <>{String(ten)} <small className="code dim">{String(ma)}</small></>
+  const soHoacTrong = (v: unknown) => (typeof v === 'number' ? money(v) : '')
+  const cols: Col[] = [
+    { k: 'stt', t: '#', w: 45, cls: 'dim' },
+    { k: 'maCt', t: 'Mã công thức', nhom: 'Món bán', w: 100, cls: 'code', r: r => r.maCt ? String(r.maCt) : r.tenMon ? <span className="dim">—</span> : '' },
+    { k: 'tenMon', t: 'Tên', nhom: 'Món bán', w: 180, r: r => r.tenMon ? tenMa(r.tenMon, r.maMon) : '' },
+    { k: 'dvtMon', t: 'ĐVT', nhom: 'Món bán', c: true, w: 60 },
+    { k: 'slMon', t: 'Số lượng', nhom: 'Món bán', num: true, w: 85, r: r => typeof r.slMon === 'number' ? soLuong(r.slMon) : '' },
+    { k: 'giaMon', t: 'Đơn giá', nhom: 'Món bán', num: true, w: 90 },
+    { k: 'tienMon', t: 'Thành tiền', nhom: 'Món bán', num: true, w: 100 },
+    { k: 'tenNvl', t: 'Tên', nhom: 'Hàng hoá', w: 180, r: r => r.tenNvl ? tenMa(r.tenNvl, r.maNvl) : '' },
+    { k: 'dvtNvl', t: 'ĐVT', nhom: 'Hàng hoá', c: true, w: 60 },
+    { k: 'soLo', t: 'Số lô', nhom: 'Hàng hoá', w: 60 },
+    { k: 'slNvl', t: 'Số lượng', nhom: 'Hàng hoá', num: true, w: 85, r: r => typeof r.slNvl === 'number' ? soLuong(r.slNvl) : '' },
+    { k: 'giaNvl', t: 'Đơn giá', nhom: 'Hàng hoá', num: true, w: 90, r: r => soHoacTrong(r.giaNvl) },
+    { k: 'tienNvl', t: 'Tổng', nhom: 'Hàng hoá', num: true, w: 100, r: r => soHoacTrong(r.tienNvl) },
+    {
+      k: 'ghiChu', t: 'Ghi chú', w: 200, wCung: true, cls: 'xdl-cat',
+      r: r => r.ghiChu ? <span className={(r._lyDo as LyDoXdl).loai === 5 ? 'xdl-nhac' : 'xdl-loi'} title={String(r.ghiChu)}>{String(r.ghiChu)}</span> : '',
+    },
+    {
+      k: 'xuLy', t: 'Xử lý', w: 110,
+      r: r => {
+        const ld = r._lyDo as LyDoXdl | undefined
+        return ld ? <button type="button" className="ds-link-so" onClick={e => { e.stopPropagation(); nav(diSua[ld.loai]) }}>{LY_DO[ld.loai].nut}</button> : ''
+      },
+    },
+  ]
 
   return (
     <FormToanMan
@@ -225,8 +297,9 @@ function ChiTietXuatDinhLuong({ sc, mod, row }: ScreenProps & { row?: PhieuXdl }
       meta={
         <>
           <span className="chip ok">Đã xuất kho</span>
-          <span className="src">Hệ thống</span>
+          <span className="src">{row.nguon}</span>
           <span className="chip info"><Icon n="cuahang" className="ic sm" />{row.cn}</span>
+          {monLoi > 0 && <span className="chip warn">{monLoi} món chưa xuất</span>}
         </>
       }
       footClass="fsf-f-xem"
@@ -251,132 +324,95 @@ function ChiTietXuatDinhLuong({ sc, mod, row }: ScreenProps & { row?: PhieuXdl }
       <div className="stack" style={{ gap: 14 }}>
         <p className="pos-nhac" style={{ margin: 0 }}>
           <Icon n="info" className="ic sm" />
-          Phiếu xuất kho theo định lượng sinh tự động từ chứng từ Xuất bán POS. Phiếu chỉ xem, không sửa hay xoá.
+          Phiếu sinh tự động từ chứng từ Xuất bán POS. Chỉ xem, không sửa hay xoá.
         </p>
 
-        <section className="xdl-dau-phieu">
-          <div className="xdl-dau-o">
-            <small>Số chứng từ</small>
-            <b className="code">{row.so}</b>
+        {/* Đầu phiếu 2 nhóm kiểu nhãn trái ô phải như Xuất bán POS (T637, T641); nhãn ô thứ hai cố định để các ô thẳng cột */}
+        <section className="xp637-dau xdl-dau">
+          <div className="xp637-nhom">
+            <div className="xp637-tieu">ĐƠN HÀNG POS</div>
+            <div className="xp637-ds">
+              <div className="xp637-o">
+                <span className="xp637-nhan">Mã hoá đơn</span>
+                <div className="xp637-tri"><span className="xp637-code">{row.maHd}</span></div>
+              </div>
+              <div className="xp637-cap">
+                <div className="xp637-o">
+                  <span className="xp637-nhan">Số đơn POS</span>
+                  <div className="xp637-tri"><span className="xp637-code">{row.soDon}</span></div>
+                </div>
+                <div className="xp637-o xp637-o-phu">
+                  <span className="xp637-nhan">Kênh bán</span>
+                  <div className="xp637-tri"><span title={row.kenh}>{row.kenh}</span></div>
+                </div>
+              </div>
+              <div className="xp637-o">
+                <span className="xp637-nhan">Tham chiếu</span>
+                <div className="xp637-tri">
+                  <Link to={`/app/ban-hang/3-1-1/${row.posId}`} className="ds-link-so" title="Mở chứng từ Xuất bán POS">{row.posSo}</Link>
+                </div>
+              </div>
+            </div>
           </div>
-          <div className="xdl-dau-o">
-            <small>Ngày xuất kho</small>
-            <b>{row.ngay}</b>
-          </div>
-          <div className="xdl-dau-o">
-            <small>Cửa hàng</small>
-            <b>{row.cn}</b>
-          </div>
-          <div className="xdl-dau-o">
-            <small>Tham chiếu (Xuất bán POS)</small>
-            <Link to={`/app/ban-hang/3-1-1/${row.posId}`} className="ds-link-so" title="Mở chứng từ Xuất bán POS">
-              {row.posSo}
-            </Link>
-          </div>
-          <div className="xdl-dau-o" style={{ gridColumn: 'span 2' }}>
-            <small>Ghi chú</small>
-            <span>{row.ghiChu}</span>
-          </div>
-          <div className="xdl-dau-o">
-            <small>Nguồn / Người tạo</small>
-            <span>{row.nguon} · {row.nguoiTao}</span>
+          <div className="xp637-nhom">
+            <div className="xp637-tieu">PHIẾU XUẤT KHO</div>
+            <div className="xp637-ds">
+              <div className="xp637-cap">
+                <div className="xp637-o">
+                  <span className="xp637-nhan">Số chứng từ</span>
+                  <div className="xp637-tri"><span className="xp637-code">{row.so}</span></div>
+                </div>
+                <div className="xp637-o xp637-o-phu">
+                  <span className="xp637-nhan">Ngày xuất</span>
+                  <div className="xp637-tri"><span>{row.ngay}</span></div>
+                </div>
+              </div>
+              <div className="xp637-cap">
+                <div className="xp637-o">
+                  <span className="xp637-nhan">Cửa hàng</span>
+                  <div className="xp637-tri"><span title={row.cn}>{row.cn}</span></div>
+                </div>
+                <div className="xp637-o xp637-o-phu">
+                  <span className="xp637-nhan">Nguồn</span>
+                  <div className="xp637-tri"><span>{row.nguon} · {row.nguoiTao}</span></div>
+                </div>
+              </div>
+              <div className="xp637-o">
+                <span className="xp637-nhan">Ghi chú</span>
+                <div className="xp637-tri"><span title={row.ghiChu}>{row.ghiChu}</span></div>
+              </div>
+            </div>
           </div>
         </section>
 
         {isPro && (
           <div className="xdl-tabs">
-            <button
-              type="button"
-              className={`xdl-tab${tab === 'ct' ? ' on' : ''}`}
-              onClick={() => setTab('ct')}
-            >
+            <button type="button" className={`xdl-tab${tab === 'ct' ? ' on' : ''}`} onClick={() => setTab('ct')}>
               Chi tiết xuất kho ({row.dong.length} món)
             </button>
-            <button
-              type="button"
-              className={`xdl-tab${tab === 'ht' ? ' on' : ''}`}
-              onClick={() => setTab('ht')}
-            >
+            <button type="button" className={`xdl-tab${tab === 'ht' ? ' on' : ''}`} onClick={() => setTab('ht')}>
               Hạch toán
             </button>
           </div>
         )}
 
         {tab === 'ct' && (
-          <div className="card" style={{ padding: 0, overflow: 'auto' }}>
-            <table className="table xdl-tree-table">
-              <thead>
-                <tr>
-                  <th style={{ width: 45 }}>#</th>
-                  <th style={{ width: 250 }}>Hàng hoá</th>
-                  <th style={{ width: 250 }}>Nguyên vật liệu</th>
-                  <th style={{ width: 85, textAlign: 'center' }}>Đơn vị tính</th>
-                  <th style={{ width: 95, textAlign: 'right' }}>Số lượng</th>
-                  <th style={{ width: 110, textAlign: 'right' }}>Giá vốn</th>
-                  <th style={{ width: 130, textAlign: 'right' }}>Tiền vốn</th>
-                </tr>
-              </thead>
-              <tbody>
-                {row.dong.map((m, i) => {
-                  const key = `${m.ma}-${i}`
-                  const thu = daThu[key]
-                  return (
-                    <Fragment key={key}>
-                      <tr className={`xdl-row-cha${!m.coCongThuc ? ' xdl-khong-ct' : ''}`}>
-                        <td className="dim">{i + 1}</td>
-                        <td>
-                          <div style={{ display: 'flex', alignItems: 'center' }}>
-                            {m.coCongThuc ? (
-                              <button
-                                type="button"
-                                className="xdl-toggle-btn"
-                                onClick={() => toggleThu(key)}
-                                title={thu ? 'Mở danh sách nguyên vật liệu' : 'Thu gọn danh sách nguyên vật liệu'}
-                              >
-                                <Icon n={thu ? 'chevron-right' : 'chevron-down'} className="ic sm" />
-                              </button>
-                            ) : (
-                              <span style={{ display: 'inline-block', width: 22 }} />
-                            )}
-                            <span>
-                              <b>{m.ten}</b> <small className="code dim">({m.ma})</small>
-                            </span>
-                          </div>
-                        </td>
-                        <td>
-                          {!m.coCongThuc && <span className="dim xdl-chua-ct">Chưa có công thức</span>}
-                        </td>
-                        <td style={{ textAlign: 'center' }}>{m.dvt}</td>
-                        <td style={{ textAlign: 'right' }}><b>{soLuong(m.sl)}</b></td>
-                        <td style={{ textAlign: 'right' }}>—</td>
-                        <td style={{ textAlign: 'right' }}><b>{m.tienVon ? money(m.tienVon) : '—'}</b></td>
-                      </tr>
-                      {m.coCongThuc && !thu && m.nvl.map((n, j) => (
-                        <tr key={`${key}-${n.ma}-${j}`} className="xdl-row-con">
-                          <td className="dim" style={{ textAlign: 'right', fontSize: 12 }}>{i + 1}.{j + 1}</td>
-                          <td></td>
-                          <td style={{ paddingLeft: 28 }}>
-                            <span className="xdl-nvl-ten">{n.ten}</span> <small className="code dim">({n.ma})</small>
-                          </td>
-                          <td style={{ textAlign: 'center' }}>{n.dvt}</td>
-                          <td style={{ textAlign: 'right' }}>{soLuong(n.sl)}</td>
-                          <td style={{ textAlign: 'right' }}>{money(n.gia)}</td>
-                          <td style={{ textAlign: 'right' }}>{money(n.tien)}</td>
-                        </tr>
-                      ))}
-                    </Fragment>
-                  )
-                })}
-              </tbody>
-              <tfoot>
-                <tr>
-                  <td colSpan={4}><b>Tổng cộng</b></td>
-                  <td style={{ textAlign: 'right' }}><b>{soLuong(row.dong.reduce((a, m) => a + m.sl, 0))}</b></td>
-                  <td></td>
-                  <td style={{ textAlign: 'right' }}><b>{money(row.tong)}</b></td>
-                </tr>
-              </tfoot>
-            </table>
+          <div className="card xdl-luoi" style={{ padding: 0, overflow: 'auto' }}>
+            {demLyDo.size > 0 && (
+              <div className="xdl-canh-bao">
+                <b>{monLoi}/{row.dong.length} món chưa trừ được nguyên vật liệu.</b>
+                {[...demLyDo].sort((a, b) => a[0] - b[0]).map(([loai, n]) => (
+                  <span key={loai} className={loai === 5 ? 'xdl-nhac' : 'xdl-loi'}>{LY_DO[loai].ngan}: {n}</span>
+                ))}
+              </div>
+            )}
+            <Table
+              cols={cols}
+              rows={rowsBang}
+              rowCls={r => (r._lyDo ? 'xdl-dong-loi' : '')}
+              loc={{ gt: locCot, dat: (k, g) => setLocCot(x => ({ ...x, [k]: g })), bo: new Set(['stt', 'xuLy']), kieu: c => kieuCot(c.k), layLuaChon: k => dsGiaTri(dongLuoi, r => String(r[k] ?? '')) }}
+              sum={{ maCt: 'Tổng cộng', ...tong }}
+            />
           </div>
         )}
 

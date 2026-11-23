@@ -146,6 +146,7 @@ export const HANG_SX = [
   { ma: 'NVL030', ten: 'Đường cát', nhom: 'Gia vị', dvt: 'kg', gia: 24000, tkKho: '152' },
   { ma: 'NVL031', ten: 'Quế, hồi, thảo quả', nhom: 'Gia vị', dvt: 'kg', gia: 260000, tkKho: '152' },
   { ma: 'NVL032', ten: 'Trứng gà', nhom: 'Trứng, sữa', dvt: 'Quả', gia: 3200, tkKho: '152' },
+  { ma: 'NVL033', ten: 'Đá viên', nhom: 'Pha chế', dvt: 'kg', gia: 0, tkKho: '152' },   // chưa có giá, mẫu lý do thiếu giá vốn ở Xuất kho định lượng (T907)
   { ma: 'BTP01', ten: 'Nước dùng phở bò', nhom: 'Bán thành phẩm', dvt: 'Lít', gia: 32000, tkKho: '152' },
   { ma: 'BTP02', ten: 'Nước dùng bún bò', nhom: 'Bán thành phẩm', dvt: 'Lít', gia: 30000, tkKho: '152' },
   { ma: 'BTP03', ten: 'Sườn nướng ướp sẵn', nhom: 'Bán thành phẩm', dvt: 'kg', gia: 165000, tkKho: '152' },

@@ -2,6 +2,9 @@
 
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
+## 24/11/2026
+- T907: Bán hàng, Xuất kho định lượng làm lại. Danh sách bỏ dòng đếm phiếu, thêm cột Mã hoá đơn (# và 5 ký tự cuối), cột Ghi chú gọn một dòng. Chi tiết phiếu có đầu phiếu 2 nhóm như Xuất bán POS, lưới chia nhóm cột Món bán, Hàng hoá. Món không trừ được nguyên vật liệu ghi rõ lý do và có nút đi sửa.
+
 ## 23/11/2026
 - T906: Trang Quản lý đơn vị kế toán, mở từ menu đơn vị hoặc menu avatar. Tab Đơn vị kế toán có nút Vào làm việc. Tab Cửa hàng FABi xem mọi cửa hàng của tài khoản, lọc đã gán, chưa gán, gán vào đơn vị, chuyển đơn vị. Chỉ chuyển hoặc bớt được cửa hàng chưa có chứng từ tạo thủ công. Cửa hàng lên sổ từ ngày bắt đầu làm việc của đơn vị nhận.
 - T905: Điện thoại, Chi phí NVL xem một cửa hàng: nút Xem danh sách phiếu mua hàng nằm cuối danh sách, không đè thanh tab dưới. Dòng phiếu mua chỉ hiện tổng tiền, bỏ tiền hàng.
