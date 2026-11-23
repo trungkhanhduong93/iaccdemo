@@ -187,17 +187,15 @@ export function MChiPhiNvl(_: ScreenProps) {
                 </div>
                 <div className="m-standard-cpt-so">
                   <div className="m-standard-cpt-tien">{moneyD(Number(r.tong))}</div>
-                  <div className="m-standard-cpt-phantram">{moneyD(Number(r.tien))} tiền hàng</div>
                 </div>
               </div>
             ))}
           </div>
-          <div className="m-standard-day-nut">
-            <Link to="/app/mua-hang/4-1-1" className="m-standard-nut-chinh">
-              <Icon n="truck" className="ic sm" />
-              <span>Xem danh sách phiếu mua hàng</span>
-            </Link>
-          </div>
+          {/* nút nằm cuối danh sách như Kiểm kê ngay, không ghim đáy để khỏi đè thanh tab (T905) */}
+          <Link to="/app/mua-hang/4-1-1" className="m-tcf-nut-vien chu-xanh">
+            <Icon n="truck" className="ic sm" kieu="net" />
+            <span>Xem danh sách phiếu mua hàng</span>
+          </Link>
           {kk && (
             <div className="m-nvl-ghi">Tồn đầu kỳ, tồn cuối kỳ lấy từ phiếu kiểm kê cuối tháng trước và cuối tháng này.</div>
           )}
