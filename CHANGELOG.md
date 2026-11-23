@@ -7,6 +7,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 - T910: Bảng kê chi tiết mua hàng chỉ còn kiểu xem Chi tiết, bỏ nút Tổng hợp. Nút Bảng kê mua hàng ở trang chủ (web, điện thoại) mở báo cáo tổng hợp mới.
 - T910: Đầu mọi báo cáo, bấm tên nhóm trên đường dẫn (vd Báo cáo / Mua hàng) về đúng nhóm báo cáo đó.
 - T907: Bán hàng, Xuất kho định lượng làm lại. Danh sách bỏ dòng đếm phiếu, thêm cột Mã hoá đơn (# và 5 ký tự cuối), cột Ghi chú gọn một dòng. Chi tiết phiếu có đầu phiếu 2 nhóm như Xuất bán POS, lưới chia nhóm cột Món bán, Hàng hoá. Món không trừ được nguyên vật liệu ghi rõ lý do và có nút đi sửa.
+- T912: Kho gói Plus, Xuất điều chuyển và Nhập điều chuyển gom vào một tab Điều chuyển trên thanh tab, bên trong vẫn có hai tab con Xuất điều chuyển, Nhập điều chuyển.
 
 ## 23/11/2026
 - T906: Trang Quản lý đơn vị kế toán, mở từ menu đơn vị hoặc menu avatar. Tab Đơn vị kế toán có nút Vào làm việc. Tab Cửa hàng FABi xem mọi cửa hàng của tài khoản, lọc đã gán, chưa gán, gán vào đơn vị, chuyển đơn vị. Chỉ chuyển hoặc bớt được cửa hàng chưa có chứng từ tạo thủ công. Cửa hàng lên sổ từ ngày bắt đầu làm việc của đơn vị nhận.
