@@ -60,7 +60,8 @@ const xepSanXuat = (ds: ScreenDef[]) => {
 /** Điều chuyển theo iPOS Inventory (T155): tab Điều chuyển cũ tách thành Xuất điều chuyển (mã Excel 5.1.4), Nhập điều chuyển, Chuyển kho.
  *  Hai tab sau không có mã Excel riêng, mở theo gói của 5.1.4, đứng liền sau Xuất điều chuyển */
 const phieuDcn = (loai: LoaiDcn, icon: string): Partial<ScreenDef> => ({ ten: DCN[loai].ten, icon, kind: 'custom', comp: PhieuDieuChuyen, voucher: cauHinhDcn(loai) })
-const NHAP_DC: ScreenDef = { slug: '5-1-4-2', can: ['5.1.4'], ngan: 'Nhập điều chuyển', nhom: 'Chứng từ', ...phieuDcn('ndc', 'filein'), kind: 'custom' }
+const NHAP_DC: ScreenDef = { slug: '5-1-4-2', can: ['5.1.4'], ngan: 'Nhập điều chuyển', nhom: 'Chứng từ', ...phieuDcn('ndc', 'filein'), kind: 'custom',
+  tabChaGoi: { PL: '5-1-4' } }   // gói Plus: không có tab riêng, là tab con trong tab Điều chuyển (T721)
 const CHUYEN_KHO: ScreenDef = { slug: '5-1-4-3', can: ['5.1.4'], ngan: 'Xuất chuyển kho', nhom: 'Chứng từ', ...phieuDcn('ck', 'swap'), kind: 'custom' }
 const sauDieuChuyen = (ds: ScreenDef[]) => { const i = ds.findIndex(x => x.slug === '5-1-4'); return [...ds.slice(0, i + 1), NHAP_DC, CHUYEN_KHO, ...ds.slice(i + 1)] }
 
@@ -100,8 +101,8 @@ const kho: ModuleDef = {
   key: 'kho', ten: 'Kho hàng', ngan: 'Kho', icon: 'box', mod: 4,
   mota: 'Nhập, xuất, điều chuyển, kiểm kê kho; giá vốn, thẻ kho, tồn kho',
   quyTrinh,
-  // Gói Plus xếp theo luồng: Tồn kho ban đầu, Nhập kho, Xuất điều chuyển, Nhập điều chuyển, Xuất huỷ, Xuất khác, Kiểm kê, Tính giá vốn (T721, T888)
-  xepTab: { PL: ['quy-trinh', '5-1-12', '5-1-1', '5-1-4', '5-1-4-2', '5-1-2-3', '5-1-2-4', '5-1-10', '5-1-7'] },
+  // Gói Plus xếp theo luồng: Tồn kho ban đầu, Nhập kho, Điều chuyển, Xuất huỷ, Xuất khác, Kiểm kê, Tính giá vốn (T721, T888)
+  xepTab: { PL: ['quy-trinh', '5-1-12', '5-1-1', '5-1-4', '5-1-2-3', '5-1-2-4', '5-1-10', '5-1-7'] },
   // Màn Điều chỉnh kho đứng ngay sau Kiểm kê (T126); nhóm sản xuất xếp theo IVT (T152); ba tab điều chuyển liền nhau (T155)
   screens: chiGoiPro([...sauKiemKe(xepSanXuat(sauDieuChuyen(tuExcel(4, {
     '5.1.2-2': phieu('XBH', 'Thêm phiếu xuất bán hàng', ['Xuất bán nguyên liệu cho đối tác', 'Xuất bán set quà Trung thu'], [['632', '156', 'Giá vốn hàng bán']], 'kh', 'Khách hàng'),
@@ -109,7 +110,7 @@ const kho: ModuleDef = {
     '5.1.2-4': phieu('XK', 'Thêm phiếu xuất khác', ['Xuất dùng cho bữa ăn nhân viên', 'Xuất làm món thử cho thực đơn mới'], [['6421', '152', 'Xuất dùng nội bộ']], 'nv', 'Người nhận'),
     // Nhập kho (T818): phiếu nhập kho thêm tay, nguồn Thủ công. Hàng thừa khi kiểm kê nhập bằng phiếu Nhập điều chỉnh ở tab Kiểm kê
     '5.1.1': { ten: 'Nhập kho', voucher: { ...phieu('NK', 'Thêm phiếu nhập kho', ['Nhập bán thành phẩm nước dùng', 'Nhập bán thành phẩm sốt ướp', 'Nhập lại nguyên liệu sơ chế dùng không hết'], [['152', '154', 'Nhập kho bán thành phẩm']]).voucher!, nguon: 'tay' } },
-    '5.1.4': phieuDcn('xdc', 'dieuchuyen'),
+    '5.1.4': { ...phieuDcn('xdc', 'dieuchuyen'), nganGoi: { PL: 'Điều chuyển' } },   // gói Plus một tab Điều chuyển, tab con Xuất, Nhập điều chuyển (T721)
     '9.1.3': { kind: 'custom', comp: CongThucScreen, icon: 'book' },
     '5.1.3': phieuSx('xcb', 'Xuất chế biến', 'flask'),
     '5.1.5': { kind: 'custom', comp: CongThucScreen, icon: 'book' },
