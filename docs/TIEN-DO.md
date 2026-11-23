@@ -11,6 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T907 | Xuất kho định lượng làm lại theo mẫu Trum chốt: danh sách cân cột, bỏ dòng đếm phiếu, thêm cột Mã hoá đơn #5 ký tự cuối; chi tiết phiếu đầu phiếu 2 nhóm như Xuất bán POS, lưới phẳng nhóm cột Món bán, Hàng hoá, món không xuất được ghi lý do (5 lý do) và cột Xử lý, dòng tổng 4 cột | Trum | Đang làm | Sửa `kho/XuatDinhLuong.tsx`, `kho/xuat-dinh-luong.ts`, cuối `app.css` (mục T907). Mẫu artifact Gkizz4UXzvRAHoB93mtykS bản 6 |
 | T893 | Form Sửa danh mục không lưu được thay đổi của dòng mẫu (chỉ lưu dòng thêm trong phiên, `CatalogScreen.tsx` dòng ~660). Nhập Excel T892 đã có lớp ghi đè `ghiDeCatalogRow` trong `danhMucStore.ts`, form Sửa có thể dùng lại | Trum | Chưa làm | Thấy khi làm T892 |
 | T882 | Tồn kho ban đầu trên điện thoại: danh sách thẻ, chọn nhiều, Thiết lập hàng loạt, Xoá | | Chờ | Trum dời sang phiên sau (18/11/2026). Mẫu `backup/mau-T879/Dt*.dc.html`, spec mục Việc T882 trong `backup/spec-T879-T882.md` |
 | T873 | Rà mẫu báo cáo gói Plus theo bộ mẫu TT58 bản 13/11 (17 mẫu), lập bảng lệch `docs/RA-SOAT-MAU-TT58.md`, chưa sửa code | Trum | Dở dang | Chỉ tạo `docs/RA-SOAT-MAU-TT58.md`. Spec `backup/spec-T594-T871-T873.md`. Dừng 17/11: đã trích 17 sheet ra `backup/review-T873/excel_summary.txt`, chưa viết bảng lệch |
