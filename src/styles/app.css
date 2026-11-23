@@ -50042,6 +50042,9 @@ body:has(.nxh-nen) .pop { z-index: 1001; }
 .dsdv-ten b { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .dsdv-dang { flex: none; padding: 1px 6px; border-radius: 4px; background: var(--tint); color: var(--blue); font-size: 11px; font-weight: 600; line-height: 16px; }
 .dsdv-tat { opacity: .35; cursor: default; }
+.dsdv-ds-ch { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.dsdv-so-ch { flex: none; min-width: 22px; height: 20px; padding: 0 6px; border: 1px solid var(--line); border-radius: 10px; background: var(--soft); color: var(--ink); font-size: 12px; font-weight: 700; line-height: 18px; text-align: center; box-sizing: border-box; }
+.dsdv-ten-ch { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .dsdv-tat:hover { background: transparent; }
 .dsdv-tt { display: inline-flex; gap: 2px; }
 .dsdv-chi-xem { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: 12.5px; }

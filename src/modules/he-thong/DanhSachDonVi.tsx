@@ -41,7 +41,7 @@ export function DanhSachDonVi({ sc }: ScreenProps) {
     { k: 'mst', t: 'Mã số thuế', w: 130, r: r => !r.id ? null : r.mst || <span className="muted">Chưa khai</span> },
     { k: 'ten', t: 'Tên đơn vị', w: 260, r: r => !r.id ? null : <span className="dsdv-ten"><b title={r.ten}>{r.ten}</b>{r.id === s.donVi && <span className="dsdv-dang">Đang làm việc</span>}</span> },   // nhãn nhỏ sau tên, tên dài thì cắt tên, nhãn vẫn hiện
     { k: 'diaChi', t: 'Địa chỉ', w: 280 },
-    { k: 'cuaHang', t: 'Danh sách cửa hàng', w: 300, r: r => !r.id ? r.cuaHang : r.soCh ? <span title={r.cuaHang}><b>{r.soCh}</b> · {r.cuaHang}</span> : <span className="muted">Chưa có cửa hàng</span> },
+    { k: 'cuaHang', t: 'Danh sách cửa hàng', w: 300, r: r => !r.id ? r.cuaHang : r.soCh ? <span className="dsdv-ds-ch" title={r.cuaHang}><span className="dsdv-so-ch" title={`${r.soCh} cửa hàng`}>{r.soCh}</span><span className="dsdv-ten-ch">{r.cuaHang}</span></span> : <span className="muted">Chưa có cửa hàng</span> },
     { k: 'loai', t: 'Loại hình', w: 130 },
     { k: 'tenGoi', t: 'Gói dịch vụ', w: 120, r: r => !r.id ? null : <Pk g={r.goi} /> },   // gói đơn vị đang dùng, đổi ở Gói thuê bao
     { k: 'thaoTac', t: 'Thao tác', c: true, w: 120, dinh: 'phai', r: r => !r.id ? null : (

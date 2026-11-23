@@ -6,7 +6,7 @@
 
 ## Đã làm
 
-- File mới `src/modules/he-thong/DanhSachDonVi.tsx`: bảng đơn vị gồm Mã số thuế, Tên đơn vị, Địa chỉ, Danh sách cửa hàng, Loại hình, Gói dịch vụ (Standard, Plus, Pro đang dùng), Thao tác. Hộp sửa có ô Gói dịch vụ chỉ đọc. Có ô tìm, dòng tổng, phân trang. Nút chuyển sang làm việc ở đơn vị khác, dòng đơn vị đang mở thì nút mờ. Nhãn nhỏ "Đang làm việc" sau tên. Cột Thao tác ghim bên phải.
+- File mới `src/modules/he-thong/DanhSachDonVi.tsx`: bảng đơn vị gồm Mã số thuế, Tên đơn vị, Địa chỉ, Danh sách cửa hàng, Loại hình, Gói dịch vụ (Standard, Plus, Pro đang dùng), Thao tác. Hộp sửa có ô Gói dịch vụ chỉ đọc. Có ô tìm, dòng tổng, phân trang. Nút chuyển sang làm việc ở đơn vị khác, dòng đơn vị đang mở thì nút mờ. Nhãn nhỏ "Đang làm việc" sau tên. Cột Thao tác ghim bên phải. Số cửa hàng là nhãn tròn riêng trước tên cửa hàng, không lẫn với số trong tên.
 - Hộp sửa đơn vị: tên, MST (10 hoặc 13 số, không trùng đơn vị khác), địa chỉ. Thêm cửa hàng chọn từ cửa hàng FABi chưa gán, bớt cửa hàng bằng nút x. Bấm Lưu mới áp dụng. Đơn vị cần ít nhất một cửa hàng.
 - Quyền: vai trò Chủ doanh nghiệp (role `owner`, coi là FABi Owner) được sửa. Vai trò khác chỉ xem, ô chỉ đọc, không có nút Lưu. Người dùng chốt trong phiên.
 - `src/modules/he-thong/index.ts`: thêm màn `he-thong/don-vi`, ẩn tab ở mọi gói.
