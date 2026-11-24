@@ -907,7 +907,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
   const khuonMua = laTraBan || nhom === 'ban'   // mọi phiếu bán lập tay: thẻ đầu, mặt hàng, chân như phiếu mua (T854)
   // Bán hàng lập tay (T855, như web T785): tích Thanh toán ngay lập phiếu thu, công tắc Phát hành HĐĐT, Kênh bán bắt buộc
   const laBanTay = khuonMua && !laTraBan
-  const khuonMuaGon = khuonMua || laHuy   // chỉ về hình dáng: thẻ mặt hàng, chân ghim như phiếu mua; Xuất huỷ không dính thanh toán, hoá đơn
+  const khuonMuaGon = khuonMua || laNk   // chỉ về hình dáng: thẻ mặt hàng, chân ghim như phiếu mua; Xuất huỷ không dính thanh toán, hoá đơn
   // GTGT theo % doanh thu (T855, như web T450): Bán hàng, Hàng bán trả lại không có ô VAT, thuế 0, trừ Giảm trừ thuế
   const tyLeBan = khuonMua && cfg.thue !== 0 && gtgtTyLe(s)
   const hdDaXuat = laBanTay && row ? hdCua(row) : undefined
@@ -2586,8 +2586,8 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
         ) : (
           /* ════ PHIẾU HÀNG HOÁ KHÁC (BÁN HÀNG, KHO...) ════ */
           <>
-            {laHuy ? (
-              /* Xuất huỷ (T928): thẻ đầu, mặt hàng, chân như phiếu mua; không nhà cung cấp, không thanh toán, hoá đơn */
+            {laNk ? (
+              /* Xuất huỷ (T928), Nhập kho (T929): thẻ đầu, mặt hàng, chân như phiếu mua; không nhà cung cấp, không thanh toán, hoá đơn */
               <div className="m-t655-the">
                 <div className="m-t655-chip-hang">
                   <span className="m-t600-chip-nguon">{gocData?.nguon === 'excel' ? 'Excel' : 'Thủ công'}</span>
@@ -2602,9 +2602,9 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                 {loiO.cuaHang && <div className="m-lp-loi-o m-t655-loi">{loiO.cuaHang}</div>}
                 <div className="m-t655-ke" />
                 <div className="m-t655-hang">
-                  <span className="m-t655-nhan">Kho xuất <em>*</em></span>
+                  <span className="m-t655-nhan">{laHuy ? 'Kho xuất' : 'Kho nhập'} <em>*</em></span>
                   <button type="button" className="m-t655-o" id="m-lp-o-kho" onClick={() => setMoChonKho(true)}>
-                    <span className={kho ? 'chu' : 'goi'}>{kho || 'Chọn kho xuất'}</span>
+                    <span className={kho ? 'chu' : 'goi'}>{kho || (laHuy ? 'Chọn kho xuất' : 'Chọn kho nhập')}</span>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
                   </button>
                 </div>
@@ -2616,6 +2616,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
                   </button>
                 </div>
+                {laHuy && (
                 <div className="m-t655-hang">
                   <span className="m-t655-nhan">Lý do huỷ <em>*</em></span>
                   <button type="button" className="m-t655-o" onClick={() => setMoChonLyHuy(true)}>
@@ -2623,6 +2624,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
                   </button>
                 </div>
+                )}
                 <div className="m-t655-hang">
                   <span className="m-t655-nhan">Người thực hiện</span>
                   <input type="text" aria-label="Người thực hiện" className="m-t655-o go" placeholder="Nhập người thực hiện" value={nhanVien} onChange={e => setNhanVien(e.target.value)} />
@@ -2925,11 +2927,11 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                 />
               ))}
               {/* Bán hàng, Hàng bán trả lại: khối Tổng cộng dưới danh sách như phiếu mua (T842, T853, T854); Tổng tiền ghim ở chân */}
-              {laHuy && (
+              {laNk && (
                 <div className="m-t601-tong-khu">
                   <div style={{ fontSize: 15, fontWeight: 600, marginBottom: 6, color: 'var(--ink)' }}>Tổng cộng ({dsDong.length} dòng)</div>
                   <div className="m-t601-tong-dong"><span className="lb">Tổng số lượng</span><span>{money(dsDong.reduce((a, d) => a + (Number(d.sl) || 0), 0))}</span></div>
-                  <div className="m-t601-tong-dong"><span className="lb">Tổng tiền vốn</span><span>{money(tongTien)}</span></div>
+                  <div className="m-t601-tong-dong"><span className="lb">{laHuy ? 'Tổng tiền vốn' : 'Tổng tiền'}</span><span>{money(tongTien)}</span></div>
                 </div>
               )}
               {khuonMua && (
