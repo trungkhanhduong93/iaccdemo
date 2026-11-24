@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 24/11/2026
+- T913: Xuất kho định lượng, chi tiết phiếu bỏ cột Số lô. Kéo mép tiêu đề để giãn độ rộng cột, vd kéo rộng Ghi chú xem đủ nội dung. Trình duyệt nhớ độ rộng đã kéo.
 - T910: Báo cáo mới Tổng hợp mua hàng theo hàng hoá ở nhóm báo cáo Mua hàng: mỗi mặt hàng một dòng với số lượng, đơn giá bình quân, thành tiền, chiết khấu, thuế, tổng tiền. Bấm mã hàng mở Bảng kê chi tiết mua hàng ở tab mới, cùng kỳ, lọc sẵn mặt hàng đó.
 - T910: Bảng kê chi tiết mua hàng chỉ còn kiểu xem Chi tiết, bỏ nút Tổng hợp. Nút Bảng kê mua hàng ở trang chủ (web, điện thoại) mở báo cáo tổng hợp mới.
 - T910: Đầu mọi báo cáo, bấm tên nhóm trên đường dẫn (vd Báo cáo / Mua hàng) về đúng nhóm báo cáo đó.

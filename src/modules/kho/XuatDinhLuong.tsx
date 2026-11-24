@@ -213,12 +213,13 @@ function ChiTietXuatDinhLuong({ sc, mod, row }: ScreenProps & { row?: PhieuXdl }
   const dongForm = useDong(duongDan(mod, sc))
   const [tab, setTab] = useState<'ct' | 'ht'>('ct')
   const [locCot, setLocCot] = useState<Record<string, GiaTriLoc>>({})
+  const doRong = useDoRongCot('xuat-dinh-luong-ct')   // kéo giãn cột, kéo rộng Ghi chú xem đủ (T913)
 
   // Lưới phẳng như mẫu Chi tiết tiêu hao: mỗi dòng một NVL của một món, phần Món bán lặp lại để lọc từng cột đúng
   const dongLuoi = useMemo<Row[]>(() => (row?.dong ?? []).flatMap((m, i) => {
     const mon = { _mon: i, maCt: m.maCt ?? '', _ctId: m.ctId, tenMon: m.ten, maMon: m.maFabi ? `FABi: ${m.maFabi}` : m.ma, dvtMon: m.dvt, slMon: m.sl, giaMon: m.gia, tienMon: m.tien }
     if (!m.nvl.length) return [{ ...mon, id: `${i}`, ghiChu: m.lyDo?.text ?? '', _lyDo: m.lyDo }]
-    return m.nvl.map((n, j) => ({ ...mon, id: `${i}-${j}`, tenNvl: n.ten, maNvl: n.ma, dvtNvl: n.dvt, soLo: '', slNvl: n.sl, giaNvl: n.gia, tienNvl: n.tien, ghiChu: n.lyDo?.text ?? '', _lyDo: n.lyDo }))
+    return m.nvl.map((n, j) => ({ ...mon, id: `${i}-${j}`, tenNvl: n.ten, maNvl: n.ma, dvtNvl: n.dvt, slNvl: n.sl, giaNvl: n.gia, tienNvl: n.tien, ghiChu: n.lyDo?.text ?? '', _lyDo: n.lyDo }))
   }), [row])
 
   if (!row) {
@@ -274,7 +275,6 @@ function ChiTietXuatDinhLuong({ sc, mod, row }: ScreenProps & { row?: PhieuXdl }
     { k: 'tienMon', t: 'Thành tiền', nhom: 'Món bán', num: true, w: 100 },
     { k: 'tenNvl', t: 'Tên', nhom: 'Hàng hoá', w: 180, r: r => r.tenNvl ? tenMa(r.tenNvl, r.maNvl) : '' },
     { k: 'dvtNvl', t: 'ĐVT', nhom: 'Hàng hoá', c: true, w: 60 },
-    { k: 'soLo', t: 'Số lô', nhom: 'Hàng hoá', w: 60 },
     { k: 'slNvl', t: 'Số lượng', nhom: 'Hàng hoá', num: true, w: 85, r: r => typeof r.slNvl === 'number' ? soLuong(r.slNvl) : '' },
     { k: 'giaNvl', t: 'Đơn giá', nhom: 'Hàng hoá', num: true, w: 90, r: r => soHoacTrong(r.giaNvl) },
     { k: 'tienNvl', t: 'Tổng', nhom: 'Hàng hoá', num: true, w: 100, r: r => soHoacTrong(r.tienNvl) },
@@ -415,6 +415,7 @@ function ChiTietXuatDinhLuong({ sc, mod, row }: ScreenProps & { row?: PhieuXdl }
               cols={cols}
               rows={rowsBang}
               rowCls={r => (r._lyDo ? 'xdl-dong-loi' : '')}
+              doRong={doRong}
               loc={{ gt: locCot, dat: (k, g) => setLocCot(x => ({ ...x, [k]: g })), bo: new Set(['stt', 'xuLy']), kieu: c => kieuCot(c.k), layLuaChon: k => dsGiaTri(dongLuoi, r => String(r[k] ?? '')) }}
               sum={{ maCt: 'Tổng cộng', ...tong }}
             />
