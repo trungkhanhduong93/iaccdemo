@@ -132,7 +132,14 @@ function conBaoCao(sc: ScreenDef, goi: Goi, cheDo?: CheDo, session?: Pick<Sessio
   }
   const m = MODULES.find(x => x.screens.includes(sc))
   if (m && AN_NHOM_BC[goi]?.includes(m.key)) return false   // tab Báo cáo của phân hệ có nhóm ẩn ở gói (T218)
-  return (m?.screens.filter(laBaoCao) ?? []).some(x => hienMan(x, goi, cheDo, session))
+  if ((m?.screens.filter(laBaoCao) ?? []).some(x => hienMan(x, goi, cheDo, session))) return true
+  // Báo cáo của phân hệ khác khai ở khung Báo cáo của sơ đồ Quy trình (vd Bảng kê chi phí phân bổ 10.4.4 của Tổng hợp ở Chi phí phân bổ) cũng đủ để hiện tab
+  const bcMod = MODULES.find(x => x.key === 'bao-cao')?.screens.filter(x => x.goc) ?? []
+  return (m?.quyTrinh?.baoCao ?? []).some(di => {
+    const { mod: g, sc: x } = dich(di, m?.key)
+    const b = g && x && g.key !== m?.key ? bcMod.find(y => y.goc === g.key && y.slug === x.slug) : undefined
+    return !!b && hienMan(b, goi, cheDo, session)
+  })
 }
 
 /** Mã quyết định khoá của màn (để tìm gói thấp nhất) */
