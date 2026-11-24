@@ -1,12 +1,14 @@
 // Đầu phiếu, bảng dòng phiếu điều chuyển (T155): xuất điều chuyển, nhập điều chuyển, chuyển kho.
 // Nhập điều chuyển lấy dòng từ phiếu xuất tham chiếu, sửa được Thực nhận. Chuyển kho không có đơn giá, thành tiền, cột tài khoản
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import type { Row } from '../types'
 import { CUA_HANG, NVL } from '../../data/mock'
 import { cheDoHienTai, useSession } from '../../app/session'
 import { tkTheoCheDo } from '../tong-hop/so-cai'
 import { ChonDanhMuc } from '../../ui/ChonDanhMuc'
+import { ThemHangLoat, type HangChon } from '../../ui/generic/ThemHangLoat'
+import { quyDoiTuDanhMuc } from '../danh-muc/QuyDoiDvt'
 import { Select } from '../../ui/Dropdown'
 import { Icon } from '../../ui/Icon'
 import { money } from '../../ui/format'
@@ -92,17 +94,26 @@ export function DauDieuChuyen({ loai, sua, cuaHang, kho, setKho, khoNhan, setKho
   return (
     <div className="dcn-dau">
       {oKhoXuat}
-      {/* Bỏ ô Cửa hàng nhận (T748): chọn kho của cửa hàng khác, cửa hàng nhận suy ra từ kho */}
+      {/* Bỏ ô Cửa hàng nhận (T748): kho nhận là mọi kho trừ kho xuất, cửa hàng nhận suy ra từ kho */}
       <div className="f">
         <label>Kho nhận <em>*</em></label>
-        <OChon nhan="Kho nhận" value={khoNhan} ds={CUA_HANG.filter(c => c.ten !== cuaHang).flatMap(c => c.kho)} trong="Chọn kho nhận" sua={sua}
+        <OChon nhan="Kho nhận" value={khoNhan} ds={CUA_HANG.flatMap(c => c.kho).filter(k => k !== kho)} trong="Chọn kho nhận" sua={sua}
           onChange={v => { setKhoNhan(v); setCnNhan(cnCuaKho(v)) }} />
       </div>
     </div>
   )
 }
 
-const DS_NVL = NVL.map(n => ({ v: n.ma, t: `${n.ten} - ${n.ma}` }))
+const DS_NVL = NVL.map(n => ({ v: n.ma, t: `${n.ma} - ${n.ten}` }))   // ô Mã hàng ghi mã trước như phiếu mua hàng
+const DS_HANG_LOAT: HangChon[] = NVL.map(n => ({ ma: n.ma, ten: n.ten, dvt: n.dvt, nhom: n.nhom, loai: 'Nguyên vật liệu' }))
+
+/** ĐVT chọn được của một hàng: ĐVT chính và các ĐVT có quy đổi trong danh mục Quy đổi ĐVT (1.4) */
+function dsDvtCuaHang(ma: string, dvtDong: string) {
+  const h = NVL.find(n => n.ma === ma)
+  const qd = h ? quyDoiTuDanhMuc(h.ten, h.dvt) : []
+  const ds = [...new Set([h?.dvt ?? dvtDong, ...qd.map(q => q.dv), dvtDong].filter(Boolean))]
+  return { ds, h, qd }
+}
 
 export function BangDieuChuyen({ loai, dong, onChange, cheDo, coTk, an = [], khongTong = false, kho, coThamChieu }: {
   loai: LoaiDcn; dong: DongDcn[]; onChange?: (ds: DongDcn[]) => void; cheDo: 'xem' | 'sua'; coTk?: boolean; an?: string[]; khongTong?: boolean
@@ -117,22 +128,32 @@ export function BangDieuChuyen({ loai, dong, onChange, cheDo, coTk, an = [], kho
   const capNhat = (i: number, p: Partial<DongDcn>) => onChange?.(dong.map((d, j) => (j === i ? { ...d, ...p } : d)))
   const xoaDong = (i: number) => onChange?.(dong.filter((_, j) => j !== i))
   const tongTien = dong.reduce((a, d) => a + (d.tien || 0), 0)
+  const [moHangLoat, setMoHangLoat] = useState(false)
+  /** Đổi ĐVT: giá theo ĐVT mới quy từ giá ĐVT chính, thành tiền tính lại */
+  const doiDvt = (i: number, dvt: string) => {
+    const d = dong[i], { h, qd } = dsDvtCuaHang(d.ma, d.dvt)
+    const q = qd.find(x => x.dv === dvt)
+    const giaChinh = h?.gia ?? d.gia
+    const gia = dvt === h?.dvt || !q || !q.tl ? giaChinh : Math.round(q.nguoc ? giaChinh * q.tl : giaChinh / q.tl)
+    capNhat(i, { dvt, gia: ck ? 0 : gia, tien: ck ? 0 : Math.round(d.sl * gia) })
+  }
 
   const tk = coTk && !ck && DCN[loai].noCo[0] ? DCN[loai].noCo[0].slice(0, 2).map(t => tkTheoCheDo(t, cd).so) : null
-  const soCot = 2 + Number(hien('dvt')) + Number(hien('slXuat')) + 1 + Number(hien('gia')) + Number(hien('tien')) + Number(hien('gcDong')) + (tk ? 2 : 0) + Number(sua && !nhap)
+  const soCot = 3 + Number(hien('dvt')) + Number(hien('slXuat')) + 1 + Number(hien('gia')) + Number(hien('tien')) + Number(hien('gcDong')) + (tk ? 2 : 0) + Number(sua && !nhap)
 
-  const trong = !nhap && !kho ? <><b>Chưa có thông tin xuất</b>Chọn <b>Kho xuất</b> ở đầu phiếu để thêm hàng hoá.</>
-    : nhap && !coThamChieu ? <><b>Chưa có thông tin nhập</b>Chọn phiếu <b>Tham chiếu</b> ở đầu phiếu, hàng cần nhập tự điền theo phiếu xuất.</>
-      : dong.length ? null : <><b>Chưa có dòng nào</b>{sua && !nhap ? 'Bấm Thêm dòng để chọn nguyên vật liệu.' : ''}</>
+  // Xuất, chuyển kho: bảng như phiếu mua hàng, chưa có dòng vẫn hiện hàng Tổng cộng và nút Thêm dòng; chỉ phiếu nhập cần báo chờ tham chiếu
+  const trong = nhap ? (!coThamChieu ? <><b>Chưa có thông tin nhập</b>Chọn phiếu <b>Tham chiếu</b> ở đầu phiếu, hàng cần nhập tự điền theo phiếu xuất.</>
+    : dong.length ? null : <b>Chưa có dòng nào</b>) : null
 
   return (
-    <div className="bang-sua-wrap sx-bang">
+    <div className="bang-sua-wrap">
       <div className="tbl-wrap" style={{ overflowX: 'auto' }}>
         <table className={`tbl${sua ? ' bang-sua' : ''}`}>
           <thead>
             <tr>
               <th className="dim c" style={{ width: 40 }}>#</th>
-              <th style={{ minWidth: 260 }}>Hàng hoá</th>
+              <th style={{ width: 120 }}>Mã hàng</th>
+              <th style={{ minWidth: 200 }}>Tên hàng hoá, dịch vụ</th>
               {hien('dvt') && <th style={{ width: 90 }}>Đơn vị tính</th>}
               {hien('slXuat') && <th className="num" style={{ width: 120 }}>Số lượng xuất</th>}
               <th className="num" style={{ width: 120 }}>{nhap ? 'Thực nhận' : 'Số lượng'}</th>
@@ -147,12 +168,18 @@ export function BangDieuChuyen({ loai, dong, onChange, cheDo, coTk, an = [], kho
             {trong ? <tr><td colSpan={soCot} className="sx-trong">{trong}</td></tr> : dong.map((d, i) => (
               <tr key={i}>
                 <td className="dim c">{i + 1}</td>
+                {sua && !nhap ? (
+                  <td>
+                    <ChonDanhMuc dm="nvl" nhan="nguyên vật liệu" coMa chiMa className="inp sm" trong="Chọn" value={d.ma} ds={DS_NVL}
+                      onChange={v => capNhat(i, { ...dongDcn(v, d.sl, !ck), gcDong: d.gcDong })} />
+                  </td>
+                ) : <td className="code">{d.ma}</td>}
                 <td>
-                  {sua && !nhap ? <ChonDanhMuc dm="nvl" nhan="nguyên vật liệu" className="inp sm" value={d.ma} ds={DS_NVL}
-                    onChange={v => capNhat(i, { ...dongDcn(v, d.sl, !ck), gcDong: d.gcDong })} />
-                    : <span className="sx-ten">{d.ten}<small> - {d.ma}</small></span>}
+                  {sua && !nhap ? <input type="text" className="inp sm" value={d.ten} placeholder="Tên hàng" aria-label="Tên hàng hoá" onChange={e => capNhat(i, { ten: e.target.value })} />
+                    : d.ten}
                 </td>
-                {hien('dvt') && <td>{d.dvt}</td>}
+                {hien('dvt') && <td>{sua && !nhap ? (() => { const { ds } = dsDvtCuaHang(d.ma, d.dvt)
+                  return <Select className="inp sm" value={d.dvt} aria-label="Đơn vị tính" onChange={e => doiDvt(i, e.target.value)} ds={ds.map(v => ({ v, t: v }))} /> })() : d.dvt}</td>}
                 {hien('slXuat') && <td className="num dim">{soLuong(d.slXuat ?? 0)}</td>}
                 <td className={`num${nhap && d.sl !== d.slXuat ? ' sx-lech' : ''}`} title={nhap && d.sl !== d.slXuat ? 'Thực nhận khác số lượng xuất' : undefined}>
                   {sua ? <OSo val={d.sl} onChange={v => capNhat(i, { sl: v, tien: Math.round(v * d.gia) })} /> : soLuong(d.sl)}
@@ -178,11 +205,16 @@ export function BangDieuChuyen({ loai, dong, onChange, cheDo, coTk, an = [], kho
           )}
         </table>
       </div>
-      {sua && !nhap && kho && (
+      {sua && !nhap && (
         <div className="row sx-them">
-          <button type="button" className="btn sm ghost" onClick={() => onChange?.([...dong, { ...dongDcn(DS_NVL[0].v, 0, !ck), ...(ck ? { gcDong: '' } : {}) }])}>
+          <button type="button" className="btn sm ghost" disabled={!kho} title={kho ? undefined : 'Chọn Kho xuất ở đầu phiếu để thêm hàng hoá'} onClick={() => onChange?.([...dong, { ...dongDcn(DS_NVL[0].v, 0, !ck), ...(ck ? { gcDong: '' } : {}) }])}>
             <Icon n="plus" className="ic sm" />Thêm dòng
           </button>
+          <button type="button" className="btn sm ghost" disabled={!kho} title={kho ? undefined : 'Chọn Kho xuất ở đầu phiếu để thêm hàng hoá'} onClick={() => setMoHangLoat(true)}>
+            <Icon n="plus" className="ic sm" />Thêm hàng loạt
+          </button>
+          {moHangLoat && <ThemHangLoat ds={DS_HANG_LOAT} daCo={dong.map(d => d.ma)} onDong={() => setMoHangLoat(false)}
+            onXacNhan={ds => onChange?.([...dong, ...ds.map(h => ({ ...dongDcn(h.ma, 1, !ck), ...(ck ? { gcDong: '' } : {}) }))])} />}
           {dong.length > 0 && (
             <button type="button" className="btn sm ghost" onClick={() => onChange?.([])} style={{ color: 'var(--red)' }}>
               <Icon n="trash" className="ic sm" />Xoá hết
