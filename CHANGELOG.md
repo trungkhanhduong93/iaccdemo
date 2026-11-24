@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 24/11/2026
+- T925: Danh sách Thu chi máy tính, tab Chuyển quỹ bỏ cột Lý do, Tham chiếu, Nguồn.
 - T924: Danh sách chứng từ (Thu chi, Mua hàng, Kho, Bán hàng, Công thức, Phiếu sản xuất, Hoá đơn điện tử): mở phiếu rồi đóng thì quay về đúng kỳ và bộ lọc đang xem, không trả về kỳ hiện tại.
 - T916, T920: Phiếu chuyển quỹ không chọn được Đến quỹ trùng Từ quỹ, trên máy tính lẫn điện thoại. Lưu khi hai quỹ trùng hoặc thiếu Đến quỹ thì báo "Từ quỹ và Đến quỹ phải khác nhau". Điện thoại có thêm ô Đến quỹ.
 - T917: Phiếu chuyển quỹ định khoản theo quỹ đã chọn: Nợ tài khoản quỹ đến, Có tài khoản quỹ đi. Quỹ tiền mặt là 1111, tài khoản ngân hàng là 1121. Sổ quỹ ghi dòng nộp tiền vào ngân hàng bằng số phiếu CQ.

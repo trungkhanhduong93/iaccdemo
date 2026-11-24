@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T925 | Danh sách chứng từ máy tính, tab Chuyển quỹ: bỏ cột Lý do, Tham chiếu, Nguồn; tab Tiền mặt, Ngân hàng giữ nguyên | Trum | 24/11/2026 | 2026-11-24-trum-chuyen-quy.md |
 | T924 | Web, danh sách chứng từ: mở phiếu rồi đóng thì quay về đúng kỳ và bộ lọc đang xem, không trả về kỳ hiện tại | dinhlanphuongipacc | 24/11/2026 | [nhật ký](../nhat-ky/2026-11-24-dinhlanphuongipacc-nho-ky-loc-dong-phieu.md) |
 | T916 | Phiếu chuyển quỹ máy tính: ô Đến quỹ bỏ quỹ đang chọn ở Từ quỹ, đổi Từ quỹ trùng thì Đến quỹ rỗng, lưu chặn câu "Từ quỹ và Đến quỹ phải khác nhau" | Trum | 24/11/2026 | 2026-11-24-trum-chuyen-quy.md |
 | T917 | Chuyển quỹ định khoản theo mã quỹ: Nợ TK quỹ đến, Có TK quỹ đi (quỹ tiền mặt 1111, ngân hàng 1121); thêm `quyCuaCq`, `tkCuaQuy`, chuyển `QUY_TIEN` sang `gen.ts`; sổ quỹ ghi dòng nộp tiền ngân hàng số CQ | Trum | 24/11/2026 | 2026-11-24-trum-chuyen-quy.md |

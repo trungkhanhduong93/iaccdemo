@@ -299,6 +299,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
   const [tabLoai, setTabLoai] = useState(() => cfg.loai?.find(l => l.k === thamSo.get('loai'))?.k ?? cfg.loai?.[0]?.k ?? '')   // ?loai= mở đúng tab con, vd từ sơ đồ (T128)
   // Thu chi (T386): tab Tiền mặt, Ngân hàng, Chuyển quỹ trên thanh tab phân hệ, cùng màn, nhóm loại phiếu theo ?nhom=
   const nhomChon = nhomDangMo(sc, thamSo)
+  const tabCq = mod.key === 'tien' && nhomChon?.k === 'cq'   // tab Chuyển quỹ (T919, T925)
   const loaiNhom = nhomChon ? cfg.loai?.filter(l => nhomChon.loai.includes(l.k)) : cfg.loai
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [moHangLoat, setMoHangLoat] = useState(false)
@@ -521,11 +522,11 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
     // Mua, bán (T286): Diễn giải là tên hàng trong phiếu, diễn giải đầu phiếu đổi tên Ghi chú
     ...(muaBan ? [{ k: 'tenHang', t: 'Diễn giải', w: 260, r: (r: Row) => <span title={String(r._tenHangDu ?? '')}>{r.tenHang}</span> } as Col] : []),
     { k: 'dienGiai', t: cfg.kiemKe || cfg.dieuChinh || muaBan || laNk ? 'Ghi chú' : 'Diễn giải' },   // phiếu kiểm kê, nhập khác ghi Ghi chú như đầu phiếu (T124, T740)
-    ...(mod.key === 'tien' && nhomChon?.k === 'cq' ? [
+    ...(tabCq ? [
       { k: '_tuQuyHien', t: 'Từ quỹ', w: 190 } as Col,
       { k: '_denQuyHien', t: 'Đến quỹ', w: 190 } as Col,
     ] : []),   // T919: cột Từ quỹ, Đến quỹ cho tab Chuyển quỹ
-    ...(mod.key === 'tien' || cfg.khongKho ? [{ k: 'lyDo', t: 'Lý do', w: 170 } as Col] : []),   // Hoá đơn mua hàng cũng có cột Lý do (T821)   // T96; tên cột ngắn Lý do (T168)
+    ...((mod.key === 'tien' && !tabCq) || cfg.khongKho ? [{ k: 'lyDo', t: 'Lý do', w: 170 } as Col] : []),   // tab Chuyển quỹ không có Lý do (T925)   // Hoá đơn mua hàng cũng có cột Lý do (T821)   // T96; tên cột ngắn Lý do (T168)
     ...(cfg.doiTuong !== 'none' && !laNk ? [{ k: 'doiTuong', t: cfg.nhan ?? 'Đối tượng' } as Col] : []),
     // Đang chọn một cửa hàng trên thanh trên thì cột cửa hàng thừa
     ...(cnChon ? [] : [{ k: 'cn', t: 'Cửa hàng', cls: 'dim', w: 130 } as Col]),
@@ -566,23 +567,23 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
     ...(cfg.kiemKe ? [{ k: 'kho', t: 'Kho', w: 180 } as Col, { k: 'soMat', t: 'Số mặt hàng', num: true, w: 120 } as Col] : []),
     ...(cfg.dieuChinh ? [{ k: 'kho', t: 'Kho', w: 180 } as Col] : []),   // T126
     ...(!cfg.kiemKe && !cfg.dieuChinh && !laNk && (cfg.thue !== undefined || cfg.dong === 'hang') ? [giamGtgtCua(mod, cfg, s) ? { k: 'giamThue', t: 'Giảm thuế GTGT', num: true, w: 130 } as Col : { k: 'thue', t: 'Tiền thuế', num: true, w: 120 } as Col] : []),
-    // Tham chiếu (T127, T270): các phiếu liên quan, một dòng, mở tab mới hoặc mở popup chọn mã
-    {
+    // Tham chiếu (T127, T270): các phiếu liên quan, một dòng, mở tab mới hoặc mở popup chọn mã; tab Chuyển quỹ không có (T925)
+    ...(tabCq ? [] : [{
       k: 'thamChieu', t: 'Tham chiếu', w: 150,
-      r: r => <OThamChieu ds={thamChieuCua(r)} />,
-    },
+      r: (r: Row) => <OThamChieu ds={thamChieuCua(r)} />,
+    } as Col]),
     // Ngày tạo, người tạo (T132)
     { k: 'ngayTao', t: 'Ngày tạo', w: 140 },
     { k: 'nguoiTao', t: sc.code === '5.1.1' ? 'Người thực hiện' : 'Người tạo', w: 150 },   // Nhập kho (T818)
-    {
+    ...(tabCq ? [] : [{   // tab Chuyển quỹ không có Nguồn (T925)
       k: 'nguon',
       t: 'Nguồn',
       w: 90,
-      r: r => {
+      r: (r: Row) => {
         const [c, t] = NGUON[r.nguon] ?? NGUON.tay
         return <span className={`src ${c}`}>{t}</span>
       },
-    },
+    } as Col]),
     // Tổng tiền là cột cuối; không còn cột Chức năng, xem phiếu bằng đúp chuột hoặc khung chi tiết (T48)
     ...(cfg.kiemKe || (cfg.dieuChinh && s.goi === 'S') ? [] : [{ k: 'tong', t: 'Tổng tiền', num: true, w: 120, dinh: 'phai' } as Col]),   // điều chỉnh kho gói Standard không hiện giá trị (T131); cố định bên phải khi cuộn ngang (T239)
   ]
