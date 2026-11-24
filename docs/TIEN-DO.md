@@ -11,6 +11,12 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T916 | Phiếu chuyển quỹ máy tính: ô Đến quỹ bỏ quỹ đang chọn ở Từ quỹ, lưu thì chặn khi hai quỹ trùng | Trum | Đang làm | Sửa `ChungTuForm.tsx` (khúc `oQuyCq`, hàm `luu`). Spec `backup/spec-T916-T921.md` |
+| T917 | Chuyển quỹ định khoản theo mã quỹ (quỹ tiền mặt 1111, ngân hàng 1121, Nợ quỹ đến, Có quỹ đi); sổ quỹ ghi dòng nộp tiền ngân hàng thành số CQ | Trum | Đang làm | Sửa `gen.ts` (`dinhKhoanDongTien`, thêm `quyCuaCq`), `SoQuy.tsx` (`soQuyCn`) |
+| T918 | Mẫu in Phiếu chuyển quỹ 1 tờ (Từ quỹ, Đến quỹ, số tiền, Nợ/Có), thay cặp Phiếu chi + Phiếu thu | Trum | Đang làm | Sửa `src/app/mau-in.ts` |
+| T919 | Danh sách chứng từ máy tính, tab Chuyển quỹ: thêm cột Từ quỹ, Đến quỹ | Trum | Đang làm | Sửa `VoucherScreen.tsx` (khúc cột, Trum đang giữ T496) |
+| T920 | Điện thoại, lập phiếu chuyển quỹ: thêm ô Đến quỹ, bỏ quỹ đi khỏi danh sách, chặn lưu khi trùng | Trum | Đang làm | Sửa `MDtThuChiLap.tsx` |
+| T921 | Điện thoại, danh sách Thu chi tab Chuyển quỹ: 2 ô Tổng xuất đi, Tổng nhận vào; bộ lọc thêm Quỹ | Trum | Đang làm | Sửa `MDtThuChiDs.tsx`, dùng `quyCuaCq` của T917 |
 | T893 | Form Sửa danh mục không lưu được thay đổi của dòng mẫu (chỉ lưu dòng thêm trong phiên, `CatalogScreen.tsx` dòng ~660). Nhập Excel T892 đã có lớp ghi đè `ghiDeCatalogRow` trong `danhMucStore.ts`, form Sửa có thể dùng lại | Trum | Chưa làm | Thấy khi làm T892 |
 | T882 | Tồn kho ban đầu trên điện thoại: danh sách thẻ, chọn nhiều, Thiết lập hàng loạt, Xoá | | Chờ | Trum dời sang phiên sau (18/11/2026). Mẫu `backup/mau-T879/Dt*.dc.html`, spec mục Việc T882 trong `backup/spec-T879-T882.md` |
 | T873 | Rà mẫu báo cáo gói Plus theo bộ mẫu TT58 bản 13/11 (17 mẫu), lập bảng lệch `docs/RA-SOAT-MAU-TT58.md`, chưa sửa code | Trum | Dở dang | Chỉ tạo `docs/RA-SOAT-MAU-TT58.md`. Spec `backup/spec-T594-T871-T873.md`. Dừng 17/11: đã trích 17 sheet ra `backup/review-T873/excel_summary.txt`, chưa viết bảng lệch |
