@@ -18,7 +18,7 @@ import { between, dmy, k, pad, pick, rng } from '../../ui/format'
 export function soQuyCn(cn: string, thang: number) {
   const r = rng('soquy' + cn + thang)
   const mo = k(between(r, 38e6, 52e6))
-  let du = mo, pt = 0, pc = 0, tn = 0, tc = 0
+  let du = mo, pt = 0, pc = 0, cq = 0, tn = 0, tc = 0
   const rows: Row[] = []
   for (const x of DAILY.filter(d => d.cn === cn && d.date.getMonth() + 1 === thang)) {
     const ngay = dmy(x.date)
@@ -31,7 +31,8 @@ export function soQuyCn(cn: string, thang: number) {
     for (const [dg, tk, v] of chi) {
       if (v <= 0) continue
       du -= v; tc += v
-      rows.push({ ngay, chi: `PC${pad(thang)}-${pad(++pc, 3)}`, dg, tk, co: v, du })
+      const soChi = dg.startsWith('Nộp tiền') ? `CQ${pad(thang)}-${pad(++cq, 3)}` : `PC${pad(thang)}-${pad(++pc, 3)}`   // T917: nộp tiền ngân hàng mang số CQ
+      rows.push({ ngay, chi: soChi, dg, tk, co: v, du })
     }
   }
   return { mo, rows, tn, tc, cuoi: du }

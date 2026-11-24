@@ -180,6 +180,50 @@ export const MAU_IN: MauIn[] = [
     coNoCo: true,
   },
 
+  // 2b. Phiếu chuyển quỹ (T918)
+  {
+    id: 'phieu-chuyen-quy',
+    ten: 'Phiếu chuyển quỹ',
+    kyHieu: { TT58: '', TT133: '', TT99: '' },
+    tieuDe: 'PHIẾU CHUYỂN QUỸ',
+    trang: { kho: 'A5', huong: 'ngang', le: [8, 10, 8, 15], lien: 1, coChu: 9.5, phong: 'app' },
+    khoi: taoKhoi(false, false, false, false),
+    soCotThongTin: 1,
+    thongTin: [
+      { k: 'tuQuy', nhan: 'Từ quỹ', batBuoc: true },
+      { k: 'denQuy', nhan: 'Đến quỹ', batBuoc: true },
+      { k: 'nguoi', nhan: 'Người thực hiện', batBuoc: true },
+      { k: 'lyDo', nhan: 'Diễn giải', batBuoc: true },
+      { k: 'soTien', nhan: 'Số tiền', batBuoc: true },
+      { k: 'bangChu', nhan: 'Viết bằng chữ', batBuoc: true },
+    ],
+    thongTinTheoCheDo: {
+      TT58: [
+        { k: 'tuQuy', nhan: 'Từ quỹ', batBuoc: true },
+        { k: 'denQuy', nhan: 'Đến quỹ', batBuoc: true },
+        { k: 'nguoi', nhan: 'Người thực hiện', batBuoc: true },
+        { k: 'lyDo', nhan: 'Diễn giải', batBuoc: true },
+        { k: 'soTien', nhan: 'Số tiền', batBuoc: true },
+        { k: 'bangChu', nhan: 'Viết bằng chữ', batBuoc: true },
+      ],
+    },
+    ky: [
+      { chucDanh: 'Người lập phiếu', goiY: '(Ký, họ tên)' },
+      { chucDanh: 'Người thực hiện', goiY: '(Ký, họ tên)' },
+      { chucDanh: 'Kế toán trưởng', goiY: '(Ký, họ tên)' },
+      { chucDanh: 'Giám đốc', goiY: '(Ký, họ tên, đóng dấu)' },
+    ],
+    kyTheoCheDo: {
+      TT58: [
+        { chucDanh: 'Người lập phiếu', goiY: '(Ký, họ tên)' },
+        { chucDanh: 'Người thực hiện', goiY: '(Ký, họ tên)' },
+        { chucDanh: 'Kế toán trưởng', goiY: '(Ký, họ tên)' },
+        { chucDanh: 'Người đại diện theo pháp luật', goiY: '(Ký, họ tên, đóng dấu)' },
+      ],
+    },
+    coNoCo: true,
+  },
+
   // 3. Phiếu thu qua ngân hàng
   {
     id: 'phieu-thu-nh',
@@ -912,7 +956,7 @@ export function mauCuaChungTu(code: string, loai?: string, cd?: CheDo, goi?: Goi
       case '2.1.1':
         if (loai === 'thu') return ['phieu-thu']
         if (loai === 'chi') return ['phieu-chi']
-        if (loai === 'cq') return ['phieu-chi', 'phieu-thu']
+        if (loai === 'cq') return ['phieu-chuyen-quy', 'phieu-chi', 'phieu-thu']   // T918
         if (loai === 'bc') return ['phieu-thu-nh']
         if (loai === 'unc') return ['uy-nhiem-chi']
         return ['phieu-chi', 'phieu-thu']

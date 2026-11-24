@@ -11,7 +11,7 @@ import { CUA_HANG, HOM_NAY, KHACH, LY_DO, NCC, NHAN_VIEN, TK_NGAN_HANG } from '.
 import { layChiNhanhNho } from '../ChonCuaHangTruoc'
 import { soKeTiep, suaPhieu, themPhieu, ghiNhatKy } from '../generic/daXoa'
 import { MAN_THU_CHI, QUY_TIEN, TEN_CT_TT, TIEN_TO_CT_TT } from '../generic/ChungTuForm'
-import { doanLyDoThuChi, dongCua, tkTheoLyDo, ttNghiepVu } from '../generic/gen'
+import { doanLyDoThuChi, dongCua, quyCuaCq, tkTheoLyDo, ttNghiepVu } from '../generic/gen'
 import { useDongChungTu } from '../generic/VoucherScreen'
 import { theoLoai } from '../generic/nhom'
 import { TAI_KHOAN } from '../../modules/danh-muc/data'
@@ -167,6 +167,14 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
     }
     return ''
   })
+  // T920: Quỹ đến cho phiếu chuyển quỹ
+  const [denQuy, setDenQuy] = useState<string>(() => {
+    if (goc?._denQuy) return String(goc._denQuy)
+    return goc && isCq ? quyCuaCq(goc).den : ''   // phiếu mẫu chưa lưu Đến quỹ thì suy như web (T920)
+  })
+  const [loiDenQuy, setLoiDenQuy] = useState('')
+  const [moChonDenQuy, setMoChonDenQuy] = useState(false)
+  const [timDenQuy, setTimDenQuy] = useState('')
 
   const ngayHomNay = `${String(HOM_NAY.getDate()).padStart(2, '0')}/${String(HOM_NAY.getMonth() + 1).padStart(2, '0')}/${HOM_NAY.getFullYear()}`
   const [ngay, setNgay] = useState<string>(() => dienSan?.ngay ?? (row?.ngay ? String(row.ngay) : ngayHomNay))
@@ -457,6 +465,14 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
       toast('Vui lòng chọn quỹ tiền', { loai: 'loi' })
       return
     }
+    // T920: Kiểm tra quỹ đến với phiếu chuyển quỹ
+    if (isCq) {
+      if (!denQuy || denQuy === quyLuu) {
+        setLoiDenQuy('Từ quỹ và Đến quỹ phải khác nhau')
+        toast('Từ quỹ và Đến quỹ phải khác nhau', { loai: 'loi' })
+        return
+      }
+    }
     const duLieuPhieu: Partial<Row> = {
       so: soCt,
       loai,
@@ -472,6 +488,7 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
       tien: tienLuu,
       tong: tienLuu,
       _quy: quyLuu,
+      ...(isCq ? { _tuQuy: quyLuu, _denQuy: denQuy } : {}),
       _lyDo: lyDoLuu,
       _dong: isCq
         ? undefined
@@ -622,6 +639,13 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
     return q ? dsQuyOptions.filter(o => o.ten.toLowerCase().includes(q)) : dsQuyOptions
   }, [dsQuyOptions, timQuy])
 
+  // T920: Quỹ đến cho phiếu chuyển quỹ
+  const dsDenQuyLoc = useMemo(() => {
+    const ds = QUY_TIEN.filter(q => q !== quy)
+    const t = timDenQuy.trim().toLowerCase()
+    return t ? ds.filter(q => q.toLowerCase().includes(t)) : ds
+  }, [quy, timDenQuy])
+
   const handleChonCn = (tenCn: string) => {
     setMoChonCn(false)
     setCuaHang(tenCn)
@@ -764,7 +788,7 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
 
           <div className="m-tc-lap-field m-t650-hang">
             <label className="nhan">
-              {isCq ? 'Quỹ' : 'Quỹ tiền mặt'} <span className="sao">*</span>
+              {isCq ? 'Từ quỹ' : 'Quỹ tiền mặt'} <span className="sao">*</span>
             </label>
             <div
               className="m-tc-lap-select"
@@ -776,6 +800,25 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
               </svg>
             </div>
           </div>
+
+          {/* T920: Ô Đến quỹ cho phiếu chuyển quỹ */}
+          {isCq && (
+            <div className="m-tc-lap-field m-t650-hang">
+              <label className="nhan">
+                Đến quỹ <span className="sao">*</span>
+              </label>
+              <div
+                className="m-tc-lap-select"
+                onClick={() => setMoChonDenQuy(true)}
+              >
+                <span className={!denQuy ? 'trong' : ''}>{denQuy || 'Chọn quỹ tiền'}</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M6 9l6 6 6-6" />
+                </svg>
+              </div>
+              {loiDenQuy && <div className="m-t601-loi">{loiDenQuy}</div>}
+            </div>
+          )}
 
           <div
             className="m-tc-lap-field m-t650-hang m-lp-sua-o"
@@ -1443,6 +1486,9 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
                         className={`m-t600-hang-quy ${isChon ? 'on' : ''}`}
                         onClick={() => {
                           setQuy(q.ten)
+                          if (isCq && denQuy === q.ten) {
+                            setDenQuy('')
+                          }
                           setMoChonQuy(false)
                           setDaSua(true)
                         }}
@@ -1480,6 +1526,110 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
                 className="btn pri"
                 style={{ width: '100%', height: 48, borderRadius: 10, fontSize: 15, fontWeight: 600 }}
                 onClick={() => setMoChonQuy(false)}
+              >
+                Chọn quỹ này
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── SHEET CHỌN ĐẾN QUỸ (T920) ── */}
+      {moChonDenQuy && (
+        <div className="m-tam-overlay" onClick={() => setMoChonDenQuy(false)}>
+          <div className="m-tam-hop m-t600-sheet-70" onClick={e => e.stopPropagation()}>
+            <div className="m-tam-dau">
+              <div>
+                <h2 className="m-tam-tieu">Chọn đến quỹ</h2>
+                <div style={{ fontSize: 13, color: 'var(--muted)', marginTop: 2 }}>
+                  Cửa hàng {cuaHang || 'Phố Mây Nguyễn Trãi'}
+                </div>
+              </div>
+              <button type="button" className="m-tam-dong-btn" onClick={() => setMoChonDenQuy(false)} aria-label="Đóng">
+                <Icon n="x" className="ic sm" kieu="net" />
+              </button>
+            </div>
+
+            <div className="m-t600-sheet-than" style={{ padding: '8px 16px' }}>
+              <div style={{ padding: '0 0 10px' }}>
+                <div className="m-t601-o-tim">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2" strokeLinecap="round">
+                    <circle cx="11" cy="11" r="7" />
+                    <path d="M20 20l-4-4" />
+                  </svg>
+                  <input
+                    type="text"
+                    placeholder="Tìm quỹ…"
+                    value={timDenQuy}
+                    onChange={e => setTimDenQuy(e.target.value)}
+                  />
+                  {timDenQuy && (
+                    <button type="button" className="m-lp-tim-hang-x" onClick={() => setTimDenQuy('')} style={{ border: 0, background: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+                      <Icon n="x" className="ic sm" kieu="net" />
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {dsDenQuyLoc.length === 0 ? (
+                <div style={{ padding: '24px 16px', textAlign: 'center', color: 'var(--muted)', fontSize: 14 }}>
+                  Không tìm thấy quỹ phù hợp
+                </div>
+              ) : (
+                dsDenQuyLoc.map((tenQuy, idx) => {
+                  const sd = soDuQuy(tenQuy)
+                  const loaiQ = tenQuy.startsWith('Quỹ tiền mặt') ? 'tm' : 'nh'
+                  const isChon = denQuy === tenQuy
+                  const prevLoai = idx > 0 ? (dsDenQuyLoc[idx - 1].startsWith('Quỹ tiền mặt') ? 'tm' : 'nh') : ''
+                  const hienNhom = idx === 0 || loaiQ !== prevLoai
+                  return (
+                    <div key={tenQuy}>
+                      {hienNhom && (
+                        <div className="m-t601-nhom-chu" style={{ margin: idx === 0 ? '0 -16px 8px' : '8px -16px', padding: '4px 16px 6px' }}>
+                          {loaiQ === 'tm' ? 'TIỀN MẶT' : 'NGÂN HÀNG'}
+                        </div>
+                      )}
+                      <div
+                        className={`m-t600-hang-quy ${isChon ? 'on' : ''}`}
+                        onClick={() => {
+                          setDenQuy(tenQuy)
+                          setLoiDenQuy('')
+                          setMoChonDenQuy(false)
+                          setDaSua(true)
+                        }}
+                      >
+                        <span className={`m-t601-quy-ic ${loaiQ}`}>
+                          {loaiQ === 'tm' ? (
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#138a52" strokeWidth="1.8">
+                              <rect x="2" y="6" width="20" height="13" rx="2" />
+                              <circle cx="12" cy="12.5" r="2.5" />
+                            </svg>
+                          ) : (
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0560a6" strokeWidth="1.8">
+                              <path d="M3 10l9-6 9 6M5 10v8M19 10v8M9 10v8M15 10v8M3 20h18" />
+                            </svg>
+                          )}
+                        </span>
+                        <div style={{ minWidth: 0, flex: 1 }}>
+                          <div style={{ fontWeight: 600, fontSize: 15, color: 'var(--ink)' }}>{tenQuy}</div>
+                          <div style={{ fontSize: 11, color: 'var(--muted)' }}>
+                            Số dư {money(sd)} đ
+                          </div>
+                        </div>
+                        {isChon && <span style={{ color: 'var(--blue)' }}><Icon n="check" className="ic sm" kieu="net" /></span>}
+                      </div>
+                    </div>
+                  )
+                })
+              )}
+            </div>
+
+            <div className="m-t600-sheet-day">
+              <button
+                type="button"
+                className="btn pri"
+                style={{ width: '100%', height: 48, borderRadius: 10, fontSize: 15, fontWeight: 600 }}
+                onClick={() => setMoChonDenQuy(false)}
               >
                 Chọn quỹ này
               </button>

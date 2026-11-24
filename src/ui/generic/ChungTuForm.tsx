@@ -25,7 +25,7 @@ import { ChonDanhMuc } from '../ChonDanhMuc'
 import { heSoZoom } from '../zoom'
 import { BaoCaoDoRongCtx, St, Table, useDoRongCot } from '../Table'
 import { chuanKyHieuHd, chuanSoHd, dmy, fold, money, moneyD } from '../format'
-import { NGUON, dongCua, nguoiTaoMau, tkTheoLyDo, ttNghiepVu, type Dong } from './gen'
+import { NGUON, QUY_TIEN, dongCua, nguoiTaoMau, tkCuaQuy, tkTheoLyDo, ttNghiepVu, type Dong } from './gen'
 import { boO, nhomCua, theoLoai, TT_TIEN } from './nhom'
 import { BangKiemKe, COT_KK } from './BangKiemKe'
 import { MAN_DC, phieuDieuChinh, type LoaiDc } from '../../modules/kho/dieu-chinh'
@@ -240,6 +240,10 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
   // Phiếu đã lưu Từ quỹ, Đến quỹ thì mở lại đúng quỹ đã chọn (T779)
   const [tuQuy, setTuQuy] = useState(() => row?._tuQuy ? String(row._tuQuy) : rut ? QUY_TIEN[CUA_HANG.length] : quyTm)
   const [denQuy, setDenQuy] = useState(() => row?._denQuy ? String(row._denQuy) : rut ? quyTm : QUY_TIEN[CUA_HANG.length])
+  function chonTuQuy(q: string) {
+    setTuQuy(q)
+    if (q === denQuy) setDenQuy('')   // T916: đổi Từ quỹ trùng Đến quỹ thì xoá Đến quỹ
+  }
   useEffect(() => {
     setLyDo(row?._lyDo ? String(row._lyDo) : lyGoc(row?.dienGiai ? String(row.dienGiai) : cfg.dienGiai[0]))
   }, [loai?.k, row?.id])
@@ -270,6 +274,15 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
       setDsDong(ds => ds.map(d => ({ ...d, ly: lyDo })))
     }
   }, [dongGoc, lyDo, coTkTheoLy, loaiPhieuTien])   // không đưa oLy vào: object tạo lại mỗi lần vẽ làm effect chạy lặp
+
+  // Chuyển quỹ (T917): Nợ/Có của dòng tính lại theo quỹ đến và quỹ đi khi đổi quỹ
+  useEffect(() => {
+    if (nhom === 'cq') {
+      const tkNo = tkCuaQuy(denQuy)
+      const tkCo = tkCuaQuy(tuQuy)
+      setDsDong(ds => ds.map(d => ({ ...d, tkNo, tkCo })))
+    }
+  }, [dongGoc, nhom, tuQuy, denQuy])
   // Gói Standard phiếu chi, UNC lý do Thanh toán công nợ nhà cung cấp (T718): tab Chi tiết chọn phiếu mua còn nợ để trả,
   // mỗi phiếu mua chọn thành một dòng chi tiết. Phiếu mẫu chưa chọn phiếu mua thì khi xem vẫn hiện bảng dòng như cũ
   const traNoNcc = tcNhuStandard(s.goi) && laTien && (loai?.k === 'chi' || loai?.k === 'unc') && lyDo === LY_DO.find(x => x.ma === 'CHI02')?.ten
@@ -540,6 +553,11 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
     }
     // Phiếu thu, chi chỉ bắt buộc đối tượng khi lý do là thu nợ, đi vay, chi công nợ, cho vay (T330)
     if (laTien && canDt && !doiTuong.trim()) { toast(`Chọn đối tượng cho lý do ${lyDo}`, { loai: 'loi' }); return }
+    // Chuyển quỹ (T916): chặn Đến quỹ rỗng hoặc trùng Từ quỹ
+    if (nhom === 'cq' && (!denQuy.trim() || denQuy === tuQuy)) {
+      toast('Từ quỹ và Đến quỹ phải khác nhau', { loai: 'loi' })
+      return
+    }
     if (traNoNcc && !traNo.length) { toast('Chọn phiếu mua cần thanh toán ở tab Chi tiết', { loai: 'loi' }); return }   // T718
     if (khoGon && !kho) { toast(laNk ? 'Chọn Kho nhập' : 'Chọn Kho xuất', { loai: 'loi' }); return }   // T737, T741
     if (laHuy && !lyDo) { toast('Chọn Lý do huỷ', { loai: 'loi' }); return }   // T914
@@ -909,11 +927,11 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
       <button type="button" className="ph-nut" onClick={() => setMoNguoiMua(true)}>Thay đổi thông tin VAT</button>
     </div>
   )
-  // Chuyển quỹ: ô quỹ đi, quỹ đến và người thực hiện
-  const oQuyCq = (nhan: string, v: string, setV: (v: string) => void) => (
+  // Chuyển quỹ: ô quỹ đi, quỹ đến và người thực hiện (T916)
+  const oQuyCq = (nhan: string, v: string, setV: (v: string) => void, ds = QUY_TIEN) => (
     <div className="f">
       <label>{nhan} <em>*</em></label>
-      {suaTtc ? <ChonDanhMuc dm="quy" nhan="quỹ" value={v} onChange={setV} ds={QUY_TIEN} khongThem /> : <input className="inp" readOnly value={v} />}
+      {suaTtc ? <ChonDanhMuc dm="quy" nhan="quỹ" value={v} onChange={setV} ds={ds} khongThem /> : <input className="inp" readOnly value={v} />}
     </div>
   )
   const oNguoiTh = hienDau('nguoi') && (
@@ -1390,7 +1408,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
               {khoDau && oKhoDau}
               {nhom === 'cq' ? (
                 <>
-                  {oQuyCq('Từ quỹ', tuQuy, setTuQuy)}
+                  {oQuyCq('Từ quỹ', tuQuy, chonTuQuy)}
                   {oNguoiTh}
                 </>
               ) : (<>
@@ -1424,8 +1442,8 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
             {/* Cột 2: lý do, nhân viên, mã số thuế, hạn thanh toán */}
             <div className="stack" style={{ gap: 10 }}>
               {!lyDuoi && oLyDo}
-              {/* Chuyển quỹ: hàng 1 Từ quỹ, Đến quỹ; hàng 2 Người thực hiện, Ghi chú (T77) */}
-              {nhom === 'cq' && oQuyCq('Đến quỹ', denQuy, setDenQuy)}
+              {/* Chuyển quỹ: hàng 1 Từ quỹ, Đến quỹ; hàng 2 Người thực hiện, Ghi chú (T77, T916) */}
+              {nhom === 'cq' && oQuyCq('Đến quỹ', denQuy, setDenQuy, QUY_TIEN.filter(q => q !== tuQuy))}
               {tcGiua && oDiaChi}
               {/* Phiếu kiểm kê: hàng 1 Kho kiểm kê, Nhân viên thực hiện; hàng 2 Ghi chú (T124) */}
               {gonDau && !laDcn && (
@@ -1818,10 +1836,7 @@ export interface TraTu {   // điện thoại dùng chung khi lập trả lại 
   kenh?: string   // hàng bán trả lại lập từ chứng từ bán: kênh bán của chứng từ gốc (T855)
 }
 
-export const QUY_TIEN = [
-  ...CUA_HANG.map(c => `Quỹ tiền mặt ${c.ngan}`),
-  ...TK_NGAN_HANG.map(t => `${t.nh.split(',')[0]} ${t.so}`),
-]
+export { QUY_TIEN } from './gen'
 
 /** Đoán lý do thu, chi từ diễn giải; không khớp thì lấy lý do cuối danh sách (Thu khác, Chi phí khác) */
 /** Thẻ chi phí phân bổ của phiếu chi: thẻ tạo khi lưu phiếu (_theCp, T168) và thẻ mẫu trỏ về phiếu (_goc, T436) */

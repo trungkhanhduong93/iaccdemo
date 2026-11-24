@@ -1,7 +1,7 @@
 // Dựng dữ liệu in từ một phiếu trong danh sách chứng từ (dữ liệu giả của gen.ts)
 import type { Row, VoucherCfg, LoaiCT } from '../../modules/types'
 import type { MauIn } from '../../app/mau-in'
-import { dongCua, nguoiTaoMau, tongDong, ttNghiepVu, type Dong } from '../generic/gen'
+import { dongCua, nguoiTaoMau, tongDong, ttNghiepVu, quyCuaCq, tkCuaQuy, loaiThuChiCua, type Dong } from '../generic/gen'
 import { CUA_HANG } from '../../data/mock'
 import { docSoTien, money, pad, rng, k } from '../format'
 import { giaVonBq, tienVon } from '../../modules/kho/tinh-gia-von/giaVonBq'
@@ -57,6 +57,7 @@ function noCoCuaMau(mauId: string, ds: NoCo): { no: string[]; co: string[] } {
     case 'phieu-chi': return loc(x => dau(x[1], '111'), [coKhac('111') ?? '331', '1111'])
     case 'phieu-thu-nh': return loc(x => dau(x[0], '112'), ['1121', noKhac('112') ?? '131'])
     case 'uy-nhiem-chi': return loc(x => dau(x[1], '112'), [coKhac('112') ?? '331', '1121'])
+    case 'phieu-chuyen-quy': return { no: ['1121'], co: ['1111'] }
     case 'phieu-nhap-kho': return loc(x => dau(x[0], '152', '153', '155', '156'), ['152', ds.some(x => dau(x[0], '511')) ? '632' : '331'])
     case 'phieu-xuat-kho':
     case 'phieu-xuat-kho-ban': return loc(x => dau(x[1], '152', '153', '155', '156'), ['632', '152'])
@@ -104,7 +105,13 @@ export function duLieuIn(
   // Bút toán Nợ / Có
   const noCoList = loai?.noCo ?? cfg.noCo ?? []
   const capTien = noCoList[0] ?? ['1111', '131']
-  const { no, co } = noCoCuaMau(mau.id, noCoList)
+  let { no, co } = noCoCuaMau(mau.id, noCoList)
+  const laCq = loai?.k === 'cq' || row.loai === 'cq' || mau.id === 'phieu-chuyen-quy' || loaiThuChiCua(cfg, String(row.id ?? '')) === 'cq'
+  if (laCq) {
+    const cq = quyCuaCq(row)
+    no = [tkCuaQuy(cq.den)]
+    co = [tkCuaQuy(cq.tu)]
+  }
 
   // Bảng chi tiết
   let dong: Record<string, string | number>[] = []
@@ -247,6 +254,16 @@ export function duLieuIn(
     tt.diaDiem = String(row.cn ?? '')
     tt.theoCt = ''
     deTrong.add('theoCt')
+  }
+
+  // Phiếu chuyển quỹ (T918): bổ sung Từ quỹ, Đến quỹ và Người thực hiện
+  if (laCq) {
+    const cq = quyCuaCq(row)
+    tt.tuQuy = cq.tu
+    tt.denQuy = cq.den
+    if (row.nguoi || row._nhanVien) {
+      tt.nguoi = String(row._nhanVien ?? row.nguoi)
+    }
   }
 
   // Điền bù các trường thông tin trong mẫu nếu còn thiếu để không để trống trường bắt buộc

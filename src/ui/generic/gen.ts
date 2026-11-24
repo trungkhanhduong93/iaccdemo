@@ -1,6 +1,6 @@
 // Sinh dữ liệu giả cho màn chung. Có hạt giống theo mã màn nên mở lại vẫn ra đúng số cũ.
 import type { Row, VoucherCfg } from '../../modules/types'
-import { CUA_HANG, HANG, HOM_NAY, KHACH, KHOAN_MUC, NCC, NHAN_VIEN, NVL } from '../../data/mock'
+import { CUA_HANG, HANG, HOM_NAY, KHACH, KHOAN_MUC, NCC, NHAN_VIEN, NVL, TK_NGAN_HANG } from '../../data/mock'
 import { between, dmy, fold, k, pad, pick, rng } from '../format'
 
 /** Bỏ lượt rng đầu (số phút) để form, bản in, điện thoại ra cùng người với cột danh sách (T824) */
@@ -189,6 +189,29 @@ export function tkTheoLyDo(loai: string, ly: string): { tkNo?: string; tkCo?: st
   return {}
 }
 
+/** Các quỹ chuyển qua lại trên phiếu chuyển quỹ: quỹ tiền mặt từng cửa hàng, rồi tài khoản ngân hàng (T917) */
+export const QUY_TIEN = [
+  ...CUA_HANG.map(c => `Quỹ tiền mặt ${c.ngan}`),
+  ...TK_NGAN_HANG.map(t => `${t.nh.split(',')[0]} ${t.so}`),
+]
+
+/** Tài khoản kế toán của quỹ: Quỹ tiền mặt ra 1111, còn lại tài khoản ngân hàng ra 1121 (T917) */
+export function tkCuaQuy(ten: string): '1111' | '1121' {
+  return (ten ?? '').startsWith('Quỹ tiền mặt') ? '1111' : '1121'
+}
+
+/** Quỹ đi và quỹ đến của phiếu chuyển quỹ (T917) */
+export function quyCuaCq(row: Row): { tu: string; den: string } {
+  const cnTen = String(row.cn ?? row.cuaHang ?? row.cuaHangTen ?? '')
+  const ch = CUA_HANG.find(c => c.ten === cnTen || c.id === cnTen || c.ngan === cnTen)
+  const quyTmCh = `Quỹ tiền mặt ${ch?.ngan ?? CUA_HANG[0].ngan}`
+  const quyNh = QUY_TIEN[CUA_HANG.length]
+  const rut = fold(String(row.dienGiai ?? row._ghiChu ?? '')).includes('rut tien')
+  const tu = String(row._tuQuy ?? (rut ? quyNh : quyTmCh))
+  const den = String(row._denQuy ?? (tu === quyNh ? quyTmCh : quyNh))
+  return { tu, den }
+}
+
 /** Cặp tài khoản Nợ/Có ngầm định cho dòng thu chi hoặc các màn dong: 'tien' */
 export function dinhKhoanDongTien(cfg: VoucherCfg, id: string, ten: string): { tkNo?: string; tkCo?: string; ly?: string } {
   const loai = loaiThuChiCua(cfg, id)
@@ -197,10 +220,12 @@ export function dinhKhoanDongTien(cfg: VoucherCfg, id: string, ten: string): { t
     return { ...tkTheoLyDo(loai, ly), ly }
   }
   if (loai === 'cq') {
-    const isRut = ten.toLowerCase().includes('rút')
+    const isRut = fold(ten).includes('rut')
+    const tu = isRut ? QUY_TIEN[CUA_HANG.length] : `Quỹ tiền mặt ${CUA_HANG[0].ngan}`
+    const den = isRut ? `Quỹ tiền mặt ${CUA_HANG[0].ngan}` : QUY_TIEN[CUA_HANG.length]
     return {
-      tkNo: isRut ? '1111' : '1121',
-      tkCo: isRut ? '1121' : '1111',
+      tkNo: tkCuaQuy(den),
+      tkCo: tkCuaQuy(tu),
     }
   }
   if (loai === 'dccn') {

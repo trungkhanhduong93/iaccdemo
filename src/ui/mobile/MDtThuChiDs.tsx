@@ -9,9 +9,9 @@ import { docNgay, trongKhoang } from '../ChonNgay'
 import { money } from '../format'
 import { dsChipTT, khopChipTT } from '../LocNangCao'
 import { chieuTien } from './chieuTien'
-import { TT_CT } from '../generic/gen'
+import { quyCuaCq, TT_CT } from '../generic/gen'
 import { boO, nhomCua, theoLoai } from '../generic/nhom'
-import { lyMacDinh } from '../generic/ChungTuForm'
+import { lyMacDinh, QUY_TIEN } from '../generic/ChungTuForm'
 import { useDongChungTu } from '../generic/VoucherScreen'
 import { MChon } from './MChon'
 import { coLocKhacMacDinh, MAC_DINH_LOC_MOBILE, MLoc, tinhKhoangNgay, type GtLocMobile } from './MLoc'
@@ -141,6 +141,8 @@ export const MDtThuChiDs: FC<ScreenProps> = ({ sc, mod }) => {
     : true)
   // Đổi tab thì loại phiếu đã chọn mà tab không có bị bỏ qua, không lọc ra danh sách trống
   const loaiPhieuLoc = (locVal.loaiPhieu ?? []).filter(k => dsLoaiTab.some(l => l.k === k))
+  // Đổi tab khỏi Chuyển quỹ thì lọc Quỹ không được làm rỗng danh sách tab khác (T921)
+  const quyLoc = loaiChon === 'cq' ? (locVal.quy ?? []) : []
 
   const kn = tinhKhoangNgay(locVal.thoiGian, locVal.khoangNgay)
   const truocTT = useMemo(() => {
@@ -173,9 +175,13 @@ export const MDtThuChiDs: FC<ScreenProps> = ({ sc, mod }) => {
       if (locVal.lyDo && locVal.lyDo.length > 0) {
         if (!locVal.lyDo.includes(String(r.lyDo ?? ''))) return false
       }
+      if (quyLoc.length > 0) {
+        const { tu, den } = quyCuaCq(r)
+        if (!quyLoc.includes(tu) && !quyLoc.includes(den)) return false
+      }
       return true
     })
-  }, [rows, kn, cnChon, loaiChon, locVal])
+  }, [rows, kn, cnChon, loaiChon, locVal, quyLoc, loaiPhieuLoc])
 
   const chipsGoc = useMemo(() => dsChipTT(truocTT, ghi), [truocTT, ghi])
   const chips = useMemo(
@@ -200,16 +206,29 @@ export const MDtThuChiDs: FC<ScreenProps> = ({ sc, mod }) => {
   }, [listSauLocTT, tuKhoa])
 
   const dsChieu = useMemo(() => list.map(r => chieuTien(mod.key, cfg, r)), [list, mod.key, cfg])
-  const { tongThu, tongChi } = useMemo(() => {
+  const { tongThu, tongChi, tongXuatDi, tongNhanVao } = useMemo(() => {
     let thu = 0
     let chi = 0
+    let xuatDi = 0
+    let nhanVao = 0
     list.forEach((r, idx) => {
       const tien = Number(r.tong) || Number(r.tien) || 0
       if (dsChieu[idx] === 'vao') thu += tien
       else if (dsChieu[idx] === 'ra') chi += tien
+
+      if (loaiChon === 'cq') {
+        if (quyLoc.length === 0) {
+          xuatDi += tien
+          nhanVao += tien
+        } else {
+          const { tu, den } = quyCuaCq(r)
+          if (quyLoc.includes(tu)) xuatDi += tien
+          if (quyLoc.includes(den)) nhanVao += tien
+        }
+      }
     })
-    return { tongThu: thu, tongChi: chi }
-  }, [list, dsChieu])
+    return { tongThu: thu, tongChi: chi, tongXuatDi: xuatDi, tongNhanVao: nhanVao }
+  }, [list, dsChieu, loaiChon, quyLoc])
 
   // Nhóm theo ngày
   const nhomTheoNgay = useMemo(() => {
@@ -391,21 +410,24 @@ export const MDtThuChiDs: FC<ScreenProps> = ({ sc, mod }) => {
           {loaiPhieuLoc.map(k => (
             <span key={k} className="m-chip-xem">{LOAI_THU_CHI.find(l => l.k === k)?.ten}</span>
           ))}
+          {quyLoc.map(q => (
+            <span key={q} className="m-chip-xem">Quỹ: {q}</span>
+          ))}
         </div>
 
-        {/* Card Tổng hợp kỳ */}
+        {/* Card Tổng hợp kỳ (T921) */}
         <div className="m-tc-card-tong-hop m-ds-dong-tom-tat">
           <div className="m-tc-th-hang-tren">
             <span className="m-tc-th-dem">{list.length} chứng từ</span>
           </div>
           <div className="m-tc-th-hang-duoi">
             <div className="m-tc-th-o-thu">
-              <span className="m-tc-th-o-nhan">Tổng thu</span>
-              <span className="m-tc-th-o-so">+{money(tongThu)} đ</span>
+              <span className="m-tc-th-o-nhan">{loaiChon === 'cq' ? 'Tổng xuất đi' : 'Tổng thu'}</span>
+              <span className="m-tc-th-o-so">{loaiChon === 'cq' ? `${money(tongXuatDi)} đ` : `+${money(tongThu)} đ`}</span>
             </div>
             <div className="m-tc-th-o-chi">
-              <span className="m-tc-th-o-nhan">Tổng chi</span>
-              <span className="m-tc-th-o-so">-{money(tongChi)} đ</span>
+              <span className="m-tc-th-o-nhan">{loaiChon === 'cq' ? 'Tổng nhận vào' : 'Tổng chi'}</span>
+              <span className="m-tc-th-o-so">{loaiChon === 'cq' ? `${money(tongNhanVao)} đ` : `-${money(tongChi)} đ`}</span>
             </div>
           </div>
         </div>
@@ -538,6 +560,7 @@ export const MDtThuChiDs: FC<ScreenProps> = ({ sc, mod }) => {
         dsNguon={dsNguon}
         dsLyDo={dsLyDo}
         dsLoaiPhieu={dsLoaiTab}
+        dsQuy={loaiChon === 'cq' ? QUY_TIEN : undefined}
         dsChiNhanh={dsChiNhanh}
         dsTrangThai={chips}
       />

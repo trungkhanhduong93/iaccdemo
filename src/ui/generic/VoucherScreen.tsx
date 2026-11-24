@@ -29,7 +29,7 @@ import { MAN_DC, MAN_KK, TEN_DC } from '../../modules/kho/dieu-chinh'
 import { NutDongBoThuChiFabi } from '../../modules/tien/DongBoThuChiFabi'
 
 import { CUA_HANG, HANG, NHAN_VIEN, NVL } from '../../data/mock'
-import { NGUON, TT_CT, chungTu, dongCua, gioPhieu, nguoiTaoMau, tomTatTenHang, ttNghiepVu, type Dong } from './gen'
+import { NGUON, TT_CT, chungTu, dongCua, gioPhieu, loaiThuChiCua, nguoiTaoMau, quyCuaCq, tomTatTenHang, ttNghiepVu, type Dong } from './gen'
 import { boO, nhomCua, theoLoai, TT_HD, TT_TIEN } from './nhom'
 import { BangKiemKe } from './BangKiemKe'
 import { BangSua } from './BangSua'
@@ -325,7 +325,15 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
     const dsKhoCn = CUA_HANG.find(c => c.ten === r.cn)?.kho ?? []
     const khoPhieu = String(r._kho ?? (laNk ? dsDong.find(d => d.kho)?.kho ?? dsKhoCn[0] ?? '' : ''))
     return { ...r, kho: khoPhieu, _khoDs: khoPhieu ? [khoPhieu] : [], _maHang: dsDong.map(d => d.ma).filter(Boolean), ...(cfg.kiemKe ? { soMat: dsDong.length } : {}) }
-  }) : mod.key === 'tien' ? rowsGoc.map((r): Row => ({ ...r, lyDo: lyDoThuChi(cfg, r) })) : nhom !== 'mua' && nhom !== 'ban' ? rowsGoc : rowsGoc.map((r): Row => {
+  }) : mod.key === 'tien' ? rowsGoc.map((r): Row => {
+    const isCq = loaiThuChiCua(cfg, String(r.id ?? '')) === 'cq' || r.loai === 'cq'
+    const cq = isCq ? quyCuaCq(r) : null
+    return {
+      ...r,
+      lyDo: lyDoThuChi(cfg, r),
+      ...(cq ? { _tuQuyHien: cq.tu, _denQuyHien: cq.den } : {}),   // T919
+    }
+  }) : nhom !== 'mua' && nhom !== 'ban' ? rowsGoc : rowsGoc.map((r): Row => {
     const dsDong = (r._dong as Dong[] | undefined) ?? dongCua(theoLoai(cfg, r.loai), `${sc.code ?? sc.slug}-${r.id}`)
     const dsKhoCn = CUA_HANG.find(c => c.ten === r.cn)?.kho ?? []
     const khoDau = String(r._kho ?? dsKhoCn[0] ?? '')
@@ -513,6 +521,10 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
     // Mua, bán (T286): Diễn giải là tên hàng trong phiếu, diễn giải đầu phiếu đổi tên Ghi chú
     ...(muaBan ? [{ k: 'tenHang', t: 'Diễn giải', w: 260, r: (r: Row) => <span title={String(r._tenHangDu ?? '')}>{r.tenHang}</span> } as Col] : []),
     { k: 'dienGiai', t: cfg.kiemKe || cfg.dieuChinh || muaBan || laNk ? 'Ghi chú' : 'Diễn giải' },   // phiếu kiểm kê, nhập khác ghi Ghi chú như đầu phiếu (T124, T740)
+    ...(mod.key === 'tien' && nhomChon?.k === 'cq' ? [
+      { k: '_tuQuyHien', t: 'Từ quỹ', w: 190 } as Col,
+      { k: '_denQuyHien', t: 'Đến quỹ', w: 190 } as Col,
+    ] : []),   // T919: cột Từ quỹ, Đến quỹ cho tab Chuyển quỹ
     ...(mod.key === 'tien' || cfg.khongKho ? [{ k: 'lyDo', t: 'Lý do', w: 170 } as Col] : []),   // Hoá đơn mua hàng cũng có cột Lý do (T821)   // T96; tên cột ngắn Lý do (T168)
     ...(cfg.doiTuong !== 'none' && !laNk ? [{ k: 'doiTuong', t: cfg.nhan ?? 'Đối tượng' } as Col] : []),
     // Đang chọn một cửa hàng trên thanh trên thì cột cửa hàng thừa

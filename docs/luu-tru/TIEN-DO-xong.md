@@ -5,6 +5,12 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
 | T924 | Web, danh sách chứng từ: mở phiếu rồi đóng thì quay về đúng kỳ và bộ lọc đang xem, không trả về kỳ hiện tại | dinhlanphuongipacc | 24/11/2026 | [nhật ký](../nhat-ky/2026-11-24-dinhlanphuongipacc-nho-ky-loc-dong-phieu.md) |
+| T916 | Phiếu chuyển quỹ máy tính: ô Đến quỹ bỏ quỹ đang chọn ở Từ quỹ, đổi Từ quỹ trùng thì Đến quỹ rỗng, lưu chặn câu "Từ quỹ và Đến quỹ phải khác nhau" | Trum | 24/11/2026 | 2026-11-24-trum-chuyen-quy.md |
+| T917 | Chuyển quỹ định khoản theo mã quỹ: Nợ TK quỹ đến, Có TK quỹ đi (quỹ tiền mặt 1111, ngân hàng 1121); thêm `quyCuaCq`, `tkCuaQuy`, chuyển `QUY_TIEN` sang `gen.ts`; sổ quỹ ghi dòng nộp tiền ngân hàng số CQ | Trum | 24/11/2026 | 2026-11-24-trum-chuyen-quy.md |
+| T918 | Mẫu in Phiếu chuyển quỹ 1 tờ (Từ quỹ, Đến quỹ, Người thực hiện, Nợ/Có theo quỹ), là mẫu mặc định của phiếu CQ, vẫn chọn được Phiếu chi, Phiếu thu | Trum | 24/11/2026 | 2026-11-24-trum-chuyen-quy.md |
+| T919 | Danh sách chứng từ máy tính, tab Chuyển quỹ: thêm cột Từ quỹ, Đến quỹ | Trum | 24/11/2026 | 2026-11-24-trum-chuyen-quy.md |
+| T920 | Điện thoại, lập phiếu chuyển quỹ: ô Từ quỹ, Đến quỹ (bỏ quỹ đi khỏi danh sách), chặn lưu khi trùng, lưu `_tuQuy`, `_denQuy` | Trum | 24/11/2026 | 2026-11-24-trum-chuyen-quy.md |
+| T921 | Điện thoại, danh sách Thu chi tab Chuyển quỹ: 2 ô Tổng xuất đi, Tổng nhận vào theo quỹ lọc; bộ lọc thêm dòng Quỹ (`MLoc.tsx` thêm `dsQuy`, `quy`) | Trum | 24/11/2026 | 2026-11-24-trum-chuyen-quy.md |
 | T915 | Xuất kho định lượng: bỏ ô Cửa hàng ở đầu phiếu; cột Kho xuất trong nhóm Hàng hoá (Standard, Plus một kho chính, Pro tách kho bar, bếp); nhóm Hàng hoá sang trái kèm Ghi chú, Xử lý; nguồn ghi Xuất bán POS | Trum | 24/11/2026 | `2026-11-24-trum-xdl-kho-xuat.md` |
 | T922 | Tồn kho ban đầu: tab xuống cuối menu Kho Plus, bỏ chip Cần xem lại, thanh lọc gọn như danh sách mua hàng, Thêm mới mở hộp tích chọn hàng, nút Sửa và Lưu, ĐVT chọn lại được, một mặt hàng nhiều dòng khác ĐVT, kho theo cửa hàng đang đứng, sửa luật khoá bỏ qua phiếu kiểm kê đã xoá | dinhlanphuongipacc | 24/11/2026 | 2026-11-24-dinhlanphuongipacc-ton-kho-ban-dau.md |
 | T914 | Phiếu xuất huỷ: thêm ô Lý do huỷ (danh mục Lý do nghiệp vụ, Dùng cho Xuất kho, bắt buộc) ở chỗ Nhân viên thực hiện; đổi nhãn thành Người thực hiện, gõ chữ tự do, dời xuống hàng 2 cạnh Ghi chú, Ghi chú thu hẹp còn nửa hàng | dinhlanphuongipacc | 24/11/2026 | [nhật ký](../nhat-ky/2026-11-24-dinhlanphuongipacc-ly-do-huy.md) |

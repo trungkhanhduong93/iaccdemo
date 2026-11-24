@@ -4,6 +4,11 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 24/11/2026
 - T924: Danh sách chứng từ (Thu chi, Mua hàng, Kho, Bán hàng, Công thức, Phiếu sản xuất, Hoá đơn điện tử): mở phiếu rồi đóng thì quay về đúng kỳ và bộ lọc đang xem, không trả về kỳ hiện tại.
+- T916, T920: Phiếu chuyển quỹ không chọn được Đến quỹ trùng Từ quỹ, trên máy tính lẫn điện thoại. Lưu khi hai quỹ trùng hoặc thiếu Đến quỹ thì báo "Từ quỹ và Đến quỹ phải khác nhau". Điện thoại có thêm ô Đến quỹ.
+- T917: Phiếu chuyển quỹ định khoản theo quỹ đã chọn: Nợ tài khoản quỹ đến, Có tài khoản quỹ đi. Quỹ tiền mặt là 1111, tài khoản ngân hàng là 1121. Sổ quỹ ghi dòng nộp tiền vào ngân hàng bằng số phiếu CQ.
+- T918: In phiếu chuyển quỹ ra 1 tờ Phiếu chuyển quỹ có Từ quỹ, Đến quỹ, Người thực hiện. Phiếu chi, Phiếu thu vẫn chọn được trong danh sách mẫu.
+- T919: Danh sách Thu chi máy tính, tab Chuyển quỹ có thêm cột Từ quỹ, Đến quỹ.
+- T921: Điện thoại, tab Chuyển quỹ đổi 2 ô thành Tổng xuất đi, Tổng nhận vào. Bộ lọc có thêm dòng Quỹ, chọn quỹ thì 2 ô tính theo quỹ đó.
 - T915: Xuất kho định lượng, đầu phiếu bỏ ô Cửa hàng vì góc trên phải đã có. Lưới chi tiết để nhóm Hàng hoá bên trái, Món bán bên phải, thêm cột Kho xuất. Gói Pro tách kho bar cho đồ uống, kho bếp cho món ăn. Nguồn phiếu ghi Xuất bán POS thay cho FABi.
 - T922: Kho > Tồn kho ban đầu (gói Plus) đứng cuối thanh tab. Bỏ chip Cần xem lại; thanh lọc gọn như danh sách mua hàng. Thêm mới mở hộp tích chọn hàng, nút Sửa rồi Lưu để sửa số lượng, đơn giá, ĐVT; một mặt hàng có nhiều dòng khác ĐVT. Ô Kho hàng chỉ liệt kê kho của cửa hàng đang đứng. Xoá phiếu kiểm kê thì kho mở khoá lại.
 - T914: Phiếu xuất huỷ có thêm ô Lý do huỷ, chọn từ danh mục Lý do nghiệp vụ dành cho Xuất kho. Nhân viên thực hiện đổi thành Người thực hiện, gõ chữ tự do, nằm hàng dưới cạnh Ghi chú.
