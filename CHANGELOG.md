@@ -2,6 +2,10 @@
 
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
+## 25/11/2026
+- T929: Điện thoại gói Plus, danh sách Nhập kho, Xuất huỷ, Xuất khác, Điều chuyển, Điều chỉnh hiện số tiền từng phiếu và Tổng cộng như Nhập mua. Kiểm kê giữ như cũ. Chứng từ tổng hợp dùng khung danh sách chuẩn, dòng phụ là diễn giải. Form lập Xuất, Nhập điều chuyển có thẻ đầu Ngày, Số phiếu, Từ kho, Đến kho, Diễn giải, chân Tổng tiền, Huỷ, Lưu phiếu.
+- T930: Điện thoại gói Plus, xem phiếu kho và Chứng từ tổng hợp như phiếu Nhập mua: tiêu đề tên phiếu và số, thẻ đầu Tổng giá trị (CTTH: Tổng tiền), Thông tin chung nhãn trái giá trị phải, CTTH mỗi bút toán một thẻ. Chân có Xoá và Sửa phiếu, Điều chỉnh vẫn không có chân.
+- T931: Điện thoại gói Plus, lập Nhập kho, Xuất huỷ, Xuất khác như phiếu Nhập mua: thẻ đầu Ngày, Số phiếu, Kho, Người thực hiện hoặc Người nhận, Diễn giải; thẻ mặt hàng, Tổng cộng, chân Tổng tiền, Huỷ, Lưu phiếu. Không hỏi quỹ khi lưu. Chứng từ tổng hợp mỗi bút toán một thẻ Diễn giải, TK Nợ, TK Có, Số tiền, có nút Thêm bút toán.
 ## 24/11/2026
 - T927: Điện thoại, xem phiếu Xuất huỷ trình bày như phiếu mua: tiêu đề tên phiếu và số phiếu, cửa hàng và nguồn ở đầu thẻ, số lớn là Tổng tiền vốn. Thông tin chung có Kho xuất, Lý do huỷ, Người thực hiện. Dòng hàng ghi Giá vốn, Tiền vốn, cuối danh sách có Tổng số lượng, Tổng tiền vốn.
 - T926: Phiếu xuất điều chuyển máy tính: Kho nhận là mọi kho trừ kho xuất đang chọn. Bảng chi tiết như Phiếu mua hàng: tách cột Mã hàng, Tên hàng hoá, có Thêm hàng loạt, ĐVT chọn theo quy đổi của hàng.

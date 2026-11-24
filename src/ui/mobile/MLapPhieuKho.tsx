@@ -19,7 +19,7 @@ import {
   CONG_THUC_CB, keoNvlCb, SX, soLuong, tienToSx, hangCua,
   type DongSx, type LoaiSx,
 } from '../../modules/kho/san-xuat'
-import { DCN, khoCuaCn, type LoaiDcn } from '../../modules/kho/dieu-chuyen'
+import { DCN, khoCuaCn, cnCuaKho, type LoaiDcn } from '../../modules/kho/dieu-chuyen'
 import type { Dong } from '../generic/gen'
 import { quyDoiTuDanhMuc } from '../../modules/danh-muc/QuyDoiDvt'
 import { goSoVN, docSoVN } from '../OSoGo'
@@ -465,7 +465,18 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
     return dsCnNhan[0]?.ten ?? 'Phố Mây Thảo Điền'
   })
 
-  const dsKhoNhanXdc = useMemo(() => khoCuaCn(cnNhan), [cnNhan])
+  const dsKhoNhanXdc = useMemo(() => {
+    return CUA_HANG.filter(c => c.ten !== cuaHang).flatMap(c => c.kho)
+  }, [cuaHang])
+
+  const soHienThi = useMemo(() => {
+    if (dangSua && row?.so) return String(row.so)
+    if (laDcn && dcn) {
+      const man = `${mod.key}/${sc.slug}`
+      return soKeTiep(man, `${DCN[dcn].prefix}2610-`)
+    }
+    return ''
+  }, [dangSua, row, laDcn, dcn, mod.key, sc.slug])
 
   // Người kiểm kê
   const [nguoiKiem, setNguoiKiem] = useState(() => {
@@ -1126,7 +1137,7 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
       )}
 
       {/* ── SHEET CHỌN KHO NHẬN ── */}
-      {laDcn && (dcn === 'ck' || dcn === 'xdc') && (
+      {laDcn && (
         <MChon
           mo={moChonKhoNhan}
           onDong={() => setMoChonKhoNhan(false)}
@@ -1139,6 +1150,11 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
               return
             }
             setKhoNhan(v)
+            if (dcn === 'xdc') {
+              const cn = cnCuaKho(v)
+              if (cn) setCnNhan(cn)
+              if (loiO.cnNhan) setLoiO(l => { const n = { ...l }; delete n.cnNhan; return n })
+            }
             if (loiO.khoNhan) setLoiO(l => { const n = { ...l }; delete n.khoNhan; return n })
           }}
           apDung
@@ -1788,6 +1804,88 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
 
       <div className="m-lp-than m-lp-than-cuon">
         {/* ════ THÔNG TIN CHUNG: KHO, KHO NHẬN, THỜI GIAN, GHI CHÚ (T300) ════ */}
+        {laDcn ? (
+          <div className="m-t655-the">
+            <div className="m-t655-chip-hang">
+              <span className="m-t600-chip-nguon">Thủ công</span>
+              <button type="button" className="m-t655-cua-hang" onClick={() => { if (!gocData?.cn) setMoChonCn(true) }}>
+                <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" strokeWidth="1.8" fill="none" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                  <polyline points="9 22 9 12 15 12 15 22" />
+                </svg>
+                <span>{cuaHang || 'Chọn cửa hàng'}</span>
+              </button>
+            </div>
+            {loiO.cuaHang && <div className="m-lp-loi-o m-t655-loi">{loiO.cuaHang}</div>}
+            <div className="m-t655-ke" />
+
+            {/* 1. Ngày */}
+            <div className="m-t655-hang">
+              <span className="m-t655-nhan">Ngày chứng từ <em>*</em></span>
+              <button type="button" className="m-t655-o" id="m-lp-o-thoiGian" onClick={() => setMoLich(true)}>
+                <span className="chu">{thoiGian.slice(0, 10)}</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
+              </button>
+            </div>
+            {loiO.thoiGian && <div className="m-lp-loi-o m-t655-loi">{loiO.thoiGian}</div>}
+
+            {/* 2. Số phiếu */}
+            <div className="m-t655-hang">
+              <span className="m-t655-nhan">Số phiếu</span>
+              <input
+                type="text"
+                readOnly
+                aria-label="Số phiếu"
+                className="m-t655-o go"
+                value={soHienThi}
+                style={{ cursor: 'default' }}
+              />
+            </div>
+
+            {/* 3. Từ kho */}
+            <div className="m-t655-hang">
+              <span className="m-t655-nhan">Từ kho <em>*</em></span>
+              <button
+                type="button"
+                className="m-t655-o"
+                id="m-lp-o-kho"
+                onClick={() => (cuaHang ? setMoChonKho(true) : setMoChonCn(true))}
+              >
+                <span className={kho ? 'chu' : 'goi'}>{kho || 'Chọn kho xuất'}</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
+              </button>
+            </div>
+            {loiO.kho && <div className="m-lp-loi-o m-t655-loi">{loiO.kho}</div>}
+
+            {/* 4. Đến kho */}
+            <div className="m-t655-hang">
+              <span className="m-t655-nhan">Đến kho <em>*</em></span>
+              <button
+                type="button"
+                className="m-t655-o"
+                id="m-lp-o-khoNhan"
+                onClick={() => setMoChonKhoNhan(true)}
+              >
+                <span className={khoNhan ? 'chu' : 'goi'}>{khoNhan || 'Chọn kho nhận'}</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
+              </button>
+            </div>
+            {loiO.khoNhan && <div className="m-lp-loi-o m-t655-loi">{loiO.khoNhan}</div>}
+
+            {/* 5. Diễn giải */}
+            <div className="m-t655-hang">
+              <span className="m-t655-nhan">Diễn giải</span>
+              <input
+                type="text"
+                aria-label="Diễn giải"
+                className="m-t655-o go"
+                placeholder="Diễn giải"
+                value={ghiChu}
+                onChange={e => setGhiChu(e.target.value)}
+              />
+            </div>
+          </div>
+        ) : (
         <div className="m-the-trang m-lp-nhom-dong">
           {/* Cửa hàng: chỉ hiện khi đang xem Tất cả cửa hàng (T357) */}
           {!cnChon && (
@@ -1914,6 +2012,7 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
             </div>
           </div>
         </div>
+        )}
 
         {/* ════ NHÓM 2: DANH SÁCH HÀNG HOÁ / KIỂM KÊ / SẢN XUẤT ════ */}
         {/* Với sản xuất chế biến: Khối chọn thành phẩm */}
@@ -2017,28 +2116,52 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
       </div>
 
       {/* ── THANH CỐ ĐỊNH Ở ĐÁY: TỔNG TIỀN / MẶT HÀNG & NÚT LƯU LẠI ── */}
-      <div className="m-lp-day m-lp-day-mot-man">
-        <div className="m-lp-day-hang-tong">
-          {laKk ? (
-            <>
-              <span className="m-lp-day-nhan">Mặt hàng:</span>
-              <span className="m-lp-day-tong dam">{dsDong.length}</span>
-            </>
-          ) : (
-            <>
-              <span className="m-lp-day-nhan">Tổng tiền:</span>
-              <span className="m-lp-day-tong dam cam">{money(tongTien)} đ</span>
-            </>
-          )}
+      {laDcn ? (
+        <div className="m-t600-chan-day m-t656-chan">
+          <div className="m-t656-tong">
+            <span>Tổng tiền <small>({dsDong.length} dòng)</small></span>
+            <b>{money(tongTien)} đ</b>
+          </div>
+          <button
+            type="button"
+            className="m-t600-btn-huy"
+            onClick={handleQuayLai}
+          >
+            Huỷ
+          </button>
+          <button
+            type="button"
+            className="m-t600-btn-luu"
+            onClick={() => thucHienLuu(false)}
+            data-hd="luu"
+          >
+            Lưu phiếu
+          </button>
         </div>
-        <button
-          type="button"
-          className="m-lp-nut-chinh m-lp-nut-luu"
-          onClick={() => thucHienLuu(false)}
-        >
-          Lưu lại
-        </button>
-      </div>
+      ) : (
+        <div className="m-lp-day m-lp-day-mot-man">
+          <div className="m-lp-day-hang-tong">
+            {laKk ? (
+              <>
+                <span className="m-lp-day-nhan">Mặt hàng:</span>
+                <span className="m-lp-day-tong dam">{dsDong.length}</span>
+              </>
+            ) : (
+              <>
+                <span className="m-lp-day-nhan">Tổng tiền:</span>
+                <span className="m-lp-day-tong dam cam">{money(tongTien)} đ</span>
+              </>
+            )}
+          </div>
+          <button
+            type="button"
+            className="m-lp-nut-chinh m-lp-nut-luu"
+            onClick={() => thucHienLuu(false)}
+          >
+            Lưu lại
+          </button>
+        </div>
+      )}
 
       {/* ── BẢNG CHỌN ── */}
       {renderCacBangChon()}

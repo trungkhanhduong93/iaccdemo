@@ -116,7 +116,9 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
   const laDc = Boolean(cfg.dieuChinh)
   const laNk = sc.code === '5.1.1'   // phiếu Nhập kho (T824, như web T818)
   const laHuy = sc.code === '5.1.2-3'   // phiếu Xuất huỷ xem như Nhập kho, phiếu mua: tiêu đề tên phiếu và số, cửa hàng và nguồn lên đầu, có Lý do huỷ (T927)
-  const khoGonXem = laNk || laHuy
+  const khoChuanXem = mod.key === 'kho' && !laKk   // khuôn xem chuẩn cho phiếu kho (T930)
+  const laCtth = mod.key === 'tong-hop'   // Chứng từ tổng hợp theo khuôn Nhập mua (T930)
+  const khoGonXem = khoChuanXem
   const laTraBan = sc.code === '3.1.4'   // Hàng bán trả lại (T830): bỏ diễn giải ở đầu phiếu, Chi tiết đủ ô như web
   const sx = cfg.sanXuat
   const laSx = Boolean(sx)
@@ -197,6 +199,12 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
       dsDong.find(d => d.kho)?.kho ??
       khoMacDinh,
   )
+  const tuKho = String(dcn === 'ndc' ? (row._khoXuat ?? kho) : (row._kho ?? kho))
+  const denKho = String(dcn === 'ndc' ? (row._kho ?? kho) : (row._khoNhan ?? ''))
+  const tenPhieuKho = () => {
+    const t = loai?.ten ?? tenMan(sc)
+    return t.toLowerCase().startsWith('phiếu') ? `${t} ${soCt}` : `Phiếu ${t.toLowerCase()} ${soCt}`
+  }
 
   const nhanKemHd = row._nhanKemHd !== undefined ? Boolean(row._nhanKemHd) : Boolean(row._soHd || nv?.soHd)
 
@@ -708,7 +716,17 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
             <path d="M19 12H5M12 19l-7-7 7-7" />
           </svg>
         </button>
-        <h2 className="m-pb-tieu-de">{cfg.khongKho ? `Hoá đơn mua hàng ${soCt}` : nhomMb === 'mua' ? `Phiếu mua hàng ${soCt}` : laHuy ? `Phiếu xuất huỷ ${soCt}` : soCt}</h2>
+        <h2 className="m-pb-tieu-de">
+          {cfg.khongKho
+            ? `Hoá đơn mua hàng ${soCt}`
+            : nhomMb === 'mua'
+              ? `Phiếu mua hàng ${soCt}`
+              : laCtth
+                ? `Chứng từ tổng hợp ${soCt}`
+                : khoChuanXem
+                  ? tenPhieuKho()
+                  : soCt}
+        </h2>
         <span className="m-pb-thanh-dau-phai" />
       </header>
 
@@ -760,6 +778,26 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
                     Hạn {hanTt}{tinhSoNgayCon(hanTt) ? ` · ${tinhSoNgayCon(hanTt)}` : ''}
                   </div>
                 )}
+              </div>
+            </div>
+          </div>
+        ) : khoChuanXem || laCtth ? (
+          <div className="m-t600-the-dau m-t655-dau">
+            <div className="m-tc-xem-dong-cn">
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                <polyline points="9 22 9 12 15 12 15 22" />
+              </svg>
+              <span>{cuaHangTen}</span>
+              <span className="m-tc-badge-nguon m-tc-xem-nguon">
+                {NGUON[row.nguon]?.[1] ?? 'Thủ công'}
+              </span>
+            </div>
+
+            <div>
+              <div className="m-t600-tong-tien-nhan">{laCtth ? 'Tổng tiền' : 'Tổng giá trị'}</div>
+              <div className="m-t600-tong-tien-so">
+                {money(laCtth ? (dsDong.reduce((a, d) => a + (Number(d.tien) || 0), 0) || Number(row.tien) || 0) : (Number(row.tien) || 0))} đ
               </div>
             </div>
           </div>
@@ -1052,38 +1090,140 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
 
                 {renderDsHangHoaMua()}
               </>
-            ) : khoGonXem ? (
+            ) : khoChuanXem ? (
               <>
-                {/* Nhập kho (T824): chi tiết như phiếu mua, không nhà cung cấp, hoá đơn; có Người thực hiện (như web T818) */}
                 <div className="m-pb-nhom">THÔNG TIN CHUNG</div>
                 <div className="m-pb-the m-pb-the-gon m-t655-gon">
                   <div className="m-pb-dong">
-                    <span className="n">Ngày chứng từ</span>
+                    <span className="n">Ngày</span>
                     <span className="g">{String(row.ngay ?? '').split(' ')[0]}</span>
                   </div>
                   <div className="m-pb-dong">
-                    <span className="n">{laHuy ? 'Kho xuất' : 'Kho nhập'}</span>
-                    <span className="g">{kho}</span>
+                    <span className="n">Số phiếu</span>
+                    <span className="g">{soCt}</span>
                   </div>
+                  {laDcn ? (
+                    <>
+                      <div className="m-pb-dong">
+                        <span className="n">Từ kho</span>
+                        <span className="g">{tuKho}</span>
+                      </div>
+                      <div className="m-pb-dong">
+                        <span className="n">Đến kho</span>
+                        <span className="g">{denKho}</span>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="m-pb-dong">
+                      <span className="n">{laHuy ? 'Kho xuất' : laNk ? 'Kho nhập' : 'Kho'}</span>
+                      <span className="g">{kho}</span>
+                    </div>
+                  )}
+                  {(Boolean(row.doiTuong) || sc.code === '5.1.2-4') && (
+                    <div className="m-pb-dong">
+                      <span className="n">{sc.code === '5.1.2-4' ? 'Người nhận' : 'Đối tượng'}</span>
+                      <span className="g">{String(row.doiTuong || '')}</span>
+                    </div>
+                  )}
                   {laHuy && (
                     <div className="m-pb-dong">
                       <span className="n">Lý do huỷ</span>
                       <span className="g">{String(row._lyDo || LY_DO.find(x => x.dung === 'Xuất kho')?.ten || '')}</span>
                     </div>
                   )}
-                  <div className="m-pb-dong">
-                    <span className="n">Người thực hiện</span>
-                    <span className="g">{String(row._nhanVien ?? row._nguoiTao ?? nguoiTaoMau(row.so))}</span>
-                  </div>
+                  {/* Nhập kho, Xuất huỷ: có Người thực hiện (T824, T927, như web T818) */}
+                  {(laNk || laHuy) && (
+                    <div className="m-pb-dong">
+                      <span className="n">Người thực hiện</span>
+                      <span className="g">{String(row._nhanVien ?? row._nguoiTao ?? nguoiTaoMau(row.so))}</span>
+                    </div>
+                  )}
                   {(row.dienGiai || row._ghiChu) && (
                     <div className="m-pb-dong">
-                      <span className="n">Ghi chú</span>
+                      <span className="n">Diễn giải</span>
                       <span className="g">{String(row.dienGiai || row._ghiChu)}</span>
+                    </div>
+                  )}
+                  {danhSachThamChieu.length > 0 && (
+                    <div className="m-pb-dong">
+                      <span className="n">Tham chiếu</span>
+                      <span className="g link" style={{ display: 'flex', flexWrap: 'wrap', gap: 6, justifyContent: 'flex-end' }}>
+                        {danhSachThamChieu.map((tc, idx) => (
+                          <Link
+                            key={idx}
+                            to={tc.url}
+                            style={{ color: 'var(--blue)', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 4, fontWeight: 600 }}
+                          >
+                            <span>{tc.so}</span>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden="true">
+                              <path d="M9 6l6 6-6 6" />
+                            </svg>
+                          </Link>
+                        ))}
+                      </span>
                     </div>
                   )}
                 </div>
 
                 {renderDsHangHoaMua()}
+              </>
+            ) : laCtth ? (
+              <>
+                <div className="m-pb-nhom">THÔNG TIN CHUNG</div>
+                <div className="m-pb-the m-pb-the-gon m-t655-gon">
+                  <div className="m-pb-dong">
+                    <span className="n">Ngày</span>
+                    <span className="g">{String(row.ngay ?? '').split(' ')[0]}</span>
+                  </div>
+                  <div className="m-pb-dong">
+                    <span className="n">Số chứng từ</span>
+                    <span className="g">{soCt}</span>
+                  </div>
+                  {(row.dienGiai || row._ghiChu) && (
+                    <div className="m-pb-dong">
+                      <span className="n">Diễn giải</span>
+                      <span className="g">{String(row.dienGiai || row._ghiChu)}</span>
+                    </div>
+                  )}
+                </div>
+
+                <div className="m-pb-nhom" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span>BÚT TOÁN</span>
+                  <span style={{ color: 'var(--muted)', fontWeight: 'normal', textTransform: 'none', fontSize: 13 }}>
+                    {dsDong.length} bút toán
+                  </span>
+                </div>
+
+                {dsDong.map((d, idx) => {
+                  const dg = d.ten || d.ly || row.dienGiai || `Bút toán ${idx + 1}`
+                  const dt = d.dt || ''
+                  return (
+                    <div key={idx} className="m-pb-the m-pb-the-gon m-t655-gon">
+                      <div className="m-pb-dong">
+                        <span className="n">Diễn giải</span>
+                        <span className="g bold">{dg}</span>
+                      </div>
+                      <div className="m-pb-dong">
+                        <span className="n">TK Nợ</span>
+                        <span className="g">{d.tkNo || '6421'}</span>
+                      </div>
+                      <div className="m-pb-dong">
+                        <span className="n">TK Có</span>
+                        <span className="g">{d.tkCo || '242'}</span>
+                      </div>
+                      <div className="m-pb-dong">
+                        <span className="n">Số tiền</span>
+                        <span className="g bold num">{money(Number(d.tien) || 0)} đ</span>
+                      </div>
+                      {Boolean(dt) && (
+                        <div className="m-pb-dong">
+                          <span className="n">Đối tượng</span>
+                          <span className="g">{String(dt)}</span>
+                        </div>
+                      )}
+                    </div>
+                  )
+                })}
               </>
             ) : laKk ? (
               <>
@@ -1392,7 +1532,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
       {!laDc && (
       <div className="m-pb-day">
         <div className="m-pb-day-nut">
-          {!laKk && dsMenu.length > 0 && (
+          {!laKk && !khoChuanXem && !laCtth && dsMenu.length > 0 && (
             <button
               type="button"
               className="m-pb-btn-more"
@@ -1424,7 +1564,29 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
             </button>
           )}
 
-          {nutPhu && (
+          {/* Phiếu kho, CTTH: chân 2 nút Sửa phiếu (chính) + Xoá (phụ đỏ) (T930) */}
+          {(khoChuanXem || laCtth) && (
+            <>
+              <button
+                type="button"
+                className="m-pb-btn-phu m-t660-nut m-t660-xoa"
+                onClick={() => handleMenuChon('xoa')}
+              >
+                Xoá
+              </button>
+              {coTheSua && (
+                <button
+                  type="button"
+                  className="m-pb-btn-sua m-t660-nut"
+                  onClick={moSua}
+                >
+                  <span>Sửa phiếu</span>
+                </button>
+              )}
+            </>
+          )}
+
+          {!khoChuanXem && !laCtth && nutPhu && (
             <button type="button" className="m-pb-btn-phu" onClick={nutPhu.action}>
               {nhomMb === 'mua' && nutPhu.nhan === 'Sửa phiếu' && (
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ marginRight: 6 }}>
@@ -1436,7 +1598,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
             </button>
           )}
 
-          {nutChinh && (
+          {!khoChuanXem && !laCtth && nutChinh && (
             <button
               type="button"
               className={`m-pb-btn-sua${nutChinh.laThanhToan ? ' tt-nut' : ''}`}

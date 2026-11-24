@@ -50108,3 +50108,33 @@ td.xdl-cat > span { display: block; overflow: hidden; text-overflow: ellipsis; w
 .xdl-tt-dong > .xdl-tt-gc { flex: 3 1 0; }
 @media (max-width: 900px) { .xdl-tt-dong { flex-wrap: wrap; } .xdl-tt-dong > .xp637-o, .xdl-tt-dong > .xp637-o:first-child { flex: 1 1 45%; } }
 .xdl-luoi .ls-g { padding: 12px 16px; }
+
+/* ── Màn xem phiếu kho và Chứng từ tổng hợp theo khuôn Nhập mua (T930) ── */
+.m-pb-the.m-t655-gon + .m-pb-the.m-t655-gon {
+  margin-top: 8px;
+}
+
+/* ── Form lập Nhập kho, Xuất huỷ, Xuất khác và CTTH theo khuôn Nhập mua (T931) ── */
+.m-t931-bt-the {
+  margin-bottom: 10px;
+}
+.m-t931-bt-dau {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+  padding-bottom: 4px;
+}
+.m-t931-bt-ten {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+}
+.m-t931-bt-xoa {
+  background: none;
+  border: none;
+  color: var(--danger, #d92d20);
+  font-size: 13px;
+  cursor: pointer;
+  padding: 2px 6px;
+}

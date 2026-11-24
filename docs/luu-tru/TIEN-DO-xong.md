@@ -4,6 +4,9 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T929 | Điện thoại gói Plus: Danh sách phiếu kho hiện tiền (trừ Kiểm kê), CTTH sang khung danh sách chuẩn, form lập Điều chuyển vỏ m-t655, chân Tổng tiền + Huỷ / Lưu phiếu | Trum | 25/11/2026 | [2026-11-25-trum-kho-ctth-khuon-mua](../nhat-ky/2026-11-25-trum-kho-ctth-khuon-mua.md) |
+| T930 | Điện thoại gói Plus: Màn xem Nhập kho, Xuất huỷ, Xuất khác, Điều chuyển, Điều chỉnh, CTTH theo khuôn Nhập mua: thẻ Tổng giá trị, Thông tin chung m-t655-gon, chân Xoá + Sửa phiếu | Trum | 25/11/2026 | [2026-11-25-trum-kho-ctth-khuon-mua](../nhat-ky/2026-11-25-trum-kho-ctth-khuon-mua.md) |
+| T931 | Điện thoại gói Plus: Form lập Nhập kho, Xuất huỷ, Xuất khác, CTTH theo khuôn Nhập mua: thẻ đầu m-t655, CTTH mỗi bút toán một thẻ, chân Tổng tiền + Huỷ / Lưu phiếu | Trum | 25/11/2026 | [2026-11-25-trum-kho-ctth-khuon-mua](../nhat-ky/2026-11-25-trum-kho-ctth-khuon-mua.md) |
 | T927 | Điện thoại, xem phiếu Xuất huỷ như phiếu mua: tiêu đề Phiếu xuất huỷ + số phiếu, cửa hàng và nguồn lên đầu thẻ, Tổng tiền vốn, bỏ ô Cửa hàng, Nguồn chứng từ; Thông tin chung có Kho xuất, Lý do huỷ, Người thực hiện; dòng hàng Giá vốn, Tiền vốn; Tổng cộng có Tổng số lượng, Tổng tiền vốn | dinhlanphuongipacc | 24/11/2026 | [nhật ký](../nhat-ky/2026-11-24-dinhlanphuongipacc-xem-xuat-huy-dt.md) |
 | T926 | Web, Phiếu xuất điều chuyển: kho nhận là mọi kho trừ kho xuất; bảng chi tiết như phiếu mua hàng, tách Mã hàng và Tên hàng, Thêm hàng loạt, ĐVT theo quy đổi. Điện thoại chưa làm | dinhlanphuongipacc | 24/11/2026 | [nhật ký](../nhat-ky/2026-11-24-dinhlanphuongipacc-phieu-xuat-dieu-chuyen.md) |
 | T925 | Danh sách chứng từ máy tính, tab Chuyển quỹ: bỏ cột Lý do, Tham chiếu, Nguồn; tab Tiền mặt, Ngân hàng giữ nguyên | Trum | 24/11/2026 | 2026-11-24-trum-chuyen-quy.md |

@@ -746,7 +746,7 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
 
   const quayLai = () => quayLaiMobile(nav, '/app/nghiep-vu')
 
-  const dungKhungChuan = mod.key === 'mua-hang' || mod.key === 'ban-hang' || mod.key === 'kho'
+  const dungKhungChuan = mod.key === 'mua-hang' || mod.key === 'ban-hang' || mod.key === 'kho' || mod.key === 'tong-hop'
 
   const chipsLoc = useMemo(() => {
     const arr: ReactNode[] = []
@@ -789,20 +789,20 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
     <>
       {dungKhungChuan ? (
         <MDsChungTuChuan
-          tieuDe={sc.code === '5.1.1' ? 'Nhập kho' : mod.ngan ?? mod.ten}
+          tieuDe={sc.code === '5.1.1' ? 'Nhập kho' : (mod.key === 'tong-hop' ? (sc.ngan ?? sc.ten ?? 'Chứng từ tổng hợp') : (mod.ngan ?? mod.ten ?? ''))}
           hangTabs={hangTabs}
           onQuayLai={quayLai}
           onMoLoc={() => setLocMo(true)}
           coLoc={coLocKhacMacDinh(locVal)}
           chipsLoc={chipsLoc}
           chuoiKhoangNgay={chuoiKhoangNgay411}
-          hienTien={mod.key !== 'kho'}
+          hienTien={!(mod.key === 'kho' && cfg.kiemKe)}
           rows={list}
           renderDong={(r, i) => {
             const cfgLoai = theoLoai(cfg, r.loai)
             const laHang = cfgLoai.dong === 'hang' || cfgLoai.dong === 'nvl'
             let soDongHang = 0
-            if ((laHang && !cfg.khongKho) || cfg.dieuChuyen || cfg.sanXuat || cfg.kiemKe) {   // Hoá đơn mua hàng không đếm hàng hoá, dòng là diễn giải (T826)
+            if (mod.key !== 'tong-hop' && ((laHang && !cfg.khongKho) || cfg.dieuChuyen || cfg.sanXuat || cfg.kiemKe)) {   // Hoá đơn mua hàng không đếm hàng hoá, dòng là diễn giải (T826)
               if (Array.isArray(r._dong)) {
                 soDongHang = r._dong.length
               } else {
@@ -823,12 +823,14 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
               }
             } else if (mod.key === 'ban-hang') {
               dongPhu = String(r.doiTuong || r.kh || r.dienGiai || '—')
+            } else if (mod.key === 'tong-hop') {
+              dongPhu = String(r.dienGiai || '—')
             } else {
               dongPhu = String(r.doiTuong || r.ncc || r.dienGiai || '—')
             }
 
             const tien = Number(r.tong ?? r.tien ?? 0)
-            const hienTien = mod.key !== 'kho'
+            const hienTien = !(mod.key === 'kho' && cfg.kiemKe)
             // Nhập kho (T824, như web T818): thẻ ghi Người thực hiện đã lưu trên phiếu, phiếu mẫu lấy người tạo
             const dongPhu2 = sc.code === '5.1.1' ? `Người thực hiện: ${String(r._nhanVien ?? r._nguoiTao ?? nguoiTaoMau(r.so))}` : undefined
 
