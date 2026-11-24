@@ -54,7 +54,7 @@ export interface PhieuXdl {
   kenh: string
   ngayTao: string
   nguoiTao: string
-  nguon: string
+  nguon: 'Xuất bán POS' | 'Xuất bán hàng'   // phiếu bán hàng thủ công sau này ghi "Xuất bán hàng" (T915)
   tong: number
   dong: DongMonXdl[]
 }
@@ -127,7 +127,7 @@ export function useDsPhieuXdl(): PhieuXdl[] {
         kenh: p.kenh,
         ngayTao: `${dmy(p.date)} 23:30`,
         nguoiTao: 'Hệ thống',
-        nguon: 'FABi',
+        nguon: 'Xuất bán POS',
         tong,
         dong,
       }
