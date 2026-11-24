@@ -1255,3 +1255,5 @@ Trum chốt 23/11/2026 (T902). Bản vẽ `backup/mau-T902/ban-ve.html`, spec `b
 - Bước kiểm kê chưa xong không chặn khoá sổ.
 
 Lý do: không có phiếu kiểm kê thì không có số chi phí đúng. Phiếu chốt để lại dấu vết ai chốt, lúc nào, và giữ một nguồn tồn cuối duy nhất là phiếu kiểm kê.
+
+## QD116. Khuôn phiếu điện thoại cho phiếu không thanh toán (đang soạn)
