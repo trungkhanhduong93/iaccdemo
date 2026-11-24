@@ -11,7 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T914 | Phiếu xuất huỷ: thêm ô Lý do huỷ (lấy từ danh mục Lý do nghiệp vụ, Dùng cho Xuất kho) ở chỗ Nhân viên thực hiện; đổi nhãn thành Người thực hiện, dời xuống hàng 2 cạnh Ghi chú, Ghi chú thu hẹp | dinhlanphuongipacc | Đang làm | Sửa `ChungTuForm.tsx` |
 | T893 | Form Sửa danh mục không lưu được thay đổi của dòng mẫu (chỉ lưu dòng thêm trong phiên, `CatalogScreen.tsx` dòng ~660). Nhập Excel T892 đã có lớp ghi đè `ghiDeCatalogRow` trong `danhMucStore.ts`, form Sửa có thể dùng lại | Trum | Chưa làm | Thấy khi làm T892 |
 | T882 | Tồn kho ban đầu trên điện thoại: danh sách thẻ, chọn nhiều, Thiết lập hàng loạt, Xoá | | Chờ | Trum dời sang phiên sau (18/11/2026). Mẫu `backup/mau-T879/Dt*.dc.html`, spec mục Việc T882 trong `backup/spec-T879-T882.md` |
 | T873 | Rà mẫu báo cáo gói Plus theo bộ mẫu TT58 bản 13/11 (17 mẫu), lập bảng lệch `docs/RA-SOAT-MAU-TT58.md`, chưa sửa code | Trum | Dở dang | Chỉ tạo `docs/RA-SOAT-MAU-TT58.md`. Spec `backup/spec-T594-T871-T873.md`. Dừng 17/11: đã trích 17 sheet ra `backup/review-T873/excel_summary.txt`, chưa viết bảng lệch |

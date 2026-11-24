@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T914 | Phiếu xuất huỷ: thêm ô Lý do huỷ (danh mục Lý do nghiệp vụ, Dùng cho Xuất kho, bắt buộc) ở chỗ Nhân viên thực hiện; đổi nhãn thành Người thực hiện, gõ chữ tự do, dời xuống hàng 2 cạnh Ghi chú, Ghi chú thu hẹp còn nửa hàng | dinhlanphuongipacc | 24/11/2026 | [nhật ký](../nhat-ky/2026-11-24-dinhlanphuongipacc-ly-do-huy.md) |
 | T913 | Form Xuất kho định lượng: bỏ cột Số lô ở nhóm Hàng hoá; lưới chi tiết kéo giãn được độ rộng cột (khoá `xuat-dinh-luong-ct`), kéo rộng Ghi chú xem đủ nội dung | Trum | 24/11/2026 | `docs/nhat-ky/2026-11-24-trum-xdl-bo-so-lo.md` |
 | T911 | Skill bản đồ lên bản 6 "siêu bản đồ", học từ graphify: cache kết quả đọc file, `viec` nhanh từ 5,86 xuống 2,65 giây và giữ độ trúng 17/20; nhãn độ tin; lệnh `explain`, `ma`, `do`; hook nhắc dùng bản đồ; cài lên máy và mọi hồ sơ Orca | Trum | 24/11/2026 | `docs/nhat-ky/2026-11-24-trum-sieu-ban-do.md` |
 | T910 | Báo cáo Tổng hợp mua hàng theo hàng hoá (mã 4.2.8) ở nhóm báo cáo Mua hàng: cột như Bảng kê chi tiết mua hàng, bỏ ngày, số phiếu, nhà cung cấp; mã hàng là liên kết mở Bảng kê chi tiết mua hàng 4.2.7 ở tab mới, cùng kỳ, lọc theo mặt hàng; Bảng kê chi tiết mua hàng 4.2.7 bỏ kiểu xem Tổng hợp (cờ `chiChiTiet`); đường dẫn đầu báo cáo bấm tên nhóm về nhóm báo cáo | dinhlanphuongipacc | 24/11/2026 | 2026-11-24-dinhlanphuongipacc-tong-hop-mua-theo-hang.md |

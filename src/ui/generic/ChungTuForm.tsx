@@ -121,7 +121,8 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
   const coTtXn = laSx || dcn === 'xdc' || dcn === 'ndc'   // có trạng thái Chờ nhập, Đã nhập, Đã huỷ
   const laNk = sc.code === '5.1.1'   // phiếu nhập khác: bỏ đối tượng, kho nhập ở đầu phiếu, chi tiết chỉ số lượng, đơn giá, thành tiền (T737)
   const laXh = sc.code === '5.1.2-3' || sc.code === '5.1.2-4'   // phiếu xuất huỷ (T741), xuất khác (T745) như nhập khác, kho xuất ở đầu phiếu, chi tiết Giá vốn, Tiền vốn
-  const nhanNv = laNk ? 'Người thực hiện' : 'Nhân viên thực hiện'   // Nhập kho ghi Người thực hiện (T818)
+  const laHuy = sc.code === '5.1.2-3'   // xuất huỷ: hàng 1 Kho xuất, Lý do huỷ; hàng 2 Người thực hiện, Ghi chú (T914)
+  const nhanNv = laNk || laHuy ? 'Người thực hiện' : 'Nhân viên thực hiện'   // Nhập kho ghi Người thực hiện (T818), xuất huỷ (T914)
   const khoGon = laNk || laXh  // một kho ở đầu phiếu, bỏ đối tượng, bỏ thuế
   const giaVon = laXh || laDc   // xuất huỷ, xuất khác, xuất và nhập điều chỉnh: Đơn giá, Thành tiền gọi là Giá vốn, Tiền vốn (T741, T747)
   const gonDau = laKk || laDc || laSx || laDcn || khoGon    // đầu phiếu gọn: Kho, Nhân viên thực hiện; Ghi chú
@@ -224,7 +225,9 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
   const oLy = mod.key === 'tien' || cfg.khongKho ? bo.a.find(o => o.k === 'ly') : undefined
   // Lý do mặc định khi thêm mới: theo mã lý do trên đường dẫn (?ly=mã lý do Chi phí chờ phân bổ, vd mở từ sơ đồ Chi phí phân bổ), không có thì đoán từ diễn giải
   const lyUrl = moi ? LY_DO.find(x => x.ma === sp.get('ly'))?.ten : undefined
-  const lyGoc = (dg: string) => lyUrl && oLy?.ds?.includes(lyUrl) ? lyUrl : lyMacDinh(oLy?.ds ?? [], dg)
+  // Lý do huỷ (T914): danh mục Lý do nghiệp vụ, Dùng cho Xuất kho; mặc định lý do đầu (Xuất huỷ hàng hỏng)
+  const dsLyHuy = laHuy ? LY_DO.filter(x => x.dung === 'Xuất kho').map(x => x.ten) : []
+  const lyGoc = (dg: string) => laHuy ? dsLyHuy[0] ?? '' : lyUrl && oLy?.ds?.includes(lyUrl) ? lyUrl : lyMacDinh(oLy?.ds ?? [], dg)
   const [hoiThe, setHoiThe] = useState<{ moMoi: boolean; idMoi: string; tu: Record<string, unknown> } | null>(null)
   // Lập phiếu từ gợi ý sau khi tạo quỹ ở trang chủ: lưu xong hỏi quay lại trang chủ làm tiếp (T250)
   const [goiYVe] = useState(() => Boolean((loc.state as { goiYVeTrangChu?: boolean } | null)?.goiYVeTrangChu))
@@ -539,6 +542,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
     if (laTien && canDt && !doiTuong.trim()) { toast(`Chọn đối tượng cho lý do ${lyDo}`, { loai: 'loi' }); return }
     if (traNoNcc && !traNo.length) { toast('Chọn phiếu mua cần thanh toán ở tab Chi tiết', { loai: 'loi' }); return }   // T718
     if (khoGon && !kho) { toast(laNk ? 'Chọn Kho nhập' : 'Chọn Kho xuất', { loai: 'loi' }); return }   // T737, T741
+    if (laHuy && !lyDo) { toast('Chọn Lý do huỷ', { loai: 'loi' }); return }   // T914
     if (khoDau && !kho) { toast((nhom === 'ban') !== (cfg.prefix === 'TLN' || cfg.prefix === 'TL') ? 'Chọn Kho xuất' : 'Chọn Kho nhập', { loai: 'loi' }); return }   // kho đầu phiếu mua, bán có dấu * (T790)
     if (hdDienTu && !kenh) { toast('Chọn Kênh bán', { loai: 'loi' }); return }   // T785
     // Phiếu sản xuất (T152): bắt buộc kho, phiếu nhập bắt buộc tham chiếu, phải có dòng
@@ -1432,7 +1436,15 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
                       <ChonDanhMuc dm="kho" nhan="kho" value={kho} onChange={setKho} ds={!kho || dsKhoCn.includes(kho) ? dsKhoCn : [kho, ...dsKhoCn]} />
                     ) : <input className="inp" readOnly value={kho} />}
                   </div>
-                  {hienDau('nhanVien') && (
+                  {laHuy ? (
+                    <div className="f" style={{ flex: 1 }}>
+                      <label>Lý do huỷ <em>*</em></label>
+                      {suaTtc ? (
+                        <ChonDanhMuc dm="ly:Lý do huỷ" nhan="lý do huỷ" value={lyDo} onChange={setLyDo}
+                          ds={!lyDo || dsLyHuy.includes(lyDo) ? dsLyHuy : [lyDo, ...dsLyHuy]} />
+                      ) : <input className="inp" readOnly value={lyDo} />}
+                    </div>
+                  ) : hienDau('nhanVien') && (
                     <div className="f" style={{ flex: 1 }}>
                       <label>{nhanNv}</label>
                       {suaTtc ? (
@@ -1441,6 +1453,19 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
                       ) : <input className="inp" readOnly value={nhanVien} />}
                     </div>
                   )}
+                </div>
+              )}
+              {/* Xuất huỷ hàng 2 (T914): Người thực hiện, Ghi chú mỗi ô nửa hàng */}
+              {laHuy && (hienDau('nhanVien') || oGhiChu) && (
+                <div className="row" style={{ gap: 10 }}>
+                  {hienDau('nhanVien') && (
+                    <div className="f" style={{ flex: 1 }}>
+                      <label>{nhanNv}</label>
+                      {/* Người thực hiện gõ tự do, không chọn từ danh mục nhân viên (T914) */}
+                      <input className="inp" readOnly={!suaTtc} value={nhanVien} onChange={e => setNhanVien(e.target.value)} />
+                    </div>
+                  )}
+                  <div style={{ flex: 1, minWidth: 0 }}>{oGhiChu}</div>
                 </div>
               )}
               {/* Điều chuyển (T155): xuất có kho xuất, cửa hàng nhận, kho nhận; nhập có tham chiếu, kho nhận; chuyển kho có kho xuất, kho nhận */}
@@ -1499,7 +1524,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
                     : <input className="inp" readOnly value={kenh} />}
                 </div>
               )}
-              {!keoGc && oGhiChu}
+              {!keoGc && !laHuy && oGhiChu}
             </div>
 
             {/* Mua tích Nhận kèm hoá đơn, bán tích Lập kèm hoá đơn: thông tin hoá đơn thành một cột trước cột ngày, số phiếu, ba hàng đều với hai cột trái (T62, T68, T83) */}

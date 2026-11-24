@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 24/11/2026
+- T914: Phiếu xuất huỷ có thêm ô Lý do huỷ, chọn từ danh mục Lý do nghiệp vụ dành cho Xuất kho. Nhân viên thực hiện đổi thành Người thực hiện, gõ chữ tự do, nằm hàng dưới cạnh Ghi chú.
 - T913: Xuất kho định lượng, chi tiết phiếu bỏ cột Số lô. Kéo mép tiêu đề để giãn độ rộng cột, vd kéo rộng Ghi chú xem đủ nội dung. Trình duyệt nhớ độ rộng đã kéo.
 - T910: Báo cáo mới Tổng hợp mua hàng theo hàng hoá ở nhóm báo cáo Mua hàng: mỗi mặt hàng một dòng với số lượng, đơn giá bình quân, thành tiền, chiết khấu, thuế, tổng tiền. Bấm mã hàng mở Bảng kê chi tiết mua hàng ở tab mới, cùng kỳ, lọc sẵn mặt hàng đó.
 - T910: Bảng kê chi tiết mua hàng chỉ còn kiểu xem Chi tiết, bỏ nút Tổng hợp. Nút Bảng kê mua hàng ở trang chủ (web, điện thoại) mở báo cáo tổng hợp mới.
