@@ -94,8 +94,11 @@ function useBoLoc(path: string) {
   )
 }
 
+/** Ô bắt buộc chọn trong popup điều kiện xem báo cáo (Thẻ kho: Kho, Mặt hàng); chưa có giá trị thì khoá nút Xem báo cáo */
+export type OBatBuoc = { k: string; ten: string; o: ReactNode; coGiaTri: boolean }
+
 /** moTa: dòng thông số lọc dưới tên báo cáo ở phần đầu mới (T576), vd "Quỹ tiền mặt · Tất cả cửa hàng · Tháng 9/2026" */
-export function ReportToolbar({ ky, setKy, children, moTa }: { ky: string; setKy: (v: string) => void; children?: ReactNode; moTa?: ReactNode }) {
+export function ReportToolbar({ ky, setKy, children, moTa, oBatBuoc }: { ky: string; setKy: (v: string) => void; children?: ReactNode; moTa?: ReactNode; oBatBuoc?: OBatBuoc[] }) {
   // Số liệu báo cáo mẫu tính theo tháng, nên lấy tháng của ngày bắt đầu làm kỳ.
   const [khoang, setKhoang] = useState(() => khoangThang(Number(ky), 2026))
   // Khoảng ngày lúc bấm Lọc gần nhất: kho lọc chỉ nhớ tháng, đổi ngày trong cùng tháng vẫn phải báo chấm cam ở nút Lọc (T576)
@@ -410,7 +413,7 @@ export function ReportToolbar({ ky, setKy, children, moTa }: { ky: string; setKy
   return (
     <>
       {thanh}
-      {hoiLoc && <HopHoiLoc ten={(slug && tenBC(slug, s.cheDo)) || ''} ds={oLoc} onXem={xemTuPopup} onHuy={() => nav(-1)} />}
+      {hoiLoc && <HopHoiLoc ten={(slug && tenBC(slug, s.cheDo)) || ''} ds={oLoc} oBatBuoc={oBatBuoc} onXem={xemTuPopup} onHuy={() => nav(-1)} />}
       <TuyChinhBC
         open={moTuyChinh}
         onClose={() => setMoTuyChinh(false)}
@@ -424,8 +427,9 @@ export function ReportToolbar({ ky, setKy, children, moTa }: { ky: string; setKy
 }
 
 /** Popup điều kiện lọc trước khi xem báo cáo (T288): đủ các ô lọc của báo cáo, không chia ngoài thanh, nâng cao */
-function HopHoiLoc({ ten, ds, onXem, onHuy }: { ten: string; ds: OLocDef[]; onXem: () => void; onHuy: () => void }) {
+function HopHoiLoc({ ten, ds, oBatBuoc = [], onXem, onHuy }: { ten: string; ds: OLocDef[]; oBatBuoc?: OBatBuoc[]; onXem: () => void; onHuy: () => void }) {
   useDongEsc(onHuy)
+  const thieu = oBatBuoc.some(o => !o.coGiaTri)
   return createPortal(
     <div className="overlay ds-hop-nen">
       <div className="ds-hop bc-hoi-loc" role="dialog" aria-modal="true" aria-label="Điều kiện xem báo cáo">
@@ -434,10 +438,13 @@ function HopHoiLoc({ ten, ds, onXem, onHuy }: { ten: string; ds: OLocDef[]; onXe
         {ten && <div className="bc-hoi-loc-ten">{ten}</div>}
         <div className="bc-hoi-loc-than">
           {ds.map(o => <div key={o.k} className="bc-hoi-loc-o"><span>{o.ten}</span><div className="ds-o">{o.o}</div></div>)}
+          {oBatBuoc.map(o => (
+            <div key={o.k} className="bc-hoi-loc-o"><span>{o.ten} <b className="bc-hoi-loc-sao" aria-hidden="true">*</b></span><div className="ds-o">{o.o}</div></div>
+          ))}
         </div>
         <div className="ds-chan">
           <button type="button" className="btn" onClick={onHuy}>Huỷ</button>
-          <button type="button" className="btn pri" onClick={onXem}>Xem báo cáo</button>
+          <button type="button" className="btn pri" disabled={thieu} title={thieu ? 'Chọn đủ các mục có dấu *' : undefined} onClick={onXem}>Xem báo cáo</button>
         </div>
       </div>
     </div>,

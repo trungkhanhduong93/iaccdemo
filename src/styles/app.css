@@ -50072,3 +50072,6 @@ td.xdl-cat > span { display: block; overflow: hidden; text-overflow: ellipsis; w
 .td-bang .inp.td-o-an { border-color: transparent; background: transparent; box-shadow: none; }
 .td-bang .inp.td-o-an:hover { border-color: var(--line); }
 .td-bang .inp.td-o-an:focus { border-color: var(--blue); background: #fff; box-shadow: 0 0 0 3px rgba(5, 96, 166, .12); }
+
+/* ── Thẻ kho: popup điều kiện bắt buộc chọn Kho, Mặt hàng (T844) ── */
+.bc-hoi-loc-sao { color: var(--danger, #d92d20); font-weight: 600; }

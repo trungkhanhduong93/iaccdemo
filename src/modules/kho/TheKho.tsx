@@ -25,10 +25,9 @@ export function TheKho({ sc, mod }: ScreenProps) {
   const [ky, setKy] = useState(() => q.get('ky') ?? tt.daXem.ky ?? '9')
   const [kho, setKho] = useState(() => {
     const qKho = q.get('kho')
-    if (qKho && KHO.includes(qKho)) return qKho
-    return dsKho[0] || KHO[1]
+    return qKho && KHO.includes(qKho) ? qKho : ''
   })
-  const [ma, setMa] = useState(() => HANG_XNT.find(h => h.ma === q.get('ma'))?.ma ?? HANG_XNT[0].ma)
+  const [ma, setMa] = useState(() => HANG_XNT.find(h => h.ma === q.get('ma'))?.ma ?? '')
 
   // Kỳ trên đường dẫn ghi vào bộ lọc đã xem trước khi thanh lọc chạy, nếu không thanh lọc kéo kỳ về kỳ xem lần trước
   const [san, setSan] = useState(!q.get('ky'))
@@ -41,27 +40,48 @@ export function TheKho({ sc, mod }: ScreenProps) {
     if (k) { datKyNhap(path, k); xemBaoCao(path); setKy(k); setSan(true) }
   }, [q, path])
 
-  const the = useMemo(() => theKho(Number(ky), kho, ma), [ky, kho, ma])
-  const cols = useMemo(() => the.cols.map(c => {
+  // Kho và Mặt hàng bắt buộc chọn mới xem được thẻ kho; chưa chọn thì chưa dựng thẻ
+  const daChon = Boolean(kho && ma)
+  const the = useMemo(() => daChon ? theKho(Number(ky), kho, ma) : null, [ky, kho, ma, daChon])
+  const cols = useMemo(() => (the?.cols ?? []).map(c => {
     if (c.k === 'soNhap' || c.k === 'soXuat') {
       return { ...c, r: (x: Row) => x?.[c.k] ? <SoChungTu so={x[c.k]} /> : null }
     }
     return c
-  }), [the.cols])
+  }), [the])
   const ten = tenMan(sc)
+  const oKho = (
+    <Select className="inp" value={kho} onChange={e => setKho(e.target.value)}>
+      <option value="">Chọn kho</option>
+      {dsKho.map(k => <option key={k}>{k}</option>)}
+    </Select>
+  )
+  const oMa = (
+    <Select className="inp" value={ma} onChange={e => setMa(e.target.value)}>
+      <option value="">Chọn mặt hàng</option>
+      {HANG_XNT.map(h => <option key={h.ma} value={h.ma}>{h.ten}</option>)}
+    </Select>
+  )
   return (
     <div className="page page-report">
       <PageHead crumb={[mod.ten, sc.nhom ?? '']} title={ten} code={sc.code} />
       <section className="report">
         {san && (
-          <ReportToolbar ky={ky} setKy={setKy}>
-            <LocO nhan="Kho"><Select className="inp" value={kho} onChange={e => setKho(e.target.value)}>{dsKho.map(k => <option key={k}>{k}</option>)}</Select></LocO>
-            <LocO nhan="Mặt hàng"><Select className="inp" value={ma} onChange={e => setMa(e.target.value)}>{HANG_XNT.map(h => <option key={h.ma} value={h.ma}>{h.ten}</option>)}</Select></LocO>
+          <ReportToolbar ky={ky} setKy={setKy} oBatBuoc={[
+            { k: 'kho', ten: 'Kho', o: oKho, coGiaTri: Boolean(kho) },
+            { k: 'matHang', ten: 'Mặt hàng', o: oMa, coGiaTri: Boolean(ma) },
+          ]}>
+            <LocO nhan="Kho">{oKho}</LocO>
+            <LocO nhan="Mặt hàng">{oMa}</LocO>
           </ReportToolbar>
         )}
-        <ReportPaper title={ten} sub={`${the.hang.ma} - ${the.hang.ten} (${the.hang.dvt}) · ${kho} · Tháng ${ky}/2026`}>
-          <RptTable cols={cols} rows={the.rows} />
-        </ReportPaper>
+        {the ? (
+          <ReportPaper title={ten} sub={`${the.hang.ma} - ${the.hang.ten} (${the.hang.dvt}) · ${kho} · Tháng ${ky}/2026`}>
+            <RptTable cols={cols} rows={the.rows} />
+          </ReportPaper>
+        ) : (
+          <div className="bc-xem bc-cho-loc"><span>Chọn Kho và Mặt hàng để xem thẻ kho</span></div>
+        )}
       </section>
     </div>
   )
