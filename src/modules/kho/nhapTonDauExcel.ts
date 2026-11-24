@@ -6,7 +6,7 @@ import { maKho } from '../danh-muc/data'
 import { fold } from '../../ui/format'
 import { taiFileDm, ngayFile, type CotMau, type SheetDs, type ODm } from '../../ui/generic/mauNhapDm'
 import type { BaoTienDo, DongKiem, KetQuaKiem, KetQuaNhap, NhomCot, XuLyDong } from '../../ui/generic/nhapDmKieu'
-import { dsTonDau, dvtCuaHang, luuTonDau, xoaTonDau, type LyDoKhoa, type DongTonDau } from './ton-dau'
+import { dsTonDau, dvtCuaHang, luuTonDau, xoaTheoMa, type LyDoKhoa, type DongTonDau } from './ton-dau'
 
 const MAT_HANG = [...NVL, ...HANG.filter(h => h.tonKho)]
 
@@ -243,7 +243,7 @@ export async function kiemFileNhapTonDau(file: File, kho: string): Promise<KetQu
 
   const dsKho = dsTonDau(kho)
   const mapTonDauCu = new Map<string, DongTonDau>()
-  for (const d of dsKho) mapTonDauCu.set(d.ma.toLowerCase(), d)
+  for (const d of dsKho) { const k = d.ma.toLowerCase(); const cu = mapTonDauCu.get(k); if (!cu || (d.co && !cu.co)) mapTonDauCu.set(k, d) }   // mã có nhiều dòng ĐVT thì lấy dòng đầu có tồn
 
   const mapMatHang = new Map<string, { ma: string; ten: string; dvt: string }>()
   for (const h of MAT_HANG) mapMatHang.set(h.ma.toLowerCase(), h)
@@ -442,7 +442,8 @@ export async function ghiTonDau(
     baoTienDo(i + 1, tong, d)
   }
 
-  if (xoaMa.length) xoaTonDau(kho, xoaMa)
+  // Nhập Excel ghi đè theo mã hàng: bỏ mọi dòng cũ của mã đó (kể cả dòng ĐVT khác) rồi ghi dòng trong file
+  if (xoaMa.length || luuDs.length) xoaTheoMa(kho, [...xoaMa, ...luuDs.map(d => d.ma)])
   if (luuDs.length) luuTonDau(kho, luuDs)
 
   return {

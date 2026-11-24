@@ -28,7 +28,7 @@ const COT_LOC: { k: keyof DongTl; t: string }[] = [
 
 export function HopThietLapTonDau({ kho, ma, tichSan, onDong }: { kho: string; ma: string[]; tichSan: boolean; onDong: () => void }) {
   const { toast } = useSession()
-  const [dong, setDong] = useState<DongTl[]>(() => dsTonDau(kho).filter(d => ma.includes(d.ma))
+  const [dong, setDong] = useState<DongTl[]>(() => dsTonDau(kho).filter(d => ma.includes(d.id))
     .map(d => ({ ma: d.ma, ten: d.ten, nhom: d.nhom, nhomMa: d.nhomMa, dvt: d.dvt, sl: d.sl == null ? '' : String(d.sl), gia: d.gia == null ? '' : String(d.gia) })))
   const [tich, setTich] = useState<Set<string>>(() => new Set(tichSan ? ma : []))
   const [loc, setLoc] = useState<Record<string, string>>({})
@@ -97,7 +97,7 @@ export function HopThietLapTonDau({ kho, ma, tichSan, onDong }: { kho: string; m
                     <td><Select className="inp sm" value={d.dvt} onChange={e => sua(d.ma, { dvt: e.target.value })} aria-label="Đơn vị tính" ds={dsDvt.map(x => ({ v: x.ten, t: `${x.ma} - ${x.ten}` }))} /></td>
                     <td className="td-mot-dong">{maTen(d.nhomMa, d.nhom)}</td>
                     <td><input className="inp sm td-o-so" inputMode="decimal" aria-label="Số lượng" value={soQT(d.sl)} onChange={e => sua(d.ma, { sl: nhapSoQT(e.target.value) })} /></td>
-                    <td><input className={`inp sm td-o-so${d.sl !== '' && d.gia === '' ? ' thieu' : ''}`} inputMode="decimal" aria-label="Đơn giá" placeholder={d.sl !== '' && d.gia === '' ? 'Thiếu đơn giá' : ''} value={soQT(d.gia)} onChange={e => sua(d.ma, { gia: nhapSoQT(e.target.value) })} /></td>
+                    <td><input className={`inp sm td-o-so${d.sl !== '' && d.gia === '' ? ' thieu' : ''}`} inputMode="decimal" aria-label="Đơn giá" value={soQT(d.gia)} onChange={e => sua(d.ma, { gia: nhapSoQT(e.target.value) })} /></td>
                     <td className="num b">{tien(d) == null ? '' : money(tien(d)!)}</td>
                   </tr>
                 )
@@ -153,11 +153,11 @@ export function HopThietLapTonDau({ kho, ma, tichSan, onDong }: { kho: string; m
   )
 }
 
-export function HopChepTonDau({ kho, ma, onDong }: { kho: string; ma: string[]; onDong: () => void }) {
+export function HopChepTonDau({ kho, dsKho: khoCho = KHO, ma, onDong }: { kho: string; dsKho?: string[]; ma: string[]; onDong: () => void }) {
   const { toast } = useSession()
   const [chon, setChon] = useState<string[]>([])
   const [mo, setMo] = useState(false)
-  const dsKho = KHO.filter(k => k !== kho).map(k => ({ k, khoa: khoaTonDau(k) !== null }))
+  const dsKho = khoCho.filter(k => k !== kho).map(k => ({ k, khoa: khoaTonDau(k) !== null }))
   const chep = () => {
     chepTonDau(kho, chon, ma)
     toast(`Đã chép tồn đầu ${ma.length} mã hàng sang ${chon.join(', ')}`)
@@ -165,9 +165,9 @@ export function HopChepTonDau({ kho, ma, onDong }: { kho: string; ma: string[]; 
   }
   return (
     <div className="td-phu td-phu-nho">
-      <div className="td-hop-nho td-hop-chep" role="dialog" aria-modal="true" aria-label="Chép sang kho khác">
+      <div className="td-hop-nho td-hop-chep" role="dialog" aria-modal="true" aria-label="Sao chép sang kho khác">
         <div className="td-dau">
-          <div className="td-dau-chu"><b className="td-tieu-de">Chép sang kho khác</b><span>{ma.length} mã hàng đã chọn · từ {kho}</span></div>
+          <div className="td-dau-chu"><b className="td-tieu-de">Sao chép sang kho khác</b><span>{ma.length} mã hàng đã chọn · từ {kho}</span></div>
           <NutDong onDong={onDong} />
         </div>
         <div className="td-chep-than">

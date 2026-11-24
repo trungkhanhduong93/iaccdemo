@@ -15,7 +15,9 @@ const COT: [keyof HangChon | 'hang', string, (h: HangChon) => string][] = [
   ['loai', 'Loại', h => h.loai],
 ]
 
-export function ThemHangLoat({ ds, daCo, nhanDaCo = 'Đã có trong phiếu', onDong, onXacNhan }: {
+export function ThemHangLoat({ ds, daCo, nhanDaCo = 'Đã có trong phiếu', chonLaiDaCo = false, tieuDe = 'Thêm hàng loạt', onDong, onXacNhan }: {
+  chonLaiDaCo?: boolean                  // true: hàng đã có vẫn tích chọn được, chỉ gắn nhãn (Tồn kho ban đầu)
+  tieuDe?: string                        // tiêu đề hộp, mặc định Thêm hàng loạt; Tồn kho ban đầu dùng Thêm mới
   ds: HangChon[]
   daCo: string[]                         // mã hàng đã có trong phiếu: tích sẵn, mờ, không chọn lại để khỏi trùng dòng
   nhanDaCo?: string                      // nhãn cạnh hàng đã có, vd Tồn kho ban đầu ghi "Đã có ở <kho>" (T736)
@@ -41,7 +43,8 @@ export function ThemHangLoat({ ds, daCo, nhanDaCo = 'Đã có trong phiếu', on
   const trangHien = Math.min(trang, soTrang)
   const dau = (trangHien - 1) * coTrang
   const dsTrang = dsLoc.slice(dau, dau + coTrang)
-  const chonDuoc = dsTrang.filter(h => !daCo.includes(h.ma))
+  const khoaDaCo = (ma: string) => !chonLaiDaCo && daCo.includes(ma)
+  const chonDuoc = dsTrang.filter(h => !khoaDaCo(h.ma))
   const tatCa = chonDuoc.length > 0 && chonDuoc.every(h => chon.has(h.ma))
 
   const bat = (ma: string, v: boolean) => setChon(c => { const n = new Set(c); if (v) n.add(ma); else n.delete(ma); return n })
@@ -49,9 +52,9 @@ export function ThemHangLoat({ ds, daCo, nhanDaCo = 'Đã có trong phiếu', on
 
   return createPortal(
     <div className="overlay ds-hop-nen" onMouseDown={e => { if (e.target === e.currentTarget) onDong() }}>
-      <div className="ds-hop thl-hop" role="dialog" aria-modal="true" aria-label="Thêm hàng loạt">
+      <div className="ds-hop thl-hop" role="dialog" aria-modal="true" aria-label={tieuDe}>
         <div className="ds-hop-dau">
-          <b className="thl-tieu-de">Thêm hàng loạt</b>
+          <b className="thl-tieu-de">{tieuDe}</b>
           <span className="grow" />
           <button type="button" className="icon-btn sm" onClick={onDong} aria-label="Đóng"><Icon n="x" className="ic sm" /></button>
         </div>
@@ -71,11 +74,11 @@ export function ThemHangLoat({ ds, daCo, nhanDaCo = 'Đã có trong phiếu', on
               </thead>
               <tbody>
                 {dsTrang.map((h, i) => {
-                  const co = daCo.includes(h.ma)
+                  const co = daCo.includes(h.ma), khoa = khoaDaCo(h.ma)
                   return (
-                    <tr key={h.ma} className={co ? 'thl-co' : chon.has(h.ma) ? 'thl-on' : ''} onClick={() => { if (!co) bat(h.ma, !chon.has(h.ma)) }}>
+                    <tr key={h.ma} className={khoa ? 'thl-co' : chon.has(h.ma) ? 'thl-on' : ''} onClick={() => { if (!khoa) bat(h.ma, !chon.has(h.ma)) }}>
                       <td onClick={e => e.stopPropagation()}>
-                        <input type="checkbox" checked={co || chon.has(h.ma)} disabled={co} onChange={e => bat(h.ma, e.target.checked)} aria-label={`Chọn ${h.ten}`} />
+                        <input type="checkbox" checked={khoa || chon.has(h.ma)} disabled={khoa} onChange={e => bat(h.ma, e.target.checked)} aria-label={`Chọn ${h.ten}`} />
                       </td>
                       <td className="dim">{dau + i + 1}</td>
                       <td>{h.ten} <span className="muted">- {h.ma}</span>{co && <span className="thl-nhan">{nhanDaCo}</span>}</td>

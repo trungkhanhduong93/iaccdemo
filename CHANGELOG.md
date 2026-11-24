@@ -4,6 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 24/11/2026
 - T915: Xuất kho định lượng, đầu phiếu bỏ ô Cửa hàng vì góc trên phải đã có. Lưới chi tiết để nhóm Hàng hoá bên trái, Món bán bên phải, thêm cột Kho xuất. Gói Pro tách kho bar cho đồ uống, kho bếp cho món ăn. Nguồn phiếu ghi Xuất bán POS thay cho FABi.
+- T922: Kho > Tồn kho ban đầu (gói Plus) đứng cuối thanh tab. Bỏ chip Cần xem lại; thanh lọc gọn như danh sách mua hàng. Thêm mới mở hộp tích chọn hàng, nút Sửa rồi Lưu để sửa số lượng, đơn giá, ĐVT; một mặt hàng có nhiều dòng khác ĐVT. Ô Kho hàng chỉ liệt kê kho của cửa hàng đang đứng. Xoá phiếu kiểm kê thì kho mở khoá lại.
 - T914: Phiếu xuất huỷ có thêm ô Lý do huỷ, chọn từ danh mục Lý do nghiệp vụ dành cho Xuất kho. Nhân viên thực hiện đổi thành Người thực hiện, gõ chữ tự do, nằm hàng dưới cạnh Ghi chú.
 - T913: Xuất kho định lượng, chi tiết phiếu bỏ cột Số lô. Kéo mép tiêu đề để giãn độ rộng cột, vd kéo rộng Ghi chú xem đủ nội dung. Trình duyệt nhớ độ rộng đã kéo.
 - T910: Báo cáo mới Tổng hợp mua hàng theo hàng hoá ở nhóm báo cáo Mua hàng: mỗi mặt hàng một dòng với số lượng, đơn giá bình quân, thành tiền, chiết khấu, thuế, tổng tiền. Bấm mã hàng mở Bảng kê chi tiết mua hàng ở tab mới, cùng kỳ, lọc sẵn mặt hàng đó.

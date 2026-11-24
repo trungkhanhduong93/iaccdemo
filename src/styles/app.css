@@ -50067,3 +50067,8 @@ td.xdl-cat > span { display: block; overflow: hidden; text-overflow: ellipsis; w
 
 /* ── Xuất kho định lượng: cột Tên ghi Tên - mã, mã nhạt hơn tên (T915) ── */
 .xdl-luoi .xdl-ma { color: var(--muted); font-weight: 400; }
+
+/* ── Tồn kho ban đầu: ô gõ số lượng, đơn giá liền bảng, chỉ hiện khung khi rê chuột hoặc đang gõ (T922) ── */
+.td-bang .inp.td-o-an { border-color: transparent; background: transparent; box-shadow: none; }
+.td-bang .inp.td-o-an:hover { border-color: var(--line); }
+.td-bang .inp.td-o-an:focus { border-color: var(--blue); background: #fff; box-shadow: 0 0 0 3px rgba(5, 96, 166, .12); }
