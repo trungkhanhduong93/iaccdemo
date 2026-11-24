@@ -50098,3 +50098,13 @@ td.xdl-cat > span { display: block; overflow: hidden; text-overflow: ellipsis; w
 
 /* ── Thẻ kho: popup điều kiện bắt buộc chọn Kho, Mặt hàng (T844) ── */
 .bc-hoi-loc-sao { color: var(--danger, #d92d20); font-weight: 600; }
+
+/* ── Xuất kho định lượng: thông tin chung dạng chữ, tab Xuất kho, Lỗi, Lịch sử (T932) ── */
+.xdl-tt { padding: 10px 16px; }
+.xdl-tt-dong { margin-bottom: 8px; }
+.xdl-tt-dong > .xp637-o { flex: 1 1 0; }
+.xdl-tt-dong > .xdl-tt-be { flex: 0 1 190px; }
+.xdl-tt-dong > .xp637-o:first-child { flex: 0 0 270px; }
+.xdl-tt-dong > .xdl-tt-gc { flex: 3 1 0; }
+@media (max-width: 900px) { .xdl-tt-dong { flex-wrap: wrap; } .xdl-tt-dong > .xp637-o, .xdl-tt-dong > .xp637-o:first-child { flex: 1 1 45%; } }
+.xdl-luoi .ls-g { padding: 12px 16px; }

@@ -1,6 +1,6 @@
 // Xuất kho định lượng (T849): mỗi phiếu Xuất bán POS sinh một phiếu xuất kho định lượng,
-// T907: chi tiết đầu phiếu 2 nhóm như Xuất bán POS, lưới phẳng nhóm cột Món bán, Hàng hoá, món không xuất được ghi lý do.
-import { useMemo, useState } from 'react'
+// T907: lưới phẳng, món không xuất được ghi lý do. T932: tiêu đề như phiếu mua, 3 tab Xuất kho, Lỗi, Lịch sử.
+import { useMemo, useState, type ReactNode } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import type { Col, Row, ScreenProps } from '../types'
 import { duongDan, tenMan } from '../../app/registry'
@@ -18,6 +18,7 @@ import { NutExcel } from '../../ui/CongCuDs'
 import { Select } from '../../ui/Dropdown'
 import { useDsPhieuXdl, type LyDoXdl, type PhieuXdl } from './xuat-dinh-luong'
 import { CUA_HANG } from '../../data/mock'
+import { LichSu } from '../../ui/generic/ChungTuForm'
 
 // Món đồ uống do quầy bar pha, gói Pro xuất NVL từ kho bar (T915)
 const DO_UONG = /cà phê|cafe|trà|sinh tố|nước|bia|soda|sữa|latte|cacao|matcha|đá xay|cocktail|rượu/i
@@ -215,11 +216,12 @@ function ChiTietXuatDinhLuong({ sc, mod, row }: ScreenProps & { row?: PhieuXdl }
   const { s } = useSession()
   const nav = useNavigate()
   const dongForm = useDong(duongDan(mod, sc))
-  const [tab, setTab] = useState<'ct' | 'ht'>('ct')
+  const [tab, setTab] = useState<'xk' | 'loi' | 'ht' | 'ls'>('xk')
   const [locCot, setLocCot] = useState<Record<string, GiaTriLoc>>({})
-  const doRong = useDoRongCot('xuat-dinh-luong-ct')   // kéo giãn cột, kéo rộng Ghi chú xem đủ (T913)
+  const doRong = useDoRongCot('xuat-dinh-luong-ct')   // kéo giãn cột (T913)
+  const doRongLoi = useDoRongCot('xuat-dinh-luong-loi')
 
-  // Lưới phẳng như mẫu Chi tiết tiêu hao: mỗi dòng một NVL của một món, phần Món bán lặp lại để lọc từng cột đúng
+  // Tab Xuất kho: mỗi dòng một NVL của một món, phần Món bán lặp lại để lọc từng cột đúng
   // Kho xuất (T915): Standard, Plus một kho chính theo cửa hàng; Pro tách kho bar cho đồ uống, kho bếp cho món còn lại
   const ch = CUA_HANG.find(c => c.ten === row?.cn)
   const khoCua = (tenMon: string) => {
@@ -228,10 +230,10 @@ function ChiTietXuatDinhLuong({ sc, mod, row }: ScreenProps & { row?: PhieuXdl }
     return bar ?? ch?.kho[0] ?? ''
   }
   const dongLuoi = useMemo<Row[]>(() => (row?.dong ?? []).flatMap((m, i) => {
-    const mon = { _mon: i, maCt: m.maCt ?? '', _ctId: m.ctId, tenMon: m.ten, maMon: m.maFabi ? `FABi: ${m.maFabi}` : m.ma, dvtMon: m.dvt, slMon: m.sl, giaMon: m.gia, tienMon: m.tien }
-    if (!m.nvl.length) return [{ ...mon, id: `${i}`, ghiChu: m.lyDo?.text ?? '', _lyDo: m.lyDo }]
+    if (!m.nvl.length) return []   // món lỗi sang tab Lỗi
+    const mon = { _mon: i, maCt: m.maCt ?? '', _ctId: m.ctId, tenMon: m.ten, maMon: m.maFabi ? `FABi: ${m.maFabi}` : m.ma, slMon: m.sl }
     const khoXuat = khoCua(m.ten)
-    return m.nvl.map((n, j) => ({ ...mon, id: `${i}-${j}`, tenNvl: n.ten, maNvl: n.ma, dvtNvl: n.dvt, slNvl: n.sl, giaNvl: n.gia, tienNvl: n.tien, khoXuat, ghiChu: n.lyDo?.text ?? '', _lyDo: n.lyDo }))
+    return m.nvl.map((n, j) => ({ ...mon, id: `${i}-${j}`, tenNvl: n.ten, maNvl: n.ma, dvtNvl: n.dvt, slNvl: n.sl, giaNvl: n.gia, tienNvl: n.tien, khoXuat, _lyDo: n.lyDo }))
   }), [row, s.goi])   // eslint-disable-line react-hooks/exhaustive-deps
 
   if (!row) {
@@ -243,6 +245,7 @@ function ChiTietXuatDinhLuong({ sc, mod, row }: ScreenProps & { row?: PhieuXdl }
   }
 
   const isPro = s.goi === 'PR'
+  const ghiChu = `${row.ghiChu} đơn ${row.maHd}`   // ghép mã hoá đơn POS vào ghi chú
   const congThuc = s.goi === 'PL' ? '/app/danh-muc/cong-thuc-che-bien' : '/app/kho/9-1-3'   // gói Plus xem công thức ở Danh mục (T719)
   const diSua: Record<LyDoXdl['loai'], string> = { 1: congThuc, 2: '/app/danh-muc/1-2', 3: '/app/danh-muc/1-4', 4: congThuc, 5: '/app/kho/5-1-7' }
 
@@ -253,57 +256,55 @@ function ChiTietXuatDinhLuong({ sc, mod, row }: ScreenProps & { row?: PhieuXdl }
   }))
   const rowsBang = rowsLoc.map((r, i) => ({ ...r, stt: i + 1 }))
 
-  // Tổng: món bán cộng mỗi món một lần vì phần Món bán lặp theo dòng NVL
+  // Tổng: tiền vốn cộng mọi dòng NVL; số lượng món bán cộng mỗi món một lần vì phần Món bán lặp theo dòng NVL
   const daDem = new Set<unknown>()
-  const tong = { slMon: 0, tienMon: 0, slNvl: 0, tienNvl: 0 }
+  const tong = { slMon: 0, tienNvl: 0 }
   for (const r of rowsLoc) {
-    if (!daDem.has(r._mon)) { daDem.add(r._mon); tong.slMon += Number(r.slMon); tong.tienMon += Number(r.tienMon) }
-    tong.slNvl += Number(r.slNvl ?? 0)
+    if (!daDem.has(r._mon)) { daDem.add(r._mon); tong.slMon += Number(r.slMon) }
     tong.tienNvl += Number(r.tienNvl ?? 0)
   }
 
-  // Dải cảnh báo: đếm món theo lý do; lý do 5 nằm ở dòng NVL nên đếm món có NVL thiếu giá
-  const demLyDo = new Map<LyDoXdl['loai'], number>()
-  for (const m of row.dong) {
-    const loai = m.lyDo?.loai ?? (m.nvl.some(n => n.lyDo) ? 5 : undefined)
-    if (loai) demLyDo.set(loai, (demLyDo.get(loai) ?? 0) + 1)
-  }
-  const monLoi = row.dong.filter(m => m.lyDo).length
+  // Tab Lỗi: món chưa tạo được xuất kho định lượng (lý do 1 đến 4)
+  const dsLoi = row.dong.filter(m => m.lyDo)
+  const rowsLoi: Row[] = dsLoi.map((m, i) => ({ id: String(i), stt: i + 1, tenMon: m.ten, maMon: m.maFabi ? `FABi: ${m.maFabi}` : m.ma, slMon: m.sl, lyDo: m.lyDo!.text, _lyDo: m.lyDo }))
+  const tongLoi = dsLoi.reduce((a, m) => a + m.sl, 0)
 
-  const tenMa = (ten: unknown, ma: unknown) => <>{String(ten)} <span className="xdl-ma">- {String(ma)}</span></>
-  const soHoacTrong = (v: unknown) => (typeof v === 'number' ? money(v) : '')
+  const tenMa = (ten: unknown, ma: unknown) => ma ? <>{String(ten ?? '')} <span className="xdl-ma">- {String(ma)}</span></> : <>{String(ten ?? '')}</>   // dòng tổng chỉ có nhãn, không có mã
   const cols: Col[] = [
     { k: 'stt', t: '#', w: 45, cls: 'dim' },
-    // Hàng hoá bên trái, Món bán bên phải (T915); dòng tổng ghi nhãn ở cột Tên hàng hoá
-    { k: 'khoXuat', t: 'Kho xuất', w: 140 },   // Kho xuất đứng riêng, cột đầu bên trái (T915)
-    { k: 'tenNvl', t: 'Tên', nhom: 'Hàng hoá', w: 180, r: r => r.maNvl ? tenMa(r.tenNvl, r.maNvl) : String(r.tenNvl ?? '') },
-    { k: 'dvtNvl', t: 'ĐVT', nhom: 'Hàng hoá', c: true, w: 60 },
-    { k: 'slNvl', t: 'Số lượng', nhom: 'Hàng hoá', num: true, w: 85, r: r => typeof r.slNvl === 'number' ? soLuong(r.slNvl) : '' },
-    { k: 'giaNvl', t: 'Đơn giá', nhom: 'Hàng hoá', num: true, w: 90, r: r => soHoacTrong(r.giaNvl) },
-    { k: 'tienNvl', t: 'Tổng', nhom: 'Hàng hoá', num: true, w: 100, r: r => soHoacTrong(r.tienNvl) },
+    { k: 'khoXuat', t: 'Kho xuất', w: 140 },
+    { k: 'tenNvl', t: 'Nguyên vật liệu', w: 200, r: r => tenMa(r.tenNvl, r.maNvl) },
+    { k: 'dvtNvl', t: 'ĐVT', c: true, w: 60 },
+    { k: 'slNvl', t: 'Số lượng', num: true, w: 85, r: r => soLuong(Number(r.slNvl)) },
+    { k: 'giaNvl', t: 'Giá vốn', num: true, w: 95, r: r => r._lyDo ? <span className="xdl-nhac" title={(r._lyDo as LyDoXdl).text}>{money(Number(r.giaNvl))}</span> : money(Number(r.giaNvl)) },
+    { k: 'tienNvl', t: 'Tiền vốn', num: true, w: 105, r: r => money(Number(r.tienNvl)) },
+    { k: 'tenMon', t: 'Món bán', w: 200, gop: true, r: r => tenMa(r.tenMon, r.maMon) },
+    { k: 'slMon', t: 'Số lượng', num: true, w: 85, gop: true, r: r => soLuong(Number(r.slMon)) },
     {
-      k: 'maCt', t: 'Mã công thức', nhom: 'Món bán', w: 100, cls: 'code',
+      k: 'maCt', t: 'Mã công thức', w: 110, cls: 'code', gop: true,
       // Bấm mã mở công thức chế biến đó (T908)
-      r: r => r._ctId ? <button type="button" className="ds-link-so" title="Mở công thức chế biến" onClick={e => { e.stopPropagation(); nav(`${congThuc}/${String(r._ctId)}`) }}>{String(r.maCt)}</button>
-        : r.tenMon ? <span className="dim">—</span> : String(r.maCt ?? ''),   // dòng tổng: nhãn "Tổng cộng" không phải link
+      r: r => r._ctId ? <button type="button" className="ds-link-so" title="Mở công thức chế biến" onClick={e => { e.stopPropagation(); nav(`${congThuc}/${String(r._ctId)}`) }}>{String(r.maCt)}</button> : <span className="dim">—</span>,
     },
-    { k: 'tenMon', t: 'Tên', nhom: 'Món bán', w: 180, r: r => r.tenMon ? tenMa(r.tenMon, r.maMon) : '' },
-    { k: 'dvtMon', t: 'ĐVT', nhom: 'Món bán', c: true, w: 60 },
-    { k: 'slMon', t: 'Số lượng', nhom: 'Món bán', num: true, w: 85, r: r => typeof r.slMon === 'number' ? soLuong(r.slMon) : '' },
-    { k: 'giaMon', t: 'Đơn giá', nhom: 'Món bán', num: true, w: 90 },
-    { k: 'tienMon', t: 'Thành tiền', nhom: 'Món bán', num: true, w: 100 },
-    // Ghi chú, Xử lý đứng riêng ở cuối, sau nhóm Món bán (T915)
+  ]
+  const colsLoi: Col[] = [
+    { k: 'stt', t: '#', w: 45, cls: 'dim' },
+    { k: 'tenMon', t: 'Món bán', w: 260, r: r => tenMa(r.tenMon, r.maMon) },
+    { k: 'slMon', t: 'Số lượng', num: true, w: 90, r: r => soLuong(Number(r.slMon)) },
+    { k: 'lyDo', t: 'Lý do', w: 360, wCung: true, cls: 'xdl-cat', r: r => <span className="xdl-loi" title={String(r.lyDo)}>{String(r.lyDo)}</span> },
     {
-      k: 'ghiChu', t: 'Ghi chú', w: 200, wCung: true, cls: 'xdl-cat',
-      r: r => r.ghiChu ? <span className={(r._lyDo as LyDoXdl).loai === 5 ? 'xdl-nhac' : 'xdl-loi'} title={String(r.ghiChu)}>{String(r.ghiChu)}</span> : '',
-    },
-    {
-      k: 'xuLy', t: 'Xử lý', w: 110,
+      k: 'xuLy', t: 'Xử lý', w: 130,
       r: r => {
-        const ld = r._lyDo as LyDoXdl | undefined
-        return ld ? <button type="button" className="ds-link-so" onClick={e => { e.stopPropagation(); nav(diSua[ld.loai]) }}>{LY_DO[ld.loai].nut}</button> : ''
+        const ld = r._lyDo as LyDoXdl
+        return <button type="button" className="ds-link-so" onClick={e => { e.stopPropagation(); nav(diSua[ld.loai]) }}>{LY_DO[ld.loai].nut}</button>
       },
     },
+  ]
+
+  const tabs: [typeof tab, ReactNode][] = [
+    ['xk', 'Xuất kho'],
+    ['loi', <>Lỗi{dsLoi.length > 0 && <span className="n err">{dsLoi.length}</span>}</>],
+    ...(isPro ? [['ht', 'Hạch toán'] as [typeof tab, ReactNode]] : []),
+    ['ls', 'Lịch sử'],
   ]
 
   return (
@@ -313,13 +314,16 @@ function ChiTietXuatDinhLuong({ sc, mod, row }: ScreenProps & { row?: PhieuXdl }
       xem
       onClose={dongForm}
       title="Xuất kho định lượng"
-      giua={<span className="fsf-tt xem">Phiếu <b>{row.so}</b></span>}
+      giua={<span className="fsf-tt xem">Chi tiết phiếu <b>{row.so}</b></span>}
+      trai={
+        <button type="button" className="icon-btn" title="Xem lịch sử thao tác" onClick={() => setTab('ls')}>
+          <Icon n="history" />
+        </button>
+      }
       meta={
         <>
-          <span className="chip ok">Đã xuất kho</span>
           <span className="src">{row.nguon}</span>
-          <span className="chip info"><Icon n="cuahang" className="ic sm" />{row.cn}</span>
-          {monLoi > 0 && <span className="chip warn">{monLoi} món chưa xuất</span>}
+          <span className="chip info" title="Cửa hàng lập chứng từ, không sửa được"><Icon n="cuahang" className="ic sm" />{row.cn}</span>
         </>
       }
       footClass="fsf-f-xem"
@@ -347,93 +351,48 @@ function ChiTietXuatDinhLuong({ sc, mod, row }: ScreenProps & { row?: PhieuXdl }
           Phiếu sinh tự động từ chứng từ Xuất bán POS. Chỉ xem, không sửa hay xoá.
         </p>
 
-        {/* Đầu phiếu 2 nhóm kiểu nhãn trái ô phải như Xuất bán POS (T637, T641); nhãn ô thứ hai cố định để các ô thẳng cột */}
-        <section className="xp637-dau xdl-dau">
-          <div className="xp637-nhom">
-            <div className="xp637-tieu">ĐƠN HÀNG POS</div>
-            <div className="xp637-ds">
-              <div className="xp637-o">
-                <span className="xp637-nhan">Mã hoá đơn</span>
-                <div className="xp637-tri"><span className="xp637-code">{row.maHd}</span></div>
-              </div>
-              <div className="xp637-cap">
-                <div className="xp637-o">
-                  <span className="xp637-nhan">Số đơn POS</span>
-                  <div className="xp637-tri"><span className="xp637-code">{row.soDon}</span></div>
-                </div>
-                <div className="xp637-o xp637-o-phu">
-                  <span className="xp637-nhan">Kênh bán</span>
-                  <div className="xp637-tri"><span title={row.kenh}>{row.kenh}</span></div>
-                </div>
-              </div>
-              <div className="xp637-o">
-                <span className="xp637-nhan">Tham chiếu</span>
-                <div className="xp637-tri">
-                  <Link to={`/app/ban-hang/3-1-1/${row.posId}`} className="ds-link-so" title="Mở chứng từ Xuất bán POS">{row.posSo}</Link>
-                </div>
-              </div>
-            </div>
+        {/* Thông tin chung dạng chữ, không ô nhập: số chứng từ đã có ở tiêu đề; dòng Tham chiếu như phiếu mua (T585, T932) */}
+        <section className="card ct-ttc xdl-tt">
+          <div className="xp637-cap xdl-tt-dong">
+            <div className="xp637-o"><span className="xp637-nhan">Mã hoá đơn POS</span><div className="xp637-tri"><span className="xp637-code">{row.maHd}</span></div></div>
+            <div className="xp637-o xdl-tt-be"><span className="xp637-nhan">Kênh bán</span><div className="xp637-tri"><span>{row.kenh}</span></div></div>
+            <div className="xp637-o xdl-tt-gc"><span className="xp637-nhan">Ghi chú</span><div className="xp637-tri"><span title={ghiChu}>{ghiChu}</span></div></div>
+            <div className="xp637-o xdl-tt-be"><span className="xp637-nhan">Ngày xuất</span><div className="xp637-tri"><span>{row.ngay}</span></div></div>
           </div>
-          <div className="xp637-nhom">
-            <div className="xp637-tieu">PHIẾU XUẤT KHO</div>
-            <div className="xp637-ds">
-              <div className="xp637-cap">
-                <div className="xp637-o">
-                  <span className="xp637-nhan">Số chứng từ</span>
-                  <div className="xp637-tri"><span className="xp637-code">{row.so}</span></div>
-                </div>
-                <div className="xp637-o xp637-o-phu">
-                  <span className="xp637-nhan">Ngày xuất</span>
-                  <div className="xp637-tri"><span>{row.ngay}</span></div>
-                </div>
-              </div>
-              {/* Cửa hàng đã có ở chip góc trên phải nên bỏ ô ở đây (T915) */}
-              <div className="xp637-o">
-                <span className="xp637-nhan">Nguồn</span>
-                <div className="xp637-tri"><span>{row.nguon} · {row.nguoiTao}</span></div>
-              </div>
-              <div className="xp637-o">
-                <span className="xp637-nhan">Ghi chú</span>
-                <div className="xp637-tri"><span title={row.ghiChu}>{row.ghiChu}</span></div>
-              </div>
-            </div>
+          <div className="ct-tham-chieu">
+            <span className="dim">Tham chiếu</span>
+            <span className="ct-tham-chieu-ds">
+              <Link to={`/app/ban-hang/3-1-1/${row.posId}`} className="ds-link-so" title="Mở chứng từ Xuất bán POS">{row.posSo}</Link>
+            </span>
           </div>
         </section>
 
-        {isPro && (
-          <div className="xdl-tabs">
-            <button type="button" className={`xdl-tab${tab === 'ct' ? ' on' : ''}`} onClick={() => setTab('ct')}>
-              Chi tiết xuất kho ({row.dong.length} món)
-            </button>
-            <button type="button" className={`xdl-tab${tab === 'ht' ? ' on' : ''}`} onClick={() => setTab('ht')}>
-              Hạch toán
-            </button>
+        <section className="card xdl-luoi" style={{ padding: 0, overflow: 'auto' }}>
+          <div className="tabs">
+            {tabs.map(([k, l]) => (
+              <button key={k} type="button" className={tab === k ? 'on' : ''} onClick={() => setTab(k)}>{l}</button>
+            ))}
           </div>
-        )}
 
-        {tab === 'ct' && (
-          <div className="card xdl-luoi" style={{ padding: 0, overflow: 'auto' }}>
-            {demLyDo.size > 0 && (
-              <div className="xdl-canh-bao">
-                <b>{monLoi}/{row.dong.length} món chưa trừ được nguyên vật liệu.</b>
-                {[...demLyDo].sort((a, b) => a[0] - b[0]).map(([loai, n]) => (
-                  <span key={loai} className={loai === 5 ? 'xdl-nhac' : 'xdl-loi'}>{LY_DO[loai].ngan}: {n}</span>
-                ))}
-              </div>
-            )}
+          {tab === 'xk' && (
             <Table
               cols={cols}
               rows={rowsBang}
               rowCls={r => (r._lyDo ? 'xdl-dong-loi' : '')}
+              gopO={r => (r._mon === undefined ? undefined : String(r._mon))}   // các dòng NVL của cùng một món gộp ô Món bán, Số lượng, Mã công thức
               doRong={doRong}
-              loc={{ gt: locCot, dat: (k, g) => setLocCot(x => ({ ...x, [k]: g })), bo: new Set(['stt', 'xuLy']), kieu: c => kieuCot(c.k), layLuaChon: k => dsGiaTri(dongLuoi, r => String(r[k] ?? '')) }}
+              loc={{ gt: locCot, dat: (k, g) => setLocCot(x => ({ ...x, [k]: g })), bo: new Set(['stt']), kieu: c => kieuCot(c.k), layLuaChon: k => dsGiaTri(dongLuoi, r => String(r[k] ?? '')) }}
               sum={{ khoXuat: 'Tổng cộng', ...tong }}
             />
-          </div>
-        )}
+          )}
 
-        {tab === 'ht' && isPro && (
-          <div className="card" style={{ padding: 0, overflow: 'auto' }}>
+          {tab === 'loi' && (
+            dsLoi.length === 0
+              ? <div className="empty"><b>Không có món lỗi</b>Tất cả món bán đã tạo được xuất kho định lượng.</div>
+              : <Table cols={colsLoi} rows={rowsLoi} doRong={doRongLoi} sum={{ tenMon: 'Tổng cộng', slMon: tongLoi }} />
+          )}
+
+          {tab === 'ht' && isPro && (
             <table className="table">
               <thead>
                 <tr>
@@ -460,8 +419,10 @@ function ChiTietXuatDinhLuong({ sc, mod, row }: ScreenProps & { row?: PhieuXdl }
                 </tr>
               </tfoot>
             </table>
-          </div>
-        )}
+          )}
+
+          {tab === 'ls' && <LichSu goi={s.goi} moi={false} man={`${mod.key}/${sc.slug}`} id={row.id} />}
+        </section>
       </div>
     </FormToanMan>
   )
