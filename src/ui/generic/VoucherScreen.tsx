@@ -293,7 +293,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
     }
     return md
   }, [thamSo])
-  const loc0 = useLocNhap(locKhoiTao)
+  const loc0 = useLocNhap(locKhoiTao, `ds:${duongDan(mod, sc)}|${thamSo.get('thang') ?? ''}|${thamSo.get('lyDo') ?? ''}|${thamSo.get('nhom') ?? ''}`)   // nhớ kỳ, bộ lọc khi mở phiếu rồi đóng
   const [chipTT, setChipTT] = useState('all')
   // Điều chỉnh kho (T126): hai tab nhỏ Xuất điều chỉnh, Nhập điều chỉnh, mỗi tab một loại phiếu
   const [tabLoai, setTabLoai] = useState(() => cfg.loai?.find(l => l.k === thamSo.get('loai'))?.k ?? cfg.loai?.[0]?.k ?? '')   // ?loai= mở đúng tab con, vd từ sơ đồ (T128)

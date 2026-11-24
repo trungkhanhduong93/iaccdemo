@@ -489,7 +489,7 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
   const tyLe = gtgtTyLe(s)
   const nav = useNavigate()
   const path = duongDan(mod, sc)
-  const loc0 = useLocNhap(locMacDinh)
+  const loc0 = useLocNhap(locMacDinh, 'ds:ban-hang')
   const { nhap, dat, ap } = loc0
   const [locCot, setLocCot] = useState<Record<string, GiaTriLoc>>({})
   const [chipTab, setChipTab] = useState<'all' | 'pos' | 'tay'>(() => TAB_NHO.get(path) ?? 'all')

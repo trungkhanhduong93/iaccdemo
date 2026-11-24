@@ -155,7 +155,7 @@ export function DsHoaDon({ sc, mod }: ScreenProps) {
   const tyLe = gtgtTyLe(s)
   const rows = dsDongHd(tyLe)
 
-  const loc0 = useLocNhap(locMacDinh)
+  const loc0 = useLocNhap(locMacDinh, 'ds:hoa-don')
   const { nhap, dat, ap } = loc0
   const [locCot, setLocCot] = useState<Record<string, GiaTriLoc>>({})
   const [chip, setChip] = useState('all')

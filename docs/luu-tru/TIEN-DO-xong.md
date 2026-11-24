@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T924 | Web, danh sách chứng từ: mở phiếu rồi đóng thì quay về đúng kỳ và bộ lọc đang xem, không trả về kỳ hiện tại | dinhlanphuongipacc | 24/11/2026 | [nhật ký](../nhat-ky/2026-11-24-dinhlanphuongipacc-nho-ky-loc-dong-phieu.md) |
 | T915 | Xuất kho định lượng: bỏ ô Cửa hàng ở đầu phiếu; cột Kho xuất trong nhóm Hàng hoá (Standard, Plus một kho chính, Pro tách kho bar, bếp); nhóm Hàng hoá sang trái kèm Ghi chú, Xử lý; nguồn ghi Xuất bán POS | Trum | 24/11/2026 | `2026-11-24-trum-xdl-kho-xuat.md` |
 | T922 | Tồn kho ban đầu: tab xuống cuối menu Kho Plus, bỏ chip Cần xem lại, thanh lọc gọn như danh sách mua hàng, Thêm mới mở hộp tích chọn hàng, nút Sửa và Lưu, ĐVT chọn lại được, một mặt hàng nhiều dòng khác ĐVT, kho theo cửa hàng đang đứng, sửa luật khoá bỏ qua phiếu kiểm kê đã xoá | dinhlanphuongipacc | 24/11/2026 | 2026-11-24-dinhlanphuongipacc-ton-kho-ban-dau.md |
 | T914 | Phiếu xuất huỷ: thêm ô Lý do huỷ (danh mục Lý do nghiệp vụ, Dùng cho Xuất kho, bắt buộc) ở chỗ Nhân viên thực hiện; đổi nhãn thành Người thực hiện, gõ chữ tự do, dời xuống hàng 2 cạnh Ghi chú, Ghi chú thu hẹp còn nửa hàng | dinhlanphuongipacc | 24/11/2026 | [nhật ký](../nhat-ky/2026-11-24-dinhlanphuongipacc-ly-do-huy.md) |

@@ -104,7 +104,7 @@ export function DsPhieuTc({ sc, mod, kieu: t, rows: rowsGoc }: ScreenProps & { k
   const [trang, setTrang] = useState(1)
   const [coTrang, setCoTrang] = useState(50)
   const [activeId, setActiveId] = useState('')
-  const loc0 = useLocNhap(locMacDinh)
+  const loc0 = useLocNhap(locMacDinh, 'ds:phieu-san-xuat')
   const { nhap, dat, ap } = loc0
   const nhanKho = t.nhanKho
 

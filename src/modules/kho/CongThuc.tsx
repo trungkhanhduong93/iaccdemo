@@ -69,7 +69,7 @@ function DsCongThuc({ sc, mod, loai, ds }: ScreenProps & { loai: LoaiCt; ds: Row
   const [chip, setChip] = useState<string>('on')
   const [trang, setTrang] = useState(1)
   const [coTrang, setCoTrang] = useState(50)
-  const loc0 = useLocNhap(locMacDinh)
+  const loc0 = useLocNhap(locMacDinh, 'ds:cong-thuc')
   const { nhap, dat, ap } = loc0
   const nhanSp = cb ? 'Sản phẩm' : 'Nguyên vật liệu gốc'
   const nhanNvl = cb ? 'Nguyên vật liệu' : 'Nguyên vật liệu đích'

@@ -95,9 +95,14 @@ export function ChipTrangThai({ ds, chon, onChon }: { ds: Chip[]; chon: string; 
 
 const giongNhau = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b)
 
-export function useLocNhap<T extends object>(macDinh: () => T) {
-  const [ap, setAp] = useState<T>(macDinh)
-  const [nhap, setNhap] = useState<T>(macDinh)
+// Nhớ bộ lọc theo phiên làm việc: mở phiếu rồi đóng, danh sách mount lại vẫn giữ kỳ và điều kiện đang lọc
+const khoLocNho = new Map<string, { ap: unknown; nhap: unknown }>()
+
+/** khoaNho: có khoá thì giữ giá trị lọc trong phiên, theo từng danh sách */
+export function useLocNhap<T extends object>(macDinh: () => T, khoaNho?: string) {
+  const [ap, setAp] = useState<T>(() => (khoaNho ? khoLocNho.get(khoaNho)?.ap as T | undefined : undefined) ?? macDinh())
+  const [nhap, setNhap] = useState<T>(() => (khoaNho ? khoLocNho.get(khoaNho)?.nhap as T | undefined : undefined) ?? macDinh())
+  if (khoaNho) khoLocNho.set(khoaNho, { ap, nhap })
   const dat = <K extends keyof T>(k: K, v: T[K]) => setNhap(x => ({ ...x, [k]: v }))
   const datVaAp = <K extends keyof T>(k: K, v: T[K]) => {
     setNhap(x => ({ ...x, [k]: v }))
