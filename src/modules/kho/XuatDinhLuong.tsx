@@ -282,17 +282,6 @@ function ChiTietXuatDinhLuong({ sc, mod, row }: ScreenProps & { row?: PhieuXdl }
     { k: 'tienNvl', t: 'Tổng', nhom: 'Hàng hoá', num: true, w: 100, r: r => soHoacTrong(r.tienNvl) },
     { k: 'khoXuat', t: 'Kho xuất', nhom: 'Hàng hoá', w: 140 },
     {
-      k: 'ghiChu', t: 'Ghi chú', nhom: 'Hàng hoá', w: 200, wCung: true, cls: 'xdl-cat',
-      r: r => r.ghiChu ? <span className={(r._lyDo as LyDoXdl).loai === 5 ? 'xdl-nhac' : 'xdl-loi'} title={String(r.ghiChu)}>{String(r.ghiChu)}</span> : '',
-    },
-    {
-      k: 'xuLy', t: 'Xử lý', nhom: 'Hàng hoá', w: 110,
-      r: r => {
-        const ld = r._lyDo as LyDoXdl | undefined
-        return ld ? <button type="button" className="ds-link-so" onClick={e => { e.stopPropagation(); nav(diSua[ld.loai]) }}>{LY_DO[ld.loai].nut}</button> : ''
-      },
-    },
-    {
       k: 'maCt', t: 'Mã công thức', nhom: 'Món bán', w: 100, cls: 'code',
       // Bấm mã mở công thức chế biến đó (T908)
       r: r => r._ctId ? <button type="button" className="ds-link-so" title="Mở công thức chế biến" onClick={e => { e.stopPropagation(); nav(`${congThuc}/${String(r._ctId)}`) }}>{String(r.maCt)}</button>
@@ -303,6 +292,18 @@ function ChiTietXuatDinhLuong({ sc, mod, row }: ScreenProps & { row?: PhieuXdl }
     { k: 'slMon', t: 'Số lượng', nhom: 'Món bán', num: true, w: 85, r: r => typeof r.slMon === 'number' ? soLuong(r.slMon) : '' },
     { k: 'giaMon', t: 'Đơn giá', nhom: 'Món bán', num: true, w: 90 },
     { k: 'tienMon', t: 'Thành tiền', nhom: 'Món bán', num: true, w: 100 },
+    // Ghi chú, Xử lý đứng riêng ở cuối, sau nhóm Món bán (T915)
+    {
+      k: 'ghiChu', t: 'Ghi chú', w: 200, wCung: true, cls: 'xdl-cat',
+      r: r => r.ghiChu ? <span className={(r._lyDo as LyDoXdl).loai === 5 ? 'xdl-nhac' : 'xdl-loi'} title={String(r.ghiChu)}>{String(r.ghiChu)}</span> : '',
+    },
+    {
+      k: 'xuLy', t: 'Xử lý', w: 110,
+      r: r => {
+        const ld = r._lyDo as LyDoXdl | undefined
+        return ld ? <button type="button" className="ds-link-so" onClick={e => { e.stopPropagation(); nav(diSua[ld.loai]) }}>{LY_DO[ld.loai].nut}</button> : ''
+      },
+    },
   ]
 
   return (
