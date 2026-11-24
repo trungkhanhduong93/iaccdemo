@@ -3,7 +3,7 @@ import type { ModuleDef } from '../types'
 import { tuExcel } from '../types'
 import { quyTrinh } from './quy-trinh'
 import { GhiTangHangLoat, useCanhBaoCho } from './GhiTangHangLoat'
-import { THE_PHAN_BO, bangPhanBo, loaiTheTheoGoi, boKichHoatPhanBo, daPhanBoKy, daPhanBoToiKy, kichHoatPhanBo, useKyNayTheoGoi, veChiTietThe } from './the-phan-bo'
+import { THE_PHAN_BO, bangPhanBo, bangKePhanBo, loaiTheTheoGoi, boKichHoatPhanBo, daPhanBoKy, daPhanBoToiKy, kichHoatPhanBo, useKyNayTheoGoi, veChiTietThe } from './the-phan-bo'
 import { CCDC_HANG, CUA_HANG, daKhoaSo } from '../../data/mock'
 
 /** Chứng từ gốc của thẻ mẫu theo thứ tự thẻ: phiếu chi, uỷ nhiệm chi mẫu có sẵn ở Thu, chi tiền (T159) */
@@ -60,6 +60,10 @@ export const theMauTheoSo = (so: string) => THE_MAU.find(t => t.soThe === so)
 /** Số phân bổ trong tháng (2026) của từng dòng thẻ mẫu, cho Sổ chi phí: mỗi dòng thẻ có phân bổ một hàng (T700) */
 export const phanBoTrongThang = (thang: number) => THE_MAU.filter(t => thangCua(t.ngay) <= 202600 + thang)
   .flatMap(t => bangPhanBo(t, 202600 + thang)).filter(r => Number(r.kyNay) > 0)
+
+/** Bảng kê chi phí phân bổ nhiều kỳ tháng thang (2026): thẻ ghi tăng tới hết tháng đó, mỗi dòng chi tiết một hàng (10.4.4) */
+export const bangKePhanBoThang = (thang: number) => THE_MAU.filter(t => thangCua(t.ngay) <= 202600 + thang)
+  .flatMap(t => bangKePhanBo(t, 202600 + thang))
 
 /** Tên kỳ yyyymm: tháng 10/2026 */
 const tenKy = (ky: number) => `tháng ${ky % 100}/${Math.floor(ky / 100)}`

@@ -4,9 +4,9 @@ import { soCai } from '../tong-hop/so-cai'
 import { createElement } from 'react'
 import { Link } from 'react-router-dom'
 import { CUA_HANG, LY_CHI_PHI, NVL, TK_NGAN_HANG, daysOf, kqkd, tongKy } from '../../data/mock'
-import { phanBoTrongThang } from '../ccdc'
+import { phanBoTrongThang, bangKePhanBoThang } from '../ccdc'
 import { datLocDaXem } from '../../ui/bao-cao/tuyChinhBC'
-import { tenQuyTm, tenTkNh } from './danh-sach'
+import { chonCuaHang, tenQuyTm, tenTkNh } from './danh-sach'
 import { between, pad, rng } from '../../ui/format'
 import { DS_TSCD } from '../tscd/data'
 import { hoaDonMuaChiPhiThang } from '../mua-hang/hoa-don-mua'
@@ -776,6 +776,31 @@ function rows1043(thang: number): Row[] {
   return rows
 }
 
+// ── 10.4.4 Bảng kê chi phí phân bổ nhiều kỳ: mỗi dòng chi tiết của thẻ một hàng (T934) ──
+const cols1044: Col[] = [
+  { k: 'soThe', t: 'Mã thẻ', cls: 'code', w: 130 },
+  { k: 'ten', t: 'Tên mục chi phí' },
+  { k: 'loai', t: 'Loại thẻ', w: 140 },
+  { k: 'soKy', t: 'Số tháng PB', num: true, w: 90 },
+  { k: 'kyDaPb', t: 'Số tháng đã PB', num: true, w: 100 },
+  { k: 'kyCon', t: 'Số tháng còn lại', num: true, w: 100 },
+  { k: 'nguyenGia', t: 'Nguyên giá', num: true },
+  { k: 'daPb', t: 'Đã PB tới đầu kỳ', num: true },
+  { k: 'dauKy', t: 'Giá trị đầu kỳ', num: true },
+  { k: 'kyNay', t: 'Phân bổ trong kỳ', num: true },
+  { k: 'luyKe', t: 'Giá trị phân bổ luỹ kế', num: true },
+  { k: 'con', t: 'Giá trị còn lại', num: true },
+]
+
+// Chỉ dòng còn giá trị đầu kỳ, đầu kỳ đã hết phân bổ thì bỏ; cuối bảng có dòng Tổng cộng các cột giá trị
+function rows1044(thang: number, cn?: string, loc?: Record<string, string[]>): Row[] {
+  // Cửa hàng chọn trên thanh trên, hoặc ô lọc Cửa hàng khi xem tất cả cửa hàng (tên cửa hàng trên thẻ)
+  const chon = cn ? CUA_HANG.filter(c => c.id === cn).map(c => c.ten) : chonCuaHang(loc ?? {})
+  const ds = bangKePhanBoThang(thang).filter(r => Number(r.dauKy) > 0 && (!chon.length || chon.includes(String(r.cn))))
+  const tong = (k: string) => ds.reduce((s, r) => s + Number(r[k] ?? 0), 0)
+  return [...ds, { ten: 'Tổng cộng', nguyenGia: tong('nguyenGia'), daPb: tong('daPb'), dauKy: tong('dauKy'), kyNay: tong('kyNay'), luyKe: tong('luyKe'), con: tong('con'), _t: 1 }]
+}
+
 export const SO_BO_SUNG: Record<string, ReportCfg> = {
   '2.2.6': { kieu: 'bangke', cols: cols226, rows: rows226 },
   '2.2.7': { kieu: 'bangke', cols: cols227, rows: rows227 },
@@ -790,4 +815,5 @@ export const SO_BO_SUNG: Record<string, ReportCfg> = {
   '10.4.1': { kieu: 'bangke', cols: cols1041, rows: rows1041 },
   '10.4.2': { kieu: 'bangke', cols: cols1042, rows: rows1042 },
   '10.4.3': { kieu: 'bangke', cols: cols1043, rows: rows1043 },
+  '10.4.4': { kieu: 'bangke', theoCn: true, cols: cols1044, rows: rows1044 },
 }

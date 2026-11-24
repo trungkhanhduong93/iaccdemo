@@ -77,6 +77,6 @@ export const quyTrinh: QuyTrinhDef = {
     },
   ],
   khongLinkBaoCaoKy: true,   // gói Free bỏ nút Tất cả báo cáo ở bước Theo dõi thẻ chi phí (T515)
-  baoCao: ['bang-phan-bo', '8-2-1', '8-2-2', '8-2-3', '8-2-4'],
+  baoCao: ['bang-phan-bo', 'tong-hop/10-4-4', '8-2-1', '8-2-2', '8-2-3', '8-2-4'],
   danhMuc: ['danh-muc/1-2', 'danh-muc/1-6', 'danh-muc/1-8'],
 }

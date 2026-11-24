@@ -84,6 +84,7 @@ const BO_SUNG: (Omit<Feature, 'g'> & { g: Goi[] })[] = [
   { c: '10.4.1', m: 9, n: 'Sổ chi tiết doanh thu, chi phí', grp: 'Sổ sách, báo cáo', g: ['PL', 'PR'], gd: 2, ivt: 0 },
   { c: '10.4.2', m: 9, n: 'Sổ theo dõi vốn chủ sở hữu', grp: 'Sổ sách, báo cáo', g: ['PL', 'PR'], gd: 2, ivt: 0 },
   { c: '10.4.3', m: 9, n: 'Sổ chi phí', grp: 'Sổ sách, báo cáo', g: ['PL', 'PR'], gd: 2, ivt: 0 },   // gói Standard ẩn tạm (T251)
+  { c: '10.4.4', m: 9, n: 'Bảng kê chi phí phân bổ nhiều kỳ', grp: 'Sổ sách, báo cáo', g: ['PL', 'PR'], gd: 2, ivt: 0 },   // mỗi dòng chi tiết thẻ một hàng, lọc kỳ và loại thẻ (T934)
 ]
 
 const CHEN_SAU: Record<string, string[]> = {
@@ -94,7 +95,7 @@ const CHEN_SAU: Record<string, string[]> = {
   '5.2.7': ['5.2.8'],
   '6.2.3': ['6.2.4', '6.2.5'],
   '7.2.2': ['7.2.3', '7.2.4'],
-  '10.3.1': ['10.4.1', '10.4.2', '10.4.3'],
+  '10.3.1': ['10.4.1', '10.4.2', '10.4.3', '10.4.4'],
 }
 
 /** Màn bỏ hẳn ở mọi gói dù có trong Excel. Trum cập nhật Excel bỏ mã rồi thì xoá dòng ở đây */

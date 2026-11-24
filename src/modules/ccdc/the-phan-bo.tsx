@@ -174,6 +174,25 @@ export function bangPhanBo(the: V, ky: number): Row[] {
   })
 }
 
+/** Bảng kê chi phí phân bổ nhiều kỳ (10.4.4): mỗi dòng chi tiết của thẻ một hàng, số liệu tới hết kỳ ky (yyyymm).
+ *  Đã PB tới đầu kỳ: luỹ kế tới hết kỳ trước; Số tháng đã PB tính cả tháng đang xem, Số tháng còn lại = Số tháng PB - Số tháng đã PB; Giá trị đầu kỳ: giá trị còn lại tới hết kỳ trước */
+export function bangKePhanBo(the: V, ky: number): Row[] {
+  const kyTruocKy = ky % 100 === 1 ? ky - 89 : ky - 1
+  return (the.dong as DongPb[] ?? []).map(d => {
+    const lich = lichDong(the, d).filter(k => !k.ngung)
+    const thang = (k: { ngay: string }) => Math.floor(ngaySo(k.ngay) / 100)
+    const daTruoc = laDau(the) ? so(d.da) : 0
+    const nguyenGia = so(d.gt)
+    const luyKe = daTruoc + lich.filter(k => thang(k) <= ky).reduce((s, k) => s + k.tien, 0)
+    const luyKeTruoc = daTruoc + lich.filter(k => thang(k) <= kyTruocKy).reduce((s, k) => s + k.tien, 0)
+    // Đã PB, số tháng đã PB: luỹ kế tới hết kỳ trước kỳ đang xem (thẻ dư đầu kỳ cộng thêm phần đã phân bổ trước khi dùng phần mềm)
+    const kyDaPb = (laDau(the) ? so(d.kyDa) : 0) + lich.filter(k => thang(k) <= ky && k.tien > 0).length   // tính cả tháng đang xem
+    const kyCon = Math.max(0, so(d.ky) - kyDaPb)
+    return { soThe: the.soThe, cn: the.cn, ten: d.ten, loai: the.loai, nguyenGia, soKy: so(d.ky), daPb: luyKeTruoc, kyDaPb,
+      dauKy: nguyenGia - luyKeTruoc, kyNay: luyKe - luyKeTruoc, luyKe, kyCon, con: nguyenGia - luyKe }
+  })
+}
+
 /** Khung xem nhanh ở danh sách thẻ: các dòng chi tiết phân bổ của thẻ, chỉ xem */
 export function veChiTietThe(the: V) {
   const rows = (the.dong as DongPb[] ?? []).map((d, i) => ({ ...d, ...tinhDong(the, d), ngayPb: ngayBd(the, d), _stt: i + 1 }))

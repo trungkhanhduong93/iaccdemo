@@ -162,6 +162,8 @@ export const CAU_HINH_BC: Record<string, CauHinhBC> = {
     nhomDuoc: ['nhomCp', 'kmcp', 'lyDo'],
     anKhongPS: true,
   }),
+  // Bảng kê chi phí phân bổ nhiều kỳ: lọc theo kỳ và loại thẻ (T934)
+  '10.4.4': baoCao('ngang', { loc: [{ k: 'loai', nhan: 'Loại thẻ', kieu: 'chonNhieu', ds: () => ['Chi phí trả trước', 'Công cụ dụng cụ', 'Tài sản cố định'] }], nhomDuoc: ['loai'] }),
 }
 
 /** Phần đầu báo cáo mới (T576, thử ở Sổ quỹ rồi áp mọi sổ, báo cáo): đường dẫn Báo cáo / nhóm, tên báo cáo kèm sao ghim,
@@ -179,7 +181,7 @@ export const chonCuaHang = (loc: Record<string, string[]>) => { const v = loc[K_
 const GIU_MOI_CHE_DO = ['2.2.1', '2.2.3']
 /** Báo cáo lấy theo danh sách iFaster, mở mọi gói, mọi chế độ, PhuongXT chốt 13/10/2026 (T185): quỹ tiền,
  *  công nợ nhà cung cấp 4.2.3, khách hàng 3.2.9, quản trị, kho, mua hàng, bán hàng. Sổ công nợ 2.2.5 bỏ (PhuongXT: thay bằng Công nợ nhà cung cấp, Công nợ khách hàng theo iFaster); TT58 vẫn giữ S4a-DNSN. Không lọc theo anTam, cheDo, trường hợp thuế; muốn ẩn ở gói nào thì bỏ mã khỏi đây hoặc lọc thêm */
-export const MO_IFASTER = ['2.2.8', '2.2.9', '4.2.3', '3.2.9', '4.2.7', '10.2.3', '10.4.3', '5.2.3', '5.2.11', '5.2.12', '5.2.9', '5.2.10', '4.2.2', '4.2.8', '4.2.1', '4.2.6', '3.2.7', '3.2.8', '3.2.6',
+export const MO_IFASTER = ['2.2.8', '2.2.9', '4.2.3', '3.2.9', '4.2.7', '10.2.3', '10.4.3', '10.4.4', '5.2.3', '5.2.11', '5.2.12', '5.2.9', '5.2.10', '4.2.2', '4.2.8', '4.2.1', '4.2.6', '3.2.7', '3.2.8', '3.2.6',
   '5.2.1', '5.2.15',   // Thẻ kho mở lại mọi gói để bấm hàng hoá ở Xuất nhập tồn mở thẻ kho, PhuongXT chốt 14/10/2026 (T211); Báo cáo kiểm kê mọi gói (T244)
   '3.2.1', '3.2.2', '3.2.3', '5.2.5']   // gói Plus theo roadmap: Báo cáo bán hàng, Đối soát với POS, Báo cáo doanh thu, Đối chiếu xuất kho với định lượng, PhuongXT 04/11/2026 (T721)
 /** Nhóm báo cáo Công nợ riêng, đứng sau nhóm Mua hàng: công nợ nhà cung cấp, khách hàng rời nhóm phân hệ, PhuongXT chốt 14/10/2026 (T217) */

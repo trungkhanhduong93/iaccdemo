@@ -39,6 +39,7 @@ const tongHop: ModuleDef = {
     '10.4.1': { report: SO_BO_SUNG['10.4.1'] },
     '10.4.2': { report: SO_BO_SUNG['10.4.2'] },
     '10.4.3': { report: SO_BO_SUNG['10.4.3'] },
+    '10.4.4': { report: SO_BO_SUNG['10.4.4'] },
   }, NGAN),
 }
 export default tongHop
