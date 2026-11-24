@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 24/11/2026
+- T927: Điện thoại, xem phiếu Xuất huỷ trình bày như phiếu mua: tiêu đề tên phiếu và số phiếu, cửa hàng và nguồn ở đầu thẻ, số lớn là Tổng tiền vốn. Thông tin chung có Kho xuất, Lý do huỷ, Người thực hiện. Dòng hàng ghi Giá vốn, Tiền vốn, cuối danh sách có Tổng số lượng, Tổng tiền vốn.
 - T926: Phiếu xuất điều chuyển máy tính: Kho nhận là mọi kho trừ kho xuất đang chọn. Bảng chi tiết như Phiếu mua hàng: tách cột Mã hàng, Tên hàng hoá, có Thêm hàng loạt, ĐVT chọn theo quy đổi của hàng.
 - T925: Danh sách Thu chi máy tính, tab Chuyển quỹ bỏ cột Lý do, Tham chiếu, Nguồn.
 - T924: Danh sách chứng từ (Thu chi, Mua hàng, Kho, Bán hàng, Công thức, Phiếu sản xuất, Hoá đơn điện tử): mở phiếu rồi đóng thì quay về đúng kỳ và bộ lọc đang xem, không trả về kỳ hiện tại.

@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T927 | Điện thoại, xem phiếu Xuất huỷ như phiếu mua: tiêu đề Phiếu xuất huỷ + số phiếu, cửa hàng và nguồn lên đầu thẻ, Tổng tiền vốn, bỏ ô Cửa hàng, Nguồn chứng từ; Thông tin chung có Kho xuất, Lý do huỷ, Người thực hiện; dòng hàng Giá vốn, Tiền vốn; Tổng cộng có Tổng số lượng, Tổng tiền vốn | dinhlanphuongipacc | 24/11/2026 | [nhật ký](../nhat-ky/2026-11-24-dinhlanphuongipacc-xem-xuat-huy-dt.md) |
 | T926 | Web, Phiếu xuất điều chuyển: kho nhận là mọi kho trừ kho xuất; bảng chi tiết như phiếu mua hàng, tách Mã hàng và Tên hàng, Thêm hàng loạt, ĐVT theo quy đổi. Điện thoại chưa làm | dinhlanphuongipacc | 24/11/2026 | [nhật ký](../nhat-ky/2026-11-24-dinhlanphuongipacc-phieu-xuat-dieu-chuyen.md) |
 | T925 | Danh sách chứng từ máy tính, tab Chuyển quỹ: bỏ cột Lý do, Tham chiếu, Nguồn; tab Tiền mặt, Ngân hàng giữ nguyên | Trum | 24/11/2026 | 2026-11-24-trum-chuyen-quy.md |
 | T924 | Web, danh sách chứng từ: mở phiếu rồi đóng thì quay về đúng kỳ và bộ lọc đang xem, không trả về kỳ hiện tại | dinhlanphuongipacc | 24/11/2026 | [nhật ký](../nhat-ky/2026-11-24-dinhlanphuongipacc-nho-ky-loc-dong-phieu.md) |

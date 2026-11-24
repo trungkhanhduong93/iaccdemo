@@ -16,7 +16,7 @@ import { useDsPhieuSx } from '../../modules/kho/BangSanXuat'
 import { SX, TT_SX } from '../../modules/kho/san-xuat'
 import { DCN } from '../../modules/kho/dieu-chuyen'
 import { MAN_DC } from '../../modules/kho/dieu-chinh'
-import { CUA_HANG, KHOAN_MUC, TK_NGAN_HANG, daKhoaSo, khoaSoDenCua } from '../../data/mock'
+import { CUA_HANG, KHOAN_MUC, LY_DO, TK_NGAN_HANG, daKhoaSo, khoaSoDenCua } from '../../data/mock'
 import { apKhoPhieu, ctTtCon, dsDcCon, dsTraCon, dsTtCon, MAN_TRA_MUA, ghiNhatKy, soDaTra, soKeTiep, suaPhieu, themPhieu, ttThamChieu, xoaPhieu } from '../generic/daXoa'
 import { MAN_THU_CHI, TEN_CT_TT, TIEN_TO_CT_TT, lyDoKhongXoaTheCuaPhieu, theCuaPhieu, xoaTheCuaPhieu, type TraTu } from '../generic/ChungTuForm'
 import { MLichSu } from './MLichSu'
@@ -115,6 +115,8 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
   const laKk = Boolean(cfg.kiemKe)
   const laDc = Boolean(cfg.dieuChinh)
   const laNk = sc.code === '5.1.1'   // phiếu Nhập kho (T824, như web T818)
+  const laHuy = sc.code === '5.1.2-3'   // phiếu Xuất huỷ xem như Nhập kho, phiếu mua: tiêu đề tên phiếu và số, cửa hàng và nguồn lên đầu, có Lý do huỷ (T927)
+  const khoGonXem = laNk || laHuy
   const laTraBan = sc.code === '3.1.4'   // Hàng bán trả lại (T830): bỏ diễn giải ở đầu phiếu, Chi tiết đủ ô như web
   const sx = cfg.sanXuat
   const laSx = Boolean(sx)
@@ -186,7 +188,8 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
 
   // Kho
   // Nhập kho (T824): phiếu mẫu chưa lưu kho thì lấy kho đầu của cửa hàng, như bản in web T818
-  const khoMacDinh = nhomMb === 'mua' || sc.code === '5.1.1' ?(CUA_HANG.find(c => c.ten === cuaHangTen)?.kho[0] ?? 'Kho hàng') : ''
+  // Xuất huỷ cũng vậy, như web (T927)
+  const khoMacDinh = nhomMb === 'mua' || sc.code === '5.1.1' || sc.code === '5.1.2-3' ?(CUA_HANG.find(c => c.ten === cuaHangTen)?.kho[0] ?? 'Kho hàng') : ''
   const kho = String(
     row._kho ??
       row.kho ??
@@ -591,7 +594,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
                   <span className="val bold num">{d.sl ?? 1} {d.dvt || 'Cái'}</span>
                 </div>
                 <div className="m-t449-hang-dong">
-                  <span className="lbl">Đơn giá:</span>
+                  <span className="lbl">{laHuy ? 'Giá vốn:' : 'Đơn giá:'}</span>
                   <span className="val num">{money(d.gia || 0)} đ</span>
                 </div>
                 {/* Dòng không có số tiền thì ẩn */}
@@ -614,7 +617,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
                   </div>
                 )}
                 <div className="m-t449-hang-dong">
-                  <span className="lbl">{laNk ? 'Thành tiền:' : 'Tổng tiền:'}</span>
+                  <span className="lbl">{laNk ? 'Thành tiền:' : laHuy ? 'Tiền vốn:' : 'Tổng tiền:'}</span>
                   <span className="val bold num">{money(tongDong)} đ</span>
                 </div>
               </div>
@@ -627,10 +630,18 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
           <div className="m-t600-tong-tieu">
             <span>Tổng cộng ({dsDong.length} dòng)</span>
           </div>
-          <div className="m-t600-tong-dong">
-            <span>Thành tiền</span>
-            <span className="num">{money(tongTien)}</span>
-          </div>
+          {/* Xuất huỷ (T927): Tổng cộng chỉ Tổng số lượng, Tổng tiền vốn */}
+          {laHuy ? (
+            <div className="m-t600-tong-dong">
+              <span>Tổng số lượng</span>
+              <span className="num">{soLuong(dsDong.reduce((a, d) => a + (Number(d.sl) || 0), 0))}</span>
+            </div>
+          ) : (
+            <div className="m-t600-tong-dong">
+              <span>Thành tiền</span>
+              <span className="num">{money(tongTien)}</span>
+            </div>
+          )}
           {tongCk > 0 && (
             <div className="m-t600-tong-dong">
               <span>Tiền chiết khấu</span>
@@ -650,7 +661,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
             </div>
           )}
           <div className="m-t600-tong-dong tong-chinh">
-            <span>Tổng tiền</span>
+            <span>{laHuy ? 'Tổng tiền vốn' : 'Tổng tiền'}</span>
             <span className="bold num">{money(tongThanhToan)} đ</span>
           </div>
         </div>
@@ -697,7 +708,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
             <path d="M19 12H5M12 19l-7-7 7-7" />
           </svg>
         </button>
-        <h2 className="m-pb-tieu-de">{cfg.khongKho ? `Hoá đơn mua hàng ${soCt}` : nhomMb === 'mua' ? `Phiếu mua hàng ${soCt}` : soCt}</h2>
+        <h2 className="m-pb-tieu-de">{cfg.khongKho ? `Hoá đơn mua hàng ${soCt}` : nhomMb === 'mua' ? `Phiếu mua hàng ${soCt}` : laHuy ? `Phiếu xuất huỷ ${soCt}` : soCt}</h2>
         <span className="m-pb-thanh-dau-phai" />
       </header>
 
@@ -755,7 +766,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
         ) : (
         <div className="m-pb-the m-pb-the-tong-quan">
           {/* Nhập kho (T824): như phiếu mua, cửa hàng và nguồn lên dòng đầu, bỏ tên thẻ (diễn giải đã có ở Chi tiết), bỏ ô Cửa hàng, Nguồn chứng từ */}
-          {laNk && (
+          {khoGonXem && (
             <div className="m-tc-xem-dong-cn">
               <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
@@ -765,14 +776,14 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
               <span className="m-tc-badge-nguon m-tc-xem-nguon">{NGUON[row.nguon]?.[1] ?? 'Thủ công'}</span>
             </div>
           )}
-          {!laNk && <div className="m-pb-hang-chip">
+          {!khoGonXem && <div className="m-pb-hang-chip">
             <span className="m-pb-chip-loai">{tenLoai}</span>
             {chipTt && <span className={`m-pb-chip-tt ${chipTt.kieu}`}>{chipTt.ten}</span>}
           </div>}
 
-          {!laNk && !laTraBan && <div className="m-pb-ten-the">{tenChinhThe}</div>}
+          {!khoGonXem && !laTraBan && <div className="m-pb-ten-the">{tenChinhThe}</div>}
 
-          {!laNk && <div className="m-pb-dong-cn">
+          {!khoGonXem && <div className="m-pb-dong-cn">
             <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="1.8" fill="none">
               <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
               <polyline points="9 22 9 12 15 12 15 22" />
@@ -797,7 +808,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
             </div>
           ) : (
             <div>
-              <div className="m-pb-nhan-gt">{laNk ? 'Tổng tiền' : 'Tổng thanh toán'}</div>{/* Nhập kho ghi theo giá nhập kho, không thuế, chiết khấu (T824) */}
+              <div className="m-pb-nhan-gt">{laNk ? 'Tổng tiền' : laHuy ? 'Tổng tiền vốn' : 'Tổng thanh toán'}</div>{/* Nhập kho ghi theo giá nhập kho, không thuế, chiết khấu (T824) */}
               <div className="m-pb-so-gt">{money(tongThanhToan)} đ</div>
             </div>
           )}
@@ -829,7 +840,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
                 </div>
               </div>
             </div>
-          ) : laDc || laNk ? null : (
+          ) : laDc || khoGonXem ? null : (
             <div className="m-pb-luoi-stat">
               <div className="m-pb-o-stat da">
                 <div className="m-pb-o-stat-nhan">Cửa hàng</div>
@@ -1041,7 +1052,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
 
                 {renderDsHangHoaMua()}
               </>
-            ) : laNk ? (
+            ) : khoGonXem ? (
               <>
                 {/* Nhập kho (T824): chi tiết như phiếu mua, không nhà cung cấp, hoá đơn; có Người thực hiện (như web T818) */}
                 <div className="m-pb-nhom">THÔNG TIN CHUNG</div>
@@ -1051,9 +1062,15 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
                     <span className="g">{String(row.ngay ?? '').split(' ')[0]}</span>
                   </div>
                   <div className="m-pb-dong">
-                    <span className="n">Kho nhập</span>
+                    <span className="n">{laHuy ? 'Kho xuất' : 'Kho nhập'}</span>
                     <span className="g">{kho}</span>
                   </div>
+                  {laHuy && (
+                    <div className="m-pb-dong">
+                      <span className="n">Lý do huỷ</span>
+                      <span className="g">{String(row._lyDo || LY_DO.find(x => x.dung === 'Xuất kho')?.ten || '')}</span>
+                    </div>
+                  )}
                   <div className="m-pb-dong">
                     <span className="n">Người thực hiện</span>
                     <span className="g">{String(row._nhanVien ?? row._nguoiTao ?? nguoiTaoMau(row.so))}</span>
