@@ -10,7 +10,6 @@ import { NutXuatExcel } from '../../../ui/CongCuDs'
 import { xuatBangExcel, type CotXuat, type ODuLieu } from '../../../ui/xuatBangExcel'
 import { fold } from '../../../ui/format'
 import { HANG, KHO, NHOM, taoDsGiaVon, type DongGiaVon, type KetQuaTinh } from './du-lieu'
-import { DsMaLoiGiaVon } from './DsMaLoiGiaVon'
 import { TinhGiaVonModal } from './TinhGiaVonModal'
 import { luuGiaVonThang } from './giaVonBq'
 
@@ -62,7 +61,6 @@ export function TinhGiaVon(_props: ScreenProps): JSX.Element {
   const { ap, nhap, dat } = loc0
   const [trang, setTrang] = useState(1)
   const [moModal, setMoModal] = useState(false)
-  const [moLoi, setMoLoi] = useState(false)
 
   // Lưu lịch sử các dòng tính thành công trong modal: key "thang/nam|ma|kho" -> { luc, key }
   const [capNhatMoi, setCapNhatMoi] = useState<Map<string, { luc: Date; key: number }>>(new Map())
@@ -203,8 +201,6 @@ export function TinhGiaVon(_props: ScreenProps): JSX.Element {
     })
   }, [dsSauCapNhat, ap])
 
-  const dsLoi = useMemo(() => dsLoc.filter(x => Boolean(x.loi)), [dsLoc])
-  const moiNhat = useMemo(() => dsLoc.reduce((m, x) => (x.capNhat > m ? x.capNhat : m), new Date(0)), [dsLoc])
 
   const tongGtDau = useMemo(() => dsLoc.reduce((s, x) => s + x.gtDau, 0), [dsLoc])
   const tongGtNhap = useMemo(() => dsLoc.reduce((s, x) => s + x.gtNhap, 0), [dsLoc])
@@ -316,6 +312,7 @@ export function TinhGiaVon(_props: ScreenProps): JSX.Element {
           />
 
           <div className="ds-toolbar-phai">
+            <NutXuatExcel onXuat={onXuatExcel} />
             <button
               type="button"
               className="btn pri"
@@ -323,37 +320,6 @@ export function TinhGiaVon(_props: ScreenProps): JSX.Element {
             >
               Chạy tính giá
             </button>
-          </div>
-        </div>
-
-        <div className="ds-hang-trang-thai">
-          <div className="trang-thai">
-            <span>
-              Tháng <b>{ap.thang.t}/{ap.thang.n}</b>
-            </span>
-            {dsLoc.length > 0 && (
-              <span>
-                {' · '}Lần tính gần nhất <b>{dinhDangNgayGio(moiNhat)}</b>
-              </span>
-            )}
-            {dsLoi.length > 0 && (
-              <>
-                <span>
-                  {' · '}<span className="chip-loi">{dsLoi.length.toLocaleString('vi-VN')} mã lỗi</span> chưa có giá vốn
-                </span>
-                {' · '}
-                <button
-                  type="button"
-                  className="lk"
-                  onClick={() => setMoLoi(true)}
-                >
-                  Xem mã lỗi
-                </button>
-              </>
-            )}
-          </div>
-          <div className="ds-toolbar-phai ds-cong-cu-h2">
-            <NutXuatExcel onXuat={onXuatExcel} />
           </div>
         </div>
 
@@ -513,20 +479,6 @@ export function TinhGiaVon(_props: ScreenProps): JSX.Element {
           thangDau={ap.thang}
           onDong={() => setMoModal(false)}
           onXong={onXongTinhGia}
-        />
-      )}
-
-      {moLoi && (
-        <DsMaLoiGiaVon
-          thang={ap.thang}
-          ds={dsLoi.map(x => ({
-            ma: x.hang.ma,
-            hang: x.hang.ten,
-            kho: x.kho.ten,
-            loi: x.loi,
-          }))}
-          tong={dsLoc.length}
-          onDong={() => setMoLoi(false)}
         />
       )}
     </div>
