@@ -270,17 +270,17 @@ function ChiTietXuatDinhLuong({ sc, mod, row }: ScreenProps & { row?: PhieuXdl }
   }
   const monLoi = row.dong.filter(m => m.lyDo).length
 
-  const tenMa = (ten: unknown, ma: unknown) => <>{String(ten)} <small className="code dim">{String(ma)}</small></>
+  const tenMa = (ten: unknown, ma: unknown) => <>{String(ten)} <span className="xdl-ma">- {String(ma)}</span></>
   const soHoacTrong = (v: unknown) => (typeof v === 'number' ? money(v) : '')
   const cols: Col[] = [
     { k: 'stt', t: '#', w: 45, cls: 'dim' },
     // Hàng hoá bên trái, Món bán bên phải (T915); dòng tổng ghi nhãn ở cột Tên hàng hoá
+    { k: 'khoXuat', t: 'Kho xuất', w: 140 },   // Kho xuất đứng riêng, cột đầu bên trái (T915)
     { k: 'tenNvl', t: 'Tên', nhom: 'Hàng hoá', w: 180, r: r => r.maNvl ? tenMa(r.tenNvl, r.maNvl) : String(r.tenNvl ?? '') },
     { k: 'dvtNvl', t: 'ĐVT', nhom: 'Hàng hoá', c: true, w: 60 },
     { k: 'slNvl', t: 'Số lượng', nhom: 'Hàng hoá', num: true, w: 85, r: r => typeof r.slNvl === 'number' ? soLuong(r.slNvl) : '' },
     { k: 'giaNvl', t: 'Đơn giá', nhom: 'Hàng hoá', num: true, w: 90, r: r => soHoacTrong(r.giaNvl) },
     { k: 'tienNvl', t: 'Tổng', nhom: 'Hàng hoá', num: true, w: 100, r: r => soHoacTrong(r.tienNvl) },
-    { k: 'khoXuat', t: 'Kho xuất', nhom: 'Hàng hoá', w: 140 },
     {
       k: 'maCt', t: 'Mã công thức', nhom: 'Món bán', w: 100, cls: 'code',
       // Bấm mã mở công thức chế biến đó (T908)
@@ -427,7 +427,7 @@ function ChiTietXuatDinhLuong({ sc, mod, row }: ScreenProps & { row?: PhieuXdl }
               rowCls={r => (r._lyDo ? 'xdl-dong-loi' : '')}
               doRong={doRong}
               loc={{ gt: locCot, dat: (k, g) => setLocCot(x => ({ ...x, [k]: g })), bo: new Set(['stt', 'xuLy']), kieu: c => kieuCot(c.k), layLuaChon: k => dsGiaTri(dongLuoi, r => String(r[k] ?? '')) }}
-              sum={{ tenNvl: 'Tổng cộng', ...tong }}
+              sum={{ khoXuat: 'Tổng cộng', ...tong }}
             />
           </div>
         )}

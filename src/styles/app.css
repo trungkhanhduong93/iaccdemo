@@ -50064,3 +50064,6 @@ td.xdl-cat > span { display: block; overflow: hidden; text-overflow: ellipsis; w
 /* .fsf tô riêng hàng đầu #eef1f5 !important nên hàng cột phải tô theo, ô trống trên cột lẻ bỏ kẻ dưới */
 .fsf .tbl thead tr.tbl-nhom + tr.tbl-cot th { background: #eef1f5 !important; }
 .fsf .tbl thead tr.tbl-nhom th.trong { border-bottom: 0; }
+
+/* ── Xuất kho định lượng: cột Tên ghi Tên - mã, mã nhạt hơn tên (T915) ── */
+.xdl-luoi .xdl-ma { color: var(--muted); font-weight: 400; }
