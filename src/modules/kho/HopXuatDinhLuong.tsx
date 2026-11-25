@@ -80,23 +80,23 @@ export function HopTaoXdl({ rows, dsCn, cnCoDinh, khoangMd, onDong, onTao }: { r
   const trong = useMemo(() => rows.filter(r => (!cn || r.cn === cn) && trongKhoang(docNgay(r.ngay), khoang)), [rows, cn, khoang])
   // Món chọn được: món thiếu đã có công thức (bổ sung) hoặc mọi món có công thức trong phạm vi (tạo lại)
   const dsMonGoc = useMemo(() => {
-    if (che === 'bs') return monThieuXdl(trong).filter(m => m.coCongThuc).map(m => ({ ma: m.ma, ten: m.ten }))
+    if (che === 'bs') return monThieuXdl(trong).map(m => ({ ma: m.ma, ten: m.ten, coCt: m.coCongThuc }))
     const mp = new Map<string, string>()
     trong.forEach(p => p.dong.forEach(m => { if (m.coCongThuc || m.choBoSung) mp.set(m.ma, m.ten) }))
-    return [...mp].map(([ma, ten]) => ({ ma, ten })).sort((a, b) => a.ma.localeCompare(b.ma))
+    return [...mp].map(([ma, ten]) => ({ ma, ten, coCt: true })).sort((a, b) => a.ma.localeCompare(b.ma))
   }, [che, trong])
   const dsNhom = useMemo(() => [...new Set(dsMonGoc.map(m => nhomCua(m.ma)))].sort(), [dsMonGoc])
   // Nhóm món chỉ dùng khi tạo lại toàn bộ
   const nhomHieu = useMemo(() => new Set(che === 'lai' ? [...nhom].filter(n => dsNhom.includes(n)) : []), [che, nhom, dsNhom])
   const dsMon = useMemo(() => (nhomHieu.size ? dsMonGoc.filter(m => nhomHieu.has(nhomCua(m.ma))) : dsMonGoc), [dsMonGoc, nhomHieu])
   // Bổ sung: tích sẵn các món thiếu đã bổ sung công thức. Tạo lại: để trống
-  const dangChon = useMemo(() => new Set([...(chon ?? (che === 'bs' ? new Set(dsMon.map(m => m.ma)) : new Set<string>()))].filter(ma => dsMon.some(m => m.ma === ma))), [chon, che, dsMon])
+  const dangChon = useMemo(() => new Set([...(chon ?? (che === 'bs' ? new Set(dsMon.filter(m => m.coCt).map(m => m.ma)) : new Set<string>()))].filter(ma => dsMon.some(m => m.ma === ma))), [chon, che, dsMon])
   // Không chọn món nào nghĩa là tất cả món trong phạm vi
   const maChon = dangChon.size ? [...dangChon] : dsMon.map(m => m.ma)
   const setChon2 = new Set(maChon)
   const tatCaMon = dangChon.size === 0 && nhomHieu.size === 0   // không chọn món: tạo lại mọi phiếu trong phạm vi
   const nXoa = che === 'lai' ? phieuTaoLaiXdl(trong, maChon, tatCaMon).length : 0
-  const nBoSung = che === 'bs' ? trong.filter(p => p.dong.some(m => m.choBoSung && setChon2.has(m.ma))).length : 0
+  const nBoSung = che === 'bs' ? trong.filter(p => p.dong.some(m => (m.choBoSung || (m.lyDo && m.lyDo.loai <= 4)) && setChon2.has(m.ma))).length : 0
     const duocLam = maChon.length > 0 && (che === 'bs' ? nBoSung > 0 : nXoa > 0)
 
   const lam = () => {

@@ -16,7 +16,7 @@ import { dangLoc, dsGiaTri, khopLoc, type GiaTriLoc, type KieuLoc } from '../../
 import { IconFigmaSearch } from '../../ui/IconFigma'
 import { NutExcel } from '../../ui/CongCuDs'
 import { Select } from '../../ui/Dropdown'
-import { daTaoLaiXdl, monThieuXdl, useDsPhieuXdl, type LyDoXdl, type PhieuXdl } from './xuat-dinh-luong'
+import { monThieuXdl, useDsPhieuXdl, type LyDoXdl, type PhieuXdl } from './xuat-dinh-luong'
 import { HopMonThieu, HopTaoXdl, type ViecTaoXdl } from './HopXuatDinhLuong'
 import { CUA_HANG } from '../../data/mock'
 import { LichSu } from '../../ui/generic/ChungTuForm'
@@ -65,7 +65,7 @@ function DanhSachXuatDinhLuong({ sc, mod, rows }: ScreenProps & { rows: PhieuXdl
   const doRong = useDoRongCot('xuat-dinh-luong')   // kéo giãn cột như danh sách Xuất bán POS (T907)
 
   const rowsCh = useMemo(() => (cnChon ? rows.filter(r => r.cn === cnChon.ten) : rows), [rows, cnChon])
-  const dsThieu = useMemo(() => monThieuXdl(rowsCh.filter(r => daTaoLaiXdl(r.id))), [rowsCh])   // chỉ món còn sót sau khi tạo lại toàn bộ
+  const dsThieu = useMemo(() => monThieuXdl(rowsCh), [rowsCh])   // món thiếu hiện từ đầu; tạo lại toàn bộ chỉ làm số này giảm hoặc giữ nguyên
   const dsCn = useMemo(() => [...new Set(rows.map(r => r.cn))].sort(), [rows])
   const kieuCot = (k: string): KieuLoc => (k === 'ngay' ? 'ngay' : k === 'tong' ? 'so' : 'chon')
   const giaTri = (r: PhieuXdl, k: string): unknown => (k === 'thamChieu' ? r.posSo : (r as unknown as Row)[k])

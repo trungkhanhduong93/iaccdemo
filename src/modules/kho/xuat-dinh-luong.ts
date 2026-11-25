@@ -103,9 +103,6 @@ export function monThieuXdl(rows: PhieuXdl[]): MonThieuXdl[] {
   return [...mp.values()].sort((a, b) => a.ma.localeCompare(b.ma))
 }
 
-/** Phiếu đã được tạo lại toàn bộ: dải cảnh báo chỉ tính món còn sót ở các phiếu này sau khi tạo lại */
-export const daTaoLaiXdl = (id: string) => kho.soMoi.has(id)
-
 /** Xuất bổ sung: chỉ món thiếu đã có công thức, ghi tiếp vào phiếu cũ. Trả số phiếu được bổ sung. */
 export function xuatBoSungXdl(rows: PhieuXdl[], maMon: string[]): number {
   let n = 0

@@ -8,7 +8,7 @@
 
 - `XuatDinhLuong.tsx` (hàm danh sách): cột Cửa hàng luôn hiện, thêm Kênh bán, cột Mã hoá đơn đổi tên Mã đơn POS (vẫn `#` + 5 ký tự). Nút Tạo xuất kho định lượng, dải cảnh báo món sót, thanh tiến trình.
 - `HopXuatDinhLuong.tsx` (mới): popup món chưa tạo (Mã món, Tên món, ĐVT, Cửa hàng, Lý do, Xử lý, nút mở ở tab mới), hộp thoại Tạo xuất kho định lượng (xuất bổ sung, tạo lại toàn bộ, nhóm món chỉ ở tạo lại, món, không chọn là tất cả), bước xác nhận.
-- `xuat-dinh-luong.ts`: trạng thái giả bổ sung, tạo lại, số phiếu mới, lịch sử; cảnh báo chỉ tính thành phẩm không theo dõi tồn kho và chỉ ở phiếu đã tạo lại.
+- `xuat-dinh-luong.ts`: trạng thái giả bổ sung, tạo lại, số phiếu mới, lịch sử; cảnh báo chỉ tính thành phẩm không theo dõi tồn kho; xuất bổ sung liệt kê mọi món thiếu, tích sẵn món đã có công thức.
 - `app.css`: mục T935 cuối file.
 
 ## Đã kiểm
