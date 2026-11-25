@@ -65,6 +65,11 @@ export const CONG_THUC_CB: CongThucCb[] = [
     nvl: [{ ma: 'NVL010', sl: 0.5 }, { ma: 'NVL030', sl: 0.08 }] },
   { id: 'cb8', ma: 'CTCB008', spMa: 'CF01', ngay: '01/09/2026', kenh: [], cuaHang: [], moTa: 'Ly 250 ml', tt: 'on',
     nvl: [{ ma: 'NVL008', sl: 0.025 }, { ma: 'NVL009', sl: 0.1 }, { ma: 'NVL033', sl: 0.2 }] },
+  // Hai công thức mẫu thêm để Xuất kho định lượng có phiếu xuất đủ, không còn món lỗi (phở bò đặc biệt, bún chả)
+  { id: 'cb9', ma: 'CTCB009', spMa: 'PHO02', ngay: '01/08/2026', kenh: [], cuaHang: [], moTa: 'Tô đặc biệt 750 ml, thêm tái, nạm, gầu', tt: 'on',
+    nvl: [{ ma: 'NVL003', sl: 0.22 }, { ma: 'NVL001', sl: 0.1 }, { ma: 'NVL015', sl: 0.05 }, { ma: 'NVL014', sl: 0.05 }, { ma: 'BTP01', sl: 0.5 }, { ma: 'NVL007', sl: 0.02 }] },
+  { id: 'cb10', ma: 'CTCB010', spMa: 'BUN01', ngay: '01/08/2026', kenh: [], cuaHang: [], moTa: 'Phần 1 người: chả nướng, bún, nước chấm', tt: 'on',
+    nvl: [{ ma: 'NVL025', sl: 0.2 }, { ma: 'BTP03', sl: 0.15 }, { ma: 'NVL029', sl: 0.02 }, { ma: 'NVL030', sl: 0.01 }, { ma: 'NVL007', sl: 0.03 }] },
 ]
 
 /** Tỉ lệ ra cho một đơn vị NVL gốc; phần còn lại là hao hụt */

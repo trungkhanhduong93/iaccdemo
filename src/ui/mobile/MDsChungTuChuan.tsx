@@ -65,7 +65,8 @@ export function HangTabsBanHang({
   const is316 = sc.code === '3.1.6' || sc.slug === '3-1-6'
   // Bán hàng, Hàng bán trả lại là mục riêng trong menu Nghiệp vụ (T830): không là tab của màn khác, màn của mình chỉ một tab
   const RIENG = ['3.1.7', '3.1.4']
-  const manRieng = is317 ? '3.1.7' : is314 ? '3.1.4' : tay311 ? '3.1.1-tay' : ''
+  const isXdl = sc.code === '5.1.2' || sc.slug === '5-1-2'   // Xuất kho định lượng: một tab riêng, không phải tab Xuất bán POS
+  const manRieng = is317 ? '3.1.7' : is314 ? '3.1.4' : tay311 ? '3.1.1-tay' : isXdl ? '5.1.2-xdl' : ''
   // Tab Báo cáo theo dõi giữ ở mọi màn bán hàng như màn mua hàng (T832, người dùng chốt sau T833); tấm báo cáo mở ngay tại đây
   const [moTheoDoi, setMoTheoDoi] = useState(false)
 
@@ -88,6 +89,9 @@ export function HangTabsBanHang({
             {nhan}
           </button>
         ))}
+      {isXdl && (
+        <button type="button" role="tab" aria-selected={true} className="m-tc-tab-btn on">Xuất kho định lượng</button>
+      )}
       {tay311 && (
         <button type="button" role="tab" aria-selected={true} className="m-tc-tab-btn on" onClick={() => nav('/app/ban-hang/3-1-1?tay=1')}>
           Bán hàng

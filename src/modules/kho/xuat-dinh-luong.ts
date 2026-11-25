@@ -125,6 +125,15 @@ export function xuatBoSungXdl(rows: PhieuXdl[], maMon: string[]): number {
   return n
 }
 
+/** Phiếu Xuất kho định lượng thành dòng cho danh sách, xem phiếu trên điện thoại (cùng nguồn với bản web) */
+export const rowTuPhieuXdl = (p: PhieuXdl): Row => ({
+  id: p.id, so: p.so, ngay: p.ngay, cn: p.cn, doiTuong: p.cn, dienGiai: p.ghiChu, tong: p.tong, tt: 'ghiso', _kho: p.cn, _nguoiTao: p.nguoiTao,
+  _thamChieu: p.posSo, _thamChieuDi: `/app/ban-hang/3-1-1/${p.posId}`,
+  _mon: p.dong.filter(m => m.nvl.length).map(m => ({ ma: m.ma, ten: m.ten, sl: m.sl, maCt: m.maCt, ctId: m.ctId, nvl: m.nvl })),
+  _loi: p.dong.filter(m => m.lyDo).map(m => ({ ma: m.ma, ten: m.ten, sl: m.sl, lyDo: m.lyDo!.text })),
+  _dong: p.dong.flatMap(m => m.nvl).map(n => ({ ma: n.ma, ten: n.ten, dvt: n.dvt, sl: n.sl, gia: n.gia, tien: n.tien, ts: 0, thue: 0 })),
+})
+
 /** Phiếu bị xoá và tạo lại: phiếu trong phạm vi có chứa một trong các món đã chọn */
 export const phieuTaoLaiXdl = (rows: PhieuXdl[], maMon: string[], tatCa = false) => (tatCa ? rows : rows.filter(p => p.dong.some(m => maMon.includes(m.ma)))).filter(p => !p.chuaTao)
 

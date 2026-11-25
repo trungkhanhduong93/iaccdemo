@@ -19,6 +19,7 @@ import { DCN } from '../../modules/kho/dieu-chuyen'
 import { useDsPhieuSx } from '../../modules/kho/BangSanXuat'
 import { MChon } from './MChon'
 import { MDanhSach } from './MDanhSach'
+import { monThieuXdl, rowTuPhieuXdl, useDsPhieuXdl } from '../../modules/kho/xuat-dinh-luong'
 import { MDsChungTuChuan, MDsDongPhieu, HangTabsBanHang } from './MDsChungTuChuan'
 import { MLapPhieu } from './MLapPhieu'
 import { MDtThuChiDs } from './MDtThuChiDs'
@@ -84,7 +85,11 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
   const { cfg, rows: rowsGoc } = useDongChungTu(sc, mod)
   const rowsDcn = useDsPhieuDcn(cfg.dieuChuyen ?? 'xdc')
   const rowsSx = useDsPhieuSx(cfg.sanXuat ?? 'xsc')
-  const rowsGocChung = cfg.dieuChuyen ? rowsDcn : cfg.sanXuat ? rowsSx : rowsGoc
+  // Xuất kho định lượng: đọc danh sách phiếu riêng như bản web, không dùng dữ liệu chứng từ chung
+  const laXdl = cfg.prefix === 'XDL'
+  const phieuXdl = useDsPhieuXdl()
+  const rowsXdl = useMemo<Row[]>(() => laXdl ? phieuXdl.filter(p => p.so).map(rowTuPhieuXdl) : [], [laXdl, phieuXdl])
+  const rowsGocChung = laXdl ? rowsXdl : cfg.dieuChuyen ? rowsDcn : cfg.sanXuat ? rowsSx : rowsGoc
   const rows = useMemo(() => {
     if (cfg.khongKho) return rowsGocChung.map((r): Row => ({ ...r, lyDo: String(r._lyDo ?? '') }))   // Hoá đơn mua hàng: Lý do nghiệp vụ (T826)
     if (mod.key !== 'tien') return rowsGocChung
@@ -97,7 +102,11 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
   }, [rowsGocChung, mod.key, cfg])
 
   const ghi = kieuGhiSoDv(s, mod.key) !== 'khong'   // gói Standard, Plus hộ kinh doanh không ghi sổ (QD81)
-  const cnChon = cuaHangHienTai(s)
+  // Phiếu điều chuyển chỉ hiện của cửa hàng mình: chưa chọn cửa hàng thì lấy cửa hàng đầu tiên
+  const cnChon = cuaHangHienTai(s) ?? (cfg.dieuChuyen ? CUA_HANG[0] : undefined)
+  // Xuất kho định lượng: dải cảnh báo món chưa tạo xuất kho định lượng như bản web, bấm mở danh sách món, lý do, chỗ xử lý
+  const [moThieuXdl, setMoThieuXdl] = useState(false)
+  const dsThieuXdl = useMemo(() => laXdl ? monThieuXdl(phieuXdl.filter(p => !cnChon || p.cn === cnChon.ten)) : [], [laXdl, phieuXdl, cnChon])
 
   // Chip trạng thái
   // Bỏ tab trạng thái ở màn chứng từ nên luôn hiện tất cả, bỏ qua ?tt= (PhuongXT 04/11/2026)
@@ -771,7 +780,7 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
     <>
       {dungKhungChuan ? (
         <MDsChungTuChuan
-          tieuDe={sc.code === '5.1.1' ? 'Nhập kho' : cfg.dieuChuyen ? DCN[cfg.dieuChuyen].ten : (mod.key === 'tong-hop' ? (sc.ngan ?? sc.ten ?? 'Chứng từ tổng hợp') : (mod.ngan ?? mod.ten ?? ''))}
+          tieuDe={sc.code === '5.1.1' ? 'Nhập kho' : laXdl ? 'Xuất kho định lượng' : cfg.dieuChuyen ? DCN[cfg.dieuChuyen].ten : (mod.key === 'tong-hop' ? (sc.ngan ?? sc.ten ?? 'Chứng từ tổng hợp') : (mod.ngan ?? mod.ten ?? ''))}
           hangTabs={hangTabs}
           onQuayLai={quayLai}
           onMoLoc={() => setLocMo(true)}
@@ -779,6 +788,13 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
           chipsLoc={chipsLoc}
           chuoiKhoangNgay={chuoiKhoangNgay411}
           hienTien={!(mod.key === 'kho' && cfg.kiemKe)}
+          theTongThem={laXdl && dsThieuXdl.length > 0 ? () => (
+            <button type="button" className="m-t827-canh" onClick={() => setMoThieuXdl(true)}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 3l9.5 17h-19z" /><path d="M12 10v4M12 17.5v.01" /></svg>
+              <span className="nd"><b>{dsThieuXdl.length} món chưa tạo xuất kho định lượng</b><small>Bấm để xem lý do và cách xử lý</small></span>
+              <span className="nut">Xem</span>
+            </button>
+          ) : undefined}
           rows={list}
           renderDong={(r, i) => {
             const cfgLoai = theoLoai(cfg, r.loai)
@@ -820,7 +836,7 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
               <MDsDongPhieu
                 key={String(r.id ?? r.so ?? i)}
                 so={String(r.so ?? '')}
-                soDongHang={soDongHang}
+                soDongHang={cfg.prefix === 'XDL' ? 0 : soDongHang}   // Xuất kho định lượng: danh sách không ghi số hàng hoá
                 dongPhu={dongPhu}
                 dongPhu2={dongPhu2}
                 tien={tien}
@@ -985,6 +1001,34 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
           }
         }}
       />
+      {/* Xuất kho định lượng: món chưa tạo, lý do, chỗ xử lý (như popup bản web) */}
+      {moThieuXdl && (
+        <div className="m-tam-overlay" onClick={() => setMoThieuXdl(false)}>
+          <div className="m-tam-hop m-t600-sheet-85" onClick={e => e.stopPropagation()}>
+            <div className="m-tam-dau">
+              <h2 className="m-tam-tieu">Món chưa tạo xuất kho định lượng</h2>
+              <button type="button" className="m-tam-dong-btn" onClick={() => setMoThieuXdl(false)} aria-label="Đóng">×</button>
+            </div>
+            <div style={{ overflowY: 'auto', padding: '8px 16px 16px' }}>
+              {dsThieuXdl.map(m => {
+                const congThuc = s.goi === 'PL' ? '/app/danh-muc/cong-thuc-che-bien' : '/app/kho/9-1-3'
+                const di = { 1: congThuc, 2: '/app/danh-muc/1-2', 3: '/app/danh-muc/1-4', 4: congThuc, 5: '/app/kho/5-1-7' }[m.loai]
+                const nut = { 1: 'Tạo công thức', 2: 'Khớp mã hàng', 3: 'Thêm ĐVT', 4: 'Mở công thức', 5: 'Tính giá vốn' }[m.loai]
+                return (
+                  <div key={m.ma} style={{ padding: '10px 0', borderBottom: '1px solid var(--line)' }}>
+                    <div style={{ fontWeight: 600 }}>{m.ten} <span style={{ color: 'var(--muted)', fontWeight: 'normal' }}>{m.ma} · {m.dvt}</span></div>
+                    <div style={{ fontSize: 13, color: 'var(--muted)' }}>{m.cn.join(', ')}</div>
+                    <div style={{ fontSize: 13, color: 'var(--red)', margin: '2px 0' }}>{m.lyDo}</div>
+                    {m.coCongThuc
+                      ? <span className="chip ok">Đã có công thức</span>
+                      : <button type="button" className="ds-link-so" onClick={() => nav(di)}>{nut}</button>}
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        </div>
+      )}
     </>
   )
 }

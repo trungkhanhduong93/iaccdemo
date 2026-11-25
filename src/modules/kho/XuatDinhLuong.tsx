@@ -19,7 +19,8 @@ import { Select } from '../../ui/Dropdown'
 import { monThieuXdl, useDsPhieuXdl, type LyDoXdl, type PhieuXdl } from './xuat-dinh-luong'
 import { HopMonThieu, HopTaoXdl, type ViecTaoXdl } from './HopXuatDinhLuong'
 import { CUA_HANG } from '../../data/mock'
-import { LichSu } from '../../ui/generic/ChungTuForm'
+import { DaiTong, LichSu } from '../../ui/generic/ChungTuForm'
+import { Dropdown, MenuItem } from '../../ui/Dropdown'
 
 // Món đồ uống do quầy bar pha, gói Pro xuất NVL từ kho bar (T915)
 const DO_UONG = /cà phê|cafe|trà|sinh tố|nước|bia|soda|sữa|latte|cacao|matcha|đá xay|cocktail|rượu/i
@@ -254,10 +255,17 @@ const LY_DO: Record<LyDoXdl['loai'], { ngan: string; nut: string }> = {
 }
 
 function ChiTietXuatDinhLuong({ sc, mod, row }: ScreenProps & { row?: PhieuXdl }) {
-  const { s } = useSession()
+  const { s, toast } = useSession()
   const nav = useNavigate()
   const dongForm = useDong(duongDan(mod, sc))
   const [tab, setTab] = useState<'xk' | 'loi' | 'ht' | 'ls'>('xk')
+  const [moLoc, setMoLoc] = useState(false)   // hàng lọc của bảng Xuất kho, bấm phễu mới hiện
+  // Chứng từ trước, sau: theo thứ tự danh sách, bỏ chứng từ bán hàng chưa tạo phiếu
+  const dsPhieu = useDsPhieuXdl().filter(r => !r.chuaTao)
+  const viTri = dsPhieu.findIndex(r => r.id === row?.id)
+  const coTruoc = viTri > 0
+  const coSau = viTri >= 0 && viTri < dsPhieu.length - 1
+  const veMay = (b: number) => nav(`${duongDan(mod, sc)}/${dsPhieu[viTri + b].id}`, { replace: true })
   const [locCot, setLocCot] = useState<Record<string, GiaTriLoc>>({})
   const doRong = useDoRongCot('xuat-dinh-luong-ct')   // kéo giãn cột (T913)
   const doRongLoi = useDoRongCot('xuat-dinh-luong-loi')
@@ -368,9 +376,25 @@ function ChiTietXuatDinhLuong({ sc, mod, row }: ScreenProps & { row?: PhieuXdl }
         </>
       }
       footClass="fsf-f-xem"
+      day={<DaiTong muc={[]} tong={row.tong} />}   // Tổng tiền ở dải trên thanh nút, như phiếu Nhập kho
       foot={
         <>
           <div className="xp-footer-trai">
+            {/* Chứng từ trước, sau như phiếu Nhập kho */}
+            {(coTruoc || coSau) && (
+              <div className="xp-chuyen-phieu">
+                <button type="button" className="xp-btn-outline xp-btn-ic" onClick={() => veMay(-1)} disabled={!coTruoc} title="Chứng từ trước" aria-label="Chứng từ trước">
+                  <Icon n="chevl" className="ic sm" />
+                </button>
+                <button type="button" className="xp-btn-outline xp-btn-ic" onClick={() => veMay(1)} disabled={!coSau} title="Chứng từ sau" aria-label="Chứng từ sau">
+                  <Icon n="chevr" className="ic sm" />
+                </button>
+              </div>
+            )}
+            <Dropdown btnClass="xp-btn-outline" align="start" width={220}
+              label={<><span>Tiện ích</span><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"><path d="M3.5 5.5L7 9L10.5 5.5" /></svg></>}>
+              {() => <MenuItem icon="doc" onClick={() => toast('Đã xuất mẫu Excel')}>Xuất Excel</MenuItem>}
+            </Dropdown>
             <button type="button" className="xp-btn-in" onClick={() => window.print()}>
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M4 12H2.66667C2.31304 12 1.97391 11.8595 1.72386 11.6095C1.47381 11.3594 1.33333 11.0203 1.33333 10.6667V7.33333C1.33333 6.97971 1.47381 6.64057 1.72386 6.39052C1.97391 6.14048 2.31304 6 2.66667 6H13.3333C13.687 6 14.0261 6.14048 14.2761 6.39052C14.5262 6.64057 14.6667 6.97971 14.6667 7.33333V10.6667C14.6667 11.0203 14.5262 11.3594 14.2761 11.6095C13.687 12 13.3333 12 13.3333 12H12" />
@@ -380,27 +404,35 @@ function ChiTietXuatDinhLuong({ sc, mod, row }: ScreenProps & { row?: PhieuXdl }
               <span>In phiếu</span>
             </button>
           </div>
-          <div className="fsf-tong">
-            <small>Tổng tiền vốn:</small><b>{moneyD(row.tong)}</b>
-          </div>
         </>
       }
     >
       <div className="stack" style={{ gap: 14 }}>
-        <p className="pos-nhac" style={{ margin: 0 }}>
-          <Icon n="info" className="ic sm" />
-          Phiếu sinh tự động từ chứng từ {row.btId ? 'bán hàng' : 'Xuất bán POS'}. Chỉ xem, không sửa hay xoá.
-        </p>
-
-        {/* Thông tin chung dạng chữ, không ô nhập: số chứng từ đã có ở tiêu đề; dòng Tham chiếu như phiếu mua (T585, T932) */}
-        <section className="card ct-ttc xdl-tt">
-          <div className="xp637-cap xdl-tt-dong">
-            {row.btId
-              ? <div className="xp637-o"><span className="xp637-nhan">Số chứng từ bán hàng</span><div className="xp637-tri"><span className="xp637-code">{row.posSo}</span></div></div>
-              : <div className="xp637-o"><span className="xp637-nhan">Mã hoá đơn POS</span><div className="xp637-tri"><span className="xp637-code">{row.maHd}</span></div></div>}
-            <div className="xp637-o xdl-tt-be"><span className="xp637-nhan">Kênh bán</span><div className="xp637-tri"><span>{row.kenh}</span></div></div>
-            <div className="xp637-o xdl-tt-gc"><span className="xp637-nhan">Ghi chú</span><div className="xp637-tri"><span title={ghiChu}>{ghiChu}</span></div></div>
-            <div className="xp637-o xdl-tt-be"><span className="xp637-nhan">Ngày xuất</span><div className="xp637-tri"><span>{row.ngay}</span></div></div>
+        {/* Thông tin chung như phiếu Nhập kho: ô viền, nhãn bên trái, chỉ xem; dòng Tham chiếu cuối khối (T585, T932) */}
+        <section className="card ct-ttc" style={{ padding: '8px 16px' }}>
+          <div className="grid" style={{ gridTemplateColumns: 'minmax(0, 1fr) 300px', gap: 16, alignItems: 'start' }}>
+            <div className="stack" style={{ gap: 10 }}>
+              <div className="row" style={{ gap: 10 }}>
+                <div className="f" style={{ flex: 1 }}>
+                  <label>{row.btId ? 'CT bán hàng' : 'Mã hoá đơn POS'}</label>
+                  <input className="inp code" readOnly value={row.btId ? row.posSo : row.maHd ?? ''} />
+                </div>
+                <div className="f" style={{ flex: 1 }}>
+                  <label>Kênh bán</label>
+                  <input className="inp" readOnly value={row.kenh ?? ''} />
+                </div>
+              </div>
+              <div className="f">
+                <label>Ghi chú</label>
+                <input className="inp" readOnly value={ghiChu} title={ghiChu} />
+              </div>
+            </div>
+            <div className="stack" style={{ gap: 10 }}>
+              <div className="f">
+                <label>Ngày xuất <em>*</em></label>
+                <input className="inp" readOnly value={row.ngay} />
+              </div>
+            </div>
           </div>
           <div className="ct-tham-chieu">
             <span className="dim">Tham chiếu</span>
@@ -415,6 +447,12 @@ function ChiTietXuatDinhLuong({ sc, mod, row }: ScreenProps & { row?: PhieuXdl }
             {tabs.map(([k, l]) => (
               <button key={k} type="button" className={tab === k ? 'on' : ''} onClick={() => setTab(k)}>{l}</button>
             ))}
+            {/* Phễu lọc sau tab cuối như phiếu Nhập kho (T383): bấm mới hiện hàng lọc, tắt thì bỏ lọc */}
+            <button type="button" className={`ct-nut-loc${moLoc ? ' on' : ''}`} aria-pressed={moLoc}
+              title={moLoc ? 'Ẩn bộ lọc dòng chi tiết' : 'Lọc dòng chi tiết'} aria-label="Lọc dòng chi tiết"
+              onClick={() => { if (!moLoc) setTab('xk'); else setLocCot({}); setMoLoc(v => !v) }}>
+              <Icon n="filter" className="ic sm" />
+            </button>
           </div>
 
           {tab === 'xk' && (
@@ -424,7 +462,7 @@ function ChiTietXuatDinhLuong({ sc, mod, row }: ScreenProps & { row?: PhieuXdl }
               rowCls={r => (r._lyDo ? 'xdl-dong-loi' : '')}
               gopO={r => (r._mon === undefined ? undefined : String(r._mon))}   // các dòng NVL của cùng một món gộp ô Món bán, Số lượng, Mã công thức
               doRong={doRong}
-              loc={{ gt: locCot, dat: (k, g) => setLocCot(x => ({ ...x, [k]: g })), bo: new Set(['stt']), kieu: c => kieuCot(c.k), layLuaChon: k => dsGiaTri(dongLuoi, r => String(r[k] ?? '')) }}
+              loc={moLoc ? { gt: locCot, dat: (k, g) => setLocCot(x => ({ ...x, [k]: g })), bo: new Set(['stt']), kieu: c => kieuCot(c.k), layLuaChon: k => dsGiaTri(dongLuoi, r => String(r[k] ?? '')) } : undefined}
               sum={{ khoXuat: 'Tổng cộng', ...tong }}
             />
           )}
