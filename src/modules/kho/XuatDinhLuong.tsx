@@ -1,6 +1,6 @@
 // Xuất kho định lượng (T849): mỗi phiếu Xuất bán POS sinh một phiếu xuất kho định lượng,
 // T907: lưới phẳng, món không xuất được ghi lý do. T932: tiêu đề như phiếu mua, 3 tab Xuất kho, Lỗi, Lịch sử.
-import { useMemo, useState, type ReactNode } from 'react'
+import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import type { Col, Row, ScreenProps } from '../types'
 import { duongDan, tenMan } from '../../app/registry'
@@ -16,7 +16,8 @@ import { dangLoc, dsGiaTri, khopLoc, type GiaTriLoc, type KieuLoc } from '../../
 import { IconFigmaSearch } from '../../ui/IconFigma'
 import { NutExcel } from '../../ui/CongCuDs'
 import { Select } from '../../ui/Dropdown'
-import { useDsPhieuXdl, type LyDoXdl, type PhieuXdl } from './xuat-dinh-luong'
+import { daTaoLaiXdl, monThieuXdl, useDsPhieuXdl, type LyDoXdl, type PhieuXdl } from './xuat-dinh-luong'
+import { HopMonThieu, HopTaoXdl, type ViecTaoXdl } from './HopXuatDinhLuong'
 import { CUA_HANG } from '../../data/mock'
 import { LichSu } from '../../ui/generic/ChungTuForm'
 
@@ -47,8 +48,24 @@ function DanhSachXuatDinhLuong({ sc, mod, rows }: ScreenProps & { rows: PhieuXdl
   const [locCot, setLocCot] = useState<Record<string, GiaTriLoc>>({})
   const [trang, setTrang] = useState(1)
   const [coTrang, setCoTrang] = useState(50)
+  const [hop, setHop] = useState<'' | 'thieu' | 'tao'>('')   // popup món thiếu, hộp thoại Tạo xuất kho định lượng (T935)
+  // Việc tạo đang chạy: pt là phần trăm; chạy xong ghi thay đổi, giữ khung ở lại với thông báo hoàn thành cho tới khi bấm Đóng
+  const [viec, setViec] = useState<(ViecTaoXdl & { pt: number; xong: boolean; ketQua: string }) | null>(null)
+  useEffect(() => {
+    if (!viec || viec.xong) return
+    if (viec.pt >= 100) {
+      const kq = viec.chay()   // ghi thay đổi đúng một lần, ngoài hàm cập nhật state
+      setViec(v => v && { ...v, xong: true, ketQua: kq })
+      return
+    }
+    const buoc = 100 / Math.max(10, Math.min(30, viec.mon.length * 2))
+    const t = setTimeout(() => setViec(v => v && { ...v, pt: Math.min(100, Math.round(v.pt + buoc)) }), 300)
+    return () => clearTimeout(t)
+  }, [viec])
   const doRong = useDoRongCot('xuat-dinh-luong')   // kéo giãn cột như danh sách Xuất bán POS (T907)
 
+  const rowsCh = useMemo(() => (cnChon ? rows.filter(r => r.cn === cnChon.ten) : rows), [rows, cnChon])
+  const dsThieu = useMemo(() => monThieuXdl(rowsCh.filter(r => daTaoLaiXdl(r.id))), [rowsCh])   // chỉ món còn sót sau khi tạo lại toàn bộ
   const dsCn = useMemo(() => [...new Set(rows.map(r => r.cn))].sort(), [rows])
   const kieuCot = (k: string): KieuLoc => (k === 'ngay' ? 'ngay' : k === 'tong' ? 'so' : 'chon')
   const giaTri = (r: PhieuXdl, k: string): unknown => (k === 'thamChieu' ? r.posSo : (r as unknown as Row)[k])
@@ -60,7 +77,7 @@ function DanhSachXuatDinhLuong({ sc, mod, rows }: ScreenProps & { rows: PhieuXdl
       if (ap.cn && r.cn !== ap.cn) return false
       if (ap.tim.trim()) {
         const kw = fold(ap.tim.trim())
-        const text = fold(`${r.so} ${r.maHd} ${r.posSo} ${r.ghiChu} ${r.cn} ${r.nguon} ${r.dong.map(m => m.ten).join(' ')}`)
+        const text = fold(`${r.so} ${r.maHd} ${r.kenh} ${r.posSo} ${r.ghiChu} ${r.cn} ${r.nguon} ${r.dong.map(m => m.ten).join(' ')}`)
         if (!text.includes(kw)) return false
       }
       for (const [k, g] of Object.entries(locCot)) {
@@ -76,7 +93,7 @@ function DanhSachXuatDinhLuong({ sc, mod, rows }: ScreenProps & { rows: PhieuXdl
   const apLoc = () => { loc0.loc(); setTrang(1) }
   const oLoc: OLocDef[] = [
     { k: 'thoiGian', ten: 'Thời gian', coGiaTri: true, o: <ChonKhoangNgay value={nhap.thoiGian} onChange={k => dat('thoiGian', k)} /> },
-    { k: 'tim', ten: 'Tìm kiếm', coGiaTri: Boolean(nhap.tim.trim()), o: <input className="ds-o-inp" value={nhap.tim} placeholder="Số phiếu, mã hoá đơn, tham chiếu, món" aria-label="Tìm kiếm"
+    { k: 'tim', ten: 'Tìm kiếm', coGiaTri: Boolean(nhap.tim.trim()), o: <input className="ds-o-inp" value={nhap.tim} placeholder="Số phiếu, mã đơn POS, tham chiếu, món" aria-label="Tìm kiếm"
       onChange={e => dat('tim', e.target.value)} onKeyDown={e => { if (e.key === 'Enter') apLoc() }} /> },
     ...(!cnChon && dsCn.length > 1 ? [{ k: 'cn', ten: 'Cửa hàng', coGiaTri: Boolean(nhap.cn), o: (
       <Select className="ds-o-sel" value={nhap.cn} aria-label="Cửa hàng" onChange={e => dat('cn', e.target.value)}>
@@ -113,8 +130,9 @@ function DanhSachXuatDinhLuong({ sc, mod, rows }: ScreenProps & { rows: PhieuXdl
       ),
     },
     // Mã hoá đơn FABi: # và 5 ký tự cuối, rê chuột xem đủ (QD114)
-    { k: 'maHd', t: 'Mã hoá đơn', cls: 'code', w: 95, r: r => <span title={String(r.maHd)}>#{String(r.maHd).slice(-5)}</span> },
-    ...(cnChon ? [] : [{ k: 'cn', t: 'Cửa hàng', w: 140 } as Col]),
+    { k: 'cn', t: 'Cửa hàng', w: 140 },
+    { k: 'kenh', t: 'Kênh bán', w: 100 },
+    { k: 'maHd', t: 'Mã đơn POS', cls: 'code', w: 100, r: r => <span title={String(r.maHd)}>#{String(r.maHd).slice(-5)}</span> },
     {
       k: 'thamChieu',
       t: 'Tham chiếu',
@@ -172,8 +190,8 @@ function DanhSachXuatDinhLuong({ sc, mod, rows }: ScreenProps & { rows: PhieuXdl
                     <IconFigmaSearch size={16} />
                     <input
                       value={nhap.tim}
-                      placeholder="Số phiếu, mã hoá đơn, tham chiếu, món"
-                      title="Tìm theo số phiếu, mã hoá đơn, tham chiếu, món"
+                      placeholder="Số phiếu, mã đơn POS, tham chiếu, món"
+                      title="Tìm theo số phiếu, mã đơn POS, tham chiếu, món"
                       aria-label="Tìm kiếm"
                       onChange={e => dat('tim', e.target.value)}
                       onKeyDown={e => {
@@ -186,8 +204,28 @@ function DanhSachXuatDinhLuong({ sc, mod, rows }: ScreenProps & { rows: PhieuXdl
             />
             <div className="ds-toolbar-phai">
               <NutExcel onXuat={() => toast(`Đã xuất ${rowsLoc.length} phiếu ra Excel`)} />
+              <button type="button" className="btn pri" disabled={Boolean(viec && !viec.xong)} onClick={() => setHop('tao')}>Tạo xuất kho định lượng</button>
             </div>
           </div>
+          {viec && (
+            <div className={`xdl-tien-trinh${viec.xong ? ' xong' : ''}`} role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={viec.pt}>
+              <div className="xdl-tt-chu">
+                <b>{viec.xong ? 'Hoàn thành tạo xuất kho định lượng.' : `${viec.ten}…`}</b>
+                <span>{viec.pt >= 100 ? viec.mon.length : Math.floor(viec.pt / 100 * viec.mon.length)}/{viec.mon.length} món · {viec.pt}%</span>
+                {viec.xong && <button type="button" className="btn sm" onClick={() => setViec(null)}>Đóng</button>}
+              </div>
+              <div className="xdl-tt-thanh"><i style={{ width: `${viec.pt}%` }} /></div>
+              {!viec.xong && <div className="xdl-tt-mon">Đang xử lý món {viec.mon[Math.min(viec.mon.length - 1, Math.floor(viec.pt / 100 * viec.mon.length))] ?? ''}</div>}
+              <div className="xdl-tt-dk">{viec.dieuKien.map(([k, v]) => <span key={k}>{k}: <b>{v}</b></span>)}</div>
+            </div>
+          )}
+          {dsThieu.length > 0 && (
+            <button type="button" className="xdl-canh-bao xdl-canh-bao-nut" aria-haspopup="dialog" onClick={() => setHop('thieu')}>
+              <Icon n="alert" className="ic sm" />
+              <span>Có <b>{dsThieu.length}</b> món chưa tạo xuất kho định lượng.</span>
+              <Icon n="chevr" className="ic sm" />
+            </button>
+          )}
           <Table
             cols={cols}
             rows={rowsBang}
@@ -199,6 +237,8 @@ function DanhSachXuatDinhLuong({ sc, mod, rows }: ScreenProps & { rows: PhieuXdl
           <PhanTrang trang={trang} tong={rowsLoc.length} coTrang={coTrang} onTrang={setTrang} onCoTrang={ct => { setCoTrang(ct); setTrang(1) }} />
         </section>
       </div>
+      {hop === 'thieu' && <HopMonThieu ds={dsThieu} goi={s.goi} onDong={() => setHop('')} />}
+      {hop === 'tao' && <HopTaoXdl rows={rowsCh} dsCn={dsCn} cnCoDinh={cnChon?.ten} khoangMd={ap.thoiGian} onDong={() => setHop('')} onTao={v => setViec({ ...v, pt: 0, xong: false, ketQua: '' })} />}
     </div>
   )
 }

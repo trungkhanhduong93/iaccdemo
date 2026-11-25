@@ -1,8 +1,8 @@
 // Dữ liệu Xuất kho định lượng (T849): sinh phiếu từ chứng từ Xuất bán POS (FABi),
 // kéo nguyên vật liệu theo công thức chế biến và giá vốn bình quân.
 // File dữ liệu: không import index.ts (BAY.md, vòng import)
-import { useMemo } from 'react'
-import { DAILY, cnTen } from '../../data/mock'
+import { useMemo, useSyncExternalStore } from 'react'
+import { DAILY, HANG, cnTen } from '../../data/mock'
 import { dmy, pad } from '../../ui/format'
 import { docNgay } from '../../ui/ChonNgay'
 import { donPosCua, dongCuaPhieu, soFabi, soXb, theoDon } from '../ban-hang/ChungTuBanHang'
@@ -34,6 +34,7 @@ export interface DongMonXdl {
   ctId?: string      // id công thức để mở màn Công thức chế biến (T908)
   maFabi?: string    // mã món FABi khi khác mã danh mục
   lyDo?: LyDoXdl     // món không trừ được NVL
+  choBoSung?: boolean   // đã có công thức nhưng chưa xuất bổ sung (T935)
   coCongThuc: boolean
   tienVon: number
   nvl: DongNvlXdl[]
@@ -57,19 +58,93 @@ export interface PhieuXdl {
   nguon: 'Xuất bán POS' | 'Xuất bán hàng'   // phiếu bán hàng thủ công sau này ghi "Xuất bán hàng" (T915)
   tong: number
   dong: DongMonXdl[]
+  lichSu: LsXdl[]    // lịch sử xuất bổ sung, tạo lại (T935)
 }
+
+export interface LsXdl { t: string; nguoi: string; nd: string }
 
 /** Dữ liệu mẫu (T907): FABi gửi mã món riêng chưa khớp danh mục hàng, để thấy lý do "chưa khớp mã hàng" */
 const MA_FABI: Record<string, string> = { GOI01: 'GOICUON-TT' }
 
+/* ── Trạng thái giả của thao tác Tạo xuất kho định lượng (T935): bổ sung món thiếu, tạo lại toàn bộ ──
+   Dữ liệu phiếu sinh lại từ công thức mỗi lần vẽ, nên ghi nhớ riêng: món lỗi lúc đầu, món đã bổ sung, số phiếu mới sau khi tạo lại, lịch sử. */
+const kho = {
+  ver: 0,
+  loiDau: null as Set<string> | null,     // khoá `${id}|${mã món}` món lỗi lý do 1 đến 4 lúc mở màn
+  daBoSung: new Set<string>(),
+  soMoi: new Map<string, string>(),
+  ls: new Map<string, LsXdl[]>(),
+  soTiep: 0,
+}
+const nguoiNghe = new Set<() => void>()
+const phat = () => { kho.ver++; nguoiNghe.forEach(f => f()) }
+const useVerXdl = () => useSyncExternalStore(f => { nguoiNghe.add(f); return () => { nguoiNghe.delete(f) } }, () => kho.ver)
+const bayGio = () => { const d = new Date(); return `${dmy(d)} ${pad(d.getHours())}:${pad(d.getMinutes())}` }
+const khoa = (id: string, ma: string) => `${id}|${ma}`
+
+export interface MonThieuXdl { ma: string; ten: string; dvt: string; cn: string[]; soPhieu: number; coCongThuc: boolean; loai: LyDoXdl['loai']; lyDo: string }
+
+/** Hàng chuyển bán có theo dõi tồn kho đã xuất kho ngay tại phiếu bán hàng, không cảnh báo thiếu xuất kho định lượng */
+const theoDoiTon = (ma: string) => Boolean(HANG.find(h => h.ma === ma)?.tonKho)
+
+/** Món chưa tạo xuất kho định lượng (lý do 1 đến 4, cộng món vừa có công thức chờ xuất bổ sung), gộp theo mã món.
+ *  Chỉ thành phẩm không theo dõi tồn kho. */
+export function monThieuXdl(rows: PhieuXdl[]): MonThieuXdl[] {
+  const mp = new Map<string, MonThieuXdl>()
+  for (const p of rows) for (const m of p.dong) {
+    if (theoDoiTon(m.ma)) continue
+    if (!m.choBoSung && !(m.lyDo && m.lyDo.loai <= 4)) continue
+    const o = mp.get(m.ma) ?? { ma: m.ma, ten: m.ten, dvt: m.dvt, cn: [], soPhieu: 0, coCongThuc: true, loai: m.lyDo?.loai ?? 1, lyDo: m.lyDo?.text ?? '' }
+    if (!o.cn.includes(p.cn)) o.cn.push(p.cn)
+    o.soPhieu++
+    if (!m.choBoSung) { o.coCongThuc = false; o.loai = m.lyDo!.loai; o.lyDo = m.lyDo!.text }
+    mp.set(m.ma, o)
+  }
+  return [...mp.values()].sort((a, b) => a.ma.localeCompare(b.ma))
+}
+
+/** Phiếu đã được tạo lại toàn bộ: dải cảnh báo chỉ tính món còn sót ở các phiếu này sau khi tạo lại */
+export const daTaoLaiXdl = (id: string) => kho.soMoi.has(id)
+
+/** Xuất bổ sung: chỉ món thiếu đã có công thức, ghi tiếp vào phiếu cũ. Trả số phiếu được bổ sung. */
+export function xuatBoSungXdl(rows: PhieuXdl[], maMon: string[]): number {
+  let n = 0
+  for (const p of rows) {
+    const them = p.dong.filter(m => m.choBoSung && maMon.includes(m.ma))
+    if (!them.length) continue
+    them.forEach(m => kho.daBoSung.add(khoa(p.id, m.ma)))
+    kho.ls.set(p.id, [...(kho.ls.get(p.id) ?? []), { t: bayGio(), nguoi: 'Người dùng', nd: `Xuất bổ sung món: ${them.map(m => m.ten).join(', ')}` }])
+    n++
+  }
+  if (n) phat()
+  return n
+}
+
+/** Phiếu bị xoá và tạo lại: phiếu trong phạm vi có chứa một trong các món đã chọn */
+export const phieuTaoLaiXdl = (rows: PhieuXdl[], maMon: string[], tatCa = false) => (tatCa ? rows : rows.filter(p => p.dong.some(m => maMon.includes(m.ma))))
+
+/** Tạo lại toàn bộ: xoá phiếu cũ, tạo phiếu mới cùng đơn POS, số phiếu cấp lại. Trả số phiếu tạo lại. */
+export function taoLaiXdl(rows: PhieuXdl[], maMon: string[], tatCa = false): number {
+  const ds = phieuTaoLaiXdl(rows, maMon, tatCa)
+  for (const p of ds) {
+    const so = `XDL${String(p.date.getFullYear()).slice(2)}${pad(p.date.getMonth() + 1)}-${pad(kho.soTiep++, 4)}`
+    kho.soMoi.set(p.id, so)
+    p.dong.filter(m => m.choBoSung).forEach(m => kho.daBoSung.add(khoa(p.id, m.ma)))
+    kho.ls.set(p.id, [{ t: bayGio(), nguoi: 'Hệ thống', nd: `Tạo mới xuất kho định lượng do tạo lại toàn bộ, thay phiếu ${p.so}` }])
+  }
+  if (ds.length) phat()
+  return ds.length
+}
+
 /** Sinh danh sách phiếu Xuất kho định lượng từ Xuất bán POS */
 export function useDsPhieuXdl(): PhieuXdl[] {
   const verGiaVon = useGiaVonBq()   // tự động vẽ lại khi vừa tính giá vốn xong (5.1.7)
+  const verXdl = useVerXdl()        // vẽ lại khi bổ sung hoặc tạo lại (T935)
 
   return useMemo(() => {
     const posList = DAILY.filter(x => x.date.getMonth() >= 8).slice().reverse().flatMap(x => theoDon(x).reverse())
 
-    return posList.map((p, idx): PhieuXdl => {
+    const goc = posList.map((p, idx): PhieuXdl => {
       const posId = String(idx)
       const posSo = soXb(p.seed)   // tham chiếu ghi số chứng từ XB của phiếu bán (T897)
       const yy = String(p.date.getFullYear()).slice(2)
@@ -130,7 +205,28 @@ export function useDsPhieuXdl(): PhieuXdl[] {
         nguon: 'Xuất bán POS',
         tong,
         dong,
+        lichSu: [],
       }
     })
-  }, [verGiaVon])
+
+    // Chụp danh sách món lỗi lúc đầu, rồi áp trạng thái bổ sung, tạo lại
+    if (!kho.loiDau) {
+      kho.loiDau = new Set(goc.flatMap(p => p.dong.filter(m => m.lyDo && m.lyDo.loai <= 4).map(m => khoa(p.id, m.ma))))
+      kho.soTiep = goc.length + 1
+    }
+    const loiDau = kho.loiDau
+    return goc.map(p => {
+      const dong = p.dong.map(m => {
+        const k = khoa(p.id, m.ma)
+        if (!loiDau.has(k) || kho.daBoSung.has(k) || !m.coCongThuc) return m
+        return { ...m, coCongThuc: false, tienVon: 0, nvl: [], choBoSung: true, lyDo: { loai: 1 as const, text: 'Đã có công thức, chờ xuất bổ sung' } }
+      })
+      return {
+        ...p, dong,
+        so: kho.soMoi.get(p.id) ?? p.so,
+        tong: dong.reduce((sum, m) => sum + m.tienVon, 0),
+        lichSu: [{ t: p.ngayTao, nguoi: p.nguoiTao, nd: `Tạo mới phiếu xuất kho định lượng từ ${p.posSo}` }, ...(kho.ls.get(p.id) ?? [])],
+      }
+    })
+  }, [verGiaVon, verXdl])
 }

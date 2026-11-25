@@ -34891,7 +34891,7 @@ a.tx-item:hover {
   display: none !important;
 }
 
-/* =========================================================
+/* ==================================================
    1. MB03: DANH SÁCH THU CHI
    ========================================================= */
 .m-tc-man {
@@ -50138,3 +50138,45 @@ td.xdl-cat > span { display: block; overflow: hidden; text-overflow: ellipsis; w
   cursor: pointer;
   padding: 2px 6px;
 }
+/* ── Xuất kho định lượng: dải món thiếu, hộp thoại Tạo xuất kho định lượng (T935) ── */
+.xdl-canh-bao-nut { width: 100%; border: 0; text-align: left; cursor: pointer; font-weight: 500; gap: 10px; flex-wrap: nowrap; }
+.xdl-canh-bao-nut > span { flex: 1; min-width: 0; font-weight: 500; }
+.xdl-phu { position: fixed; inset: 0; z-index: 70; display: flex; align-items: center; justify-content: center; padding: 16px; background: rgba(14, 26, 43, .45); }
+.xdl-hop { background: var(--white); border-radius: var(--r); width: 100%; max-height: 100%; display: flex; flex-direction: column; box-shadow: var(--sh-lg); }
+.xdl-hop-d { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border-bottom: 1px solid var(--line); color: var(--ink); font-size: 16px; }
+.xdl-hop-t { padding: 14px 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; min-height: 0; }
+.xdl-hop-c { padding: 12px 16px; border-top: 1px solid var(--line); display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; }
+.xdl-hop-bang { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--r-sm); }
+.xdl-che { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.xdl-che label { display: flex; align-items: center; gap: 8px; padding: 10px; border: 1px solid var(--line); border-radius: var(--r-sm); cursor: pointer; font-weight: 600; color: var(--ink); }
+.xdl-che label.on { border-color: var(--blue); background: var(--tint); }
+.xdl-luoi3 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.xdl-o { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.xdl-o > span { font-size: 12.5px; font-weight: 600; color: var(--ink); }
+.xdl-chon { justify-content: space-between; width: 100%; }
+.xdl-ds-mon { margin-top: 6px; border: 1px solid var(--line); border-radius: var(--r-sm); max-height: 220px; overflow-y: auto; }
+.xdl-ds-mon label { display: flex; align-items: center; gap: 8px; padding: 7px 10px; border-bottom: 1px solid var(--line); cursor: pointer; }
+.xdl-ds-mon label:last-child { border-bottom: 0; }
+.xdl-ds-mon label.dau { position: sticky; top: 0; background: var(--th); font-weight: 600; color: var(--ink); }
+.xdl-trong { padding: 12px; text-align: center; }
+.xdl-xoa { display: flex; gap: 10px; padding: 12px; border-radius: var(--r-sm); background: var(--red-t); color: var(--red); line-height: 1.5; }
+.xdl-nut-xoa { background: var(--red); border-color: var(--red); color: #fff; }
+@media (max-width: 560px) { .xdl-che, .xdl-luoi3 { grid-template-columns: 1fr; } }
+.xdl-hop-bang .tbl th, .xdl-hop-bang .tbl td { padding: 8px 12px; text-align: left; white-space: nowrap; }
+.xdl-hop-bang .tbl td:nth-child(4), .xdl-hop-bang .tbl td:nth-child(5) { white-space: normal; min-width: 160px; }
+.xdl-xoa p, .xdl-hoi p { margin: 0; }
+.xdl-xoa p + p, .xdl-hoi p + p { margin-top: 6px; }
+.xdl-hoi { display: flex; gap: 10px; padding: 12px; border-radius: var(--r-sm); background: var(--amber-t); color: var(--amber); line-height: 1.5; }
+.xdl-hoi b { color: var(--ink); }
+.xdl-tien-trinh { padding: 10px 14px; background: var(--tint); border-bottom: 1px solid var(--line); color: var(--ink); }
+.xdl-tt-chu { display: flex; justify-content: space-between; gap: 12px; font-size: 13px; margin-bottom: 6px; }
+.xdl-tt-chu b { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.xdl-tt-thanh { height: 6px; border-radius: 999px; background: var(--line); overflow: hidden; }
+.xdl-tt-thanh i { display: block; height: 100%; background: var(--blue); border-radius: 999px; transition: width .25s linear; }
+.xdl-tien-trinh.xong { background: var(--green-t); }
+.xdl-tien-trinh.xong .xdl-tt-thanh i { background: var(--green); }
+.xdl-tt-chu b { white-space: normal; }
+.xdl-tt-chu span { margin-left: auto; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.xdl-tt-mon { margin-top: 6px; font-size: 12.5px; }
+.xdl-tt-dk { display: flex; flex-wrap: wrap; gap: 4px 16px; margin-top: 6px; font-size: 12px; color: var(--muted); }
+.xdl-tt-dk b { color: var(--ink); font-weight: 600; }
