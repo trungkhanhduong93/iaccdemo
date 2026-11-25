@@ -495,24 +495,17 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
       if (isNk) return null
       return (
         <div className="m-tc-tabs" role="tablist">
-          <button
-            type="button"
-            role="tab"
-            aria-selected={isNk}
-            className={`m-tc-tab-btn${isNk ? ' on' : ''}`}
-            onClick={() => nav('/app/kho/5-1-1')}
-          >
-            Nhập kho
-          </button>
-          <button
-            type="button"
-            role="tab"
-            aria-selected={isXk}
-            className={`m-tc-tab-btn${isXk ? ' on' : ''}`}
-            onClick={() => nav('/app/kho/5-1-2-4')}
-          >
-            Xuất khác
-          </button>
+          {/* Xuất khác, Xuất huỷ mở từ menu: chỉ tab của chính nó, không lẫn tab khác */}
+          {isXk && (
+            <button
+              type="button"
+              role="tab"
+              aria-selected={true}
+              className="m-tc-tab-btn on"
+            >
+              Xuất khác
+            </button>
+          )}
           {isXh && (
             <button
               type="button"

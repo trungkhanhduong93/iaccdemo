@@ -63,6 +63,8 @@ function layTieuDe(pathname: string, search = '', s?: Session): string {
   // Tiêu đề theo tab: Nhập kho, Xuất khác (T824)
   if (modKey === 'kho' && slug === '5-1-1') return 'Nhập kho'
   if (modKey === 'kho' && slug === '5-1-2-4') return 'Xuất khác'
+  if (modKey === 'kho' && slug === '5-1-2-3') return 'Xuất huỷ'
+  if (modKey === 'kho' && slug === '5-1-10' && parts.length === 3) return 'Kiểm kê'
   if (modKey === 'ccdc' && slug === '8-1-1') return 'Chi phí chờ phân bổ'
   // Gói Plus: mục Bán hàng là chứng từ lập tay của 3.1.1 (?tay=1, xem, lập theo mã chứng từ); danh sách FABi vẫn là Xuất bán POS (T831)
   if (modKey === 'ban-hang' && slug === '3-1-1' && s?.goi === 'PL' && (parts.length > 3 || new URLSearchParams(search).get('tay') === '1')) return 'Bán hàng'
