@@ -11,7 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T940 | Danh mục không xoá được mã đã tạo: bỏ nút Xoá ở Lý do nghiệp vụ; Bảng giá thêm trạng thái Đang sử dụng, bỏ Xoá bảng giá (web, điện thoại) | Trum | Đang làm | `truong-dm.ts`, `ThemBangGia.tsx`, `MBangGia.tsx`, `app.css` |
 | T939 | Thiết kế dashboard nhà hàng (Trang chủ kế toán): 4 thẻ KPI, doanh thu và biên LN gộp theo kênh, chi phí NVL so với định mức, hao hụt NVL, công nợ, thu chi 13 tháng, kết quả theo cửa hàng. Hai bản mockup HTML | dinhlanphuongipacc | Đang làm | Chỉ thêm 2 file thiết kế `docs/thiet-ke/T939-dashboard-nha-hang-v1.html`, `...-v2.html`, chưa sửa code. Dùng định mức NVL, hao hụt của T938 |
 | T938 | Danh mục cửa hàng thêm định mức chi phí NVL (% doanh thu), định mức hao hụt (%) theo cửa hàng, nhập ở bảng và hộp chi tiết, có nút Lưu | dinhlanphuongipacc | Xong | Chưa nơi nào dùng hai định mức để tính. File: `DanhMucCuaHang.tsx` (cùng file T333), `dinh-muc-cua-hang.tsx`, `session.tsx`, cuối `app.css` |
 | T933 | `tools/kiem_tra.py` mục T870/T871 (Thẻ kho máy tính) chờ `.bc-ban-du-lieu table.tbl` quá 8 giây, làm `--nhanh` dừng giữa chừng. Hỏng cả trên `main` trước T929–T931 | | Chờ | Ghi lúc làm T929–T931 (25/11). `tools/kiem_tra.py:5557`. Xem màn Thẻ kho còn ra bảng không, sửa màn hoặc sửa bộ chọn |

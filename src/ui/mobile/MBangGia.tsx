@@ -126,9 +126,6 @@ export const MBangGia: FC<ScreenProps> = ({ sc, mod }) => {
     })
   }, [theoTab, q])
 
-  // ── State Màn Chi tiết ──
-  const [hoiXoa, setHoiXoa] = useState(false)
-
   // ── State Màn Thêm / Sửa ──
   const [formLoai, setFormLoai] = useState<LoaiGia>('Giá mua')
   const [formTen, setFormTen] = useState('')
@@ -137,6 +134,7 @@ export const MBangGia: FC<ScreenProps> = ({ sc, mod }) => {
   const [formDt, setFormDt] = useState('')
   const [formTuNgay, setFormTuNgay] = useState('')
   const [formDenNgay, setFormDenNgay] = useState('')
+  const [formTt, setFormTt] = useState(1)
   const [formDong, setFormDong] = useState<DongGia[]>([])
   const [hangThem, setHangThem] = useState<HangGia[]>([])
 
@@ -170,6 +168,7 @@ export const MBangGia: FC<ScreenProps> = ({ sc, mod }) => {
       const homNay = new Date(HOM_NAY.getFullYear(), HOM_NAY.getMonth(), HOM_NAY.getDate())
       setFormTuNgay(dmy(homNay))
       setFormDenNgay(dmy(new Date(homNay.getFullYear() + 1, homNay.getMonth(), homNay.getDate() - 1)))
+      setFormTt(1)
       setFormDong([])
       setHangThem([])
     } else if (laSua && dangXem) {
@@ -178,6 +177,7 @@ export const MBangGia: FC<ScreenProps> = ({ sc, mod }) => {
       setFormCuaHang(tachCh(dangXem.cuaHang))
       setFormRieng(Boolean(dangXem.dtMa))
       setFormDt(dangXem.dtMa)
+      setFormTt(dangXem._tt)
       const kn = docKhoang(dangXem.thoiGian)
       if (kn) {
         setFormTuNgay(dmy(kn.tu))
@@ -429,7 +429,7 @@ export const MBangGia: FC<ScreenProps> = ({ sc, mod }) => {
         vat: docSoQT(d.vat),
         ghiChu: d.ghiChu?.trim(),
       })),
-      laSua && dangXem ? dangXem._tt : 1,
+      formTt,
     )
 
     thayNhomCatalogRows(DM, r => r.soBg === soBg, rows)
@@ -610,6 +610,18 @@ export const MBangGia: FC<ScreenProps> = ({ sc, mod }) => {
                 <div className="gt m-ct-gt">{formDenNgay}</div>
                 <Icon n="calendar" className="xuong" />
               </button>
+            </div>
+
+            <div className="f">
+              <label className="row pn-tich">
+                <input
+                  type="checkbox"
+                  className="bat-tat"
+                  checked={formTt !== 0}
+                  onChange={e => setFormTt(e.target.checked ? 1 : 0)}
+                />
+                <span>Đang sử dụng</span>
+              </label>
             </div>
           </div>
 
@@ -1033,6 +1045,10 @@ export const MBangGia: FC<ScreenProps> = ({ sc, mod }) => {
               <span>Thời gian áp dụng</span>
               <b>{dangXem.thoiGian}</b>
             </div>
+            <div className="m-ct-tt-dong">
+              <span>Trạng thái</span>
+              <b>{dangXem._tt === 0 ? 'Ngừng sử dụng' : 'Đang sử dụng'}</b>
+            </div>
           </div>
 
           {/* Chi tiết giá */}
@@ -1083,15 +1099,8 @@ export const MBangGia: FC<ScreenProps> = ({ sc, mod }) => {
           </div>
         </div>
 
-        {/* Đáy cố định: Xoá & Sửa */}
+        {/* Đáy cố định: Sửa */}
         <div className="m-ct-day">
-          <button
-            type="button"
-            className="m-ct-btn phu m-btn-xoa"
-            onClick={() => setHoiXoa(true)}
-          >
-            Xoá bảng giá
-          </button>
           <button
             type="button"
             className="m-ct-btn pri"
@@ -1100,31 +1109,6 @@ export const MBangGia: FC<ScreenProps> = ({ sc, mod }) => {
             Sửa
           </button>
         </div>
-
-        {/* Hộp xác nhận xoá */}
-        {hoiXoa && (
-          <ThongBao
-            loai="xoa"
-            nhan="Xoá bảng giá"
-            tieuDe={`Xoá bảng giá ${dangXem.soBg}?`}
-            duKien={[
-              { nhan: 'Tên bảng giá', gt: dangXem.tenBg },
-              { nhan: 'Số mặt hàng', gt: `${dangXem.dong.length} dòng` },
-              { nhan: 'Áp dụng', gt: dangXem.thoiGian },
-            ]}
-            moTa="Xoá xong không lấy lại được. Phiếu lập trong khoảng ngày này không còn lấy giá từ bảng này."
-            onDong={() => setHoiXoa(false)}
-            nut={{
-              ten: 'Xoá bảng giá',
-              onClick: () => {
-                thayNhomCatalogRows(DM, r => r.soBg === dangXem.soBg, [])
-                toast(`Đã xoá bảng giá ${dangXem.soBg}`)
-                setHoiXoa(false)
-                quayLaiMobile(nav, path)
-              },
-            }}
-          />
-        )}
       </div>
     )
   }

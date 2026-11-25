@@ -1258,3 +1258,11 @@ Trum chốt 23/11/2026 (T902). Bản vẽ `backup/mau-T902/ban-ve.html`, spec `b
 Lý do: không có phiếu kiểm kê thì không có số chi phí đúng. Phiếu chốt để lại dấu vết ai chốt, lúc nào, và giữ một nguồn tồn cuối duy nhất là phiếu kiểm kê.
 
 ## QD116. Khuôn phiếu điện thoại cho phiếu không thanh toán (đang soạn)
+
+## QD117. Danh mục không xoá mã đã tạo (25/11/2026)
+
+Trum chốt khi làm T940.
+
+- Mã danh mục đã tạo không xoá được. Ngừng dùng thì tắt Đang sử dụng.
+- Áp cho mọi danh mục, web và điện thoại. Lý do nghiệp vụ, Bảng giá bỏ nút Xoá, Bảng giá thêm công tắc Đang sử dụng.
+- Thẻ chi phí phân bổ là thẻ, không thuộc luật này.

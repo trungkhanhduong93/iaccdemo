@@ -118,6 +118,7 @@ export function ThemBangGia({ onDong, tab, sua: dongSua }: { onDong: () => void;
   const [dongCu] = useState(() => soBgGoc ? tatCa.filter(r => r.soBg === soBgGoc) : [])
   const dau: Row | undefined = dongCu[0] ?? dongSua
   const [ten, setTen] = useState(String(dau?.tenBg ?? ''))
+  const [tt, setTt] = useState(() => (maSua ? Number(dau?._tt ?? 1) : 1))
   const [hoiTrung, setHoiTrung] = useState<{ ds: { hang: string; bg: string; ad: string }[]; soHang: number; themTiep: boolean } | null>(null)
   const homNay = new Date(HOM_NAY.getFullYear(), HOM_NAY.getMonth(), HOM_NAY.getDate())
   const [loai, setLoai] = useState<LoaiGia>(dau ? (dau.loai === 'Giá bán' ? 'Giá bán' : 'Giá mua') : tab === 'Giá bán' ? 'Giá bán' : 'Giá mua')   // mở theo tab đang xem (T724)
@@ -139,9 +140,8 @@ export function ThemBangGia({ onDong, tab, sua: dongSua }: { onDong: () => void;
   const [loi, setLoi] = useState<Set<number>>(new Set())
   // Bảng giá có sẵn mở ở chế độ xem; Sửa lưu ảnh trạng thái để Huỷ trả lại như cũ
   const [dangSua, setDangSua] = useState(!soBgGoc)
-  const [anhCu, setAnhCu] = useState<{ ten: string; tuNgay: string; denNgay: string; cuaHang: string[]; dt: string; rieng: boolean; dong: DongGia[] } | null>(null)
+  const [anhCu, setAnhCu] = useState<{ ten: string; tuNgay: string; denNgay: string; cuaHang: string[]; dt: string; rieng: boolean; tt: number; dong: DongGia[] } | null>(null)
   const [moHangLoat, setMoHangLoat] = useState(false)
-  const [hoiXoa, setHoiXoa] = useState(false)
   // Lọc dòng chi tiết giá như bảng chi tiết phiếu mua hàng (T383): bấm phễu hiện hàng ô lọc dưới tiêu đề cột, tắt phễu thì bỏ lọc
   const [moLoc, setMoLoc] = useState(false)
   const [gtLoc, setGtLoc] = useState<Record<string, GiaTriLoc>>({})
@@ -242,26 +242,27 @@ export function ThemBangGia({ onDong, tab, sua: dongSua }: { onDong: () => void;
     }
     const thoiGian = `${dmy(khoang.tu)} - ${dmy(khoang.den)}`
     const rows = bangGia(soBg, ten.trim(), loai, thoiGian, cuaHang.join(', '), maDt,
-      dongDien.map(d => ({ ma: d.ma, ten: hangCua(d.ma)?.ten, dvt: d.dvt || hangCua(d.ma)?.dvt || '', gia: docSoQT(d.gia), vat: docSoQT(d.vat), ghiChu: d.ghiChu?.trim() })), maSua ? (dau?._tt ?? 1) : 1)
+      dongDien.map(d => ({ ma: d.ma, ten: hangCua(d.ma)?.ten, dvt: d.dvt || hangCua(d.ma)?.dvt || '', gia: docSoQT(d.gia), vat: docSoQT(d.vat), ghiChu: d.ghiChu?.trim() })), tt)
     thayNhomCatalogRows(DM, r => r.soBg === soBg, rows)   // thêm mới: chưa có dòng nào cùng mã nên thêm vào cuối
     toast(`Đã lưu bảng giá ${soBg} (${dongDien.length} dòng), áp dụng cho ${maDt ? tenDtCua(maDt) : `mọi ${nhanDt}`}`)
     // Lưu: như phiếu thu chi, về chế độ xem bảng giá vừa lưu, bỏ dòng trống
     if (!themTiep) { setMaSua(soBg); setDong(dongDien); setLoi(new Set()); setAnhCu(null); setDangSua(false); return }
     // Lưu và thêm mới: giữ loại, thời gian, cửa hàng, đối tượng; xoá tên và lưới
-    setMaSua(''); setTen(''); setDong([dongMoi(), dongMoi(), dongMoi()]); setLoi(new Set()); setGtLoc({})
+    setMaSua(''); setTen(''); setTt(1); setDong([dongMoi(), dongMoi(), dongMoi()]); setLoi(new Set()); setGtLoc({})
   }
 
-  const batSua = () => { setAnhCu({ ten, tuNgay, denNgay, cuaHang, dt, rieng, dong }); setDangSua(true) }
+  const batSua = () => { setAnhCu({ ten, tuNgay, denNgay, cuaHang, dt, rieng, tt, dong }); setDangSua(true) }
   const huySua = () => {
     if (!maSua) { onDong(); return }   // thêm mới: Huỷ là đóng form
-    if (anhCu) { setTen(anhCu.ten); setTuNgay(anhCu.tuNgay); setDenNgay(anhCu.denNgay); setCuaHang(anhCu.cuaHang); setDt(anhCu.dt); setRieng(anhCu.rieng); setDong(anhCu.dong) }
+    if (anhCu) { setTen(anhCu.ten); setTuNgay(anhCu.tuNgay); setDenNgay(anhCu.denNgay); setCuaHang(anhCu.cuaHang); setDt(anhCu.dt); setRieng(anhCu.rieng); setTt(anhCu.tt); setDong(anhCu.dong) }
     setLoi(new Set()); setAnhCu(null); setDangSua(false)
   }
   // Sao chép: mở form thêm mới điền sẵn như bảng giá đang xem, số mới sinh khi lưu
   const saoChep = () => {
-    setMaSua(''); setTen(`${ten} (bản sao)`); setDong(dong.map(d => ({ ...d, key: ++soKhoa }))); setAnhCu(null); setDangSua(true)
+    setMaSua(''); setTen(`${ten} (bản sao)`); setTt(1); setDong(dong.map(d => ({ ...d, key: ++soKhoa }))); setAnhCu(null); setDangSua(true)
   }
   const xem = !dangSua
+  const bat = tt !== 0
 
   const dsMucDt = dsDt.map(n => ({ v: n.ma, t: n.ten, phu: `Mã: ${n.ma}${n.nhom ? ` · ${n.nhom}` : ''}` }))
   const dsMucHang = dsHang.map(h => ({ v: h.ma, t: `${h.ma} - ${h.ten}`, dvt: h.dvt }))
@@ -284,10 +285,7 @@ export function ThemBangGia({ onDong, tab, sua: dongSua }: { onDong: () => void;
           <div className="xp-footer-trai">
             <Dropdown btnClass="xp-btn-outline" align="start" width={200} label={<><span>Tiện ích</span><Icon n="chevd" className="ic sm" /></>}>
               {dongMenu => (
-                <>
-                  <MenuItem icon="copy" onClick={() => { dongMenu(); saoChep() }}>Sao chép</MenuItem>
-                  <MenuItem icon="trash" danger onClick={() => { dongMenu(); setHoiXoa(true) }}>Xoá bảng giá</MenuItem>
-                </>
+                <MenuItem icon="copy" onClick={() => { dongMenu(); saoChep() }}>Sao chép</MenuItem>
               )}
             </Dropdown>
           </div>
@@ -352,6 +350,18 @@ export function ThemBangGia({ onDong, tab, sua: dongSua }: { onDong: () => void;
               <ONgay value={tuNgay} onChange={setTuNgay} placeholder="Từ ngày" ariaLabel="Áp dụng từ ngày" disabled={xem} readOnly={xem} />
               <span aria-hidden="true">–</span>
               <ONgay value={denNgay} onChange={setDenNgay} placeholder="Đến ngày" ariaLabel="Áp dụng đến ngày" disabled={xem} readOnly={xem} />
+            </div>
+          </div>
+          <div className="bg-dau-o">
+            <label className="bg-nhan" htmlFor="bgf-tt">Trạng thái</label>
+            <div className="row">
+              <button id="bgf-tt" type="button" role="switch" aria-checked={bat}
+                aria-label={bat ? 'Đang sử dụng' : 'Ngừng sử dụng'}
+                title={bat ? 'Đang sử dụng' : 'Ngừng sử dụng'}
+                disabled={xem}
+                className={`ds-ct pn-cong-tac${bat ? ' on' : ''}`}
+                onClick={() => setTt(bat ? 0 : 1)}><i /></button>
+              <label htmlFor="bgf-tt">Đang sử dụng</label>
             </div>
           </div>
         </fieldset>
@@ -445,13 +455,6 @@ export function ThemBangGia({ onDong, tab, sua: dongSua }: { onDong: () => void;
 
       </div>
 
-      {hoiXoa && maSua && (
-        <ThongBao loai="xoa" nhan="Xoá bảng giá" tieuDe={`Xoá bảng giá ${maSua}?`}
-          duKien={[{ nhan: 'Tên bảng giá', gt: ten }, { nhan: 'Số mặt hàng', gt: `${dongDien.length} dòng` }, { nhan: 'Áp dụng', gt: `${tuNgay} - ${denNgay}` }]}
-          moTa={`Xoá xong không lấy lại được. ${laMua ? 'Phiếu mua' : 'Phiếu bán'} lập sau đó không lấy giá từ bảng này nữa.`}
-          onDong={() => setHoiXoa(false)}
-          nut={{ ten: 'Xoá bảng giá', onClick: () => { thayNhomCatalogRows(DM, r => r.soBg === maSua, []); toast(`Đã xoá bảng giá ${maSua}`); onDong() } }} />
-      )}
       {hoiTrung && (
         <ThongBao loai="canhBao" nhan="Trùng giá" tieuDe={`${hoiTrung.soHang} mặt hàng đã có giá ở bảng giá khác`}
           moTa={`Cùng ${rieng ? nhanDt : `giá chung cho mọi ${nhanDt}`}, cùng ĐVT, thời gian và cửa hàng giao nhau. Vẫn lưu được. Ngày nào hai bảng cùng áp thì bảng bắt đầu muộn hơn được dùng.`}

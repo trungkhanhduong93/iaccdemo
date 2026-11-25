@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 25/11/2026
+- T940: Lý do nghiệp vụ, Bảng giá không còn nút Xoá. Muốn ngừng dùng thì tắt Đang sử dụng. Form Bảng giá web có công tắc Trạng thái, điện thoại có ô Đang sử dụng và dòng Trạng thái khi xem.
 - T937: Gói Standard, Cấu hình kế toán không còn bật tắt Giảm thuế GTGT. Giảm thuế theo cấu hình trên FABi; gói Plus, Pro mới tự chọn nghị quyết, % giảm, hiệu lực.
 - T938: Gói Plus, Pro: Danh mục cửa hàng thêm cột Định mức chi phí NVL (%) và Định mức hao hụt (%) theo từng cửa hàng, nhập ở bảng hoặc trong hộp Chi tiết cửa hàng (có nút Lưu).
 - Điện thoại: menu Nghiệp vụ tách Thu chi thành Thu tiền, Chi tiền, Chuyển quỹ. Thu tiền, Chi tiền có tab Tất cả, Tiền mặt, Ngân hàng, Báo cáo; Chuyển quỹ hiện thẳng danh sách chuyển quỹ và tab Báo cáo.

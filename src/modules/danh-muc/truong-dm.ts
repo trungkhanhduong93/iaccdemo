@@ -750,7 +750,7 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
     chiSua: ['chiPhi', 'phanBo', 'nhomCp'],   // lý do có sẵn không sửa, chỉ tích Là chi phí (T334), Chi phí phân bổ nhiều kỳ (T700) và chọn lại nhóm lý do (T473)
     chiSuaKhi: v => v.nguon === 'FABi',      // chỉ lý do nguồn FABi bị khoá; lý do thủ công sửa được hết (T708)
     moi: () => ({ nguon: 'Thủ công' }),
-    tienIch: { xoa: v => Boolean(v._sua) && v.nguon !== 'FABi' },   // lý do FABi không xoá, lý do thủ công xoá được (T708)
+    // Mã đã tạo không xoá, chỉ tắt Đang sử dụng (T940); trước đây lý do thủ công xoá được (T708)
     khoi: [
       {
         ten: 'Thông tin chung',
