@@ -20,6 +20,13 @@ import icBaoCao from '../../assets/figma/gradient/bao-cao.svg'
 import icKeKhaiThue from '../../assets/figma/gradient/ke-khai-thue.svg'
 import icDanhMuc from '../../assets/figma/gradient/danh-muc.svg'
 
+// Tên nhóm báo cáo trên app: Bán hàng, Mua hàng, Tổng hợp dùng tên ngắn
+const NHOM_TEN_NGAN = new Set(['ban-hang', 'mua-hang', 'tong-hop'])
+function tenNhom(mod: { key: string; ten: string; ngan?: string }): string {
+  if (mod.key === 'so-sach') return mod.ten.replace(' kế toán theo ', ' ')   // Sổ sách TT58
+  return NHOM_TEN_NGAN.has(mod.key) && mod.ngan ? mod.ngan : mod.ten
+}
+
 function layIconNhom(key: string): string {
   switch (key) {
     case 'so-sach':
@@ -238,7 +245,7 @@ export const MBaoCao: FC<ScreenProps> = ({ sc, mod }) => {
             </button>
           )}
           <div className="m-bc-hdr-tieu-de-hang">
-            <h1 className="m-bc-hdr-tieu-de">{nhomDangXem ? nhomDangXem.mod.ten : 'Báo cáo'}</h1>
+            <h1 className="m-bc-hdr-tieu-de">{nhomDangXem ? tenNhom(nhomDangXem.mod) : 'Báo cáo'}</h1>
             <span className="m-bc-hdr-chip-goi">
               {s.goi === 'S' ? 'STANDARD' : GOI[s.goi]?.ten?.toUpperCase() ?? 'STANDARD'}
             </span>
@@ -342,7 +349,7 @@ export const MBaoCao: FC<ScreenProps> = ({ sc, mod }) => {
                   </div>
                   <div className="m-bc-nhom-hdr-info">
                     <div className="m-bc-nhom-hdr-line1">
-                      <h2 className="m-bc-nhom-ten">{nhomDangXem.mod.ten}</h2>
+                      <h2 className="m-bc-nhom-ten">{tenNhom(nhomDangXem.mod)}</h2>
                       <span className="m-bc-nhom-badge">{dsBcTrongNhom.length}</span>
                     </div>
                     <div className="m-bc-nhom-mota">{nhomDangXem.mod.mota ?? `${dsBcTrongNhom.length} báo cáo`}</div>
@@ -441,7 +448,7 @@ export const MBaoCao: FC<ScreenProps> = ({ sc, mod }) => {
                       <img src={iconSvg} alt="" className="m-bc-nhom-the-ic-img" />
                     </div>
                     <div className="m-bc-nhom-the-info">
-                      <div className="m-bc-nhom-the-ten">{g.mod.ten}</div>
+                      <div className="m-bc-nhom-the-ten">{tenNhom(g.mod)}</div>
                       <div className="m-bc-nhom-the-mota">{moTa}</div>
                     </div>
                     <Icon n="chevr" className="ic sm m-bc-nhom-the-chev" />

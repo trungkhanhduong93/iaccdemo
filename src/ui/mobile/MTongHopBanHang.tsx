@@ -216,7 +216,7 @@ export const MTongHopBanHang: FC<MTongHopBanHangProps> = ({ rows, q }) => {
       {/* Tổng ghim đáy màn */}
       <div className="m-bkm-chan">
         <div className="m-bkm-chan-trai">
-          <div className="m-bkm-chan-nhan">Tổng doanh thu thuần</div>
+          <div className="m-bkm-chan-nhan">Tổng cộng</div>
         </div>
         <div className="m-bkm-chan-phai">
           <span className="m-bkm-chan-tien num">{money(tongTien)} đ</span>

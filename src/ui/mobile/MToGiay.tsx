@@ -116,7 +116,8 @@ export const MToGiay: FC<ScreenProps> = ({ sc, mod }) => {
     if (is521) {
       const locKhoList = (locStore?.locKho?.length ? locStore.locKho : (locStore?.kho?.length ? locStore.kho : []))
       const khoStr = params.get('kho') || (locKhoList.length === 1 ? locKhoList[0] : (dsKhoCuaHang[0] || KHO[1]))
-      const maStr = params.get('ma') || HANG_XNT[0].ma
+      const hangLoc = HANG_XNT.find(h => h.ten === locStore?.hang?.[0] || h.ma === locStore?.hang?.[0])
+      const maStr = params.get('ma') || hangLoc?.ma || HANG_XNT[0].ma
       const the = theKho(kyNum, khoStr, maStr)
 
       const tuDate = docNgay(knMobile.tu)
@@ -228,9 +229,11 @@ export const MToGiay: FC<ScreenProps> = ({ sc, mod }) => {
         nhan: 'Kho',
         giaTri: params.get('kho') || (locKhoList.length === 1 ? locKhoList[0] : (dsKhoCuaHang[0] || KHO[1])),
       })
+      const hangChon = HANG_XNT.find(h => h.ten === locStore?.hang?.[0] || h.ma === locStore?.hang?.[0] || h.ma === params.get('ma'))
+      if (hangChon) res.push({ k: 'hang', nhan: 'Hàng', giaTri: hangChon.ten })
     }
     for (const [k, v] of Object.entries(locStore || {})) {
-      if (k === 'ky' || k === 'cuaHang' || k === 'kho' || k === 'locKho') continue
+      if (k === 'ky' || k === 'cuaHang' || k === 'kho' || k === 'locKho' || (is521 && k === 'hang')) continue
       if (Array.isArray(v) && v.length > 0) {
         res.push({ k, nhan: k, giaTri: v.join(', ') })
       }

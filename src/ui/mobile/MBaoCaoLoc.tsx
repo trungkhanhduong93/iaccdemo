@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState, type FC } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import type { ScreenDef } from '../../modules/types'
 import { cuaHangHienTai, dsCuaHang, useSession } from '../../app/session'
 import { CUA_HANG } from '../../data/mock'
+import { HANG_XNT } from '../../modules/kho/data'
 import { CAU_HINH_BC } from '../../modules/bao-cao/danh-sach'
 import {
   datKyNhap,
@@ -47,7 +49,20 @@ export const MBaoCaoLoc: FC<MBaoCaoLocProps> = ({ mo, onDong, path, sc, onApDung
   const [draftTuNgay, setDraftTuNgay] = useState<string>(() => layKhoangNgayMobile(path, daXem?.ky).tu)
   const [draftDenNgay, setDraftDenNgay] = useState<string>(() => layKhoangNgayMobile(path, daXem?.ky).den)
   const [draftCn, setDraftCn] = useState<string>(() => s.cuaHang || 'all')
-  const [draftLoc, setDraftLoc] = useState<Record<string, string[]>>(() => ({ ...(daXem?.loc || {}) }))
+  const [params] = useSearchParams()
+  // Thẻ kho (5.2.1): Kho và Hàng hoá bắt buộc chọn một; mở từ Xuất nhập tồn thì lấy sẵn theo đường dẫn
+  const laTheKho = (sc?.code ?? sc?.slug ?? '').replace(/-/g, '.') === '5.2.1'
+  const locBanDau = (): Record<string, string[]> => {
+    const o: Record<string, string[]> = { ...(daXem?.loc || {}) }
+    if (laTheKho) {
+      const kho = params.get('kho')
+      const hang = HANG_XNT.find(h => h.ma === params.get('ma'))
+      if (kho && !o.locKho?.length) o.locKho = [kho]
+      if (hang && !o.hang?.length) o.hang = [hang.ten]
+    }
+    return o
+  }
+  const [draftLoc, setDraftLoc] = useState<Record<string, string[]>>(locBanDau)
 
   const [trangCon, setTrangCon] = useState<string | null>(null)
   const [timKiem, setTimKiem] = useState('')
@@ -62,10 +77,11 @@ export const MBaoCaoLoc: FC<MBaoCaoLocProps> = ({ mo, onDong, path, sc, onApDung
       setDraftTuNgay(kn.tu)
       setDraftDenNgay(kn.den)
       setDraftCn(s.cuaHang || 'all')
-      setDraftLoc({ ...(daXem?.loc || {}) })
+      setDraftLoc(locBanDau())
       setTrangCon(null)
       setTimKiem('')
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mo, daXem, s.cuaHang, path])
 
   if (!mo) return null
@@ -80,7 +96,12 @@ export const MBaoCaoLoc: FC<MBaoCaoLocProps> = ({ mo, onDong, path, sc, onApDung
   const code = sc?.code ?? (sc?.slug?.includes('-') ? sc.slug.replace(/-/g, '.') : undefined)
   const cfgBc = code ? CAU_HINH_BC[code] : undefined
   const dsLocRieng = useMemo(() => {
-    const res: { k: string; nhan: string; ds?: string[] }[] = []
+    const res: { k: string; nhan: string; ds?: string[]; batBuoc?: boolean }[] = []
+    if (laTheKho) {
+      const khoCuaCn = CUA_HANG.filter(c => draftCn === 'all' || c.id === draftCn).flatMap(c => c.kho)
+      res.push({ k: 'locKho', nhan: 'Kho', ds: khoCuaCn, batBuoc: true })
+      res.push({ k: 'hang', nhan: 'Hàng hoá', ds: HANG_XNT.map(h => h.ten), batBuoc: true })
+    }
     for (const l of cfgBc?.loc ?? []) {
       if (l.cheDo && !l.cheDo.includes(s.cheDo)) continue
       res.push({
@@ -90,7 +111,7 @@ export const MBaoCaoLoc: FC<MBaoCaoLocProps> = ({ mo, onDong, path, sc, onApDung
       })
     }
     return res
-  }, [cfgBc, s])
+  }, [cfgBc, s, laTheKho, draftCn])
 
   // Bảng lịch chạm Từ ngày rồi Đến ngày (T322); số liệu tính theo tháng của Từ ngày nên Đến ngày không vượt cuối tháng đó
   const khoangLich = useMemo<KhoangNgay>(() => {
@@ -119,7 +140,10 @@ export const MBaoCaoLoc: FC<MBaoCaoLocProps> = ({ mo, onDong, path, sc, onApDung
     setDraftLoc({})
   }
 
+  const thieuBatBuoc = dsLocRieng.some(l => l.batBuoc && !(draftLoc[l.k]?.length))
+
   const handleApply = () => {
+    if (thieuBatBuoc) return
     const thang = String(Number(draftTuNgay.split('-')[1]) || 9)
     datKyNhap(path, thang)
     datKhoangNgayMobile(path, { tu: draftTuNgay, den: draftDenNgay })
@@ -139,14 +163,15 @@ export const MBaoCaoLoc: FC<MBaoCaoLocProps> = ({ mo, onDong, path, sc, onApDung
 
   const moTaLocRieng = (k: string, nhan: string) => {
     const vals = draftLoc[k] ?? []
-    if (vals.length === 0) return 'Tất cả'
+    if (vals.length === 0) return dsLocRieng.find(l => l.k === k)?.batBuoc ? `Chọn ${nhan.toLowerCase()}` : 'Tất cả'
     if (vals.length === 1) return vals[0]
     return `${vals.length} ${nhan.toLowerCase()}`
   }
 
   const toggleChonMuc = (k: string, val: string) => {
     const cur = draftLoc[k] ?? []
-    const next = cur.includes(val) ? cur.filter(x => x !== val) : [...cur, val]
+    const mot = dsLocRieng.find(l => l.k === k)?.batBuoc   // lọc bắt buộc chỉ chọn một giá trị
+    const next = mot ? [val] : cur.includes(val) ? cur.filter(x => x !== val) : [...cur, val]
     setDraftLoc(prev => ({ ...prev, [k]: next }))
   }
 
@@ -204,7 +229,7 @@ export const MBaoCaoLoc: FC<MBaoCaoLocProps> = ({ mo, onDong, path, sc, onApDung
               }}
             >
               <div className="m-loc-dong-trai">
-                <span className="m-loc-dong-nhan">{l.nhan}</span>
+                <span className="m-loc-dong-nhan">{l.nhan}{l.batBuoc ? ' *' : ''}</span>
                 <span className="m-loc-dong-tri">{moTaLocRieng(l.k, l.nhan)}</span>
               </div>
               <Icon n="chevr" className="ic sm m-loc-dong-ic" />
@@ -217,7 +242,7 @@ export const MBaoCaoLoc: FC<MBaoCaoLocProps> = ({ mo, onDong, path, sc, onApDung
           <button type="button" className="m-loc-btn-reset" onClick={handleReset}>
             Đặt lại
           </button>
-          <button type="button" className="m-loc-btn-apply" onClick={handleApply}>
+          <button type="button" className="m-loc-btn-apply" onClick={handleApply} disabled={thieuBatBuoc} style={thieuBatBuoc ? { opacity: 0.5 } : undefined}>
             Áp dụng
           </button>
         </div>
@@ -356,9 +381,12 @@ export const MBaoCaoLoc: FC<MBaoCaoLocProps> = ({ mo, onDong, path, sc, onApDung
                     <div
                       key={val}
                       className={`m-loc-muc-dong ${chon ? 'on' : ''}`}
-                      onClick={() => toggleChonMuc(k, val)}
+                      onClick={() => {
+                        toggleChonMuc(k, val)
+                        if (item.batBuoc) { setTrangCon(null); setTimKiem('') }   // chọn một: chạm là xong
+                      }}
                     >
-                      <div className={`m-loc-checkbox ${chon ? 'on' : ''}`}>
+                      <div className={`m-loc-checkbox ${chon ? 'on' : ''}`} style={item.batBuoc ? { borderRadius: '50%' } : undefined}>
                         {chon && <Icon n="check" className="ic sm" />}
                       </div>
                       <span className="m-loc-muc-ten">{val}</span>
