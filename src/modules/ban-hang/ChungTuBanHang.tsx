@@ -18,6 +18,7 @@ import { OChonMot } from '../../ui/OChonMot'
 import { Dropdown } from '../../ui/Dropdown'
 import { PhanTrang } from '../../ui/PhanTrang'
 import { dsTraBanCon, useDaXoa } from '../../ui/generic/daXoa'
+import { canXdlBanTay, taoXdlBanTay } from './xdl-ban-tay'
 import { ChonKhoangNgay, docNgay, thangMacDinh, trongKhoang, type KhoangNgay } from '../../ui/ChonNgay'
 import { NutDongBo, NutExcel, NutThemMoiSplit } from '../../ui/CongCuDs'
 import { HopDongBo } from '../../ui/HopDongBo'
@@ -106,7 +107,9 @@ export function mauTay(): Row[] {
     return { id: `tay-${i}`, so, ngay: `${dmy(ngay)} ${gio}`, cn: ch.ten, doiTuong: KHACH[kh % KHACH.length].ten, dienGiai, nguon, tt: 'ghi', _dong: dong, kenh: ['Tại quán', 'Mang về', 'GrabFood'][i % 3],
       _httt: i % 2 ? 'congno' : 'tienmat', _kho: ch.kho?.[0] ?? '',
       // Đã thu tiền mặt thì kèm phiếu thu mẫu bên Thu chi như phiếu mua mẫu (T855); số từ 0801 để khỏi trùng phiếu thu mẫu khác
-      ...(i % 2 ? {} : { _ctTt: { id: `tt-tay-${i}`, so: `PT${dmy(ngay).slice(8)}${dmy(ngay).slice(3, 5)}-${String(801 + i).padStart(4, '0')}`, loai: 'thu' } }), _ngayTao: `${dmy(ngay)} ${gio}`, _nguoiTao: nguon === 'excel' ? 'Nhập từ Excel' : 'Hồ Thị Mai' }
+      ...(i % 2 ? {} : { _ctTt: { id: `tt-tay-${i}`, so: `PT${dmy(ngay).slice(8)}${dmy(ngay).slice(3, 5)}-${String(801 + i).padStart(4, '0')}`, loai: 'thu' } }), _ngayTao: `${dmy(ngay)} ${gio}`, _nguoiTao: nguon === 'excel' ? 'Nhập từ Excel' : 'Hồ Thị Mai',
+      // Một phần chứng từ mẫu đã xuất kho định lượng, phần còn lại chưa (để thấy nút Tạo xuất kho định lượng và cảnh báo)
+      ...(nguon === 'tay' && i % 3 === 0 ? { _xdlSo: `XDL${dmy(ngay).slice(8)}${dmy(ngay).slice(3, 5)}-${String(5001 + i).padStart(4, '0')}`, _xdlNgay: `${dmy(ngay)} ${gio}`, _xdlNguoi: 'Hồ Thị Mai' } : {}) }
   })
   // Hoá đơn mới lập ngày cuối dữ liệu; hoá đơn gốc ghi mẫu số trống để hdMau điền theo gói (mẫu 1 hoặc 2), ký hiệu theo cửa hàng
   const ngayMoi = dmy(cuoi), them: Row[] = []
@@ -400,7 +403,7 @@ export function ChungTuBanHang({ sc, mod }: ScreenProps) {
     if (!gocLap || !hdCua(gocLap)) return <Navigate to={duongDan(mod, sc)} replace />
     return <ChungTuForm key={loc.key} sc={scHien} mod={mod} cfg={BAN_TAY} rows={rows} hdDienTu lapHd={mauTuGoc(gocLap, lap === 'tt' ? 'HDTHAYTHE' : 'HDDIEUCHINH')} />
   }
-  if (id === 'moi') return plus ? <ChungTuForm key={loc.key} sc={scHien} mod={mod} cfg={BAN_TAY} rows={rows} hdDienTu />
+  if (id === 'moi') return plus ? <ChungTuForm key={loc.key} sc={scHien} mod={mod} cfg={BAN_TAY} rows={rows} hdDienTu xuatDinhLuong />
     : <Navigate to={duongDan(mod, sc)} replace />   // gói Standard không lập tay Xuất bán POS (T52)
   if (dongXem && dongXem.nguon !== 'FABi') {
     const hd = hdCua(dongXem)
@@ -409,9 +412,13 @@ export function ChungTuBanHang({ sc, mod }: ScreenProps) {
     return (
       // phát hành xong vẽ lại form để ô Số hoá đơn, Ký hiệu, Ngày hoá đơn lấy số mới (T763)
       // Đã xuất: nhãn mã tra cứu ở thanh Thanh toán, số hoá đơn ở cột hoá đơn nên bỏ chip HĐ đầu form (T785)
-      <ChungTuForm key={`${loc.key}-${hd?.so ?? ''}`} sc={scHien} mod={mod} cfg={BAN_TAY} row={dongXem} rows={rows} hdDienTu
+      <ChungTuForm key={`${loc.key}-${hd?.so ?? ''}`} sc={scHien} mod={mod} cfg={BAN_TAY} row={dongXem} rows={rows} hdDienTu xuatDinhLuong
         metaThem={ttGoc ? <span className="chip warn">{ttGoc}</span> : nhapTt ? <span className="chip">Đang có hoá đơn thay thế dự thảo {nhapTt.so}</span> : undefined}
-        chanThem={!hd && loaiCtCua(dongXem) === 'XBAN' && <button type="button" className="xp-btn-outline" onClick={() => setMoHd(true)}><Icon n="receipt" className="ic sm" /><span>Xuất HĐĐT</span></button>}>
+        chanThem={<>
+          {/* Chứng từ chưa xuất kho định lượng: nút Tạo xuất kho định lượng; đã có thì số phiếu hiện ở Tham chiếu */}
+          {canXdlBanTay(dongXem) && !(dongXem as Row)._xdlSo && <button type="button" className="xp-btn-outline" onClick={() => toast(`Đã tạo xuất kho định lượng ${taoXdlBanTay(String(dongXem.id), s.ten, String(dongXem.ngay))}`)}><Icon n="khohang" className="ic sm" /><span>Tạo xuất kho định lượng</span></button>}
+          {!hd && loaiCtCua(dongXem) === 'XBAN' && <button type="button" className="xp-btn-outline" onClick={() => setMoHd(true)}><Icon n="receipt" className="ic sm" /><span>Xuất HĐĐT</span></button>}
+        </>}>
         {moHd && <HopXuatHddt s={s} man={`${mod.key}/${sc.slug}`} ds={[dongXem]} onDong={() => setMoHd(false)} toast={toast} />}
       </ChungTuForm>
     )
@@ -427,10 +434,10 @@ const COT_CHON = new Set(['cn', 'nguon', 'kenh', 'tenLoaiCt', 'ttPh'])
 
 /** Giá trị các ô lọc ngoài và trong Bộ lọc nâng cao. Chuỗi rỗng là tất cả */
 /** Ô chọn nhiều kiểu hộp tích như Mua hàng, mảng rỗng là tất cả (T801) */
-interface GtLoc { thoiGian: KhoangNgay; tim: string; cn: string[]; nguon: string[]; loaiCt: string[]; kh: string; kenh: string[]; pttt: string[]; hang: string[]; tonKho: string[] }
+interface GtLoc { thoiGian: KhoangNgay; tim: string; cn: string[]; nguon: string[]; loaiCt: string[]; kh: string; kenh: string[]; pttt: string[]; hang: string[]; tonKho: string[]; hddt: string[]; xdl: string[] }
 /** Lựa chọn ô lọc Loại chứng từ (T801) */
 const LOAI_CT_LOC: MucHaiCot[] = [{ v: 'POS', t: 'Xuất bán POS' }, { v: 'XBAN', t: 'Xuất bán' }, { v: 'HDDIEUCHINH', t: 'Hoá đơn điều chỉnh' }, { v: 'HDTHAYTHE', t: 'Hoá đơn thay thế' }, { v: 'HUYBAN', t: 'Huỷ bán hàng' }]
-const locMacDinh = (): GtLoc => ({ thoiGian: thangMacDinh(), tim: '', cn: [], nguon: [], loaiCt: [], kh: '', kenh: [], pttt: [], hang: [], tonKho: [] })
+const locMacDinh = (): GtLoc => ({ thoiGian: thangMacDinh(), tim: '', cn: [], nguon: [], loaiCt: [], kh: '', kenh: [], pttt: [], hang: [], tonKho: [], hddt: [], xdl: [] })
 /** Món của chứng từ để lọc theo hàng hoá, theo dõi tồn kho; nhớ lại để không tính lại mỗi lần lọc */
 const MON_CUA = new WeakMap<object, { ma: string; ten: string; tonKho: boolean }[]>()
 function monCua(x: NgayPOS) {
@@ -538,7 +545,7 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
   // Ô lọc: giá trị nháp, bấm Lọc mới áp dụng (T41)
   const apLoc = () => { loc0.loc(); setTrang(1) }
   // Ô chọn nhiều có hộp tích, ô Khách hàng gõ tìm, như bộ lọc Mua hàng (T801)
-  const chonO = (k: 'cn' | 'nguon' | 'loaiCt' | 'kenh' | 'pttt' | 'hang' | 'tonKho', ten: string, ds: MucHaiCot[]) => (
+  const chonO = (k: 'cn' | 'nguon' | 'loaiCt' | 'kenh' | 'pttt' | 'hang' | 'tonKho' | 'hddt' | 'xdl', ten: string, ds: MucHaiCot[]) => (
     <ChonHaiCot chip ds={ds} value={nhap[k]} onChange={v => dat(k, v)} nhan={ten} goiY={`Chọn ${ten.toLowerCase()}`} btnClass="ds-o-sel" />
   )
   const oLoc: OLocDef[] = [
@@ -560,6 +567,8 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
     // Hàng hoá có trong chứng từ; Theo dõi tồn kho: chứng từ có món theo dõi hoặc có món không theo dõi tồn kho (T118)
     { k: 'hang', ten: 'Hàng hoá', coGiaTri: nhap.hang.length > 0, o: chonO('hang', 'Hàng hoá', HANG.map(h => ({ v: h.ma, t: h.ten, ma: h.ma }))) },
     { k: 'tonKho', ten: 'Theo dõi tồn kho', coGiaTri: nhap.tonKho.length > 0, o: chonO('tonKho', 'Theo dõi tồn kho', [{ v: 'co', t: 'Có theo dõi tồn kho' }, { v: 'khong', t: 'Không theo dõi tồn kho' }]) },
+    { k: 'hddt', ten: 'Trạng thái xuất HĐĐT', coGiaTri: nhap.hddt.length > 0, o: chonO('hddt', 'Trạng thái xuất HĐĐT', [{ v: 'da', t: 'Đã xuất HĐĐT' }, { v: 'chua', t: 'Chưa xuất HĐĐT' }]) },
+    ...(plus ? [{ k: 'xdl', ten: 'Trạng thái xuất kho định lượng', coGiaTri: nhap.xdl.length > 0, o: chonO('xdl', 'Trạng thái xuất kho định lượng', [{ v: 'da', t: 'Đã xuất định lượng' }, { v: 'chua', t: 'Chưa xuất định lượng' }]) }] : []),
   ]
   const [cauHinhLoc, datCauHinhLoc] = useCauHinhLoc(path, oLoc.map(o => o.k), ['thoiGian', 'tim', 'cn', 'loaiCt'])
 
@@ -574,6 +583,9 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
     if (ap.kh && r.doiTuong !== ap.kh) return false
     if (ap.kenh.length && !ap.kenh.includes(String(r.kenh ?? ''))) return false
     if (ap.hang.length && !monR(r).some(m => ap.hang.includes(m.ma))) return false
+    if (ap.hddt.length && !ap.hddt.includes(hdDong(r) ? 'da' : 'chua')) return false
+    // Xuất kho định lượng: đơn POS tự sinh phiếu nên luôn là Đã xuất; chứng từ lập tay xét số phiếu _xdlSo; hoá đơn thay thế, điều chỉnh, huỷ bán không xét
+    if (plus && ap.xdl.length && !ap.xdl.includes(r.nguon === 'FABi' || r._xdlSo ? 'da' : canXdlBanTay(r) ? 'chua' : '')) return false
     if (ap.tonKho.length && !monR(r).some(m => ap.tonKho.includes(m.tonKho ? 'co' : 'khong'))) return false
     if (ap.pttt.length && !ptttR(r).some(p => ap.pttt.includes(p))) return false
     if (ap.tim.trim() && !fold(`${r.so} ${r.maHd ?? ''} ${r.dienGiai} ${r._tenHangDu}`).includes(fold(ap.tim.trim()))) return false

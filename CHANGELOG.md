@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 25/11/2026
+- T936: Gói Plus, chứng từ bán hàng lập thủ công có công tắc Xuất định lượng (bật thì lưu xong tạo luôn phiếu xuất kho định lượng), nút Tạo xuất kho định lượng cho chứng từ chưa có phiếu, số phiếu ở Tham chiếu. Danh sách Xuất kho định lượng hiện thêm phiếu Xuất bán hàng, có số chứng từ bán hàng, và cảnh báo cả món của chứng từ thủ công chưa xuất định lượng. Danh sách Bán hàng thêm lọc Trạng thái xuất HĐĐT, Trạng thái xuất kho định lượng.
 - T929: Điện thoại gói Plus, danh sách Nhập kho, Xuất huỷ, Xuất khác, Điều chuyển, Điều chỉnh hiện số tiền từng phiếu và Tổng cộng như Nhập mua. Kiểm kê giữ như cũ. Chứng từ tổng hợp dùng khung danh sách chuẩn, dòng phụ là diễn giải. Form lập Xuất, Nhập điều chuyển có thẻ đầu Ngày, Số phiếu, Từ kho, Đến kho, Diễn giải, chân Tổng tiền, Huỷ, Lưu phiếu.
 - T930: Điện thoại gói Plus, xem phiếu kho và Chứng từ tổng hợp như phiếu Nhập mua: tiêu đề tên phiếu và số, thẻ đầu Tổng giá trị (CTTH: Tổng tiền), Thông tin chung nhãn trái giá trị phải, CTTH mỗi bút toán một thẻ. Chân có Xoá và Sửa phiếu, Điều chỉnh vẫn không có chân.
 - T931: Điện thoại gói Plus, lập Nhập kho, Xuất huỷ, Xuất khác như phiếu Nhập mua: thẻ đầu Ngày, Số phiếu, Kho, Người thực hiện hoặc Người nhận, Diễn giải; thẻ mặt hàng, Tổng cộng, chân Tổng tiền, Huỷ, Lưu phiếu. Không hỏi quỹ khi lưu. Chứng từ tổng hợp mỗi bút toán một thẻ Diễn giải, TK Nợ, TK Có, Số tiền, có nút Thêm bút toán.

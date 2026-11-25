@@ -5,7 +5,12 @@ import { useMemo, useSyncExternalStore } from 'react'
 import { DAILY, HANG, cnTen } from '../../data/mock'
 import { dmy, pad } from '../../ui/format'
 import { docNgay } from '../../ui/ChonNgay'
-import { donPosCua, dongCuaPhieu, soFabi, soXb, theoDon } from '../ban-hang/ChungTuBanHang'
+import { MAN_BAN, donPosCua, dongCuaPhieu, mauTay, soFabi, soXb, theoDon } from '../ban-hang/ChungTuBanHang'
+import { canXdlBanTay, taoXdlBanTay } from '../ban-hang/xdl-ban-tay'
+import { apKhoPhieu, useBanPhieu } from '../../ui/generic/daXoa'
+import { useSession } from '../../app/session'
+import type { Dong } from '../../ui/generic/gen'
+import type { Row } from '../types'
 import { CONG_THUC_CB, hangCua, tron3 } from './san-xuat'
 import { giaVonBq, useGiaVonBq } from './tinh-gia-von/giaVonBq'
 
@@ -59,6 +64,8 @@ export interface PhieuXdl {
   tong: number
   dong: DongMonXdl[]
   lichSu: LsXdl[]    // lịch sử xuất bổ sung, tạo lại (T935)
+  btId?: string      // chứng từ bán hàng lập tay sinh phiếu này (id ở màn Bán hàng)
+  chuaTao?: boolean  // chứng từ bán hàng lập tay chưa tạo xuất kho định lượng: không hiện ở danh sách, chỉ tính vào món thiếu
 }
 
 export interface LsXdl { t: string; nguoi: string; nd: string }
@@ -109,6 +116,7 @@ export function xuatBoSungXdl(rows: PhieuXdl[], maMon: string[]): number {
   for (const p of rows) {
     const them = p.dong.filter(m => m.choBoSung && maMon.includes(m.ma))
     if (!them.length) continue
+    if (p.chuaTao) { if (p.btId) taoXdlBanTay(p.btId, 'Người dùng', p.ngay); n++; continue }   // chứng từ bán hàng lập tay chưa có phiếu: tạo phiếu
     them.forEach(m => kho.daBoSung.add(khoa(p.id, m.ma)))
     kho.ls.set(p.id, [...(kho.ls.get(p.id) ?? []), { t: bayGio(), nguoi: 'Người dùng', nd: `Xuất bổ sung món: ${them.map(m => m.ten).join(', ')}` }])
     n++
@@ -118,7 +126,7 @@ export function xuatBoSungXdl(rows: PhieuXdl[], maMon: string[]): number {
 }
 
 /** Phiếu bị xoá và tạo lại: phiếu trong phạm vi có chứa một trong các món đã chọn */
-export const phieuTaoLaiXdl = (rows: PhieuXdl[], maMon: string[], tatCa = false) => (tatCa ? rows : rows.filter(p => p.dong.some(m => maMon.includes(m.ma))))
+export const phieuTaoLaiXdl = (rows: PhieuXdl[], maMon: string[], tatCa = false) => (tatCa ? rows : rows.filter(p => p.dong.some(m => maMon.includes(m.ma)))).filter(p => !p.chuaTao)
 
 /** Tạo lại toàn bộ: xoá phiếu cũ, tạo phiếu mới cùng đơn POS, số phiếu cấp lại. Trả số phiếu tạo lại. */
 export function taoLaiXdl(rows: PhieuXdl[], maMon: string[], tatCa = false): number {
@@ -133,10 +141,46 @@ export function taoLaiXdl(rows: PhieuXdl[], maMon: string[], tatCa = false): num
   return ds.length
 }
 
+/** Tính một món bán ra NVL theo công thức chế biến: dùng cho đơn POS và chứng từ bán hàng lập tay */
+function monXdl(m: { ma: string; ten: string; dvt: string; sl: number; gia: number; tien: number }, date: Date, cn: string): DongMonXdl {
+  const maFabi = MA_FABI[m.ma]
+  const chung = { ma: m.ma, ten: m.ten, dvt: m.dvt, sl: m.sl, gia: m.gia, tien: m.tien, maFabi }
+  const loi = (lyDo: LyDoXdl, ct?: { ma: string; id: string }): DongMonXdl => ({ ...chung, maCt: ct?.ma, ctId: ct?.id, lyDo, coCongThuc: false, tienVon: 0, nvl: [] })
+  if (maFabi && !hangCua(maFabi)) return loi({ loai: 2, text: 'Món trên FABi chưa khớp mã hàng trong danh mục' })
+  const dsCt = CONG_THUC_CB.filter(c => c.spMa === m.ma && c.nvl.length)
+  if (!dsCt.length) return loi({ loai: 1, text: 'Chưa có công thức chế biến' })
+  const ct = dsCt.find(c => c.tt === 'on' && docNgay(c.ngay) <= date && (!c.cuaHang.length || c.cuaHang.includes(cn)))
+  if (!ct) {
+    const c = dsCt[0]
+    return loi({ loai: 4, text: c.tt !== 'on' ? `Công thức ${c.ma} đang ngừng áp dụng`
+      : docNgay(c.ngay) > date ? `Công thức ${c.ma} áp dụng từ ${c.ngay}` : `Công thức ${c.ma} không áp dụng cho cửa hàng này` }, c)
+  }
+  if (ct.dvt && ct.dvt !== m.dvt) return loi({ loai: 3, text: `Công thức chỉ có ĐVT ${ct.dvt}, chưa có ${m.dvt}` }, ct)
+
+  const nvl: DongNvlXdl[] = ct.nvl.map(n => {
+    const h = hangCua(n.ma)
+    const sl = tron3(n.sl * m.sl)
+    const gia = giaVonBq(n.ma, date) ?? h?.gia ?? 0
+    return {
+      ma: n.ma,
+      ten: h?.ten ?? n.ma,
+      dvt: n.dvt || h?.dvt || '',
+      dinhLuong: n.sl,
+      sl,
+      gia,
+      tien: Math.round(gia * sl),
+      lyDo: gia ? undefined : { loai: 5, text: 'NVL chưa có giá vốn, tiền vốn tạm ghi 0' },
+    }
+  })
+  return { ...chung, maCt: ct.ma, ctId: ct.id, coCongThuc: true, tienVon: nvl.reduce((sum, item) => sum + item.tien, 0), nvl }
+}
+
 /** Sinh danh sách phiếu Xuất kho định lượng từ Xuất bán POS */
 export function useDsPhieuXdl(): PhieuXdl[] {
   const verGiaVon = useGiaVonBq()   // tự động vẽ lại khi vừa tính giá vốn xong (5.1.7)
   const verXdl = useVerXdl()        // vẽ lại khi bổ sung hoặc tạo lại (T935)
+  const verBan = useBanPhieu()      // vẽ lại khi chứng từ bán hàng lập tay lưu, sửa, xoá
+  const plus = useSession().s.goi === 'PL'
 
   return useMemo(() => {
     const posList = DAILY.filter(x => x.date.getMonth() >= 8).slice().reverse().flatMap(x => theoDon(x).reverse())
@@ -149,38 +193,7 @@ export function useDsPhieuXdl(): PhieuXdl[] {
       const so = `XDL${yy}${mm}-${pad(idx + 1, 4)}`
 
       const cn = cnTen(p.cn)
-      const dong: DongMonXdl[] = dongCuaPhieu(p).map(m => {
-        const maFabi = MA_FABI[m.ma]
-        const chung = { ma: m.ma, ten: m.ten, dvt: m.dvt, sl: m.sl, gia: m.gia, tien: m.tien, maFabi }
-        const loi = (lyDo: LyDoXdl, ct?: { ma: string; id: string }): DongMonXdl => ({ ...chung, maCt: ct?.ma, ctId: ct?.id, lyDo, coCongThuc: false, tienVon: 0, nvl: [] })
-        if (maFabi && !hangCua(maFabi)) return loi({ loai: 2, text: 'Món trên FABi chưa khớp mã hàng trong danh mục' })
-        const dsCt = CONG_THUC_CB.filter(c => c.spMa === m.ma && c.nvl.length)
-        if (!dsCt.length) return loi({ loai: 1, text: 'Chưa có công thức chế biến' })
-        const ct = dsCt.find(c => c.tt === 'on' && docNgay(c.ngay) <= p.date && (!c.cuaHang.length || c.cuaHang.includes(cn)))
-        if (!ct) {
-          const c = dsCt[0]
-          return loi({ loai: 4, text: c.tt !== 'on' ? `Công thức ${c.ma} đang ngừng áp dụng`
-            : docNgay(c.ngay) > p.date ? `Công thức ${c.ma} áp dụng từ ${c.ngay}` : `Công thức ${c.ma} không áp dụng cho cửa hàng này` }, c)
-        }
-        if (ct.dvt && ct.dvt !== m.dvt) return loi({ loai: 3, text: `Công thức chỉ có ĐVT ${ct.dvt}, chưa có ${m.dvt}` }, ct)
-
-        const nvl: DongNvlXdl[] = ct.nvl.map(n => {
-          const h = hangCua(n.ma)
-          const sl = tron3(n.sl * m.sl)
-          const gia = giaVonBq(n.ma, p.date) ?? h?.gia ?? 0
-          return {
-            ma: n.ma,
-            ten: h?.ten ?? n.ma,
-            dvt: n.dvt || h?.dvt || '',
-            dinhLuong: n.sl,
-            sl,
-            gia,
-            tien: Math.round(gia * sl),
-            lyDo: gia ? undefined : { loai: 5, text: 'NVL chưa có giá vốn, tiền vốn tạm ghi 0' },
-          }
-        })
-        return { ...chung, maCt: ct.ma, ctId: ct.id, coCongThuc: true, tienVon: nvl.reduce((sum, item) => sum + item.tien, 0), nvl }
-      })
+      const dong: DongMonXdl[] = dongCuaPhieu(p).map(m => monXdl(m, p.date, cn))
 
       const tong = dong.reduce((sum, m) => sum + m.tienVon, 0)
 
@@ -212,7 +225,7 @@ export function useDsPhieuXdl(): PhieuXdl[] {
       kho.soTiep = goc.length + 1
     }
     const loiDau = kho.loiDau
-    return goc.map(p => {
+    const pos = goc.map(p => {
       const dong = p.dong.map(m => {
         const k = khoa(p.id, m.ma)
         if (!loiDau.has(k) || kho.daBoSung.has(k) || !m.coCongThuc) return m
@@ -225,5 +238,24 @@ export function useDsPhieuXdl(): PhieuXdl[] {
         lichSu: [{ t: p.ngayTao, nguoi: p.nguoiTao, nd: `Tạo mới phiếu xuất kho định lượng từ ${p.posSo}` }, ...(kho.ls.get(p.id) ?? [])],
       }
     })
-  }, [verGiaVon, verXdl])
+    if (!plus) return pos
+
+    // Chứng từ bán hàng lập tay: có số phiếu (_xdlSo) là đã xuất định lượng, chưa có thì chỉ tính vào món thiếu
+    const tay = apKhoPhieu(MAN_BAN, mauTay()).filter(canXdlBanTay).map((r): PhieuXdl => {
+      const ngay = String(r.ngay).split(' ')[0], date = docNgay(ngay), cn = cnTen(String(r.cn))
+      const co = Boolean(r._xdlSo)
+      const dong = ((r._dong as Dong[] | undefined) ?? []).filter(d => d.ma).map(d => {
+        const m = monXdl(d, date, cn)
+        return co || !m.coCongThuc ? m : { ...m, coCongThuc: false, tienVon: 0, nvl: [], choBoSung: true, lyDo: { loai: 1 as const, text: 'Chưa tạo xuất kho định lượng' } }
+      })
+      return {
+        id: `bt-${r.id}`, so: String(r._xdlSo ?? ''), ngay, date, thang: date.getMonth() + 1, cn, ghiChu: 'Xuất kho theo định lượng món bán',
+        posSo: String(r.so), posId: String(r.id), maHd: '', soDon: '', kenh: String(r.kenh ?? ''),
+        ngayTao: String(r._xdlNgay ?? r._ngayTao ?? ngay), nguoiTao: String(r._xdlNguoi ?? 'Người dùng'), nguon: 'Xuất bán hàng',
+        tong: dong.reduce((sum, m) => sum + m.tienVon, 0), dong, btId: String(r.id), chuaTao: !co,
+        lichSu: [{ t: String(r._xdlNgay ?? r._ngayTao ?? ngay), nguoi: String(r._xdlNguoi ?? 'Người dùng'), nd: `Tạo mới phiếu xuất kho định lượng từ ${r.so}` }],
+      }
+    })
+    return [...tay, ...pos]
+  }, [verGiaVon, verXdl, verBan, plus])
 }

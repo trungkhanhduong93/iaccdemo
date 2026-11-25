@@ -66,12 +66,13 @@ function DanhSachXuatDinhLuong({ sc, mod, rows }: ScreenProps & { rows: PhieuXdl
 
   const rowsCh = useMemo(() => (cnChon ? rows.filter(r => r.cn === cnChon.ten) : rows), [rows, cnChon])
   const dsThieu = useMemo(() => monThieuXdl(rowsCh), [rowsCh])   // món thiếu hiện từ đầu; tạo lại toàn bộ chỉ làm số này giảm hoặc giữ nguyên
-  const dsCn = useMemo(() => [...new Set(rows.map(r => r.cn))].sort(), [rows])
+  const dsCn = useMemo(() => [...new Set(rows.filter(r => !r.chuaTao).map(r => r.cn))].sort(), [rows])
   const kieuCot = (k: string): KieuLoc => (k === 'ngay' ? 'ngay' : k === 'tong' ? 'so' : 'chon')
   const giaTri = (r: PhieuXdl, k: string): unknown => (k === 'thamChieu' ? r.posSo : (r as unknown as Row)[k])
 
   const rowsLoc = useMemo(() => {
     return rows.filter(r => {
+      if (r.chuaTao) return false   // chứng từ bán hàng lập tay chưa tạo xuất kho định lượng chỉ tính vào món thiếu
       if (!trongKhoang(docNgay(r.ngay), ap.thoiGian)) return false
       if (cnChon && r.cn !== cnChon.ten) return false
       if (ap.cn && r.cn !== ap.cn) return false
@@ -88,7 +89,7 @@ function DanhSachXuatDinhLuong({ sc, mod, rows }: ScreenProps & { rows: PhieuXdl
       return true
     })
   }, [rows, ap, cnChon, locCot])   // eslint-disable-line react-hooks/exhaustive-deps
-  const layLuaChon = (k: string) => dsGiaTri(rows, r => String(giaTri(r, k) ?? ''))
+  const layLuaChon = (k: string) => dsGiaTri(rows.filter(r => !r.chuaTao), r => String(giaTri(r, k) ?? ''))
 
   const apLoc = () => { loc0.loc(); setTrang(1) }
   const oLoc: OLocDef[] = [
@@ -132,7 +133,7 @@ function DanhSachXuatDinhLuong({ sc, mod, rows }: ScreenProps & { rows: PhieuXdl
     // Mã hoá đơn FABi: # và 5 ký tự cuối, rê chuột xem đủ (QD114)
     { k: 'cn', t: 'Cửa hàng', w: 140 },
     { k: 'kenh', t: 'Kênh bán', w: 100 },
-    { k: 'maHd', t: 'Mã đơn POS', cls: 'code', w: 100, r: r => <span title={String(r.maHd)}>#{String(r.maHd).slice(-5)}</span> },
+    { k: 'maHd', t: 'Mã đơn POS', cls: 'code', w: 100, r: r => (r.maHd ? <span title={String(r.maHd)}>#{String(r.maHd).slice(-5)}</span> : null) },   // chứng từ bán hàng lập tay không có mã đơn POS
     {
       k: 'thamChieu',
       t: 'Tham chiếu',
@@ -142,7 +143,7 @@ function DanhSachXuatDinhLuong({ sc, mod, rows }: ScreenProps & { rows: PhieuXdl
         <Link
           to={`/app/ban-hang/3-1-1/${r.posId}`}
           className="ds-link-so"
-          title="Mở chứng từ Xuất bán POS"
+          title={String(r.nguon) === 'Xuất bán hàng' ? 'Mở chứng từ bán hàng' : 'Mở chứng từ Xuất bán POS'}
           onClick={e => e.stopPropagation()}
         >
           {r.posSo}
@@ -285,7 +286,7 @@ function ChiTietXuatDinhLuong({ sc, mod, row }: ScreenProps & { row?: PhieuXdl }
   }
 
   const isPro = s.goi === 'PR'
-  const ghiChu = `${row.ghiChu} đơn ${row.maHd}`   // ghép mã hoá đơn POS vào ghi chú
+  const ghiChu = row.maHd ? `${row.ghiChu} đơn ${row.maHd}` : row.ghiChu   // ghép mã hoá đơn POS vào ghi chú
   const congThuc = s.goi === 'PL' ? '/app/danh-muc/cong-thuc-che-bien' : '/app/kho/9-1-3'   // gói Plus xem công thức ở Danh mục (T719)
   const diSua: Record<LyDoXdl['loai'], string> = { 1: congThuc, 2: '/app/danh-muc/1-2', 3: '/app/danh-muc/1-4', 4: congThuc, 5: '/app/kho/5-1-7' }
 
@@ -388,13 +389,15 @@ function ChiTietXuatDinhLuong({ sc, mod, row }: ScreenProps & { row?: PhieuXdl }
       <div className="stack" style={{ gap: 14 }}>
         <p className="pos-nhac" style={{ margin: 0 }}>
           <Icon n="info" className="ic sm" />
-          Phiếu sinh tự động từ chứng từ Xuất bán POS. Chỉ xem, không sửa hay xoá.
+          Phiếu sinh tự động từ chứng từ {row.btId ? 'bán hàng' : 'Xuất bán POS'}. Chỉ xem, không sửa hay xoá.
         </p>
 
         {/* Thông tin chung dạng chữ, không ô nhập: số chứng từ đã có ở tiêu đề; dòng Tham chiếu như phiếu mua (T585, T932) */}
         <section className="card ct-ttc xdl-tt">
           <div className="xp637-cap xdl-tt-dong">
-            <div className="xp637-o"><span className="xp637-nhan">Mã hoá đơn POS</span><div className="xp637-tri"><span className="xp637-code">{row.maHd}</span></div></div>
+            {row.btId
+              ? <div className="xp637-o"><span className="xp637-nhan">Số chứng từ bán hàng</span><div className="xp637-tri"><span className="xp637-code">{row.posSo}</span></div></div>
+              : <div className="xp637-o"><span className="xp637-nhan">Mã hoá đơn POS</span><div className="xp637-tri"><span className="xp637-code">{row.maHd}</span></div></div>}
             <div className="xp637-o xdl-tt-be"><span className="xp637-nhan">Kênh bán</span><div className="xp637-tri"><span>{row.kenh}</span></div></div>
             <div className="xp637-o xdl-tt-gc"><span className="xp637-nhan">Ghi chú</span><div className="xp637-tri"><span title={ghiChu}>{ghiChu}</span></div></div>
             <div className="xp637-o xdl-tt-be"><span className="xp637-nhan">Ngày xuất</span><div className="xp637-tri"><span>{row.ngay}</span></div></div>
@@ -402,7 +405,7 @@ function ChiTietXuatDinhLuong({ sc, mod, row }: ScreenProps & { row?: PhieuXdl }
           <div className="ct-tham-chieu">
             <span className="dim">Tham chiếu</span>
             <span className="ct-tham-chieu-ds">
-              <Link to={`/app/ban-hang/3-1-1/${row.posId}`} className="ds-link-so" title="Mở chứng từ Xuất bán POS">{row.posSo}</Link>
+              <Link to={`/app/ban-hang/3-1-1/${row.posId}`} className="ds-link-so" title={row.nguon === 'Xuất bán hàng' ? 'Mở chứng từ bán hàng' : 'Mở chứng từ Xuất bán POS'}>{row.posSo}</Link>
             </span>
           </div>
         </section>
