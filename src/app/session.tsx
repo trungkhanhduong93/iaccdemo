@@ -50,6 +50,7 @@ export interface Session {
   cnCongTy?: Record<string, Record<string, string>>   // công ty chọn lại cho cửa hàng ở Danh mục cửa hàng theo đơn vị; khoá mã cửa hàng, giá trị mã đơn vị; chưa đặt là đơn vị đang mở (T711)
   cachNvlDv?: Record<string, LichCachNvl[]>   // cách tính chi phí NVL gói Free theo đơn vị, chung mọi cửa hàng; mỗi lần đổi áp dụng từ kỳ đầu chưa khoá sổ (T767)
   dongBoThuChi?: Record<string, Record<string, boolean>>   // tự động đồng bộ phiếu thu, chi lập trên FABi theo đơn vị, từng cửa hàng (mã cửa hàng); chưa đặt là bật (T264)
+  dinhMucCh?: Record<string, Record<string, { nvl?: number; haoHut?: number }>>   // định mức chi phí NVL (% doanh thu), định mức hao hụt (%) theo đơn vị, từng cửa hàng; chưa đặt là chưa có định mức (T938)
   mapPttt?: Record<string, Record<string, string>>   // map PTTT FABi về quỹ theo đơn vị; khoá 'mã cửa hàng|mã PTTT', giá trị mã quỹ (T264)
   kieuSo?: Record<string, KieuSo>   // quy định chữ số và dấu phân cách theo đơn vị, chọn ở Cấu hình kế toán: 'vn' 1.234.567,89 (mặc định), 'qt' 1,234,567.89 (T710)
   lyDoGhiDe?: Record<string, Record<string, { chiPhi: number; phanBo: number; nhomCp: string }>>   // lý do nghiệp vụ có sẵn sửa tích Là chi phí, Chi phí phân bổ nhiều kỳ, nhóm lý do theo đơn vị; khoá mã lý do (T700)

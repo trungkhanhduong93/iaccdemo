@@ -22,6 +22,7 @@ import { useDongEsc } from '../../ui/LocNangCao'
 import { ThongBao } from '../../ui/ThongBao'
 import { batDongBoThuChi, datDongBoThuChi, phieuThuChiFabi } from '../tien/dong-bo-fabi'
 import { DI_DOI_CACH_NVL } from '../home/chi-phi-nvl'
+import { ODinhMuc, dinhMucCh, datDinhMucCh } from './dinh-muc-cua-hang'
 
 /** Cột luôn hiện, không ẩn được ở Tuỳ chỉnh cột (T148) */
 const COT_CO_DINH = new Set(['ma', 'ten'])
@@ -58,6 +59,9 @@ export function DanhMucCuaHang({ sc, mod }: ScreenProps) {
     { k: 'kho', t: 'Kho', cls: 'dim', r: r => <>{r.kho}{standard && <span className="chip" style={{ marginLeft: 8 }}>Mặc định</span>}</> },
     { k: 'nguon', t: 'Nguồn', cls: 'dim' },
     // Cách tính chi phí NVL chung cả công ty, chọn ở Thông tin đơn vị, không còn theo cửa hàng (T767)
+    // Định mức theo cửa hàng, nhập % ngay tại bảng (T938)
+    { k: 'dmNvl', t: 'Định mức chi phí NVL (%)', w: 190, r: (r: Row) => <ODinhMuc cn={String(r.id)} ten={String(r.ten)} k="nvl" /> },
+    { k: 'dmHaoHut', t: 'Định mức hao hụt (%)', w: 170, r: (r: Row) => <ODinhMuc cn={String(r.id)} ten={String(r.ten)} k="haoHut" /> },
     // Mọi gói: bật, tắt tự động đồng bộ phiếu thu, chi lập trên FABi theo cửa hàng, (T264)
     { k: 'dongBo', t: 'Đồng bộ thu chi FABi', w: 210, r: (r: Row) => {
       const bat = batDongBoThuChi(s, String(r.id))
@@ -218,6 +222,19 @@ function HopChiTietCn({ r, onDong, onDoiCty }: { r: Row; onDong: () => void; onD
   const id = String(r.id)
   const dv = congTyCn(s, id)
   const bat = batDongBoThuChi(s, id)
+  // Định mức nhập nháp trong hộp, bấm Lưu mới ghi (T938)
+  const [dm, setDm] = useState({ nvl: String(dinhMucCh(s, id, 'nvl') ?? ''), haoHut: String(dinhMucCh(s, id, 'haoHut') ?? '') })
+  const doiDm = dm.nvl !== String(dinhMucCh(s, id, 'nvl') ?? '') || dm.haoHut !== String(dinhMucCh(s, id, 'haoHut') ?? '')
+  const luuDm = () => {
+    const so = (t: string) => { const x = t.trim().replace(',', '.'); return x === '' ? undefined : Number(x) }
+    const a = so(dm.nvl), b = so(dm.haoHut)
+    const sai = (v: number | undefined) => v !== undefined && (!Number.isFinite(v) || v < 0 || v > 100)
+    if (sai(a) || sai(b)) { toast('Định mức phải từ 0 đến 100%'); return }
+    const p1 = datDinhMucCh(s, id, 'nvl', a)
+    set({ ...p1, ...datDinhMucCh({ ...s, ...p1 }, id, 'haoHut', b) })
+    toast(`Đã lưu định mức của ${r.ten}`)
+    onDong()
+  }
   const dong: [string, React.ReactNode][] = [
     ['Mã', <span className="code">{r.ma}</span>],
     ['POS ID', <span className="code">{r.posId}</span>],
@@ -230,6 +247,10 @@ function HopChiTietCn({ r, onDong, onDoiCty }: { r: Row; onDong: () => void; onD
     ['Khu vực', r.kv],
     ['Kho', r.kho],
     ['Nguồn', r.nguon],
+    ['Định mức chi phí NVL', <span className="dmcn-dm"><input className="inp" inputMode="decimal" placeholder="Chưa đặt" aria-label="Định mức chi phí NVL (%)"
+      value={dm.nvl} onChange={e => setDm(x => ({ ...x, nvl: e.target.value }))} /><small>%</small></span>],
+    ['Định mức hao hụt', <span className="dmcn-dm"><input className="inp" inputMode="decimal" placeholder="Chưa đặt" aria-label="Định mức hao hụt (%)"
+      value={dm.haoHut} onChange={e => setDm(x => ({ ...x, haoHut: e.target.value }))} /><small>%</small></span>],
     ['Đồng bộ thu chi FABi', (
       <span className="dmcn-db">
         <button type="button" role="switch" aria-checked={bat} aria-label={`Tự động đồng bộ thu chi FABi ${r.ten}`} className={`ds-ct${bat ? ' on' : ''}`}
@@ -246,7 +267,8 @@ function HopChiTietCn({ r, onDong, onDoiCty }: { r: Row; onDong: () => void; onD
         <dl className="dmcn-ct">
           {dong.map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}
         </dl>
-        <div className="ds-chan"><button type="button" className="btn" onClick={onDong}>Đóng</button></div>
+        <div className="ds-chan"><button type="button" className="btn" onClick={onDong}>{doiDm ? 'Huỷ' : 'Đóng'}</button>
+          <button type="button" className="btn pri" disabled={!doiDm} onClick={luuDm}>Lưu</button></div>
       </div>
     </div>,
     document.body,

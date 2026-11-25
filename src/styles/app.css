@@ -50191,3 +50191,8 @@ td.xdl-cat > span { display: block; overflow: hidden; text-overflow: ellipsis; w
 .m-sdb-khung > .m-tkd-hang {
   flex: none;
 }
+
+/* ── Định mức chi phí NVL, hao hụt theo cửa hàng (T938) ── */
+.dmcn-dm { display: inline-flex; align-items: center; gap: 6px; }
+.dmcn-dm .inp { width: 96px; text-align: right; }
+.dmcn-dm small { color: var(--muted); font-size: 12px; }

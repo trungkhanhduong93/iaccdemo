@@ -4,6 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 25/11/2026
 - T937: Gói Standard, Cấu hình kế toán không còn bật tắt Giảm thuế GTGT. Giảm thuế theo cấu hình trên FABi; gói Plus, Pro mới tự chọn nghị quyết, % giảm, hiệu lực.
+- T938: Danh mục cửa hàng thêm cột Định mức chi phí NVL (%) và Định mức hao hụt (%) theo từng cửa hàng, nhập ở bảng hoặc trong hộp Chi tiết cửa hàng (có nút Lưu).
 - Điện thoại: menu Nghiệp vụ tách Thu chi thành Thu tiền, Chi tiền, Chuyển quỹ. Thu tiền, Chi tiền có tab Tất cả, Tiền mặt, Ngân hàng, Báo cáo; Chuyển quỹ hiện thẳng danh sách chuyển quỹ và tab Báo cáo.
 - Điện thoại gói Plus: Số dư ban đầu có 2 mục Tồn kho ban đầu và Dư quỹ tiền. Tồn kho ban đầu khai theo từng kho của cửa hàng đang chọn, chỉ hiện hàng có tồn đầu, phễu lọc theo kho và hàng hoá, thẻ hàng như thẻ xem phiếu. Dư quỹ tiền mở Danh mục Quỹ tiền.
 - T936: Gói Plus, chứng từ bán hàng lập thủ công có công tắc Xuất định lượng (bật thì lưu xong tạo luôn phiếu xuất kho định lượng), nút Tạo xuất kho định lượng cho chứng từ chưa có phiếu, số phiếu ở Tham chiếu. Danh sách Xuất kho định lượng hiện thêm phiếu Xuất bán hàng, có số chứng từ bán hàng, và cảnh báo cả món của chứng từ thủ công chưa xuất định lượng. Danh sách Bán hàng thêm lọc Trạng thái xuất HĐĐT, Trạng thái xuất kho định lượng.
@@ -12,6 +13,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 - T930: Điện thoại gói Plus, xem phiếu kho và Chứng từ tổng hợp như phiếu Nhập mua: tiêu đề tên phiếu và số, thẻ đầu Tổng giá trị (CTTH: Tổng tiền), Thông tin chung nhãn trái giá trị phải, CTTH mỗi bút toán một thẻ. Chân có Xoá và Sửa phiếu, Điều chỉnh vẫn không có chân.
 - T931: Điện thoại gói Plus, lập Nhập kho, Xuất huỷ, Xuất khác như phiếu Nhập mua: thẻ đầu Ngày, Số phiếu, Kho, Người thực hiện hoặc Người nhận, Diễn giải; thẻ mặt hàng, Tổng cộng, chân Tổng tiền, Huỷ, Lưu phiếu. Không hỏi quỹ khi lưu. Chứng từ tổng hợp mỗi bút toán một thẻ Diễn giải, TK Nợ, TK Có, Số tiền, có nút Thêm bút toán.
 ## 25/11/2026
+- T938: Danh mục cửa hàng thêm cột Định mức chi phí NVL (%) và Định mức hao hụt (%) theo từng cửa hàng, nhập ở bảng hoặc trong hộp Chi tiết cửa hàng (có nút Lưu).
 - T935: Danh sách Xuất kho định lượng thêm cột Kênh bán, Mã đơn POS. Nút Tạo xuất kho định lượng: xuất bổ sung món thiếu hoặc tạo lại toàn bộ theo cửa hàng, thời gian, nhóm món, món; có bước xác nhận và thanh tiến trình. Dải cảnh báo món chưa tạo xuất kho định lượng hiện từ đầu, tạo lại toàn bộ chỉ làm số món thiếu giảm hoặc giữ nguyên.
 
 ## 24/11/2026
