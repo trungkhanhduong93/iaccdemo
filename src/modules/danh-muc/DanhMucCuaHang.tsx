@@ -60,8 +60,11 @@ export function DanhMucCuaHang({ sc, mod }: ScreenProps) {
     { k: 'nguon', t: 'Nguồn', cls: 'dim' },
     // Cách tính chi phí NVL chung cả công ty, chọn ở Thông tin đơn vị, không còn theo cửa hàng (T767)
     // Định mức theo cửa hàng, nhập % ngay tại bảng (T938)
-    { k: 'dmNvl', t: 'Định mức chi phí NVL (%)', w: 190, r: (r: Row) => <ODinhMuc cn={String(r.id)} ten={String(r.ten)} k="nvl" /> },
-    { k: 'dmHaoHut', t: 'Định mức hao hụt (%)', w: 170, r: (r: Row) => <ODinhMuc cn={String(r.id)} ten={String(r.ten)} k="haoHut" /> },
+    // Chỉ gói Plus, Pro
+    ...(s.goi !== 'S' ? [
+      { k: 'dmNvl', t: 'Định mức chi phí NVL (%)', w: 190, r: (r: Row) => <ODinhMuc cn={String(r.id)} ten={String(r.ten)} k="nvl" /> },
+      { k: 'dmHaoHut', t: 'Định mức hao hụt (%)', w: 170, r: (r: Row) => <ODinhMuc cn={String(r.id)} ten={String(r.ten)} k="haoHut" /> },
+    ] : []),
     // Mọi gói: bật, tắt tự động đồng bộ phiếu thu, chi lập trên FABi theo cửa hàng, (T264)
     { k: 'dongBo', t: 'Đồng bộ thu chi FABi', w: 210, r: (r: Row) => {
       const bat = batDongBoThuChi(s, String(r.id))
@@ -224,7 +227,8 @@ function HopChiTietCn({ r, onDong, onDoiCty }: { r: Row; onDong: () => void; onD
   const bat = batDongBoThuChi(s, id)
   // Định mức nhập nháp trong hộp, bấm Lưu mới ghi (T938)
   const [dm, setDm] = useState({ nvl: String(dinhMucCh(s, id, 'nvl') ?? ''), haoHut: String(dinhMucCh(s, id, 'haoHut') ?? '') })
-  const doiDm = dm.nvl !== String(dinhMucCh(s, id, 'nvl') ?? '') || dm.haoHut !== String(dinhMucCh(s, id, 'haoHut') ?? '')
+  const coDm = s.goi !== 'S'   // định mức chỉ có ở gói Plus, Pro
+  const doiDm = coDm && (dm.nvl !== String(dinhMucCh(s, id, 'nvl') ?? '') || dm.haoHut !== String(dinhMucCh(s, id, 'haoHut') ?? ''))
   const luuDm = () => {
     const so = (t: string) => { const x = t.trim().replace(',', '.'); return x === '' ? undefined : Number(x) }
     const a = so(dm.nvl), b = so(dm.haoHut)
@@ -247,10 +251,12 @@ function HopChiTietCn({ r, onDong, onDoiCty }: { r: Row; onDong: () => void; onD
     ['Khu vực', r.kv],
     ['Kho', r.kho],
     ['Nguồn', r.nguon],
-    ['Định mức chi phí NVL', <span className="dmcn-dm"><input className="inp" inputMode="decimal" placeholder="Chưa đặt" aria-label="Định mức chi phí NVL (%)"
-      value={dm.nvl} onChange={e => setDm(x => ({ ...x, nvl: e.target.value }))} /><small>%</small></span>],
-    ['Định mức hao hụt', <span className="dmcn-dm"><input className="inp" inputMode="decimal" placeholder="Chưa đặt" aria-label="Định mức hao hụt (%)"
-      value={dm.haoHut} onChange={e => setDm(x => ({ ...x, haoHut: e.target.value }))} /><small>%</small></span>],
+    ...(coDm ? [
+      ['Định mức chi phí NVL', <span className="dmcn-dm"><input className="inp" inputMode="decimal" placeholder="Chưa đặt" aria-label="Định mức chi phí NVL (%)"
+        value={dm.nvl} onChange={e => setDm(x => ({ ...x, nvl: e.target.value }))} /><small>%</small></span>],
+      ['Định mức hao hụt', <span className="dmcn-dm"><input className="inp" inputMode="decimal" placeholder="Chưa đặt" aria-label="Định mức hao hụt (%)"
+        value={dm.haoHut} onChange={e => setDm(x => ({ ...x, haoHut: e.target.value }))} /><small>%</small></span>],
+    ] as [string, React.ReactNode][] : []),
     ['Đồng bộ thu chi FABi', (
       <span className="dmcn-db">
         <button type="button" role="switch" aria-checked={bat} aria-label={`Tự động đồng bộ thu chi FABi ${r.ten}`} className={`ds-ct${bat ? ' on' : ''}`}
@@ -268,7 +274,7 @@ function HopChiTietCn({ r, onDong, onDoiCty }: { r: Row; onDong: () => void; onD
           {dong.map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}
         </dl>
         <div className="ds-chan"><button type="button" className="btn" onClick={onDong}>{doiDm ? 'Huỷ' : 'Đóng'}</button>
-          <button type="button" className="btn pri" disabled={!doiDm} onClick={luuDm}>Lưu</button></div>
+          {coDm && <button type="button" className="btn pri" disabled={!doiDm} onClick={luuDm}>Lưu</button>}</div>
       </div>
     </div>,
     document.body,
