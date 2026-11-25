@@ -162,9 +162,9 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
           { k: 'ten', nhan: 'Tên hàng hoá', kieu: 'chu', batBuoc: true, caHang: true, cot: 'ITEM_NAME' },
           { k: 'nhom', nhan: 'Nhóm hàng hoá', kieu: 'chon', ds: TEN_NHOM_HANG, cot: 'ITEM_CLASS_ID' },
           // loại hàng hoá theo iPOS Inventory; Bán thành phẩm chỉ gói Pro (PhuongXT 11/10/2026, T144)
-          { k: 'loai', nhan: 'Loại hàng hoá', kieu: 'chon', ds: LOAI_HANG, goi: ['S', 'PL'], cot: 'ITEM_TYPE_ID' },
-          { k: 'loai', nhan: 'Loại hàng hoá', kieu: 'chon', ds: LOAI_HANG_PRO, goi: ['PR'], cot: 'ITEM_TYPE_ID' },
-          { k: 'dvt', nhan: 'Đơn vị tính', kieu: 'chon', ds: TEN_DVT, nhanDs: nhanDvt, cot: 'UNIT_ID' },
+          { k: 'loai', nhan: 'Loại hàng hoá', kieu: 'chon', ds: LOAI_HANG, batBuoc: true, goi: ['S', 'PL'], cot: 'ITEM_TYPE_ID' },
+          { k: 'loai', nhan: 'Loại hàng hoá', kieu: 'chon', ds: LOAI_HANG_PRO, batBuoc: true, goi: ['PR'], cot: 'ITEM_TYPE_ID' },
+          { k: 'dvt', nhan: 'Đơn vị tính', kieu: 'chon', ds: TEN_DVT, nhanDs: nhanDvt, batBuoc: true, cot: 'UNIT_ID' },
           { k: 'dvtPhu', nhan: 'ĐVT phụ', kieu: 'chon', ds: TEN_DVT, nhanDs: nhanDvt, goi: ['PR'], cot: 'UNIT_ID_EXTRA' },   // gói Standard không có quy đổi ĐVT nên bỏ (T144); gói Plus bỏ (T719)
           { k: 'barcode', nhan: 'Mã vạch', kieu: 'chu', goi: ['PR'], cot: 'BARCODE' },   // gói Plus bỏ (T719)
           { k: 'thuongHieu', nhan: 'Thương hiệu', kieu: 'chon', ds: TEN_THUONG_HIEU, chiDoc: (v, s) => s?.goi === 'S' },   // thương hiệu FABi (T151), gói Standard chỉ xem
