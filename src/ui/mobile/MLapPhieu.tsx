@@ -6,6 +6,7 @@ import { dongCua, nguoiTaoMau, tkTheoLyDo, ttNghiepVu, type Dong } from '../gene
 import { duongDan, tenMan } from '../../app/registry'
 import { cuaHangHienTai, gtgtTyLe, ngayDauNam, truocDauNam, useSession } from '../../app/session'
 import { giamThueHang } from '../../modules/ban-hang/giam-thue'
+import { taoXdlBanTay } from '../../modules/ban-hang/xdl-ban-tay'
 import { cauHinhHddt, hdCua, khachTheoTen, kyHieuDung, kyHieuTheoCh, laKhachCty, phatHanhHd, thieuKhach } from '../../modules/ban-hang/hddt'
 import { KENH_BAN } from '../../modules/bao-cao/tt152'
 import { type Goi, kieuGhiSoDv } from '../../app/plan'
@@ -920,6 +921,10 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
   const [cuaHang, setCuaHang] = useState(() => (gocData?.cn ? String(gocData.cn) : cnChon?.ten ?? ''))
   const tenLoai = loai?.ten ?? (gocData?.tenLoai ? String(gocData.tenLoai) : tenMan(sc))
   const man = `${mod.key}/${sc.slug}`
+  // Xuất định lượng (gói Plus, như web T936): bật thì lưu xong sinh luôn phiếu xuất kho định lượng, số phiếu hiện ở Tham chiếu
+  const coXdl = laBanTay && s.goi === 'PL'
+  const xdlDaCo = coXdl && row ? String(row._xdlSo ?? '') : ''
+  const [xdl, setXdl] = useState(() => coXdl && !row)
   const soCtDuKien = dangSua ? String(row?.so ?? gocData?.so ?? '') : soKeTiep(man, `${cfg.prefix}2610-`)
 
   const addedDt = useAddedCatalogRows('1.5')
@@ -1991,6 +1996,14 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
       // Tích Đã thanh toán khi sửa: lập phiếu chi số còn nợ, về màn xem phiếu mua (T662)
       if (nhom === 'mua' && traKhiSua && conLaiTt > 0) {
         const soChi = lapPhieuChiTraNcc({
+    // Xuất định lượng (T936, như web): sinh phiếu xuất kho định lượng sau khi chứng từ đã ghi, số phiếu vào Tham chiếu
+    const xuatXdl = () => {
+      if (!coXdl || !xdl || xdlDaCo) return ''
+      const so = taoXdlBanTay(idLuu, s.ten, ngayChiTiet)
+      ghiNhatKy(man, idLuu, soCt, s.ten, `Tạo xuất kho định lượng ${so}`)
+      return `, đã tạo xuất kho định lượng ${so}`
+    }
+
           hinhThuc: hinhThucTt === 'chuyenkhoan' ? 'chuyenkhoan' : 'tienmat',
           quy,
           ngay: ngayChiTiet,
@@ -2013,7 +2026,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
         nav(`${path}/${row!.id}`, { replace: true })
         return
       }
-      toast(`Đã lưu thay đổi ${soCt}${xuatHd()}`)
+      toast(`Đã lưu thay đổi ${soCt}${xuatHd()}${xuatXdl()}`)
       if (window.history.state && window.history.state.idx > 0) {
         nav(-1)
       } else {
@@ -2134,7 +2147,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
     }, s.ten)
     ghiNhatKy(man, idLuu, soCt, s.ten, traTu ? `Thêm mới chứng từ, trả lại hàng của ${traTu.so}` : 'Thêm mới chứng từ')
     ganTraVaoPhieuMua(idLuu, soCt)
-    toast(`Đã lưu ${soCt}${xuatHd()}`)
+    toast(`Đã lưu ${soCt}${xuatHd()}${xuatXdl()}`)
 
     if (tour) {
       baoDaLuu({ man, id: idLuu, so: soCt })
@@ -2854,6 +2867,27 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                     role="checkbox"
                     aria-checked={hinhThucTt !== 'congno'}
                     disabled={Boolean(ctTtCon(row))}
+                {/* Bán hàng lập tay (T936): hàng trên Xuất định lượng, Xuất HĐĐT; Thanh toán ngay xuống hàng dưới, tích mới hiện ô chọn quỹ */}
+                {laBanTay && (
+                  <div className="m-t656-tich-hang">
+                    {coXdl && (
+                      <button type="button" role="checkbox" aria-checked={Boolean(xdlDaCo) || xdl} disabled={Boolean(xdlDaCo)}
+                        className={`m-t655-tich ${xdlDaCo || xdl ? 'on' : ''}`} onClick={() => setXdl(v => !v)}>
+                        <span className="hop">
+                          {(xdlDaCo || xdl) && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M5 12l5 5L20 7" /></svg>}
+                        </span>
+                        {xdlDaCo ? 'Đã xuất định lượng' : 'Xuất định lượng'}
+                      </button>
+                    )}
+                    <button type="button" role="checkbox" aria-checked={Boolean(hdDaXuat) || phatHd} disabled={Boolean(hdDaXuat)}
+                      className={`m-t655-tich ${hdDaXuat || phatHd ? 'on' : ''}`} onClick={() => setPhatHd(v => !v)}>
+                      <span className="hop">
+                        {(hdDaXuat || phatHd) && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M5 12l5 5L20 7" /></svg>}
+                      </span>
+                      {hdDaXuat ? 'Đã xuất HĐĐT' : 'Xuất HĐĐT'}
+                    </button>
+                  </div>
+                )}
                     className={`m-t655-tich ${hinhThucTt !== 'congno' ? 'on' : ''}`}
                     onClick={() => {
                       setHinhThucTt(hinhThucTt === 'congno' ? 'tienmat' : 'congno')
@@ -2867,12 +2901,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                     </span>
                     {laBanTay ? 'Thanh toán ngay' : 'Đã thanh toán'}
                   </button>
-                  {laBanTay ? (hdDaXuat ? <span className="m-t655-tich">Đã xuất HĐĐT</span> : (
-                    <label className="m-t655-tich">
-                      <input type="checkbox" className="bat-tat" checked={phatHd} onChange={e => setPhatHd(e.target.checked)} />
-                      Xuất HĐĐT
-                    </label>
-                  )) : <button
+                  {laBanTay ? null : <button
                     type="button"
                     role="checkbox"
                     aria-checked={nhanKemHd}

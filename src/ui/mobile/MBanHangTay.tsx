@@ -15,6 +15,7 @@ import type { TraTu } from '../generic/ChungTuForm'
 import { dtDong } from '../../modules/ban-hang/BangHangBan'
 import { giamThueHang } from '../../modules/ban-hang/giam-thue'
 import { HopXemHd, HopXuatHddt, TEN_LOAI_CT, dsHdMoiCon, hdCua, hdGocCua, type CtLq, type HdDaXuat, type LoaiCt, laHdMoiCua, loaiCtCua, ttHdGoc } from '../../modules/ban-hang/hddt'
+import { DI_XDL } from '../../modules/ban-hang/xdl-ban-tay'
 import { MChon } from './MChon'
 import { MChonKhoangNgay } from './MChonKhoangNgay'
 import { MDsChungTuChuan, MDsDongPhieu, HangTabsBanHang } from './MDsChungTuChuan'
@@ -144,6 +145,8 @@ export const MBanHangTay: FC<MBanHangTayProps> = ({ sc, mod, rows, duong, tabTay
     // Phiếu thu, báo có lập khi Thanh toán ngay (T855) và các phiếu thu lập sau, đứng đầu như phiếu mua; bấm mở bên Thu chi
     ...[ctTtCon(ct), ...dsTtCon(ct)].flatMap(c => (c ? [c] : []))
       .map(c => ({ so: c.so, ten: 'Chứng từ thu tiền', mo: () => nav(`/app/tien/2-1-1/${c.id}`) })),
+    // Phiếu xuất kho định lượng sinh cùng chứng từ (T936, như web): bấm mở phiếu bên Bán hàng
+    ...(ct._xdlSo ? [{ so: String(ct._xdlSo), ten: 'Xuất kho định lượng', mo: () => nav(`${DI_XDL}/bt-${ct.id}`) }] : []),
     ...(hdGoc && coCt(hdGoc.id) ? [{ so: hdGoc.so, ten: 'Chứng từ gốc', mo: () => setIdXem(hdGoc.id) }] : []),
     ...([ct._huyBan, ct._hdTt] as (CtLq | undefined)[]).filter((c): c is CtLq => Boolean(c) && coCt(c!.id))
       .map(c => ({ so: c.so, ten: TEN_LOAI_CT[c.loai], mo: () => setIdXem(c.id) })),

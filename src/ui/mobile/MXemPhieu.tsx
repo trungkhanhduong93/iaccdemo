@@ -13,6 +13,7 @@ import { dtDong } from '../../modules/ban-hang/BangHangBan'
 import { giamThueHang } from '../../modules/ban-hang/giam-thue'
 import { useDsPhieuDcn } from '../../modules/kho/BangDieuChuyen'
 import { useDsPhieuSx } from '../../modules/kho/BangSanXuat'
+import { useDsPhieuXdl } from '../../modules/kho/xuat-dinh-luong'
 import { SX, TT_SX } from '../../modules/kho/san-xuat'
 import { DCN } from '../../modules/kho/dieu-chuyen'
 import { MAN_DC } from '../../modules/kho/dieu-chinh'
@@ -66,7 +67,14 @@ export const MXemPhieu: FC<MXemPhieuProps> = ({ sc, mod, id }) => {
   const { rows: rowsGoc } = useDongChungTu(sc, mod)
   const rowsDcn = useDsPhieuDcn(cfgMan.dieuChuyen ?? 'xdc')
   const rowsSx = useDsPhieuSx(cfgMan.sanXuat ?? 'xsc')
-  const rows = cfgMan.dieuChuyen ? rowsDcn : cfgMan.sanXuat ? rowsSx : rowsGoc
+  // Xuất kho định lượng (T936): phiếu sinh từ chứng từ bán hàng lập tay không nằm trong dữ liệu chung, đọc từ danh sách riêng
+  const laXdl = cfgMan.prefix === 'XDL'
+  const phieuXdl = useDsPhieuXdl()
+  const rowsXdl = useMemo<Row[]>(() => !laXdl ? [] : phieuXdl.filter(p => p.so).map(p => ({
+    id: p.id, so: p.so, ngay: p.ngay, cn: p.cn, doiTuong: p.cn, dienGiai: p.ghiChu, tong: p.tong, tt: 'ghiso', _kho: p.cn,
+    _dong: p.dong.flatMap(m => m.nvl).map(n => ({ ma: n.ma, ten: n.ten, dvt: n.dvt, sl: n.sl, gia: n.gia, tien: n.tien, ts: 0, thue: 0 })),
+  })), [laXdl, phieuXdl])
+  const rows = laXdl ? rowsXdl : cfgMan.dieuChuyen ? rowsDcn : cfgMan.sanXuat ? rowsSx : rowsGoc
 
   const row = useMemo(() => rows.find(r => String(r.id) === String(id)), [rows, id])
 
