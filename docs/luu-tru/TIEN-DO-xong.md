@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T935 | Xuất kho định lượng, danh sách: cột Kênh bán, Mã đơn POS; dải món sót sau khi tạo lại; hộp thoại Tạo xuất kho định lượng (xuất bổ sung, tạo lại toàn bộ, nhóm món, xác nhận, thanh tiến trình) | dinhlanphuongipacc | 25/11/2026 | [nhật ký](../nhat-ky/2026-11-25-dinhlanphuongipacc-xuat-kho-dinh-luong-danh-sach.md) |
 | T929 | Điện thoại gói Plus: Danh sách phiếu kho hiện tiền (trừ Kiểm kê), CTTH sang khung danh sách chuẩn, form lập Điều chuyển vỏ m-t655, chân Tổng tiền + Huỷ / Lưu phiếu | Trum | 25/11/2026 | [2026-11-25-trum-kho-ctth-khuon-mua](../nhat-ky/2026-11-25-trum-kho-ctth-khuon-mua.md) |
 | T930 | Điện thoại gói Plus: Màn xem Nhập kho, Xuất huỷ, Xuất khác, Điều chuyển, Điều chỉnh, CTTH theo khuôn Nhập mua: thẻ Tổng giá trị, Thông tin chung m-t655-gon, chân Xoá + Sửa phiếu | Trum | 25/11/2026 | [2026-11-25-trum-kho-ctth-khuon-mua](../nhat-ky/2026-11-25-trum-kho-ctth-khuon-mua.md) |
 | T931 | Điện thoại gói Plus: Form lập Nhập kho, Xuất huỷ, Xuất khác, CTTH theo khuôn Nhập mua: thẻ đầu m-t655, CTTH mỗi bút toán một thẻ, chân Tổng tiền + Huỷ / Lưu phiếu | Trum | 25/11/2026 | [2026-11-25-trum-kho-ctth-khuon-mua](../nhat-ky/2026-11-25-trum-kho-ctth-khuon-mua.md) |
