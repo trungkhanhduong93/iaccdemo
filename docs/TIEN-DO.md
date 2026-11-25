@@ -11,6 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T937 | Cấu hình kế toán: gói Free, Standard không có bật tắt Giảm thuế GTGT, giảm thuế theo FABi; gói Plus, Pro mới cấu hình được | Trum | Đang làm | `HeThong.tsx`, `giam-thue.ts`, `truong-dm.ts` |
 | T933 | `tools/kiem_tra.py` mục T870/T871 (Thẻ kho máy tính) chờ `.bc-ban-du-lieu table.tbl` quá 8 giây, làm `--nhanh` dừng giữa chừng. Hỏng cả trên `main` trước T929–T931 | | Chờ | Ghi lúc làm T929–T931 (25/11). `tools/kiem_tra.py:5557`. Xem màn Thẻ kho còn ra bảng không, sửa màn hoặc sửa bộ chọn |
 | T893 | Form Sửa danh mục không lưu được thay đổi của dòng mẫu (chỉ lưu dòng thêm trong phiên, `CatalogScreen.tsx` dòng ~660). Nhập Excel T892 đã có lớp ghi đè `ghiDeCatalogRow` trong `danhMucStore.ts`, form Sửa có thể dùng lại | Trum | Chưa làm | Thấy khi làm T892 |
 | T882 | Tồn kho ban đầu trên điện thoại: danh sách thẻ, chọn nhiều, Thiết lập hàng loạt, Xoá | | Chờ | Trum dời sang phiên sau (18/11/2026). Mẫu `backup/mau-T879/Dt*.dc.html`, spec mục Việc T882 trong `backup/spec-T879-T882.md` |
