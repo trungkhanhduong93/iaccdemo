@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard nhà hàng - IACC Cloud (mockup)</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<style>
+:root{
+  --surface-1:#f5f4ef;--surface-2:#ffffff;
+  --text-primary:#1a1a18;--text-secondary:#5c5b56;--text-muted:#898781;
+  --text-success:#2f7d32;--text-danger:#b3261e;
+  --border:rgba(11,11,11,.10);--border-strong:rgba(11,11,11,.25);
+  --bg-neutral:rgba(11,11,11,.05);
+  --radius:8px;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --surface-1:#151515;--surface-2:#1f1f1f;
+    --text-primary:#f0efec;--text-secondary:#c3c2b7;--text-muted:#898781;
+    --text-success:#6fcf73;--text-danger:#f28b82;
+    --border:rgba(255,255,255,.10);--border-strong:rgba(255,255,255,.25);
+    --bg-neutral:rgba(255,255,255,.07);
+  }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--surface-1);color:var(--text-primary);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.4}
+.wrap{max-width:1100px;margin:0 auto;padding:16px}
+
+.d{font-size:13px;color:var(--text-primary)}
+.row{display:grid;gap:10px;margin-bottom:10px}
+.r4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.r2{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+.sp2{grid-column:span 2}
+@media(max-width:700px){.r4{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.c{background:var(--surface-2);border:0.5px solid var(--border);border-radius:12px;padding:12px 14px;min-width:0;display:flex;flex-direction:column}
+.l{font-size:12px;color:var(--text-secondary);margin:0 0 4px}
+.v{font-size:22px;font-weight:500;margin:0;font-variant-numeric:tabular-nums}
+.s{font-size:12px;color:var(--text-muted);margin:2px 0 0}
+.up{color:var(--text-success)}.dn{color:var(--text-danger)}
+.h{font-size:13px;font-weight:500;margin:0 0 8px;display:flex;justify-content:space-between;align-items:baseline;gap:6px;flex-wrap:wrap}
+.h .u{font-size:11px;font-weight:400;color:var(--text-muted)}
+.bar{height:8px;background:var(--bg-neutral);border-radius:4px;overflow:hidden;display:flex;gap:2px;margin:2px 0 8px}
+.bar i{display:block;height:100%}
+.t{width:100%;border-collapse:collapse;font-size:12px;margin-top:auto}
+.t td,.t th{padding:4px 0;border-top:0.5px solid var(--border)}
+.t tr:first-child td,.t tr:first-child th{border-top:none}
+.t td:last-child{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.t4 td:not(:first-child),.t4 th:not(:first-child){text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.t4 th{font-weight:400;font-size:11px;color:var(--text-muted);text-align:left;border-bottom:0.5px solid var(--border-strong)}
+.t4 tr.tot td{font-weight:500;border-top:0.5px solid var(--border-strong)}
+.tc th{font-weight:400;font-size:11px;color:var(--text-muted);text-align:right;padding:2px 0 6px;border-bottom:0.5px solid var(--border-strong)}
+.tc th:first-child{text-align:left}
+.tc td:not(:first-child){text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.tc tr.f td{font-weight:500;background:var(--bg-neutral);border-top:0.5px solid var(--border-strong)}
+.tc tr.f td:first-child{padding-left:6px}.tc tr.f td:last-child{padding-right:6px}
+.tc tr.m td{color:var(--text-secondary);font-size:11px}
+.sq{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:5px}
+.ln{display:inline-block;width:14px;height:0;border-top:2px solid;margin-right:5px;vertical-align:middle}
+.lg{display:flex;gap:12px;flex-wrap:wrap;font-size:11px;color:var(--text-secondary);margin-bottom:6px}
+.pill{display:inline-block;font-size:12px;padding:5px 10px;border-radius:8px;background:var(--bg-neutral)}
+.cv{position:relative;width:100%}
+select{font:inherit;font-size:12px;height:30px;min-width:140px;padding:0 8px;border:0.5px solid var(--border-strong);border-radius:var(--radius);background:var(--surface-2);color:var(--text-primary)}
+.m{background:var(--bg-neutral);border-radius:8px;padding:10px 12px;min-width:0}
+.m p{margin:0}
+.m .v{font-size:20px}
+.sub{border-top:0.5px solid var(--border);margin-top:10px;padding-top:10px}
+.cn{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));flex:1}
+.cn>div{min-width:0;display:flex;flex-direction:column}
+.cn>div+div{border-left:0.5px solid var(--border);padding-left:16px}
+@media(max-width:700px){.cn>div+div{border-left:none;padding-left:0;border-top:0.5px solid var(--border);padding-top:12px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="d">
+
+<!-- Bộ lọc -->
+<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;align-items:center">
+<span class="pill"><i class="ti ti-calendar" aria-hidden="true"></i> Tháng 11/2026</span>
+<span class="pill">So với: tháng trước</span>
+<select id="st" aria-label="Chọn cửa hàng"><option value="-1">Tất cả cửa hàng</option><option value="0">Quận 1</option><option value="1">Quận 3</option><option value="2">Thủ Đức</option><option value="3">Bình Thạnh</option></select>
+</div>
+
+<!-- Hàng 1: bốn chỉ số đầu trang -->
+<div class="row r4">
+<div class="c"><p class="l">Doanh thu</p><p class="v">1.420tr</p><p class="s"><span class="up">▲ 8,4%</span> so với T10</p></div>
+<div class="c"><p class="l">Chi phí NVL</p><p class="v">470tr</p><p class="s"><span class="dn">▲ 5,6%</span> · 33,1% DT</p></div>
+<div class="c"><p class="l">Chi phí hoạt động</p><p class="v">720tr</p><p class="s"><span class="dn">▲ 12,5%</span> · 50,7% DT</p></div>
+<div class="c"><p class="l">Lợi nhuận</p><p class="v">230tr</p><p class="s"><span class="up">▲ 2,2%</span> · biên 16,2%</p></div>
+</div>
+
+<!-- Hàng 2: ba khung cao bằng nhau (grid tự kéo giãn) -->
+<div class="row r4">
+<div class="c sp2"><p class="h">Doanh thu và biên LN gộp theo kênh <span class="u">triệu · %</span></p>
+<div class="bar"><i style="width:52%;background:#2a78d6"></i><i style="width:14%;background:#eb6834"></i><i style="width:26%;background:#1baf7a"></i><i style="width:8%;background:#eda100"></i></div>
+<table class="t t4">
+<tr><th>Kênh</th><th>Doanh thu</th><th>Tỷ trọng</th><th>Biên LN gộp</th></tr>
+<tr><td><span class="sq" style="background:#2a78d6"></span>Tại chỗ</td><td>738</td><td>52%</td><td>69%</td></tr>
+<tr><td><span class="sq" style="background:#eb6834"></span>Mang đi</td><td>199</td><td>14%</td><td>68%</td></tr>
+<tr><td><span class="sq" style="background:#1baf7a"></span>App giao hàng</td><td>369</td><td>26%</td><td class="dn">60%</td></tr>
+<tr><td><span class="sq" style="background:#eda100"></span>Đặt trước</td><td>114</td><td>8%</td><td>73%</td></tr>
+<tr class="tot"><td>Tổng</td><td>1.420</td><td>100%</td><td>66,9%</td></tr></table></div>
+
+<div class="c"><p class="h">Cơ cấu chi phí <span class="u">1.190tr · %</span></p>
+<div class="bar"><i style="width:39.5%;background:#2a78d6"></i><i style="width:33.8%;background:#eb6834"></i><i style="width:11.3%;background:#1baf7a"></i><i style="width:4.6%;background:#eda100"></i><i style="width:10.8%;background:#b4b2a9"></i></div>
+<table class="t">
+<tr><td><span class="sq" style="background:#2a78d6"></span>NVL</td><td>39,5%</td></tr>
+<tr><td><span class="sq" style="background:#eb6834"></span>Nhân sự</td><td>33,8%</td></tr>
+<tr><td><span class="sq" style="background:#1baf7a"></span>Mặt bằng</td><td>11,3%</td></tr>
+<tr><td><span class="sq" style="background:#eda100"></span>Phí app</td><td>4,6%</td></tr>
+<tr><td><span class="sq" style="background:#b4b2a9"></span>Khác</td><td>10,8%</td></tr></table></div>
+
+<div class="c"><p class="h">Tiền và ngân hàng <span class="u">286tr</span></p>
+<div class="bar"><i style="width:8.4%;background:#eb6834"></i><i style="width:62.9%;background:#2a78d6"></i><i style="width:28.7%;background:#1baf7a"></i></div>
+<table class="t">
+<tr><td><span class="sq" style="background:#eb6834"></span>Quỹ tiền mặt</td><td>24 · 8,4%</td></tr>
+<tr><td><span class="sq" style="background:#2a78d6"></span>Vietcombank</td><td>180 · 62,9%</td></tr>
+<tr><td><span class="sq" style="background:#1baf7a"></span>Techcombank</td><td>82 · 28,7%</td></tr></table></div>
+</div>
+
+<!-- Hàng 3: Kết quả kinh doanh 13 tháng + Thu chi 13 tháng (cùng hàng) -->
+<div class="row r2">
+<div class="c">
+<p class="h">Kết quả kinh doanh 13 tháng <span class="u">triệu đồng · biên ròng %</span></p>
+<div class="lg"><span><span class="sq" style="background:#2a78d6"></span>Doanh thu</span><span><span class="sq" style="background:#eda100"></span>Chi phí NVL</span><span><span class="ln" style="border-color:#1baf7a"></span>Lợi nhuận</span><span><span class="ln" style="border-color:#eb6834;border-top-style:dashed"></span>Biên LN ròng (%)</span></div>
+<div class="cv" style="height:290px"><canvas id="a" role="img" aria-label="Doanh thu, chi phí NVL, lợi nhuận và biên lợi nhuận ròng 13 tháng">Doanh thu tăng từ 1010 lên 1420 triệu, lợi nhuận từ 121 lên 230 triệu.</canvas></div></div>
+
+<div class="c">
+<p class="h">Thu chi 13 tháng <span class="u">triệu đồng</span></p>
+<div class="lg"><span><span class="sq" style="background:#2a78d6"></span>Thu</span><span><span class="sq" style="background:#b4b2a9"></span>Chi</span><span><span class="ln" style="border-color:#1baf7a;border-top-style:dashed"></span>Chênh lệch thu chi</span><span><span class="ln" style="border-color:#eb6834"></span>Số dư cuối kỳ</span></div>
+<div class="cv" style="height:290px"><canvas id="e" role="img" aria-label="Thu chi 13 tháng, chênh lệch thu chi và số dư cuối kỳ">Thu cao hơn chi mọi tháng, số dư cuối kỳ T11/26 là 286 triệu.</canvas></div></div>
+</div>
+
+<!-- Hàng 4: Chi phí NVL và hao hụt, mỗi biểu đồ có đường định mức -->
+<div class="row"><div class="c">
+<p class="h">Chi phí NVL và hao hụt 13 tháng</p>
+<div class="row r2" style="margin-bottom:0">
+<div>
+<div class="lg"><span><span class="sq" style="background:#2a78d6"></span>Doanh thu</span><span><span class="sq" style="background:#eda100"></span>Chi phí NVL</span><span><span class="ln" style="border-color:#6250d6"></span>Tỷ lệ NVL (%)</span><span><span class="ln" style="border-color:#b4b2a9;border-top-style:dashed"></span><span id="lgdm">Định mức NVL</span></span></div>
+<div class="cv" style="height:250px"><canvas id="d" role="img" aria-label="Doanh thu, chi phí NVL và tỷ lệ NVL trên doanh thu 13 tháng so với định mức NVL">Tỷ lệ chi phí NVL dao động 31 đến 35 phần trăm doanh thu.</canvas></div>
+</div>
+<div>
+<div class="lg"><span><span class="sq" style="background:#eda100"></span>Giá trị hao hụt</span><span><span class="ln" style="border-color:#6250d6"></span>Tỷ lệ hao hụt (%)</span><span><span class="ln" style="border-color:#b4b2a9;border-top-style:dashed"></span><span id="lgdh">Định mức hao hụt</span></span></div>
+<div class="cv" style="height:250px"><canvas id="h" role="img" aria-label="Giá trị hao hụt NVL và tỷ lệ hao hụt 13 tháng so với định mức hao hụt">Tỷ lệ hao hụt dao động 2,1 đến 2,8 phần trăm, tháng 11 là 2,7 phần trăm.</canvas></div>
+</div>
+</div>
+</div></div>
+
+<!-- Hàng 5: công nợ + hao hụt cùng một dòng -->
+<div class="row r4">
+<div class="c sp2"><p class="h">Công nợ phải thu và phải trả <span class="u">triệu đồng · T11</span></p>
+<div class="cn">
+<div>
+<p class="l">Phải thu cuối kỳ</p><p class="v">38,4tr</p><p class="s"><span class="up">▲ 7,9tr (25,9%)</span> so với đầu kỳ</p>
+<div class="bar" style="margin-top:10px" role="img" aria-label="Đã thu 90,9 phần trăm, còn lại 9,1 phần trăm"><i style="width:90.9%;background:#2a78d6"></i><i style="width:9.1%;background:#eda100"></i></div>
+<table class="t">
+<tr><td><span class="sq" style="background:#2a78d6"></span>Đã thu trong kỳ</td><td>384,1 · 90,9%</td></tr>
+<tr><td><span class="sq" style="background:#eda100"></span>Còn lại cuối kỳ</td><td>38,4 · 9,1%</td></tr>
+<tr><td>Đầu kỳ</td><td>30,5</td></tr>
+<tr><td>Phát sinh trong kỳ</td><td>+ 392,0</td></tr></table>
+</div>
+<div>
+<p class="l">Phải trả cuối kỳ</p><p class="v">41,3tr</p><p class="s"><span class="dn">▲ 4,5tr (12,2%)</span> so với đầu kỳ</p>
+<div class="bar" style="margin-top:10px" role="img" aria-label="Đã trả 92,0 phần trăm, còn lại 8,0 phần trăm"><i style="width:92%;background:#2a78d6"></i><i style="width:8%;background:#eda100"></i></div>
+<table class="t">
+<tr><td><span class="sq" style="background:#2a78d6"></span>Đã trả trong kỳ</td><td>474,0 · 92,0%</td></tr>
+<tr><td><span class="sq" style="background:#eda100"></span>Còn lại cuối kỳ</td><td>41,3 · 8,0%</td></tr>
+<tr><td>Đầu kỳ</td><td>36,8</td></tr>
+<tr><td>Phát sinh trong kỳ</td><td>+ 478,5</td></tr></table>
+</div>
+</div>
+<p class="s" style="margin-top:8px">Phải thu trừ phải trả cuối kỳ: <span class="dn">− 2,9tr</span></p></div>
+<div class="c sp2"><p class="h">Hao hụt NVL</p>
+<p class="l">Giá trị hao hụt</p>
+<div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap">
+<p class="v" style="margin:0"><span id="hhv">12,7tr</span> <span id="hhr" style="font-size:14px;font-weight:400;color:var(--text-secondary)">· 2,7% giá trị NVL</span></p>
+<p class="s" id="hhq" style="margin:0;text-align:right"></p></div>
+<p class="s" id="hhd"></p>
+<div class="bar" id="hhbar" style="margin-top:10px"></div>
+<table class="t" id="hhtb"></table></div>
+</div>
+
+<!-- Hàng cuối: kết quả kinh doanh theo cửa hàng -->
+<div class="row"><div class="c"><p class="h">Kết quả kinh doanh theo cửa hàng <span class="u">T11 · triệu · %</span></p>
+<div class="lg"><span><span class="sq" style="background:#2a78d6"></span>Doanh thu</span><span><span class="sq" style="background:#eda100"></span>Chi phí NVL</span><span><span class="sq" style="background:#1baf7a"></span>Lợi nhuận</span><span><span class="ln" style="border-color:#eb6834;border-top-style:dashed"></span>Biên ròng</span></div>
+<div class="cv" style="height:260px"><canvas id="b" role="img" aria-label="Doanh thu, chi phí NVL, lợi nhuận và biên ròng bốn cửa hàng tháng 11">Quận 1 lãi 105 triệu, Quận 3 lãi 71, Thủ Đức lãi 30, Bình Thạnh lãi 24.</canvas></div></div></div>
+
+<p class="s" style="margin:0">Số liệu minh họa. Việc cần làm nằm ở Bàn làm việc, không đặt trên dashboard.</p>
+</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+/* ===== Màu và dữ liệu minh họa: thay bằng dữ liệu API khi làm thật ===== */
+var dk = matchMedia('(prefers-color-scheme: dark)').matches;
+var tick = '#898781', grid = dk ? '#2c2c2a' : '#e1e0d9', ring = dk ? '#1f1f1f' : '#ffffff';
+var M = ['T11/25','T12','T1','T2','T3','T4','T5','T6','T7','T8','T9','T10','T11/26'];
+var rev = [1010,1150,1230,1040,1100,1130,1180,1180,1240,1310,1275,1310,1420];   /* doanh thu */
+var pr  = [121,161,197,114,143,147,165,153,186,210,191,225,230];               /* lợi nhuận */
+var fc  = [33,33,31,35,34,33,32,33,32,34,33,34,33.1];                           /* tỷ lệ chi phí NVL / doanh thu, % */
+var hr  = [2.3,2.4,2.1,2.8,2.6,2.5,2.3,2.4,2.2,2.5,2.4,2.43,2.7];              /* tỷ lệ hao hụt / giá trị NVL, % */
+var share = [0.366,0.289,0.204,0.141];   /* tỷ trọng doanh thu từng cửa hàng (ước tính) */
+var adj   = [1.25,1.07,0.64,0.74];       /* hệ số biên LN ròng từng cửa hàng so với toàn bộ */
+var nadj  = [0.959,0.995,1.063,1.027];   /* hệ số tỷ lệ chi phí NVL từng cửa hàng so với toàn bộ */
+var hadj  = [0.85,0.95,1.2,1.15];        /* hệ số tỷ lệ hao hụt từng cửa hàng so với toàn bộ (ước tính) */
+var SR = [520,410,290,200], SN = [165,135,102,68], SP = [105,71,30,24];         /* theo cửa hàng, T11 */
+var thu = [985,1120,1195,1010,1070,1100,1150,1145,1205,1270,1240,1280,1380];
+var chi = [880,960,1000,930,940,980,1010,1010,1050,1100,1090,1070,1190];
+var net = thu.map(function(x,i){ return x - chi[i]; });                         /* chênh lệch thu chi */
+var bal = [140,175,220,190,210,205,225,230,245,260,255,270,286];               /* số dư cuối kỳ */
+var NHOM = [['Thịt, hải sản',0.559],['Rau củ',0.299],['Khác',0.142]];         /* cơ cấu hao hụt theo nhóm NVL */
+
+/* Danh mục cửa hàng: định mức khai báo cho từng cửa hàng, dùng làm đường định mức trên biểu đồ.
+   nvl    = định mức chi phí NVL, % doanh thu
+   haohut = định mức hao hụt, % giá trị NVL */
+var DM = [
+  {ten:'Quận 1',     nvl:32, haohut:2.0},
+  {ten:'Quận 3',     nvl:32, haohut:2.0},
+  {ten:'Thủ Đức',    nvl:33, haohut:2.5},
+  {ten:'Bình Thạnh', nvl:33, haohut:2.5}
+];
+/* k >= 0: định mức của cửa hàng đó; k = -1: bình quân gia quyền theo tỷ trọng doanh thu */
+function dinhMuc(k,key){
+  if(k >= 0) return DM[k][key];
+  var t = 0; for(var i=0;i<DM.length;i++) t += share[i]*DM[i][key];
+  return Math.round(t*10)/10;
+}
+
+/* ===== Hàm dùng chung ===== */
+function f(x){ return x.toLocaleString('vi-VN'); }
+function pc(x){ return x.toFixed(1).replace('.',','); }
+function ln(label,data,color,axis,dash){
+  return {type:'line',order:0,label:label,data:data,borderColor:color,backgroundColor:color,borderWidth:2,
+    borderDash:dash||[],pointRadius:3,pointBackgroundColor:color,pointBorderColor:ring,pointBorderWidth:2,
+    tension:0.25,yAxisID:axis||'y'};
+}
+function dmLine(label,k,key,axis){
+  var n = dinhMuc(k,key);
+  return {type:'line',order:0,label:label,data:M.map(function(){ return n; }),borderColor:'#b4b2a9',
+    borderDash:[5,4],borderWidth:2,pointRadius:0,yAxisID:axis};
+}
+function bar(label,data,color,w){
+  return {label:label,data:data,order:1,backgroundColor:color,borderRadius:3,maxBarThickness:w,yAxisID:'y'};
+}
+function sc(rot,dual,y1){
+  var s = {
+    x:{grid:{display:false},ticks:{color:tick,font:{size:11},autoSkip:false,maxRotation:rot},border:{color:grid}},
+    y:{beginAtZero:true,grid:{color:grid},ticks:{color:tick,font:{size:11},callback:f},border:{display:false}}
+  };
+  if(dual) s.y1 = {position:'right',min:y1.min,max:y1.max,grid:{drawOnChartArea:false},
+    ticks:{color:tick,font:{size:11},callback:function(v){return pc(v)+'%';}},border:{display:false}};
+  return s;
+}
+function opt(scales){
+  return {responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){
+      var l = c.dataset.label;
+      var p = l.indexOf('Biên')===0 || l.indexOf('Tỷ lệ')===0 || l.indexOf('Định mức')===0;
+      return l + ': ' + (p ? pc(c.parsed.y) + '%' : f(c.parsed.y) + ' tr');
+    }}}},scales:scales};
+}
+/* k = -1: tất cả cửa hàng; k = 0..3: từng cửa hàng. Trả về [doanh thu, chi phí NVL, lợi nhuận, biên ròng %] */
+function series(k){
+  var r=[],n=[],p=[],i;
+  for(i=0;i<13;i++){
+    if(k<0){ r.push(rev[i]); n.push(Math.round(rev[i]*fc[i]/100)); p.push(pr[i]); }
+    else{ var rr = rev[i]*share[k];
+      r.push(Math.round(rr));
+      n.push(Math.round(rr*fc[i]/100*nadj[k]));
+      p.push(Math.round(rr*(pr[i]/rev[i])*adj[k])); }
+  }
+  return [r,n,p,r.map(function(x,i){ return Math.round(p[i]/x*1000)/10; })];
+}
+function tyLeNvl(s){ return s[1].map(function(x,i){ return Math.round(x/s[0][i]*1000)/10; }); }
+/* Hao hụt: trả về [giá trị hao hụt (tr), tỷ lệ hao hụt (%)] */
+function haoHut(k,s){
+  var fx = k<0 ? 1 : hadj[k];
+  var rate = hr.map(function(x){ return Math.round(x*fx*100)/100; });
+  var val = s[1].map(function(n,i){ return Math.round(n*rate[i]/100*10)/10; });
+  return [val,rate];
+}
+
+/* ===== 1. Kết quả kinh doanh 13 tháng ===== */
+var s0 = series(-1), h0 = haoHut(-1,s0);
+var A = new Chart(document.getElementById('a'),{type:'bar',data:{labels:M,datasets:[
+  ln('Biên LN ròng',s0[3],'#eb6834','y1',[5,4]),
+  ln('Lợi nhuận',s0[2],'#1baf7a','y'),
+  bar('Doanh thu',s0[0],'#2a78d6',12),
+  bar('Chi phí NVL',s0[1],'#eda100',12)]},options:opt(sc(60,true,{min:0,max:25}))});
+
+/* ===== 2. Thu chi 13 tháng + số dư + chênh lệch ===== */
+new Chart(document.getElementById('e'),{type:'bar',data:{labels:M,datasets:[
+  ln('Số dư cuối kỳ',bal,'#eb6834'),
+  ln('Chênh lệch thu chi',net,'#1baf7a','y',[5,4]),
+  bar('Thu',thu,'#2a78d6',12),bar('Chi',chi,'#b4b2a9',12)]},options:opt(sc(60,false))});
+
+/* ===== 3. Chi phí NVL 13 tháng: cột doanh thu, cột chi phí NVL, đường tỷ lệ, đường định mức ===== */
+var D = new Chart(document.getElementById('d'),{type:'bar',data:{labels:M,datasets:[
+  dmLine('Định mức NVL',-1,'nvl','y1'),
+  ln('Tỷ lệ NVL / doanh thu',tyLeNvl(s0),'#6250d6','y1'),
+  bar('Doanh thu',s0[0],'#2a78d6',10),
+  bar('Chi phí NVL',s0[1],'#eda100',10)]},options:opt(sc(60,true,{min:28,max:38}))});
+
+/* ===== 4. Hao hụt NVL 13 tháng: cột giá trị hao hụt, đường tỷ lệ, đường định mức ===== */
+var H = new Chart(document.getElementById('h'),{type:'bar',data:{labels:M,datasets:[
+  dmLine('Định mức hao hụt',-1,'haohut','y1'),
+  ln('Tỷ lệ hao hụt',h0[1],'#6250d6','y1'),
+  bar('Giá trị hao hụt',h0[0],'#eda100',14)]},options:opt(sc(60,true,{min:0,max:4}))});
+
+/* ===== 5. Kết quả kinh doanh theo cửa hàng ===== */
+var SM = SR.map(function(x,i){ return Math.round(SP[i]/x*1000)/10; });
+new Chart(document.getElementById('b'),{type:'bar',data:{labels:['Quận 1','Quận 3','Thủ Đức','Bình Thạnh'],datasets:[
+  ln('Biên LN ròng',SM,'#eb6834','y1',[5,4]),
+  bar('Doanh thu',SR,'#2a78d6',22),bar('Chi phí NVL',SN,'#eda100',22),bar('Lợi nhuận',SP,'#1baf7a',22)]},
+  options:opt(sc(0,true,{min:0,max:25}))});
+
+/* ===== Chọn cửa hàng: cập nhật biểu đồ 1, 3, 4 và các ô tóm tắt T11 ===== */
+function dau(x){ return x>0 ? '▲ ' : (x<0 ? '▼ ' : ''); }
+function chonCuaHang(k){
+  var s = series(k), h = haoHut(k,s), i = 12, j = 11;
+  A.data.datasets[0].data = s[3]; A.data.datasets[1].data = s[2];
+  A.data.datasets[2].data = s[0]; A.data.datasets[3].data = s[1]; A.update();
+
+  var tl = tyLeNvl(s), dmN = dinhMuc(k,'nvl'), dmH = dinhMuc(k,'haohut');
+  var dN = D.data.datasets;
+  var nl = M.map(function(){ return dmN; });
+  dN[0].data = nl; dN[1].data = tl; dN[2].data = s[0]; dN[3].data = s[1]; D.update();
+  var dH = H.data.datasets, hl = M.map(function(){ return dmH; });
+  dH[0].data = hl; dH[1].data = h[1]; dH[2].data = h[0]; H.update();
+
+  document.getElementById('lgdm').textContent = 'Định mức NVL ' + pc(dmN) + '%';
+  document.getElementById('lgdh').textContent = 'Định mức hao hụt ' + pc(dmH) + '%';
+
+  var dv = Math.round((h[0][i]-h[0][j])*10)/10;
+  document.getElementById('hhv').textContent = pc(h[0][i]) + 'tr';
+  document.getElementById('hhd').innerHTML = '<span class="' + (dv>0?'dn':'up') + '">' + dau(dv) + pc(Math.abs(dv)) + 'tr</span> so với T10';
+
+  var chH = Math.round((h[1][i]-dmH)*10)/10;
+  document.getElementById('hhq').innerHTML = 'Định mức ' + pc(dmH) + '%, <span class="' + (chH>0?'dn':'up') + '">' + (chH>0?'vượt ':'thấp hơn ') + pc(Math.abs(chH)) + '%</span>';
+
+  var mau = ['#2a78d6','#eb6834','#1baf7a'];
+  document.getElementById('hhbar').innerHTML = NHOM.map(function(g,n){
+    return '<i style="width:' + (g[1]*100) + '%;background:' + mau[n] + '"></i>';
+  }).join('');
+  document.getElementById('hhtb').innerHTML = NHOM.map(function(g,n){
+    return '<tr><td><span class="sq" style="background:' + mau[n] + '"></span>' + g[0] + '</td><td>' + pc(h[0][i]*g[1]) + ' · ' + Math.round(g[1]*100) + '%</td></tr>';
+  }).join('');
+}
+document.getElementById('st').onchange = function(){ chonCuaHang(parseInt(this.value,10)); };
+chonCuaHang(-1);
+</script>
+</body>
+</html>
