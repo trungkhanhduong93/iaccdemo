@@ -19,6 +19,7 @@ import { MXuatBanPos } from './MXuatBanPos'
 import { MBanHangPro } from './MBanHangTay'
 import { MCongThuc } from './MCongThuc'
 import { MSoDuBanDau } from './MSoDuBanDau'
+import { MTonKhoBanDau } from './MTonKhoBanDau'
 import { MHoaDonDauVao } from './MHoaDonDauVao'
 import { MDuyetChungTu } from './MDuyetChungTu'
 import { MCanhBao, MChuyenTrangChu } from './MCanhBao'
@@ -98,6 +99,8 @@ export function manMobile(sc: ScreenDef, mod: ModuleDef): ComponentType<ScreenPr
 
   // T245: gói Free bỏ màn Số dư ban đầu riêng, đường dẫn cũ chuyển sang Danh mục Quỹ tiền
   if (mod.key === 'tien' && sc.slug === 'so-du-ban-dau' && sc.comp) return sc.comp
+  // Tồn kho ban đầu 5.1.12: mở từ Số dư ban đầu, khai tồn từng kho của cửa hàng đang đứng
+  if (mod.key === 'kho' && (sc.code === '5.1.12' || sc.slug === '5-1-12')) return MTonKhoBanDau
   // T189: Số dư ban đầu (10.1.3 và tien/so-du-ban-dau)
   if ((mod.key === 'tong-hop' && (sc.code === '10.1.3' || sc.slug === '10-1-3')) || (mod.key === 'tien' && sc.slug === 'so-du-ban-dau')) {
     return MSoDuBanDau

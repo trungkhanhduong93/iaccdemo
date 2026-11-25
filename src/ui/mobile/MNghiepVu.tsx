@@ -64,6 +64,7 @@ export function MNghiepVu() {
         sc.kind !== 'baocao' &&
         sc.slug !== 'bao-cao' &&
         nhanTab(sc) !== 'Báo cáo' &&
+        sc.code !== '5.1.12' &&   // Tồn kho ban đầu mở từ màn Số dư ban đầu, không là mục riêng của Nghiệp vụ
         !sc.voucher?.dieuChinh &&   // Xuất, Nhập điều chỉnh là tab trong màn Kiểm kê (T588)
         manMoTrenMobile(sc) &&
         (!anNgoaiGoi(s.goi) || moDuoc(sc, s.goi)) &&

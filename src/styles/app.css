@@ -50186,3 +50186,8 @@ td.xdl-cat > span { display: block; overflow: hidden; text-overflow: ellipsis; w
 .m-lp-than-cuon > .m-pb-nhom,
 .m-lp-than-cuon > .m-t601-hang-card,
 .m-lp-than-cuon > .f-them { flex-shrink: 0; }
+
+/* ── Số dư ban đầu điện thoại: danh sách 2 mục, màn Tồn kho ban đầu ── */
+.m-sdb-khung > .m-tkd-hang {
+  flex: none;
+}
