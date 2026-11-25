@@ -34,6 +34,13 @@ const LOAI_THU_CHI = [
 // Quỹ của từng loại phiếu, hiện thành nhãn cạnh số phiếu (T653)
 const QUY_THEO_LOAI: Record<string, string> = { thu: 'Tiền mặt', chi: 'Tiền mặt', bc: 'Ngân hàng', unc: 'Ngân hàng', cq: 'Chuyển quỹ' }
 
+// Menu Nghiệp vụ tách Thu chi thành Thu tiền, Chi tiền, Chuyển quỹ: màn mở với ?nhom=thu|chi|cq, chỉ hiện các loại phiếu của nhóm
+const NHOM_THU_CHI: Record<string, { ten: string; loai: string[] }> = {
+  thu: { ten: 'Thu tiền', loai: ['thu', 'bc'] },
+  chi: { ten: 'Chi tiền', loai: ['chi', 'unc'] },
+  cq: { ten: 'Chuyển quỹ', loai: ['cq'] },
+}
+
 function dinhDangThuNgay(chuoiNgay: string): string {
   const d = docNgay(chuoiNgay)
   if (isNaN(d.getTime())) return chuoiNgay
@@ -68,7 +75,10 @@ export const MDtThuChiDs: FC<ScreenProps> = ({ sc, mod }) => {
   const [chipTT, setChipTT] = useState('all')   // bỏ tab trạng thái, luôn hiện tất cả (PhuongXT 04/11/2026)
   const [moChonCnTruoc, setMoChonCnTruoc] = useState(false)
   const [dichDenMoi, setDichDenMoi] = useState<string | null>(null)
-  const [loaiChon, setLoaiChon] = useState<string>('')
+  const nhomK = sp.get('nhom') ?? ''
+  const nhom = NHOM_THU_CHI[nhomK]
+  const [loaiChon, setLoaiChon] = useState<string>(nhomK === 'cq' ? 'cq' : '')
+  useEffect(() => { setLoaiChon(nhomK === 'cq' ? 'cq' : '') }, [nhomK])
   const [timMo, setTimMo] = useState(false)
   const [tuKhoa, setTuKhoa] = useState('')
   const [sortMoiNhat, setSortMoiNhat] = useState(true)
@@ -135,10 +145,10 @@ export const MDtThuChiDs: FC<ScreenProps> = ({ sc, mod }) => {
   )
 
   // Loại phiếu của tab đang chọn, dùng cho Thêm mới (T539) và dòng Loại phiếu ở bộ lọc (T569); tab Tất cả có đủ
-  const dsLoaiTab = LOAI_THU_CHI.filter(l => loaiChon === 'tien-mat' ? l.k === 'chi' || l.k === 'thu'
+  const dsLoaiTab = LOAI_THU_CHI.filter(l => (!nhom || nhom.loai.includes(l.k)) && (loaiChon === 'tien-mat' ? l.k === 'chi' || l.k === 'thu'
     : loaiChon === 'ngan-hang' ? l.k === 'unc' || l.k === 'bc'
     : loaiChon === 'cq' ? l.k === 'cq'
-    : true)
+    : true))
   // Đổi tab thì loại phiếu đã chọn mà tab không có bị bỏ qua, không lọc ra danh sách trống
   const loaiPhieuLoc = (locVal.loaiPhieu ?? []).filter(k => dsLoaiTab.some(l => l.k === k))
   // Đổi tab khỏi Chuyển quỹ thì lọc Quỹ không được làm rỗng danh sách tab khác (T921)
@@ -152,6 +162,7 @@ export const MDtThuChiDs: FC<ScreenProps> = ({ sc, mod }) => {
         if (!trongKhoang(d, kn)) return false
       }
       if (cnChon && r.cn !== cnChon.ten) return false
+      if (nhom && !nhom.loai.includes(String(r.loai))) return false
 
       if (loaiChon) {
         if (loaiChon === 'tien-mat') {
@@ -181,7 +192,7 @@ export const MDtThuChiDs: FC<ScreenProps> = ({ sc, mod }) => {
       }
       return true
     })
-  }, [rows, kn, cnChon, loaiChon, locVal, quyLoc, loaiPhieuLoc])
+  }, [rows, kn, cnChon, nhom, loaiChon, locVal, quyLoc, loaiPhieuLoc])
 
   const chipsGoc = useMemo(() => dsChipTT(truocTT, ghi), [truocTT, ghi])
   const chips = useMemo(
@@ -261,12 +272,12 @@ export const MDtThuChiDs: FC<ScreenProps> = ({ sc, mod }) => {
   const chipHienTai = chips.find(c => c.k === chipTT)
   const nhanTrangThai = chipHienTai ? `Trạng thái: ${chipHienTai.ten}` : 'Trạng thái: Tất cả'
 
-  const tabsStandard = [
-    { k: '', ten: 'Tất cả' },
-    { k: 'tien-mat', ten: 'Tiền mặt' },
-    { k: 'ngan-hang', ten: 'Ngân hàng' },
-    { k: 'cq', ten: 'Chuyển quỹ' },
-  ]
+  // Thu tiền, Chi tiền: Tất cả, Tiền mặt, Ngân hàng, Báo cáo; Chuyển quỹ: hiện thẳng danh sách chuyển quỹ, Báo cáo
+  const tabsStandard = nhomK === 'cq'
+    ? [{ k: 'cq', ten: 'Chuyển quỹ' }]
+    : nhom
+      ? [{ k: '', ten: 'Tất cả' }, { k: 'tien-mat', ten: 'Tiền mặt' }, { k: 'ngan-hang', ten: 'Ngân hàng' }]
+      : [{ k: '', ten: 'Tất cả' }, { k: 'tien-mat', ten: 'Tiền mặt' }, { k: 'ngan-hang', ten: 'Ngân hàng' }, { k: 'cq', ten: 'Chuyển quỹ' }]
 
   // Thêm mới chỉ hiện loại phiếu của tab đang chọn; tab Tất cả hiện đủ (T539)
   const dsLoaiThem = dsLoaiTab
@@ -304,7 +315,7 @@ export const MDtThuChiDs: FC<ScreenProps> = ({ sc, mod }) => {
               <path d="M15 18l-6-6 6-6" />
             </svg>
           </button>
-          <h1 className="m-tc-tieu-de">Thu chi</h1>
+          <h1 className="m-tc-tieu-de">{nhom?.ten ?? 'Thu chi'}</h1>
           <MNutHuongDan mod={mod.key} sc={sc.slug} />
           <button
             type="button"
@@ -374,7 +385,7 @@ export const MDtThuChiDs: FC<ScreenProps> = ({ sc, mod }) => {
             className="m-tc-tab-btn"
             onClick={() => setMoTheoDoi(true)}
           >
-            Báo cáo theo dõi
+            {nhom ? 'Báo cáo' : 'Báo cáo theo dõi'}
           </button>
         </div>
       </header>
@@ -421,14 +432,14 @@ export const MDtThuChiDs: FC<ScreenProps> = ({ sc, mod }) => {
             <span className="m-tc-th-dem">{list.length} chứng từ</span>
           </div>
           <div className="m-tc-th-hang-duoi">
-            <div className="m-tc-th-o-thu">
+            {nhomK !== 'chi' && <div className="m-tc-th-o-thu">
               <span className="m-tc-th-o-nhan">{loaiChon === 'cq' ? 'Tổng xuất đi' : 'Tổng thu'}</span>
               <span className="m-tc-th-o-so">{loaiChon === 'cq' ? `${money(tongXuatDi)} đ` : `+${money(tongThu)} đ`}</span>
-            </div>
-            <div className="m-tc-th-o-chi">
+            </div>}
+            {nhomK !== 'thu' && <div className="m-tc-th-o-chi">
               <span className="m-tc-th-o-nhan">{loaiChon === 'cq' ? 'Tổng nhận vào' : 'Tổng chi'}</span>
               <span className="m-tc-th-o-so">{loaiChon === 'cq' ? `${money(tongNhanVao)} đ` : `-${money(tongChi)} đ`}</span>
-            </div>
+            </div>}
           </div>
         </div>
 
