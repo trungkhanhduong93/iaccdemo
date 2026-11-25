@@ -104,8 +104,8 @@ export interface TruongDM {
  *  gtgtKt: ô thuế suất GTGT người dùng tự chọn, chỉ hiện khi GTGT khấu trừ */
 export type PpThue = 'gtgt' | 'gtgtKt' | 'tndn' | 'giamVat' | 'giamVatDn'
 /** giamVat: ô chỉ hiện khi Cấu hình kế toán bật giảm thuế GTGT theo nghị quyết (T754); giamVatDn: thêm điều kiện GTGT theo % doanh thu */
-export function hopPp(pp: PpThue | undefined, s: { ppGtgt?: string; ppTndn?: string; donVi?: string; giamVat?: Record<string, CauHinhGiamVat> }): boolean {
-  if (pp === 'giamVat' || pp === 'giamVatDn') return cauHinhGiamVat({ donVi: s.donVi ?? '', giamVat: s.giamVat }).bat && (pp === 'giamVat' || s.ppGtgt !== 'khauTru')
+export function hopPp(pp: PpThue | undefined, s: { ppGtgt?: string; ppTndn?: string; donVi?: string; goi?: string; giamVat?: Record<string, CauHinhGiamVat> }): boolean {
+  if (pp === 'giamVat' || pp === 'giamVatDn') return cauHinhGiamVat({ donVi: s.donVi ?? '', goi: s.goi, giamVat: s.giamVat }).bat && (pp === 'giamVat' || s.ppGtgt !== 'khauTru')
   return !pp || (pp === 'gtgt' ? s.ppGtgt !== 'khauTru' : pp === 'gtgtKt' ? s.ppGtgt === 'khauTru' : s.ppTndn !== 'thuNhap')
 }
 

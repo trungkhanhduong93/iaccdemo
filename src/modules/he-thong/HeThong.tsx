@@ -23,7 +23,7 @@ import type { CauHinhDM } from '../danh-muc/truong-dm'
 import type { KieuSo } from '../../ui/format'
 import { TheCauHinhHddt, cauHinhHddt, loiHddt, type CauHinhHddt } from '../ban-hang/hddt'
 import { CACH_NVL, DS_CACH_NVL, cachNvlHienTai, datCachNvl, type CachNvl } from '../home/chi-phi-nvl'
-import { NGHI_QUYET_GIAM_VAT, cauHinhGiamVat, type CauHinhGiamVat, type DongGiamVat } from '../ban-hang/giam-thue'
+import { NGHI_QUYET_GIAM_VAT, cauHinhGiamVat, coCauHinhGiamVat, type CauHinhGiamVat, type DongGiamVat } from '../ban-hang/giam-thue'
 
 export const VAI_TRO = ['Chủ doanh nghiệp', 'Kế toán trưởng', 'Kế toán viên', 'Quản lý cửa hàng', 'Thủ kho']
 const PHAM_VI_DS = ['Tất cả cửa hàng', ...CUA_HANG.map(c => c.ten)]
@@ -688,6 +688,7 @@ export function CauHinh({ sc }: ScreenProps) {
   const ks = KIEU_SO[kieu]
   // Giảm thuế GTGT theo nghị quyết (T754): chỉ hộ kinh doanh, doanh nghiệp tính GTGT theo % doanh thu
   const coGiamVat = gtgtTyLe(s)
+  const suaGiamVat = coGiamVat && coCauHinhGiamVat(s.goi)   // gói Free, Standard chỉ xem, giảm theo FABi (T937)
   const [gv, setGv] = useState<CauHinhGiamVat>(cauHinhGiamVat(s))
   // Một nghị quyết đang áp dụng. Có nghị quyết mới thì dev thêm vào NGHI_QUYET_GIAM_VAT; chọn nghị quyết thì điền sẵn % giảm, hiệu lực
   const dongGv = gv.ds[0] ?? { ...NGHI_QUYET_GIAM_VAT[0] }
@@ -697,7 +698,7 @@ export function CauHinh({ sc }: ScreenProps) {
   })
   const soNgay = (d: string) => { const [dd, mm, yy] = d.split('/').map(Number); return yy * 10000 + mm * 100 + dd }
   const loiGv = (): string | null => {
-    if (!coGiamVat || !gv.bat) return null
+    if (!suaGiamVat || !gv.bat) return null
     for (const d of [dongGv]) {
       if (!d.nq.trim()) return 'Nhập số nghị quyết giảm thuế GTGT'
       if (!(d.pt > 0 && d.pt <= 100)) return `Nghị quyết ${d.nq}: % giảm phải lớn hơn 0 và không quá 100`
@@ -714,7 +715,7 @@ export function CauHinh({ sc }: ScreenProps) {
     const loi = loiGv() ?? (coHddt ? loiHddt(hd) : null)
     if (loi) { toast(loi, { loai: 'loi' }); return }
     const gvLuu = { ...gv, ds: [dongGv] }
-    set({ kieuSo: { ...s.kieuSo, [s.donVi]: kieu }, ...(coGiamVat ? { giamVat: { ...s.giamVat, [s.donVi]: gvLuu } } : {}),
+    set({ kieuSo: { ...s.kieuSo, [s.donVi]: kieu }, ...(suaGiamVat ? { giamVat: { ...s.giamVat, [s.donVi]: gvLuu } } : {}),
       ...(coHddt ? { hddt: { ...s.hddt, [s.donVi]: hd } } : {}) }); toast('Đã lưu cấu hình')
   }
   // Hai cột xếp riêng (T784): cột phải là Hoá đơn điện tử, Giảm thuế GTGT; không có hai thẻ này thì Bộ định khoản, Đánh số chứng từ sang cột phải
@@ -759,6 +760,7 @@ export function CauHinh({ sc }: ScreenProps) {
         {coHddt && <Card title="Hoá đơn điện tử"><TheCauHinhHddt s={s} h={hd} dat={setHd} toast={toast} /></Card>}
         {coGiamVat && (
           <Card title="Giảm thuế GTGT">
+            {!suaGiamVat ? <Note kind="gray">Gói {GOI[s.goi].ten} giảm thuế GTGT theo cấu hình trên FABi. Nâng lên gói Plus để tự chọn nghị quyết, % giảm, hiệu lực.</Note> : <>
             <div className="ch-gv" data-hd="giamVat">
               <label className="ch-gv-bat"><input type="checkbox" className="bat-tat" checked={gv.bat} onChange={e => setGv({ ...gv, bat: e.target.checked })} />
                 Giảm thuế GTGT</label>
@@ -778,6 +780,7 @@ export function CauHinh({ sc }: ScreenProps) {
               </>}
             </div>
             <Note kind="gray">{gv.bat ? <>Hàng được giảm tích ô <b>Giảm thuế theo quy định</b> ở Danh mục hàng hoá.</> : 'Không giảm thuế GTGT: chứng từ bán hàng không tính tiền giảm thuế.'}</Note>
+            </>}
           </Card>
         )}
         </div>

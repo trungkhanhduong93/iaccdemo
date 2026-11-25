@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 25/11/2026
+- T937: Gói Standard, Cấu hình kế toán không còn bật tắt Giảm thuế GTGT. Giảm thuế theo cấu hình trên FABi; gói Plus, Pro mới tự chọn nghị quyết, % giảm, hiệu lực.
 - Điện thoại: menu Nghiệp vụ tách Thu chi thành Thu tiền, Chi tiền, Chuyển quỹ. Thu tiền, Chi tiền có tab Tất cả, Tiền mặt, Ngân hàng, Báo cáo; Chuyển quỹ hiện thẳng danh sách chuyển quỹ và tab Báo cáo.
 - Điện thoại gói Plus: Số dư ban đầu có 2 mục Tồn kho ban đầu và Dư quỹ tiền. Tồn kho ban đầu khai theo từng kho của cửa hàng đang chọn, chỉ hiện hàng có tồn đầu, phễu lọc theo kho và hàng hoá, thẻ hàng như thẻ xem phiếu. Dư quỹ tiền mở Danh mục Quỹ tiền.
 - T936: Gói Plus, chứng từ bán hàng lập thủ công có công tắc Xuất định lượng (bật thì lưu xong tạo luôn phiếu xuất kho định lượng), nút Tạo xuất kho định lượng cho chứng từ chưa có phiếu, số phiếu ở Tham chiếu. Danh sách Xuất kho định lượng hiện thêm phiếu Xuất bán hàng, có số chứng từ bán hàng, và cảnh báo cả món của chứng từ thủ công chưa xuất định lượng. Danh sách Bán hàng thêm lọc Trạng thái xuất HĐĐT, Trạng thái xuất kho định lượng.
