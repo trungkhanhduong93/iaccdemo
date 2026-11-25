@@ -15,6 +15,7 @@ import { boO, nhomCua, theoLoai, TT_TIEN } from '../generic/nhom'
 import { ChungTuForm, lyMacDinh } from '../generic/ChungTuForm'
 import { useDongChungTu } from '../generic/VoucherScreen'
 import { useDsPhieuDcn } from '../../modules/kho/BangDieuChuyen'
+import { DCN } from '../../modules/kho/dieu-chuyen'
 import { useDsPhieuSx } from '../../modules/kho/BangSanXuat'
 import { MChon } from './MChon'
 import { MDanhSach } from './MDanhSach'
@@ -398,37 +399,18 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
         )
       }
       if (cfg.dieuChuyen || sc.code === '5.1.4' || sc.slug === '5-1-4' || sc.slug === '5-1-4-2' || sc.slug === '5-1-4-3') {
-        const isXdc = sc.code === '5.1.4' || sc.slug === '5-1-4' || cfg.dieuChuyen === 'xdc'
         const isNdc = sc.slug === '5-1-4-2' || cfg.dieuChuyen === 'ndc'
         const isCk = sc.slug === '5-1-4-3' || cfg.dieuChuyen === 'ck'
+        // Mở từ menu: chỉ một tab của mình và Báo cáo theo dõi, tiêu đề ghi đúng tên màn
         return (
           <div className="m-tc-tabs" role="tablist">
             <button
               type="button"
               role="tab"
-              aria-selected={isXdc}
-              className={`m-tc-tab-btn${isXdc ? ' on' : ''}`}
-              onClick={() => nav('/app/kho/5-1-4')}
+              aria-selected={true}
+              className="m-tc-tab-btn on"
             >
-              Xuất điều chuyển
-            </button>
-            <button
-              type="button"
-              role="tab"
-              aria-selected={isNdc}
-              className={`m-tc-tab-btn${isNdc ? ' on' : ''}`}
-              onClick={() => nav('/app/kho/5-1-4-2')}
-            >
-              Nhập điều chuyển
-            </button>
-            <button
-              type="button"
-              role="tab"
-              aria-selected={isCk}
-              className={`m-tc-tab-btn${isCk ? ' on' : ''}`}
-              onClick={() => nav('/app/kho/5-1-4-3')}
-            >
-              Chuyển kho
+              {isNdc ? 'Nhập điều chuyển' : isCk ? 'Chuyển kho' : 'Xuất điều chuyển'}
             </button>
             <button
               type="button"
@@ -789,7 +771,7 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
     <>
       {dungKhungChuan ? (
         <MDsChungTuChuan
-          tieuDe={sc.code === '5.1.1' ? 'Nhập kho' : (mod.key === 'tong-hop' ? (sc.ngan ?? sc.ten ?? 'Chứng từ tổng hợp') : (mod.ngan ?? mod.ten ?? ''))}
+          tieuDe={sc.code === '5.1.1' ? 'Nhập kho' : cfg.dieuChuyen ? DCN[cfg.dieuChuyen].ten : (mod.key === 'tong-hop' ? (sc.ngan ?? sc.ten ?? 'Chứng từ tổng hợp') : (mod.ngan ?? mod.ten ?? ''))}
           hangTabs={hangTabs}
           onQuayLai={quayLai}
           onMoLoc={() => setLocMo(true)}
