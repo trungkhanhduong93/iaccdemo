@@ -24,6 +24,7 @@ import type { Dong } from '../generic/gen'
 import { quyDoiTuDanhMuc } from '../../modules/danh-muc/QuyDoiDvt'
 import { goSoVN, docSoVN } from '../OSoGo'
 import { MFormDm } from './MFormDm'
+import { TheHangMua } from './MLapPhieu'
 import { MThanhCong, type DongTomTat } from './MThanhCong'
 import { addCatalogRow, getDmMeta, useAddedCatalogRows } from '../generic/danhMucStore'
 
@@ -2062,7 +2063,50 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
           </div>
         )}
 
+        {/* Điều chuyển: khối hàng hoá cùng khuôn phiếu Nhập kho, Xuất khác (thẻ mặt hàng, Tổng cộng, nút + Thêm mặt hàng) */}
+        {laDcn && (
+          <>
+            <div className="m-pb-nhom">MẶT HÀNG ({dsDong.length})</div>
+            <div id="m-lp-o-hang" data-hd="chi-tiet" className="m-t601-hang-card m-t853-the">
+              {dsDong.map((d, i) => (
+                <TheHangMua
+                  key={i}
+                  stt={i + 1}
+                  dong={d}
+                  onDoiDong={patch => doiDong(i, patch)}
+                  onDoiDvt={dvMoi => doiDvt(i, dvMoi)}
+                  onNhanBan={() => nhanBanDong(i)}
+                  onXoa={() => xoaDong(i)}
+                  gon
+                  giaVon={dcn === 'xdc'}
+                  khongGia={dcn === 'ck'}
+                />
+              ))}
+              <div className="m-t601-tong-khu">
+                <div style={{ fontSize: 15, fontWeight: 600, marginBottom: 6, color: 'var(--ink)' }}>
+                  Tổng cộng ({dsDong.length} dòng)
+                </div>
+                <div className="m-t601-tong-dong">
+                  <span className="lb">Tổng số lượng</span>
+                  <span>{money(dsDong.reduce((a, d) => a + (Number(d.sl) || 0), 0))}</span>
+                </div>
+                {dcn !== 'ck' && (
+                  <div className="m-t601-tong-dong">
+                    <span className="lb">{dcn === 'xdc' ? 'Tổng tiền vốn' : 'Tổng tiền'}</span>
+                    <span>{money(tongTien)}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+            <button type="button" className="f-them" onClick={() => setMoChonHang(true)}>
+              + Thêm mặt hàng
+            </button>
+            {loiO.hang && <div className="m-lp-loi-o">{loiO.hang}</div>}
+          </>
+        )}
+
         {/* Danh sách hàng hoá */}
+        {!laDcn && (
         <div className="m-lp-khoi-hang-man" id="m-lp-o-hang">
           <div className="m-lp-hang-man-tieu-hang">
             <span className="m-lp-hang-man-tieu-chu">
@@ -2113,6 +2157,7 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
           )}
           {loiO.hang && <div className="m-lp-loi-o">{loiO.hang}</div>}
         </div>
+        )}
       </div>
 
       {/* ── THANH CỐ ĐỊNH Ở ĐÁY: TỔNG TIỀN / MẶT HÀNG & NÚT LƯU LẠI ── */}

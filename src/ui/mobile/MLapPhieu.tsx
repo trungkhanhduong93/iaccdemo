@@ -406,9 +406,10 @@ interface TheHangMuaProps {
   ban?: boolean   // hàng bán trả lại (T833): ghi Đã bán thay Đã mua
   khongVat?: boolean   // bán hàng tính GTGT theo % doanh thu (T855): bỏ ô VAT, thuế dòng 0
   giamThue?: number   // giảm thuế GTGT của dòng khi theo % doanh thu (T885): trừ vào Tổng tiền dòng như xem Bán hàng
+  khongGia?: boolean   // Chuyển kho (không có giá): bỏ Đơn giá, Thành tiền, chỉ còn Số lượng, Ghi chú
 }
 
-function TheHangMua({
+export function TheHangMua({
   stt,
   dong,
   onDoiDong,
@@ -423,6 +424,7 @@ function TheHangMua({
   ban,
   khongVat,
   giamThue = 0,
+  khongGia,
 }: TheHangMuaProps) {
   const kieuGiam = dong.kieuGiam ?? (dong?.ck && !dong?.ptCk ? 'đ' : '%')
 
@@ -636,6 +638,7 @@ function TheHangMua({
           <span className="m-t601-tra-max" style={{ gridColumn: '2 / -1' }}>{ban ? 'Đã bán' : 'Đã mua'} {slMax} {dvt}</span>
         )}
 
+        {!khongGia && (<>
         {/* Hàng Đơn giá */}
         <span className="m-t601-grid-lbl">{giaVon ? 'Giá vốn' : 'Đơn giá'}</span>
         <div className="m-t601-box" style={{ gridColumn: '2 / -1', position: 'relative', paddingRight: 28 }}>
@@ -659,6 +662,7 @@ function TheHangMua({
           />
           <span style={{ position: 'absolute', right: 10, fontSize: 12, fontWeight: 500, color: '#9ca3af', pointerEvents: 'none' }}>đ</span>
         </div>
+        </>)}
 
         {/* Phiếu Nhập kho (T824): ghi theo giá nhập kho, bỏ Chiết khấu, VAT */}
         {!gon && (<>
@@ -811,6 +815,7 @@ function TheHangMua({
           <div className="m-t601-amt" style={{ gridColumn: '2 / -1' }}><span>{money(giamThue)} đ</span></div>
         </>)}
 
+        {!khongGia && (<>
         {/* Hàng Tổng tiền */}
         <span className="m-t601-grid-lbl tg">{gon ? 'Thành tiền' : 'Tổng tiền'}</span>
         {suaTongTien ? (
@@ -847,6 +852,7 @@ function TheHangMua({
             </button>}
           </div>
         )}
+        </>)}
 
         {/* Hàng Ghi chú */}
         <input
@@ -915,16 +921,16 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
   const tyLeBan = khuonMua && cfg.thue !== 0 && gtgtTyLe(s)
   const hdDaXuat = laBanTay && row ? hdCua(row) : undefined
   const [phatHd, setPhatHd] = useState(() => laBanTay && !row && cauHinhHddt(s).bat)
+  // Xuất định lượng (gói Plus, như web T936): bật thì lưu xong sinh luôn phiếu xuất kho định lượng, số phiếu hiện ở Tham chiếu
+  const coXdl = laBanTay && s.goi === 'PL'
+  const xdlDaCo = coXdl && row ? String(row._xdlSo ?? '') : ''
+  const [xdl, setXdl] = useState(() => coXdl && !row)
   const [kenh, setKenh] = useState(() => String(gocData?.kenh ?? (laBanTay && !row ? KENH_BAN[0] : '')))
   const [moChonKenh, setMoChonKenh] = useState(false)
   const cnChon = cuaHangHienTai(s)
   const [cuaHang, setCuaHang] = useState(() => (gocData?.cn ? String(gocData.cn) : cnChon?.ten ?? ''))
   const tenLoai = loai?.ten ?? (gocData?.tenLoai ? String(gocData.tenLoai) : tenMan(sc))
   const man = `${mod.key}/${sc.slug}`
-  // Xuất định lượng (gói Plus, như web T936): bật thì lưu xong sinh luôn phiếu xuất kho định lượng, số phiếu hiện ở Tham chiếu
-  const coXdl = laBanTay && s.goi === 'PL'
-  const xdlDaCo = coXdl && row ? String(row._xdlSo ?? '') : ''
-  const [xdl, setXdl] = useState(() => coXdl && !row)
   const soCtDuKien = dangSua ? String(row?.so ?? gocData?.so ?? '') : soKeTiep(man, `${cfg.prefix}2610-`)
 
   const addedDt = useAddedCatalogRows('1.5')
@@ -1990,12 +1996,6 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
       return `, đã xuất hoá đơn ${hd.mau}${hd.kyHieu} số ${hd.so}`
     }
 
-    if (dangSua) {
-      suaPhieu(man, String(row!.id), noiDung)
-      ghiNhatKy(man, String(row!.id), soCt, s.ten, 'Sửa chứng từ')
-      // Tích Đã thanh toán khi sửa: lập phiếu chi số còn nợ, về màn xem phiếu mua (T662)
-      if (nhom === 'mua' && traKhiSua && conLaiTt > 0) {
-        const soChi = lapPhieuChiTraNcc({
     // Xuất định lượng (T936, như web): sinh phiếu xuất kho định lượng sau khi chứng từ đã ghi, số phiếu vào Tham chiếu
     const xuatXdl = () => {
       if (!coXdl || !xdl || xdlDaCo) return ''
@@ -2004,6 +2004,12 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
       return `, đã tạo xuất kho định lượng ${so}`
     }
 
+    if (dangSua) {
+      suaPhieu(man, String(row!.id), noiDung)
+      ghiNhatKy(man, String(row!.id), soCt, s.ten, 'Sửa chứng từ')
+      // Tích Đã thanh toán khi sửa: lập phiếu chi số còn nợ, về màn xem phiếu mua (T662)
+      if (nhom === 'mua' && traKhiSua && conLaiTt > 0) {
+        const soChi = lapPhieuChiTraNcc({
           hinhThuc: hinhThucTt === 'chuyenkhoan' ? 'chuyenkhoan' : 'tienmat',
           quy,
           ngay: ngayChiTiet,
@@ -2861,12 +2867,6 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
 
                 {/* Hai tích cùng một hàng như phiếu mua: Đã thanh toán (trả tiền khách ngay), Lập kèm hoá đơn;
                     Bán hàng (T855): Thanh toán ngay (lập phiếu thu), công tắc Xuất HĐĐT như web T785; bật thì nút Lưu đổi chữ Lưu và Xuất HĐĐT */}
-                <div className="m-t656-tich-hang">
-                  <button
-                    type="button"
-                    role="checkbox"
-                    aria-checked={hinhThucTt !== 'congno'}
-                    disabled={Boolean(ctTtCon(row))}
                 {/* Bán hàng lập tay (T936): hàng trên Xuất định lượng, Xuất HĐĐT; Thanh toán ngay xuống hàng dưới, tích mới hiện ô chọn quỹ */}
                 {laBanTay && (
                   <div className="m-t656-tich-hang">
@@ -2888,6 +2888,12 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                     </button>
                   </div>
                 )}
+                <div className="m-t656-tich-hang">
+                  <button
+                    type="button"
+                    role="checkbox"
+                    aria-checked={hinhThucTt !== 'congno'}
+                    disabled={Boolean(ctTtCon(row))}
                     className={`m-t655-tich ${hinhThucTt !== 'congno' ? 'on' : ''}`}
                     onClick={() => {
                       setHinhThucTt(hinhThucTt === 'congno' ? 'tienmat' : 'congno')
