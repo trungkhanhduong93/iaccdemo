@@ -1,6 +1,6 @@
 // Biểu đồ SVG tự vẽ, không thư viện
 import { useEffect, useRef, useState } from 'react'
-import { short, locSo } from './format'
+import { short, locSo, moneyD } from './format'
 
 /** Cột đứng, có thể chồng 2 lớp (vd doanh thu và giá vốn) */
 export function Bars({ data, h = 220, colors = ['#1b6fe0', '#f28020'], hi }: {
@@ -524,6 +524,121 @@ export function LaiLoChart({ data, h = 260, rong = 640, ten = ['Doanh thu', 'Chi
       </>}
     </svg>
     {tip}
+    </div>
+  )
+}
+
+/** Rê chuột (hoặc chạm) lên khung vẽ thì trả về chỉ số cột đang trỏ tới; tooltip tự vẽ vì <title> của SVG không hiện ổn định (T941) */
+function useReCot(n: number, W: number, pl: number, pr: number) {
+  const [chon, setChon] = useState<number | null>(null)
+  const khung = useRef<HTMLDivElement>(null)
+  const di = (e: { clientX: number }) => {
+    const r = khung.current?.getBoundingClientRect()
+    if (!r) return
+    const x = (e.clientX - r.left) / r.width * W
+    setChon(x < pl || x > W - pr ? null : Math.min(n - 1, Math.floor((x - pl) / ((W - pl - pr) / n))))
+  }
+  return { chon, khung, props: { onMouseMove: di, onPointerDown: di, onMouseLeave: () => setChon(null) } }
+}
+
+function Tip({ vi, W, tieuDe, dong }: { vi: number; W: number; tieuDe: string; dong: { mau: string; ten: string; gt: string }[] }) {
+  const trai = vi / W > 0.62
+  return (
+    <div className="dnh-tip" style={{ left: `${vi / W * 100}%`, transform: trai ? 'translateX(calc(-100% - 12px))' : 'translateX(12px)' }}>
+      <b>{tieuDe}</b>
+      {dong.map(d => <div key={d.ten}><i style={{ background: d.mau }} />{d.ten}<span>{d.gt}</span></div>)}
+    </div>
+  )
+}
+
+const nhanThang = (l: string) => l.replace('/25', '').replace('/26', '')
+
+/** Cột nhóm kèm các đường, trục phải theo % cho đường có `phai` (T941). Số tiền tính bằng đồng: trục ghi gọn, rê chuột xem số đầy đủ */
+export function CotDuongChart({ nhan, cot, duong, h = 280, phaiMax = 25 }: {
+  nhan: string[]
+  cot: { ten: string; mau: string; v: number[] }[]
+  duong: { ten: string; mau: string; v: number[]; phai?: boolean; net?: boolean }[]
+  h?: number
+  /** Giá trị lớn nhất của trục phải (%) */
+  phaiMax?: number
+}) {
+  const W = 640, pl = 52, pr = 40, pb = 24, pt = 10
+  const { chon, khung, props } = useReCot(nhan.length, W, pl, pr)
+  const traiMax = Math.max(1, ...cot.flatMap(c => c.v), ...duong.filter(d => !d.phai).flatMap(d => d.v))
+  const buoc = (() => { const t = traiMax / 4, e = Math.pow(10, Math.floor(Math.log10(t))); return [1, 2, 2.5, 5, 10].map(x => x * e).find(x => x >= t) ?? t })()
+  const max = Math.ceil(traiMax / buoc) * buoc
+  const ticks = Array.from({ length: Math.round(max / buoc) + 1 }, (_, i) => i * buoc)
+  const y = (v: number) => pt + (h - pt - pb) * (1 - v / max)
+  const yp = (v: number) => pt + (h - pt - pb) * (1 - v / phaiMax)
+  const bw = (W - pl - pr) / nhan.length
+  const cx = (i: number) => pl + i * bw + bw / 2
+  const w1 = Math.min(14, bw * 0.8 / Math.max(1, cot.length))
+  const giaTri = (d: { phai?: boolean; v: number[] }, i: number) => d.phai ? d.v[i].toLocaleString(locSo(), { maximumFractionDigits: 1 }) + '%' : moneyD(d.v[i])
+  return (
+    <div className="dnh-cv" ref={khung} {...props}>
+      <svg className="chart" viewBox={`0 0 ${W} ${h}`} width="100%" role="img">
+        {ticks.map(t => (
+          <g key={t}>
+            <line x1={pl} x2={W - pr} y1={y(t)} y2={y(t)} stroke="#edf1f6" />
+            <text x={pl - 6} y={y(t) + 4} textAnchor="end">{t === 0 ? '0' : short(t)}</text>
+          </g>
+        ))}
+        {duong.some(d => d.phai) && [0, 0.25, 0.5, 0.75, 1].map(t => (
+          <text key={t} x={W - pr + 6} y={yp(t * phaiMax) + 4}>{Math.round(t * phaiMax)}%</text>
+        ))}
+        {chon !== null && <rect x={pl + chon * bw} y={pt} width={bw} height={h - pt - pb} fill="var(--soft)" />}
+        {nhan.map((l, i) => (
+          <g key={l}>
+            {cot.map((c, j) => {
+              const x = cx(i) - (cot.length * w1) / 2 + j * w1
+              return <rect key={c.ten} x={x} y={y(c.v[i])} width={w1 - 1} height={Math.max(0, h - pb - y(c.v[i]))} rx={2} fill={c.mau} />
+            })}
+            <text x={cx(i)} y={h - 7} textAnchor="middle">{nhanThang(l)}</text>
+          </g>
+        ))}
+        {duong.map(d => {
+          const pts = d.v.map((v, i) => `${cx(i)},${d.phai ? yp(v) : y(v)}`).join(' ')
+          return (
+            <g key={d.ten}>
+              <polyline points={pts} fill="none" stroke={d.mau} strokeWidth={2} strokeLinejoin="round" strokeDasharray={d.net ? '5 4' : undefined} />
+              {d.v.map((v, i) => <circle key={i} cx={cx(i)} cy={d.phai ? yp(v) : y(v)} r={chon === i ? 4 : 2.5} fill={d.mau} stroke="#fff" strokeWidth={1} />)}
+            </g>
+          )
+        })}
+      </svg>
+      {chon !== null && (
+        <Tip vi={cx(chon)} W={W} tieuDe={nhan[chon]}
+          dong={[...cot.map(c => ({ mau: c.mau, ten: c.ten, gt: moneyD(c.v[chon]) })), ...duong.map(d => ({ mau: d.mau, ten: d.ten, gt: giaTri(d, chon) }))]} />
+      )}
+    </div>
+  )
+}
+
+/** Đường tỷ lệ 13 tháng kèm đường định mức đứt nét; trục tháng ở dưới, rê chuột xem từng tháng (T941) */
+export function SparkDinhMuc({ nhan, v, dm, min, max, h = 110, mau = 'var(--blue)', ten = 'Tỷ lệ' }: {
+  nhan: string[]; v: number[]; dm?: number; min: number; max: number; h?: number; mau?: string; ten?: string
+}) {
+  const W = 640, pl = 8, pr = 8, pb = 22, pt = 8
+  const { chon, khung, props } = useReCot(v.length, W, pl, pr)
+  const bw = (W - pl - pr) / v.length
+  const x = (i: number) => pl + i * bw + bw / 2
+  const y = (n: number) => pt + (h - pt - pb) * (1 - (n - min) / (max - min || 1))
+  const pts = v.map((n, i) => `${x(i)},${y(n)}`).join(' ')
+  const phanTram = (n: number) => n.toLocaleString(locSo(), { minimumFractionDigits: 1, maximumFractionDigits: 2 }) + '%'
+  return (
+    <div className="dnh-cv" ref={khung} {...props}>
+      <svg className="chart" viewBox={`0 0 ${W} ${h}`} width="100%" role="img">
+        {chon !== null && <rect x={pl + chon * bw} y={pt} width={bw} height={h - pt - pb} fill="var(--soft)" />}
+        {dm !== undefined && <line x1={pl} x2={W - pr} y1={y(dm)} y2={y(dm)} stroke="var(--faint)" strokeWidth={2} strokeDasharray="5 4" />}
+        <polygon points={`${x(0)},${h - pb} ${pts} ${x(v.length - 1)},${h - pb}`} fill={mau} opacity={0.1} />
+        <polyline points={pts} fill="none" stroke={mau} strokeWidth={2} strokeLinejoin="round" />
+        {v.map((n, i) => (i === v.length - 1 || i === chon) && <circle key={i} cx={x(i)} cy={y(n)} r={4} fill={mau} stroke="#fff" strokeWidth={1.5} />)}
+        {nhan.map((l, i) => <text key={l} x={x(i)} y={h - 6} textAnchor="middle">{nhanThang(l)}</text>)}
+      </svg>
+      {chon !== null && (
+        <Tip vi={x(chon)} W={W} tieuDe={nhan[chon]}
+          dong={[{ mau, ten, gt: phanTram(v[chon]) }, ...(dm !== undefined ? [{ mau: 'var(--faint)', ten: 'Định mức', gt: phanTram(dm) }] : [])]} />
+      )}
     </div>
   )
 }

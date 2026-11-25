@@ -30,6 +30,7 @@ import {
   tinhToanTongQuan,
 } from './chiSo'
 import { BaBaiToanStandard } from './BaBaiToanStandard'
+import { DashboardNhaHang } from './DashboardNhaHang'
 import { HuongDan, moLaiHuongDan } from './HuongDan'
 import { datThangLamViec, thangLamViec } from '../../app/thangLamViec'
 
@@ -515,6 +516,9 @@ export function TongQuan({ sc }: ScreenProps) {
       <option value="tu-dau-nam">Từ đầu năm (từ 01/07/2026)</option>
     </Select>
   )
+
+  // Gói Plus, Pro: dashboard nhà hàng thay hẳn các khối Tổng quan cũ (T941)
+  if (!isStandard) return <DashboardNhaHang />
 
   return (
     <div className="page">

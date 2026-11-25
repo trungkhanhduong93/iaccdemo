@@ -11,7 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T939 | Thiết kế dashboard nhà hàng (Trang chủ kế toán): 4 thẻ KPI, doanh thu và biên LN gộp theo kênh, chi phí NVL so với định mức, hao hụt NVL, công nợ, thu chi 13 tháng, kết quả theo cửa hàng. Hai bản mockup HTML | dinhlanphuongipacc | Đang làm | Chỉ thêm 2 file thiết kế `docs/thiet-ke/T939-dashboard-nha-hang-v1.html`, `...-v2.html`, chưa sửa code. Dùng định mức NVL, hao hụt của T938 |
+| T942 | Dọn các khối Tổng quan cũ trong `TongQuan.tsx` (thác nước, sức khoẻ tài chính, cảnh báo, món bán chạy) và hộp Tuỳ chỉnh khối, không còn hiện ở gói Plus, Pro từ T941. Hỏi Trum trước khi xoá | | Chờ | Ghi lúc làm T941. `TongQuan.tsx`, `chiSo.ts` (`docBlocks`, `luuBlocks`) |
 | T938 | Danh mục cửa hàng thêm định mức chi phí NVL (% doanh thu), định mức hao hụt (%) theo cửa hàng, nhập ở bảng và hộp chi tiết, có nút Lưu | dinhlanphuongipacc | Xong | Chưa nơi nào dùng hai định mức để tính. File: `DanhMucCuaHang.tsx` (cùng file T333), `dinh-muc-cua-hang.tsx`, `session.tsx`, cuối `app.css` |
 | T933 | `tools/kiem_tra.py` mục T870/T871 (Thẻ kho máy tính) chờ `.bc-ban-du-lieu table.tbl` quá 8 giây, làm `--nhanh` dừng giữa chừng. Hỏng cả trên `main` trước T929–T931 | | Chờ | Ghi lúc làm T929–T931 (25/11). `tools/kiem_tra.py:5557`. Xem màn Thẻ kho còn ra bảng không, sửa màn hoặc sửa bộ chọn |
 | T893 | Form Sửa danh mục không lưu được thay đổi của dòng mẫu (chỉ lưu dòng thêm trong phiên, `CatalogScreen.tsx` dòng ~660). Nhập Excel T892 đã có lớp ghi đè `ghiDeCatalogRow` trong `danhMucStore.ts`, form Sửa có thể dùng lại | Trum | Chưa làm | Thấy khi làm T892 |

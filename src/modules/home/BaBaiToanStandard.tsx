@@ -928,7 +928,7 @@ export function VongQuy({
   )
 }
 
-const TT_NHANH_STANDARD = [
+export const TT_NHANH_STANDARD = [
   { ten: 'Thu tiền', icon: 'cashin', to: '/app/tien/2-1-1/moi?loai=thu', goiY: 'Lập phiếu thu tiền' },
   { ten: 'Chi tiền', icon: 'cashout', to: '/app/tien/2-1-1/moi?loai=chi', goiY: 'Lập phiếu chi tiền' },
   { ten: 'Mua hàng', icon: 'truck', to: '/app/mua-hang/4-1-1/moi', goiY: 'Lập phiếu mua hàng' },

@@ -2,6 +2,9 @@
 
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
+## 26/11/2026
+- T941: Gói Plus, Pro: màn Tổng quan thay bằng dashboard nhà hàng: thẻ Doanh thu, Chi phí NVL, Chi phí hoạt động, Lợi nhuận; doanh thu và biên LN gộp theo kênh; cơ cấu chi phí; tiền và ngân hàng; Kết quả kinh doanh và Thu chi 13 tháng; chi phí NVL và hao hụt NVL so với định mức cửa hàng; công nợ phải thu, phải trả; kết quả theo cửa hàng. Số tiền hiện đầy đủ theo đồng, rê chuột vào biểu đồ xem từng tháng, chọn năm, tháng trên hàng tab, có dải Thao tác nhanh.
+
 ## 25/11/2026
 - T940: Lý do nghiệp vụ, Bảng giá không còn nút Xoá. Muốn ngừng dùng thì tắt Đang sử dụng. Form Bảng giá web có công tắc Trạng thái, điện thoại có ô Đang sử dụng và dòng Trạng thái khi xem.
 - T937: Gói Standard, Cấu hình kế toán không còn bật tắt Giảm thuế GTGT. Giảm thuế theo cấu hình trên FABi; gói Plus, Pro mới tự chọn nghị quyết, % giảm, hiệu lực.
