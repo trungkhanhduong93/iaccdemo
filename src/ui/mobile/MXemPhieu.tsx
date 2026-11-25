@@ -13,7 +13,7 @@ import { dtDong } from '../../modules/ban-hang/BangHangBan'
 import { giamThueHang } from '../../modules/ban-hang/giam-thue'
 import { useDsPhieuDcn } from '../../modules/kho/BangDieuChuyen'
 import { useDsPhieuSx } from '../../modules/kho/BangSanXuat'
-import { useDsPhieuXdl } from '../../modules/kho/xuat-dinh-luong'
+import { rowTuPhieuXdl, useDsPhieuXdl } from '../../modules/kho/xuat-dinh-luong'
 import { SX, TT_SX } from '../../modules/kho/san-xuat'
 import { DCN } from '../../modules/kho/dieu-chuyen'
 import { MAN_DC } from '../../modules/kho/dieu-chinh'
@@ -70,10 +70,7 @@ export const MXemPhieu: FC<MXemPhieuProps> = ({ sc, mod, id }) => {
   // Xuất kho định lượng (T936): phiếu sinh từ chứng từ bán hàng lập tay không nằm trong dữ liệu chung, đọc từ danh sách riêng
   const laXdl = cfgMan.prefix === 'XDL'
   const phieuXdl = useDsPhieuXdl()
-  const rowsXdl = useMemo<Row[]>(() => !laXdl ? [] : phieuXdl.filter(p => p.so).map(p => ({
-    id: p.id, so: p.so, ngay: p.ngay, cn: p.cn, doiTuong: p.cn, dienGiai: p.ghiChu, tong: p.tong, tt: 'ghiso', _kho: p.cn,
-    _dong: p.dong.flatMap(m => m.nvl).map(n => ({ ma: n.ma, ten: n.ten, dvt: n.dvt, sl: n.sl, gia: n.gia, tien: n.tien, ts: 0, thue: 0 })),
-  })), [laXdl, phieuXdl])
+  const rowsXdl = useMemo<Row[]>(() => !laXdl ? [] : phieuXdl.filter(p => p.so).map(rowTuPhieuXdl), [laXdl, phieuXdl])
   const rows = laXdl ? rowsXdl : cfgMan.dieuChuyen ? rowsDcn : cfgMan.sanXuat ? rowsSx : rowsGoc
 
   const row = useMemo(() => rows.find(r => String(r.id) === String(id)), [rows, id])
@@ -124,7 +121,9 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
   const laDc = Boolean(cfg.dieuChinh)
   const laNk = sc.code === '5.1.1'   // phiếu Nhập kho (T824, như web T818)
   const laHuy = sc.code === '5.1.2-3'   // phiếu Xuất huỷ xem như Nhập kho, phiếu mua: tiêu đề tên phiếu và số, cửa hàng và nguồn lên đầu, có Lý do huỷ (T927)
-  const khoChuanXem = mod.key === 'kho' && !laKk   // khuôn xem chuẩn cho phiếu kho (T930)
+  const laXdl = cfgMan.prefix === 'XDL'   // Xuất kho định lượng: xem theo khuôn Nhập kho, ghi theo tiền vốn, chỉ xem không sửa không xoá
+  const kieuVon = laHuy || laXdl
+  const khoChuanXem = (mod.key === 'kho' || laXdl) && !laKk   // khuôn xem chuẩn cho phiếu kho (T930)
   const laCtth = mod.key === 'tong-hop'   // Chứng từ tổng hợp theo khuôn Nhập mua (T930)
   const khoGonXem = khoChuanXem
   const laTraBan = sc.code === '3.1.4'   // Hàng bán trả lại (T830): bỏ diễn giải ở đầu phiếu, Chi tiết đủ ô như web
@@ -580,7 +579,61 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
     }
   }
 
-  const renderDsHangHoaMua = () => (
+  // Xuất kho định lượng: mỗi món bán một thẻ, bên trong các NVL xuất cho món đó, cuối thẻ tiền vốn món
+  type NvlXdl = { ma: string; ten: string; dvt: string; sl: number; gia: number; tien: number; lyDo?: { text: string } }
+  type MonXdl = { ma: string; ten: string; sl: number; maCt?: string; ctId?: string; nvl: NvlXdl[] }
+  const renderMonXdl = () => {
+    const ds = (row._mon as MonXdl[] | undefined) ?? []
+    if (!ds.length) return null
+    const congThuc = s.goi === 'PL' ? '/app/danh-muc/cong-thuc-che-bien' : '/app/kho/9-1-3'
+    const tongSl = ds.reduce((a, m) => a + m.sl, 0)
+    const tongVon = ds.reduce((a, m) => a + m.nvl.reduce((b, n) => b + n.tien, 0), 0)
+    return (
+      <div>
+        <div className="m-pb-nhom" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span>MÓN BÁN, NGUYÊN VẬT LIỆU XUẤT</span>
+          <span style={{ color: 'var(--muted)', fontWeight: 'normal', textTransform: 'none', fontSize: 13 }}>{ds.length} món</span>
+        </div>
+        <div className="m-t449-hang-ds">
+          {ds.map((m, i) => (
+            <div key={i} className="m-t449-hang-the">
+              <div className="m-t449-hang-dau">
+                <div className="m-t449-hang-ten">{i + 1}. {m.ten} <span className="m-t449-hang-ma" style={{ color: 'var(--muted)', fontWeight: 'normal' }}>{m.ma}</span></div>
+              </div>
+              <div className="m-t449-hang-than">
+                <div className="m-t449-hang-dong"><span className="lbl">Số lượng bán:</span><span className="val bold num">{soLuong(m.sl)}</span></div>
+                {m.maCt && (
+                  <div className="m-t449-hang-dong"><span className="lbl">Công thức:</span>
+                    <span className="val">{m.ctId ? <Link to={`${congThuc}/${m.ctId}`} style={{ color: 'var(--blue)', fontWeight: 600, textDecoration: 'none' }}>{m.maCt}</Link> : m.maCt}</span></div>
+                )}
+                <div style={{ borderTop: '1px solid var(--line)', margin: '6px 0 2px' }} />
+                {m.nvl.map((n, j) => (
+                  <div key={j} style={{ padding: '6px 0', borderBottom: j < m.nvl.length - 1 ? '1px dashed var(--line)' : undefined }}>
+                    <div style={{ fontWeight: 600 }}>{n.ten} <span style={{ color: 'var(--muted)', fontWeight: 'normal' }}>· {n.ma}</span></div>
+                    <div className="m-t449-hang-dong" style={{ color: 'var(--muted)' }}>
+                      <span className="lbl">{soLuong(n.sl)} {n.dvt} × <span style={n.lyDo ? { color: 'var(--amber)' } : undefined} title={n.lyDo?.text}>{money(n.gia)}</span></span>
+                      <span className="val bold num" style={{ color: 'var(--ink)' }}>{money(n.tien)} đ</span>
+                    </div>
+                  </div>
+                ))}
+                <div className="m-t449-hang-dong" style={{ borderTop: '1px solid var(--line)', paddingTop: 6 }}>
+                  <span className="lbl">Tiền vốn món:</span>
+                  <span className="val bold num">{money(m.nvl.reduce((b, n) => b + n.tien, 0))} đ</span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="m-t600-the-tong">
+          <div className="m-t600-tong-tieu"><span>Tổng cộng ({ds.length} món)</span></div>
+          <div className="m-t600-tong-dong"><span>Tổng số lượng món</span><span className="num">{soLuong(tongSl)}</span></div>
+          <div className="m-t600-tong-dong tong-chinh"><span>Tổng tiền vốn</span><span className="bold num">{money(tongVon)} đ</span></div>
+        </div>
+      </div>
+    )
+  }
+
+  const renderDsHangHoaMua = () => laXdl ? renderMonXdl() : (   // phiếu XDL toàn món lỗi: không có dòng xuất, chỉ hiện mục Món chưa xuất được
     <div>
       <div className="m-pb-nhom" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <span>HÀNG HOÁ, DỊCH VỤ</span>
@@ -610,7 +663,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
                   <span className="val bold num">{d.sl ?? 1} {d.dvt || 'Cái'}</span>
                 </div>
                 <div className="m-t449-hang-dong">
-                  <span className="lbl">{laHuy ? 'Giá vốn:' : 'Đơn giá:'}</span>
+                  <span className="lbl">{kieuVon ? 'Giá vốn:' : 'Đơn giá:'}</span>
                   <span className="val num">{money(d.gia || 0)} đ</span>
                 </div>
                 {/* Dòng không có số tiền thì ẩn */}
@@ -633,7 +686,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
                   </div>
                 )}
                 <div className="m-t449-hang-dong">
-                  <span className="lbl">{laNk ? 'Thành tiền:' : laHuy ? 'Tiền vốn:' : 'Tổng tiền:'}</span>
+                  <span className="lbl">{laNk ? 'Thành tiền:' : kieuVon ? 'Tiền vốn:' : 'Tổng tiền:'}</span>
                   <span className="val bold num">{money(tongDong)} đ</span>
                 </div>
               </div>
@@ -647,7 +700,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
             <span>Tổng cộng ({dsDong.length} dòng)</span>
           </div>
           {/* Xuất huỷ (T927): Tổng cộng chỉ Tổng số lượng, Tổng tiền vốn */}
-          {laHuy ? (
+          {kieuVon ? (
             <div className="m-t600-tong-dong">
               <span>Tổng số lượng</span>
               <span className="num">{soLuong(dsDong.reduce((a, d) => a + (Number(d.sl) || 0), 0))}</span>
@@ -677,7 +730,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
             </div>
           )}
           <div className="m-t600-tong-dong tong-chinh">
-            <span>{laHuy ? 'Tổng tiền vốn' : 'Tổng tiền'}</span>
+            <span>{kieuVon ? 'Tổng tiền vốn' : 'Tổng tiền'}</span>
             <span className="bold num">{money(tongThanhToan)} đ</span>
           </div>
         </div>
@@ -803,9 +856,9 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
             </div>
 
             <div>
-              <div className="m-t600-tong-tien-nhan">{laCtth ? 'Tổng tiền' : 'Tổng giá trị'}</div>
+              <div className="m-t600-tong-tien-nhan">{laCtth ? 'Tổng tiền' : laXdl ? 'Tổng tiền vốn' : 'Tổng giá trị'}</div>
               <div className="m-t600-tong-tien-so">
-                {money(laCtth ? (dsDong.reduce((a, d) => a + (Number(d.tien) || 0), 0) || Number(row.tien) || 0) : (Number(row.tien) || 0))} đ
+                {money(laCtth ? (dsDong.reduce((a, d) => a + (Number(d.tien) || 0), 0) || Number(row.tien) || 0) : (Number(laXdl ? row.tong : row.tien) || 0))} đ
               </div>
             </div>
           </div>
@@ -1123,11 +1176,11 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
                     </>
                   ) : (
                     <div className="m-pb-dong">
-                      <span className="n">{laHuy ? 'Kho xuất' : laNk ? 'Kho nhập' : 'Kho'}</span>
+                      <span className="n">{laHuy || laXdl ? 'Kho xuất' : laNk ? 'Kho nhập' : 'Kho'}</span>
                       <span className="g">{kho}</span>
                     </div>
                   )}
-                  {(Boolean(row.doiTuong) || sc.code === '5.1.2-4') && (
+                  {!laXdl && (Boolean(row.doiTuong) || sc.code === '5.1.2-4') && (
                     <div className="m-pb-dong">
                       <span className="n">{sc.code === '5.1.2-4' ? 'Người nhận' : 'Đối tượng'}</span>
                       <span className="g">{String(row.doiTuong || '')}</span>
@@ -1140,7 +1193,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
                     </div>
                   )}
                   {/* Nhập kho, Xuất huỷ: có Người thực hiện (T824, T927, như web T818) */}
-                  {(laNk || laHuy) && (
+                  {(laNk || laHuy || laXdl) && (
                     <div className="m-pb-dong">
                       <span className="n">Người thực hiện</span>
                       <span className="g">{String(row._nhanVien ?? row._nguoiTao ?? nguoiTaoMau(row.so))}</span>
@@ -1174,6 +1227,28 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
                 </div>
 
                 {renderDsHangHoaMua()}
+                {/* Xuất kho định lượng: món không trừ được NVL, như tab Lỗi trên web */}
+                {laXdl && ((row._loi as { ma: string; ten: string; sl: number; lyDo: string }[] | undefined) ?? []).length > 0 && (
+                  <div>
+                    <div className="m-pb-nhom" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span>MÓN CHƯA XUẤT ĐƯỢC</span>
+                      <span style={{ color: 'var(--muted)', fontWeight: 'normal', textTransform: 'none', fontSize: 13 }}>{(row._loi as unknown[]).length} món</span>
+                    </div>
+                    <div className="m-t449-hang-ds">
+                      {(row._loi as { ma: string; ten: string; sl: number; lyDo: string }[]).map((m, idx) => (
+                        <div key={idx} className="m-t449-hang-the">
+                          <div className="m-t449-hang-dau">
+                            <div className="m-t449-hang-ten">{idx + 1}. {m.ten} <span className="m-t449-hang-ma" style={{ color: 'var(--muted)', fontWeight: 'normal' }}>{m.ma}</span></div>
+                          </div>
+                          <div className="m-t449-hang-than">
+                            <div className="m-t449-hang-dong"><span className="lbl">Số lượng:</span><span className="val bold num">{soLuong(m.sl)}</span></div>
+                            <div className="m-t449-hang-dong"><span className="lbl">Lý do:</span><span className="val" style={{ color: 'var(--red)' }}>{m.lyDo}</span></div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </>
             ) : laCtth ? (
               <>
@@ -1537,7 +1612,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
       </div>
 
       {/* ── CHÂN GHIM ĐÁY (A7); phiếu điều chỉnh không có thao tác nên không có chân (T660) ── */}
-      {!laDc && (
+      {!laDc && !laXdl && (
       <div className="m-pb-day">
         <div className="m-pb-day-nut">
           {!laKk && !khoChuanXem && !laCtth && dsMenu.length > 0 && (
@@ -1573,7 +1648,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
           )}
 
           {/* Phiếu kho, CTTH: chân 2 nút Sửa phiếu (chính) + Xoá (phụ đỏ) (T930) */}
-          {(khoChuanXem || laCtth) && (
+          {(khoChuanXem || laCtth) && !laXdl && (
             <>
               <button
                 type="button"
