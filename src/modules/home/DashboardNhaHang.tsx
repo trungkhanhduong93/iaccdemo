@@ -18,36 +18,36 @@ import {
   chiaTheoTy, chuoiThang, dinhMuc, haoHut, ketQuaCuaHang, thuChi,
 } from './soLieuDashboardNhaHang'
 
-const so1 = (n: number) => n.toLocaleString(locSo(), { minimumFractionDigits: 1, maximumFractionDigits: 1 })
+export const so1 = (n: number) => n.toLocaleString(locSo(), { minimumFractionDigits: 1, maximumFractionDigits: 1 })
 
 /** Số cộng một khung tỷ lệ: xanh khi tốt, đỏ khi xấu */
-function Doi({ gia, tot, hau }: { gia: number; tot: boolean; hau: string }) {
+export function Doi({ gia, tot, hau }: { gia: number; tot: boolean; hau: string }) {
   return <><span className={tot ? 'dnh-tot' : 'dnh-xau'}>{gia >= 0 ? '▲' : '▼'} {so1(Math.abs(gia))}%</span> {hau}</>
 }
 
-function Kpi({ ten, v, phu }: { ten: string; v: string; phu: ReactNode }) {
+export function Kpi({ ten, v, phu }: { ten: string; v: string; phu: ReactNode }) {
   return <div className="card dnh-kpi"><div className="dnh-l">{ten}</div><div className="dnh-v">{v}</div><div className="dnh-s">{phu}</div></div>
 }
 
-function ThanhTy({ phan }: { phan: { ty: number; mau: string }[] }) {
+export function ThanhTy({ phan }: { phan: { ty: number; mau: string }[] }) {
   return <div className="dnh-bar">{phan.map((p, i) => <i key={i} style={{ width: `${p.ty}%`, background: p.mau }} />)}</div>
 }
 
-function Chu({ mau, ten }: { mau: string; ten: string }) {
+export function Chu({ mau, ten }: { mau: string; ten: string }) {
   return <span className="dnh-chu"><i className="dnh-o" style={{ background: mau }} />{ten}</span>
 }
-function ChuDuong({ mau, ten, net }: { mau: string; ten: string; net?: boolean }) {
+export function ChuDuong({ mau, ten, net }: { mau: string; ten: string; net?: boolean }) {
   return <span className="dnh-chu"><i className="dnh-d" style={{ borderTopColor: mau, borderTopStyle: net ? 'dashed' : 'solid' }} />{ten}</span>
 }
 
 /** Dòng "Định mức x%, vượt/thấp hơn y%": đỏ khi vượt định mức, xanh khi thấp hơn */
-function SoDinhMuc({ r, dm }: { r: number; dm?: number }) {
+export function SoDinhMuc({ r, dm }: { r: number; dm?: number }) {
   if (dm === undefined) return <span className="dnh-mo">Chưa đặt định mức ở Danh mục cửa hàng</span>
   const c = Math.round((r - dm) * 10) / 10
   return <>Định mức {so1(dm)}%, <span className={c > 0 ? 'dnh-xau' : 'dnh-tot'}>{c > 0 ? 'vượt ' : 'thấp hơn '}{so1(Math.abs(c))}%</span></>
 }
 
-function ODuLieu({ v, max, mau }: { v: number; max: number; mau: string }) {
+export function ODuLieu({ v, max, mau }: { v: number; max: number; mau: string }) {
   return <div className="dnh-db"><i style={{ width: `${v / max * 100}%`, background: mau }} /><span>{money(v)}</span></div>
 }
 

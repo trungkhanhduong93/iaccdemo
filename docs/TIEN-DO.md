@@ -11,7 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T943 | Điện thoại, Trang chủ gói Plus, Pro: dashboard nhà hàng như web T941 (4 thẻ KPI, kênh, cơ cấu chi phí, tiền và ngân hàng, KQKD và Thu chi 13 tháng, chi phí NVL và hao hụt so với định mức, công nợ, kết quả theo cửa hàng) | dinhlanphuongipacc | Đang làm | Sửa `src/ui/mobile/MTrangChu.tsx` (nhánh gói Plus, Pro `MTrangChuCoPhi`), thêm file `src/ui/mobile/MDashboardNhaHang.tsx`, dùng lại `home/soLieuDashboardNhaHang.ts`, cuối `app.css`. Mẫu `docs/thiet-ke/T939-dashboard-nha-hang-v2.html` |
 | T942 | Dọn các khối Tổng quan cũ trong `TongQuan.tsx` (thác nước, sức khoẻ tài chính, cảnh báo, món bán chạy) và hộp Tuỳ chỉnh khối, không còn hiện ở gói Plus, Pro từ T941. Hỏi Trum trước khi xoá | | Chờ | Ghi lúc làm T941. `TongQuan.tsx`, `chiSo.ts` (`docBlocks`, `luuBlocks`) |
 | T938 | Danh mục cửa hàng thêm định mức chi phí NVL (% doanh thu), định mức hao hụt (%) theo cửa hàng, nhập ở bảng và hộp chi tiết, có nút Lưu | dinhlanphuongipacc | Xong | Chưa nơi nào dùng hai định mức để tính. File: `DanhMucCuaHang.tsx` (cùng file T333), `dinh-muc-cua-hang.tsx`, `session.tsx`, cuối `app.css` |
 | T933 | `tools/kiem_tra.py` mục T870/T871 (Thẻ kho máy tính) chờ `.bc-ban-du-lieu table.tbl` quá 8 giây, làm `--nhanh` dừng giữa chừng. Hỏng cả trên `main` trước T929–T931 | | Chờ | Ghi lúc làm T929–T931 (25/11). `tools/kiem_tra.py:5557`. Xem màn Thẻ kho còn ra bảng không, sửa màn hoặc sửa bộ chọn |

@@ -50252,3 +50252,17 @@ td.xdl-cat > span { display: block; overflow: hidden; text-overflow: ellipsis; w
 .dnh-kc > .card-b { flex: 1; display: flex; flex-direction: column; }
 .dnh-kc .dnh-t { flex: 1; }
 .dnh-kc tr.dnh-tong td { vertical-align: bottom; }
+
+/* ── Dashboard nhà hàng điện thoại gói Plus, Pro (T943) ── */
+.m-dnh .m-tc-the-ivt { overflow: hidden; }
+.m-dnh-loc { display: flex; gap: 8px; padding: 0 16px 12px; }
+.m-dnh-loc .sel-mini { flex: 1; min-width: 0; height: 38px; }
+.mdnh-so { font-size: 15px; font-weight: 700; color: var(--ink); line-height: 1.3; font-variant-numeric: tabular-nums; word-break: break-all; }
+.m-dnh .dnh-v { font-size: 22px; }
+.m-dnh .dnh-t td { padding-left: 6px; }
+.m-dnh .dnh-t td:first-child { padding-left: 0; }
+.mdnh-cn { margin-bottom: 14px; }
+.mdnh-ch { padding: 10px 12px; margin-bottom: 8px; border: 1px solid var(--line); border-radius: 10px; }
+.mdnh-ch.chon { background: var(--soft); }
+.mdnh-ch.tong { background: var(--tint); border-color: transparent; margin-bottom: 0; }
+.mdnh-ch-ten { font-weight: 700; color: var(--ink); margin-bottom: 4px; }

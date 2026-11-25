@@ -554,15 +554,17 @@ function Tip({ vi, W, tieuDe, dong }: { vi: number; W: number; tieuDe: string; d
 const nhanThang = (l: string) => l.replace('/25', '').replace('/26', '')
 
 /** Cột nhóm kèm các đường, trục phải theo % cho đường có `phai` (T941). Số tiền tính bằng đồng: trục ghi gọn, rê chuột xem số đầy đủ */
-export function CotDuongChart({ nhan, cot, duong, h = 280, phaiMax = 25 }: {
+export function CotDuongChart({ nhan, cot, duong, h = 280, phaiMax = 25, rong = 640 }: {
   nhan: string[]
   cot: { ten: string; mau: string; v: number[] }[]
   duong: { ten: string; mau: string; v: number[]; phai?: boolean; net?: boolean }[]
   h?: number
   /** Giá trị lớn nhất của trục phải (%) */
   phaiMax?: number
+  /** Bề rộng khung vẽ; điện thoại truyền số nhỏ để chữ trục không bị co */
+  rong?: number
 }) {
-  const W = 640, pl = 52, pr = 40, pb = 24, pt = 10
+  const W = rong, pl = 52, pr = 40, pb = 24, pt = 10
   const { chon, khung, props } = useReCot(nhan.length, W, pl, pr)
   const traiMax = Math.max(1, ...cot.flatMap(c => c.v), ...duong.filter(d => !d.phai).flatMap(d => d.v))
   const buoc = (() => { const t = traiMax / 4, e = Math.pow(10, Math.floor(Math.log10(t))); return [1, 2, 2.5, 5, 10].map(x => x * e).find(x => x >= t) ?? t })()
@@ -615,10 +617,10 @@ export function CotDuongChart({ nhan, cot, duong, h = 280, phaiMax = 25 }: {
 }
 
 /** Đường tỷ lệ 13 tháng kèm đường định mức đứt nét; trục tháng ở dưới, rê chuột xem từng tháng (T941) */
-export function SparkDinhMuc({ nhan, v, dm, min, max, h = 110, mau = 'var(--blue)', ten = 'Tỷ lệ' }: {
-  nhan: string[]; v: number[]; dm?: number; min: number; max: number; h?: number; mau?: string; ten?: string
+export function SparkDinhMuc({ nhan, v, dm, min, max, h = 110, mau = 'var(--blue)', ten = 'Tỷ lệ', rong = 640 }: {
+  nhan: string[]; v: number[]; dm?: number; min: number; max: number; h?: number; mau?: string; ten?: string; rong?: number
 }) {
-  const W = 640, pl = 8, pr = 8, pb = 22, pt = 8
+  const W = rong, pl = 8, pr = 8, pb = 22, pt = 8
   const { chon, khung, props } = useReCot(v.length, W, pl, pr)
   const bw = (W - pl - pr) / v.length
   const x = (i: number) => pl + i * bw + bw / 2
