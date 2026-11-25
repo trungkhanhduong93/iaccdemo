@@ -521,6 +521,8 @@ export function ttXemHd(s: Session, r: Row, hd: HdDaXuat) {
     phiDv: dong.reduce((a, d) => a + (d.phiDv || 0), 0),
     dv: DON_VI.find(d => d.id === s.donVi) ?? DON_VI[0],
     tenMau: TEN_MAU[mau2 ? 2 : 1],
+    // Hình thức thanh toán trên hoá đơn: chưa thanh toán là TM/CK, tiền mặt ngay là Tiền mặt, chuyển khoản ngay là Chuyển khoản
+    httt: r._httt === 'tienmat' ? 'Tiền mặt' : r._httt === 'chuyenkhoan' ? 'Chuyển khoản' : 'TM/CK',
   }
 }
 export type TtXem = ReturnType<typeof ttXemHd>
@@ -585,7 +587,7 @@ function BanHd({ hd, t }: { hd: HdDaXuat; t: TtXem }) {
           <div><span>Mã số thuế:</span><b className="hdx-mst">{cty ? k.mst : ''}</b>
             {cty ? <><span>Mã ĐV QHNS:</span><b className="hep">{k.maQhns}</b></> : <><span>CCCD:</span><b className="hep">{k.cccd}</b></>}</div>
           <div><span>Địa chỉ:</span><b>{k.diaChi}</b></div>
-          <div><span>Hình thức thanh toán:</span><b>TM/CK</b><span>Đồng tiền:</span><b className="hep">VND</b></div>
+          <div><span>Hình thức thanh toán:</span><b>{t.httt}</b><span>Đồng tiền:</span><b className="hep">VND</b></div>
         </div>
         <table className="hdx-bh">
           <thead>

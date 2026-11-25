@@ -54,7 +54,7 @@ function veHd(hd: HdDaXuat, t: TtXem): HTMLCanvasElement {
   if (cty) dongMua('Tên đơn vị:', k.tenDv.toUpperCase())
   dongMua('Mã số thuế:', cty ? k.mst : '')
   dongMua('Địa chỉ:', k.diaChi)
-  dongMua('Hình thức thanh toán:', 'TM/CK      Đồng tiền: VND')
+  dongMua('Hình thức thanh toán:', `${t.httt}      Đồng tiền: VND`)
   y += 16
 
   // Bảng hàng
@@ -156,7 +156,7 @@ export function xmlHd(hd: HdDaXuat, t: TtXem): Blob {
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <HDon>
   <DLHDon Id="data">
-    <TTChung>${the('PBan', '2.1.0')}${the('THDon', t.tenMau)}${the('KHMSHDon', hd.mau)}${the('KHHDon', hd.kyHieu)}${the('SHDon', hd.so)}${the('NLap', `${nam}-${th}-${n}`)}${the('DVTTe', 'VND')}${the('HTTToan', 'TM/CK')}</TTChung>
+    <TTChung>${the('PBan', '2.1.0')}${the('THDon', t.tenMau)}${the('KHMSHDon', hd.mau)}${the('KHHDon', hd.kyHieu)}${the('SHDon', hd.so)}${the('NLap', `${nam}-${th}-${n}`)}${the('DVTTe', 'VND')}${the('HTTToan', t.httt)}</TTChung>
     <NDHDon>
       <NBan>${the('Ten', dv.ten)}${the('MST', dv.mst.replace(/\s/g, ''))}${the('DChi', dv.diaChi)}</NBan>
       <NMua>${the('Ten', cty ? k.tenDv : '')}${the('MST', cty ? k.mst : '')}${the('DChi', k.diaChi)}${the('HVTNMHang', k.tenNm)}${cty ? the('MDVQHNSach', k.maQhns) : the('CCCDan', k.cccd)}</NMua>
