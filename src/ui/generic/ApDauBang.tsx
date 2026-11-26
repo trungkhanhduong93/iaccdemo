@@ -1,5 +1,6 @@
 // Ô Thuế GTGT, Chiết khấu trên thanh tab phiếu mua hàng, áp xuống mọi dòng chi tiết (T492)
 import { useEffect, useRef, useState } from 'react'
+import { DS_MUC_THUE_SUAT } from '../../modules/danh-muc/thue-suat'
 import { Select } from '../Dropdown'
 import { Icon } from '../Icon'
 import { money, dauThap } from '../format'
@@ -84,7 +85,7 @@ export function ApDauBang({ dong, onChange, an, coThue, coCk }: {
         <div className="ct-ap-o">
           <span>Thuế GTGT</span>
           <Select className="inp sm ct-ap-ts" value={tsChung} aria-label="Thuế GTGT áp cho mọi dòng" onChange={e => apThue(e.target.value)}
-            ds={[...(tsChung === '' ? [{ v: '', t: 'Nhiều mức' }] : []), { v: '0', t: '0%' }, { v: '5', t: '5%' }, { v: '8', t: '8%' }, { v: '10', t: '10%' }]} />
+            ds={[...(tsChung === '' ? [{ v: '', t: 'Nhiều mức' }] : []), ...DS_MUC_THUE_SUAT]} />
         </div>
       )}
     </div>

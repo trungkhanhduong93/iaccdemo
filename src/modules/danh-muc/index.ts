@@ -4,6 +4,7 @@ import type { Col, ModuleDef, Row, ScreenDef } from '../types'
 import { tuExcel } from '../types'
 // Tạm ẩn tab Quy trình của Danh mục, PhuongXT chốt 14/10/2026 (T225); mở lại thì khai lại quyTrinh từ './quy-trinh'
 import { kieuGhiSo } from '../../app/plan'
+import { DM_THUE_SUAT } from './thue-suat'
 import { CCDC_HANG, CUA_HANG, HANG, KHACH, KHO, LY_DO, NCC, NHAN_VIEN, NHOM_LY_DO, NVL, ganLyDo, luuLyDo } from '../../data/mock'
 import { DON_VI_TINH, tkCot, taiKhoan, NHOM_HANG, NHOM_DOI_TUONG, NHOM_MUC_CP, NHOM_CONG_VIEC, NHOM_KHO, DS_PTTT, QUY_DOI_DVT, DS_MUC_CHI_PHI_16, DS_CONG_VIEC_17, DS_QUY_TIEN_112, DS_HANG_HOA_12 } from './data'
 import { timNganhNghe } from './nganh-nghe'
@@ -281,9 +282,7 @@ const danhMuc: ModuleDef = {
       rows: () => [['07/10/2026', 'USD', 26280, 26640], ['07/10/2026', 'EUR', 30410, 31950], ['06/10/2026', 'USD', 26270, 26630], ['06/10/2026', 'EUR', 30390, 31930], ['30/09/2026', 'USD', 26250, 26610]]
         .map(([ngay, tt, mua, ban]) => ({ ngay, tt, mua, ban, nguon: 'Ngân hàng giao dịch chính' })) } },
     '1.11': { catalog: { them: 'Thêm loại thuế', cols: [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Tên' }, { k: 'ts', t: 'Thuế suất', num: true }, { k: 'gc', t: 'Áp dụng', cls: 'dim' }],
-      rows: () => [['GTGT0', 'Thuế GTGT 0%', '0%', 'Hàng xuất khẩu'], ['GTGT5', 'Thuế GTGT 5%', '5%', 'Nước sạch, một số nông sản'], ['GTGT8', 'Thuế GTGT 8%', '8%', 'Dịch vụ ăn uống được giảm thuế'],
-        ['GTGT10', 'Thuế GTGT 10%', '10%', 'Bia, rượu và hàng hoá khác'], ['KCT', 'Không chịu thuế', '—', 'Rau, thịt tươi sống chưa chế biến'], ['KKKNT', 'Không kê khai, tính nộp', '—', 'Khoản thu hộ']]
-        .map(([ma, ten, ts, gc]) => ({ ma, ten, ts, gc })) } },
+      rows: () => DM_THUE_SUAT.map(({ ma, ten, ts, ap }) => ({ ma, ten, ts, gc: ap })) } },
     // Gói Free khai số dư ban đầu quỹ ngay ở danh mục (cột, ô trong form), không còn màn Số dư ban đầu riêng; lưu cùng chỗ soDuQuy (T245)
     '1.12': { catalog: { them: 'Thêm quỹ', nhomLoc: 'loai', nhanLoc: 'Loại',
       tich: { nhan: 'Chưa gán phương thức thanh toán', macDinh: false, loc: r => !r._pttt?.length },   // Khoá sổ gói Free mở với ?tich=1 (T317)

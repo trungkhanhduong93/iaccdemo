@@ -6,6 +6,7 @@ import { CUA_HANG, KHACH, KHO, NCC, NHAN_VIEN, NHOM_LY_DO, nhomLyTuDong } from '
 import { NGANH_NGHE_CON, timNganhNghe } from './nganh-nghe'
 import { DN_AN_UONG, NGANH_NGHE_DN, timNganhNgheDn } from './nganh-nghe-dn'
 import { cauHinhGiamVat, type CauHinhGiamVat } from '../ban-hang/giam-thue'
+import { DS_GT_THUE_SUAT, nhanThueSuat } from './thue-suat'
 import { KhoiQuyDoi } from './QuyDoiDvt'
 import { KhoiPtttQuy } from './QuyPttt'
 import { chiaTheoForm, loiChiaSoDu } from './ChiaSoDuQuy'
@@ -175,7 +176,7 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
         truong: [
           { k: 'giaMua', nhan: 'Giá mua', kieu: 'tien', goi: ['PR'], cot: 'PURCHASE_PRICE' },   // gói Plus bỏ (T719)
           { k: 'gia', nhan: 'Giá bán', kieu: 'tien', goi: ['PR'], cot: 'SALE_PRICE' },   // gói Plus bỏ (T719)
-          { k: 'ts', nhan: 'Thuế suất GTGT (%)', kieu: 'chon', ds: ['KCT', '0', '5', '8', '10'], cot: 'VAT_TAX_ID', cheDo: ['TT133', 'TT99'] },   // TT152, TT58 tính theo ngành nghề (T151)
+          { k: 'ts', nhan: 'Thuế suất GTGT (%)', kieu: 'chon', ds: DS_GT_THUE_SUAT, nhanDs: nhanThueSuat, cot: 'VAT_TAX_ID', cheDo: ['TT133', 'TT99'] },   // TT152, TT58 tính theo ngành nghề (T151)
         ],
       },
       {
@@ -200,7 +201,7 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
           { k: 'nhomNganhDn', nhan: 'Nhóm ngành nghề', kieu: 'chu', chiDoc: true, caHang: true },
           { k: 'thueGtgtDn', nhan: 'Thuế GTGT (%)', kieu: 'so', chiDoc: true, pp: 'gtgt' },
           // GTGT khấu trừ: thuế suất không theo bảng ngành nghề, người dùng tự chọn
-          { k: 'ts', nhan: 'Thuế suất GTGT (%)', kieu: 'chon', ds: ['KCT', '0', '5', '8', '10'], cot: 'VAT_TAX_ID', pp: 'gtgtKt' },
+          { k: 'ts', nhan: 'Thuế suất GTGT (%)', kieu: 'chon', ds: DS_GT_THUE_SUAT, nhanDs: nhanThueSuat, cot: 'VAT_TAX_ID', pp: 'gtgtKt' },
           { k: 'thueTndn', nhan: 'Thuế TNDN (%)', kieu: 'so', chiDoc: true, pp: 'tndn' },
           { k: 'giamVat', nhan: 'Giảm thuế theo quy định', kieu: 'tich', oVuong: true, pp: 'giamVatDn' },   // T754
         ],
@@ -815,7 +816,7 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
           { k: 'tkTraLai', nhan: 'TK hàng bán trả lại', kieu: 'chon', cheDo: ['TT133', 'TT99'] },
           { k: 'mucCp', nhan: 'Mục chi phí', kieu: 'chon', ds: TEN_MUC_CHI_PHI },
           { k: 'ppGia', nhan: 'Phương pháp tính giá', kieu: 'chon', ds: ['Bình quân cuối kỳ', 'Bình quân tức thời', 'Nhập trước xuất trước', 'Đích danh'] },
-          { k: 'ts', nhan: 'Thuế suất GTGT (%)', kieu: 'chon', ds: ['KCT', '0', '5', '8', '10'], cheDo: ['TT133', 'TT99'] },
+          { k: 'ts', nhan: 'Thuế suất GTGT (%)', kieu: 'chon', ds: DS_GT_THUE_SUAT, nhanDs: nhanThueSuat, cheDo: ['TT133', 'TT99'] },
           // T154: bỏ theo dõi tồn kho, kho mặc định
         ],
       },

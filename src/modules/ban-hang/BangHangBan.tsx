@@ -1,6 +1,7 @@
 // Bảng hàng bán gõ tay của chứng từ Bán hàng gói Plus (T753): cùng cột như chi tiết Xuất bán POS, thêm ô gõ
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import type { Dong } from '../../ui/generic/gen'
+import { DS_MUC_THUE_SUAT } from '../danh-muc/thue-suat'
 import { Select } from '../../ui/Dropdown'
 import { HANG } from '../../data/mock'
 import { ChonDanhMuc } from '../../ui/ChonDanhMuc'
@@ -136,7 +137,7 @@ export function ApDauBangBan({ dong, onChange, an, coThue }: { dong: Dong[]; onC
         <div className="ct-ap-o">
           <span>Thuế GTGT</span>
           <Select className="inp sm ct-ap-ts" value={tsChung} aria-label="Thuế GTGT áp cho mọi dòng" onChange={e => apThue(e.target.value)}
-            ds={[...(tsChung === '' ? [{ v: '', t: 'Nhiều mức' }] : []), { v: '0', t: '0%' }, { v: '5', t: '5%' }, { v: '8', t: '8%' }, { v: '10', t: '10%' }]} />
+            ds={[...(tsChung === '' ? [{ v: '', t: 'Nhiều mức' }] : []), ...DS_MUC_THUE_SUAT]} />
         </div>
       )}
     </div>
