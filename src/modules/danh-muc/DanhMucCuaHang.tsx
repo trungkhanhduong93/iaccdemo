@@ -208,18 +208,16 @@ export function DanhMucCuaHang({ sc, mod }: ScreenProps) {
 const khongCty = (s: Session, cn: string) => s.cnCongTy?.[s.donVi]?.[cn] === ''
 
 /** Hỏi xác nhận xoá cửa hàng khỏi công ty (cty rỗng) hoặc chuyển sang công ty khác (T946).
- *  Chứng từ đã phát sinh ở lại công ty cũ. Tích Xoá dữ liệu thì xoá mọi chứng từ của cửa hàng ở công ty cũ (bản mẫu chỉ báo, chưa xoá thật). */
+ *  Cả hai luôn xoá mọi chứng từ đã phát sinh của cửa hàng ở công ty cũ, không có ô tích chọn (bản mẫu chỉ báo, chưa xoá thật). */
 function HopDoiCty({ x, onDong }: { x: { cn: string; ten: string; cty: string }; onDong: () => void }) {
   const { s, set, toast } = useSession()
-  const [xoaDl, setXoaDl] = useState(false)
   const cu = congTyCn(s, x.cn)
   const moi = x.cty ? dsDonVi(s).find(d => d.id === x.cty) : undefined
   const xoa = !x.cty
   const xacNhan = () => {
     set({ cnCongTy: { ...s.cnCongTy, [s.donVi]: { ...s.cnCongTy?.[s.donVi], [x.cn]: x.cty } } })
     onDong()
-    const dl = xoaDl ? ` Đã xoá chứng từ của cửa hàng ở ${cu.ten}.` : ` Chứng từ cũ vẫn ở ${cu.ten}.`
-    toast((xoa ? `Đã xoá ${x.ten} khỏi ${cu.ten}.` : `Đã chuyển ${x.ten} sang ${moi?.ten}.`) + dl)
+    toast((xoa ? `Đã xoá ${x.ten} khỏi ${cu.ten}.` : `Đã chuyển ${x.ten} sang ${moi?.ten}.`) + ` Đã xoá chứng từ của cửa hàng ở ${cu.ten}.`)
   }
   return (
     <ThongBao loai={xoa ? 'xoa' : 'canhBao'} nhan={xoa ? 'Xoá khỏi công ty' : 'Chuyển công ty'}
@@ -227,25 +225,17 @@ function HopDoiCty({ x, onDong }: { x: { cn: string; ten: string; cty: string };
       moTa={xoa ? <>Cửa hàng <b>{x.ten}</b> sẽ không còn thuộc <b>{cu.ten}</b>.</> : <>Cửa hàng <b>{x.ten}</b></>}
       duKien={xoa ? undefined : [{ nhan: 'Từ', gt: cu.ten }, { nhan: 'Sang', gt: moi?.ten ?? '' }]}
       onDong={onDong}
-      nut={{ ten: xoaDl ? (xoa ? 'Xoá cửa hàng và dữ liệu' : 'Chuyển và xoá dữ liệu') : (xoa ? 'Xoá khỏi công ty' : 'Chuyển công ty'), onClick: xacNhan }}>
+      nut={{ ten: xoa ? 'Xoá cửa hàng và dữ liệu' : 'Chuyển và xoá dữ liệu', onClick: xacNhan }}>
       <ul className="dmcn-hq">
+        <li className="dmcn-hq-do">Mọi chứng từ đã phát sinh của {x.ten} ở {cu.ten} sẽ bị xoá vĩnh viễn, không khôi phục được.</li>
         {xoa ? <>
-          <li>Chứng từ đã phát sinh vẫn lưu ở {cu.ten}, sổ sách không đổi.</li>
           <li>Từ nay không nhập thêm phát sinh cho cửa hàng này được nữa.</li>
           <li>Thu chi FABi của cửa hàng ngừng đồng bộ.</li>
         </> : <>
-          <li>Chứng từ đã phát sinh vẫn nằm ở {cu.ten}.</li>
           <li>Phát sinh mới của cửa hàng ghi vào {moi?.ten}.</li>
           <li>Thu chi FABi đồng bộ về công ty mới từ lúc chuyển.</li>
         </>}
       </ul>
-      <div className="dmcn-xoa-dl">
-        <label className="dmcn-xoa-dl-chon">
-          <input type="checkbox" checked={xoaDl} onChange={e => setXoaDl(e.target.checked)} />
-          {xoa ? 'Xoá cả dữ liệu đã phát sinh' : `Xoá dữ liệu đã phát sinh ở ${cu.ten}`}
-        </label>
-        {xoaDl && <p className="dmcn-xoa-dl-canh">Mọi chứng từ của {x.ten} ở {cu.ten} sẽ bị xoá vĩnh viễn. Không khôi phục được.</p>}
-      </div>
     </ThongBao>
   )
 }
