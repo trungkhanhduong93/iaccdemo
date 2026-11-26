@@ -14,7 +14,8 @@ import { moneyD, pct, soLuong } from '../../ui/format'
 import { useMoTuTrangChu } from '../../app/tuTrangChu'
 import { NutXuatExcel } from '../../ui/CongCuDs'
 import { xuatBangExcel } from '../../ui/xuatBangExcel'
-import { CACH_NVL, DI_DOI_CACH_NVL, canKiemKeCuoiThang, daKhoaThang, moTaCach, nvlHangKy, nvlKy } from './chi-phi-nvl'
+import { CACH_NVL, DI_DOI_CACH_NVL, canKiemKeCuoiThang, daKhoaThang, nvlHangKy, nvlKy } from './chi-phi-nvl'
+import { TheCongThucNvl, ThanhTyLeNvl } from './TheCongThucNvl'
 import { HopChotTonHt } from './HopChotTonHt'
 
 const THANG = [7, 8, 9, 10]
@@ -62,7 +63,8 @@ export function ChiPhiNvl(_: ScreenProps) {
       { k: 'tonCuoi', t: 'Tồn cuối kỳ', num: true, r: (r: Record<string, unknown>) => r.chuaKk ? <span className="cht-chip">Chưa kiểm kê</span> : moneyD(Number(r.tonCuoi)) }] : []),
     { k: 'tien', t: 'Chi phí NVL', num: true, r: r => r.chuaKk ? lapPhieu : moneyD(Number(r.tien)) },
     { k: 'dt', t: 'Doanh thu', num: true },
-    { k: 'tyLe', t: 'Tỷ lệ trên doanh thu', num: true },
+    // Thanh nhỏ tô màu theo mức tỷ lệ cạnh số (T944)
+    { k: 'tyLe', t: 'Tỷ lệ trên doanh thu', num: true, w: 170, r: r => r.chuaKk ? '–' : <span className="nvl-tl-o"><ThanhTyLeNvl tl={Number(r.tl)} />{pct(Number(r.tl))}</span> },
   ]
 
   // Xuất Excel bảng đang xem: mọi cửa hàng, hoặc mặt hàng của một cửa hàng
@@ -89,12 +91,8 @@ export function ChiPhiNvl(_: ScreenProps) {
         <Link to="/app/kho/5-1-10/moi" className="btn sm pri"><Icon n="clipboard" className="ic sm" kieu="net" />Kiểm kê ngay</Link>
         <NutXuatExcel onXuat={xuat} />
       </div>
-      <div className="cpt-tong">
-        <span>Tổng chi phí NVL{cn ? ` · ${cn.ten}` : ''}<small className="nvl-phu">{moTaCach(tong.cach)} · {pct(dt ? tong.tien / dt : 0)} doanh thu{chuaKk.length ? ' đã tính' : ''}</small></span>
-        {/* Kiểm kê định kỳ: ghi công thức kèm số (T767) */}
-        {kk && <span className="nvl-ct">= Tồn đầu kỳ <b>{moneyD(tong.tonDau)}</b> + Mua trong tháng <b>{moneyD(tong.mua)}</b> − Tồn cuối kỳ <b>{moneyD(tong.tonCuoi)}</b></span>}
-        <b>{moneyD(tong.tien)}{chuaKk.length > 0 && <small className="cht-chua-gom">Chưa gồm {chuaKk.length} cửa hàng chưa kiểm kê</small>}</b>
-      </div>
+      {/* Thẻ công thức thay thẻ tổng một dòng (T944): Tồn đầu + Mua − Tồn cuối = Chi phí NVL */}
+      <TheCongThucNvl tong={tong} ten={cn?.ten} />
       <div className="cpt-cuon">
       {chuaKk.length > 0 && (
         <div className="cht-bao" role="alert">
@@ -120,8 +118,8 @@ export function ChiPhiNvl(_: ScreenProps) {
         </div>
         </> : <>
           <Table cols={cotCn}
-            rows={tong.ds.map(x => ({ id: x.cn, ten: x.ten, tonDau: x.tonDau, mua: x.mua, tonCuoi: x.tonCuoi, dt: x.dt, tien: x.tien, chuaKk: x.chuaKk, tyLe: x.chuaKk ? '–' : pct(x.dt ? x.tien / x.dt : 0) }))}
-            sum={{ ten: chuaKk.length ? `Cộng ${tong.ds.length - chuaKk.length}/${tong.ds.length} cửa hàng` : 'Cộng', ...(kk ? { tonDau: tong.tonDau, mua: tong.mua, tonCuoi: tong.tonCuoi } : {}), dt, tien: tong.tien, tyLe: pct(dt ? tong.tien / dt : 0) }}
+            rows={tong.ds.map(x => ({ id: x.cn, ten: x.ten, tonDau: x.tonDau, mua: x.mua, tonCuoi: x.tonCuoi, dt: x.dt, tien: x.tien, chuaKk: x.chuaKk, tl: x.dt ? x.tien / x.dt : 0 }))}
+            sum={{ ten: chuaKk.length ? `Cộng ${tong.ds.length - chuaKk.length}/${tong.ds.length} cửa hàng` : 'Cộng', ...(kk ? { tonDau: tong.tonDau, mua: tong.mua, tonCuoi: tong.tonCuoi } : {}), dt, tien: tong.tien, tyLe: pct(dt ? tong.tien / dt : 0), tl: dt ? tong.tien / dt : 0 }}
             onRow={r => doi({ cn: String(r.id) })} />
           <div className="nvl-chan">Bấm cửa hàng để xem chi phí từng mặt hàng NVL.</div>
         </>}

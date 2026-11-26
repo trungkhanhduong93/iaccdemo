@@ -13,12 +13,12 @@ import {
   CACH_NVL,
   DI_DOI_CACH_NVL,
   daKhoaThang,
-  moTaCach,
   nvlKy,
   phieuMuaKy,
   canKiemKeCuoiThang,
 } from '../../modules/home/chi-phi-nvl'
 import { HopChotTonHt } from '../../modules/home/HopChotTonHt'
+import { TheCongThucNvl, ThanhTyLeNvl } from '../../modules/home/TheCongThucNvl'
 
 const THANG = [7, 8, 9, 10]
 
@@ -38,7 +38,6 @@ export function MChiPhiNvl(_: ScreenProps) {
 
   const tong = nvlKy(s, cn ? [cn.id] : [], thang)
   const kk = tong.cach === 'kk'
-  const dt = tong.ds.reduce((a, x) => a + x.dt, 0)
   const khoa = daKhoaThang(thang)
   const canKk = canKiemKeCuoiThang(s, thang)
   const chuaKkIds = tong.chuaKk
@@ -48,28 +47,8 @@ export function MChiPhiNvl(_: ScreenProps) {
 
   return (
     <div className="m-standard-cpt">
-      {/* Thẻ tổng ở đầu */}
-      <div className="m-standard-cpt-tong-the">
-        <div className="m-standard-cpt-tong-nhan">
-          Tổng chi phí NVL tháng {thang}/2026{cn ? ` · ${cn.ten}` : ''}
-          <small className="m-standard-cpt-tong-phu">
-            {moTaCach(tong.cach)} · {pct(dt ? tong.tien / dt : 0)} doanh thu
-          </small>
-        </div>
-        <div className="m-standard-cpt-tong-so">
-          {moneyD(tong.tien)}
-          {coCanhBao && (
-            <small className="m-nvl-tong-chua-gom">
-              Chưa gồm {chuaKkIds.length} cửa hàng chưa kiểm kê
-            </small>
-          )}
-        </div>
-        {kk && (
-          <div style={{ marginTop: 6, fontSize: 12, color: 'var(--muted)' }}>
-            = Tồn đầu <b>{moneyD(tong.tonDau)}</b> + Mua <b>{moneyD(tong.mua)}</b> − Tồn cuối <b>{moneyD(tong.tonCuoi)}</b>
-          </div>
-        )}
-      </div>
+      {/* Thẻ công thức như máy tính, xếp dọc (T944) */}
+      <TheCongThucNvl tong={tong} ten={cn?.ten} />
 
       {/* Dòng cách tính như web: tên, mô tả, nút Đổi cách tính mở Thông tin đơn vị */}
       <div className="m-nvl-cach">
@@ -161,7 +140,7 @@ export function MChiPhiNvl(_: ScreenProps) {
                   ) : (
                     <>
                       <div className="m-standard-cpt-tien">{moneyD(d.tien)}</div>
-                      <div className="m-standard-cpt-phantram">{pct(d.dt ? d.tien / d.dt : 0)} DT</div>
+                      <div className="m-standard-cpt-phantram nvl-tl-o"><ThanhTyLeNvl tl={d.dt ? d.tien / d.dt : 0} />{pct(d.dt ? d.tien / d.dt : 0)} DT</div>
                     </>
                   )}
                 </div>
