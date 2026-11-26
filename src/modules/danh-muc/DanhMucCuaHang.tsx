@@ -219,7 +219,6 @@ const khoaSoCn = (s: Session, cn: string): KyKhoa | null => {
  *  Cả hai luôn xoá mọi chứng từ đã phát sinh của cửa hàng ở công ty cũ, không có ô tích chọn (bản mẫu chỉ báo, chưa xoá thật). */
 function HopDoiCty({ x, onDong, onXong }: { x: { cn: string; ten: string; cty: string }; onDong: () => void; onXong: () => void }) {
   const { s, set, toast } = useSession()
-  const nav = useNavigate()
   const cu = congTyCn(s, x.cn)
   const moi = x.cty ? dsDonVi(s).find(d => d.id === x.cty) : undefined
   const xoa = !x.cty
@@ -227,9 +226,7 @@ function HopDoiCty({ x, onDong, onXong }: { x: { cn: string; ten: string; cty: s
   if (khoa) return (
     <ThongBao loai="chan" nhan={xoa ? 'Không xoá được' : 'Không chuyển được'}
       tieuDe="Cửa hàng đã khoá sổ"
-      moTa={<><b>{x.ten}</b> đã khoá sổ đến tháng {khoa.thang}/{khoa.nam}. Xoá hay chuyển công ty sẽ xoá chứng từ trong kỳ đã khoá, nên chưa làm được.</>}
-      buoc={['Mở khoá sổ các kỳ của cửa hàng ở Khoá sổ kế toán.', `Quay lại đây ${xoa ? 'xoá cửa hàng khỏi công ty' : 'chuyển công ty'}.`]}
-      nut={{ ten: 'Mở Khoá sổ kế toán', onClick: () => { onXong(); nav('/app/tong-hop/10-1-6') } }}
+      moTa={<><b>{x.ten}</b> đã khoá sổ đến tháng {khoa.thang}/{khoa.nam} nên không {xoa ? 'xoá khỏi công ty' : 'chuyển công ty'} được.</>}
       onDong={onDong} />
   )
   const xacNhan = () => {

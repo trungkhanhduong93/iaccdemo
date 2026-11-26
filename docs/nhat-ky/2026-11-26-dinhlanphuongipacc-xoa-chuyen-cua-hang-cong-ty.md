@@ -10,7 +10,7 @@
 - `src/modules/danh-muc/DanhMucCuaHang.tsx`, hộp Chi tiết cửa hàng (`HopChiTietCn`):
   - Combo Công ty có nút X bỏ trống công ty. Đổi công ty hoặc bấm X chỉ là nháp, bấm Lưu mới hỏi xác nhận. Nút Lưu luôn hiện (trước chỉ hiện ở gói Plus, Pro để lưu định mức).
   - Xoá hay chuyển xong thì cửa hàng biến khỏi danh mục của đơn vị đang mở, hộp chi tiết đóng. Lưu trong `cnCongTy`: `''` là xoá, mã đơn vị khác là chuyển (hàm `daRoiCty`).
-  - Cửa hàng mẫu đã khoá sổ kỳ nào từ ngày bắt đầu năm tài chính thì không cho xoá, chuyển: hộp chặn "Cửa hàng đã khoá sổ", nút mở Khoá sổ kế toán (hàm `khoaSoCn`). Cửa hàng mới lên sổ chưa có kỳ khoá.
+  - Cửa hàng mẫu đã khoá sổ kỳ nào từ ngày bắt đầu năm tài chính thì không cho xoá, chuyển: hộp chặn "Cửa hàng đã khoá sổ" chỉ báo khoá đến tháng nào nên không làm được, không có đường dẫn mở khoá (hàm `khoaSoCn`). 3 cửa hàng mẫu đều khoá đến 8/2026 nên luôn bị chặn. Cửa hàng mới lên sổ chưa có kỳ khoá.
   - Tiêu đề popup chuyển rút gọn "Chuyển sang công ty khác?" cho vừa một dòng.
 - Hộp xác nhận mới `HopDoiCty` (dùng `ThongBao`), thay hộp chuyển công ty cũ của T711. Theo người dùng: không có ô tích chọn, cả xoá lẫn chuyển luôn xoá mọi chứng từ đã phát sinh của cửa hàng ở công ty cũ.
   - Gạch đầu dòng đầu chữ đỏ: chứng từ đã phát sinh ở công ty cũ bị xoá vĩnh viễn.
