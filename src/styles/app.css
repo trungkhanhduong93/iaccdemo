@@ -50293,3 +50293,13 @@ td.xdl-cat > span { display: block; overflow: hidden; text-overflow: ellipsis; w
 .m-standard-cpt .nvl-ct-phu, .m-standard-cpt .nvl-ct-tl, .m-standard-cpt .nvl-ct-the.chinh .cht-chua-gom { flex-basis: 100%; }
 .m-standard-cpt .nvl-ct-the.chinh .nvl-ct-so { font-size: 20px; }
 .m-standard-cpt .nvl-tl { width: 40px; }
+
+/* ── Danh mục cửa hàng: nút X bỏ trống công ty, hộp xoá, chuyển công ty (T946) ── */
+.dmcn-cty-o { position: relative; display: inline-flex; align-items: center; gap: 6px; }
+.dmcn-cty-x { width: 28px; height: 28px; flex: none; border: 1px solid var(--line); border-radius: 999px; background: var(--white); color: var(--muted); cursor: pointer; display: grid; place-items: center; padding: 0; }
+.dmcn-cty-x:hover { background: var(--red-t); border-color: var(--red); color: var(--red); }
+.dmcn-xoa-dl { border: 1px solid var(--line); border-radius: var(--r-sm); padding: 10px 12px; display: flex; flex-direction: column; gap: 10px; font-size: 13px; }
+.dmcn-xoa-dl-chon { display: flex; align-items: center; gap: 8px; color: var(--ink); cursor: pointer; }
+.dmcn-xoa-dl-chon input { width: 16px; height: 16px; accent-color: var(--red); }
+.dmcn-xoa-dl-canh { margin: 0 0 0 24px; padding: 8px 10px; border-radius: var(--r-sm); background: var(--red-t); color: var(--red); line-height: 1.5; }
+.dmcn-hq { margin: 0; padding-left: 18px; font-size: 13px; line-height: 1.65; color: var(--body); }

@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 26/11/2026
+- T946: Danh mục cửa hàng, hộp Chi tiết cửa hàng: combo Công ty có nút X để bỏ trống công ty; đổi công ty hay bỏ trống thì bấm Lưu mới hỏi xác nhận. Chứng từ đã phát sinh vẫn ở công ty cũ, có ô tích Xoá dữ liệu đã phát sinh. Cửa hàng bỏ trống hiện "Chưa thuộc công ty nào".
 - T943: Điện thoại gói Plus, Pro: Trang chủ tab Quản trị hiện dashboard nhà hàng như web (thẻ Doanh thu, Chi phí NVL, Chi phí hoạt động, Lợi nhuận; kênh; cơ cấu chi phí; tiền và ngân hàng; Kết quả kinh doanh, Thu chi 13 tháng; chi phí NVL, hao hụt so với định mức; công nợ; kết quả theo cửa hàng), số tiền đầy đủ theo đồng.
 - T941: Gói Plus, Pro: màn Tổng quan thay bằng dashboard nhà hàng: thẻ Doanh thu, Chi phí NVL, Chi phí hoạt động, Lợi nhuận; doanh thu và biên LN gộp theo kênh; cơ cấu chi phí; tiền và ngân hàng; Kết quả kinh doanh và Thu chi 13 tháng; chi phí NVL và hao hụt NVL so với định mức cửa hàng; công nợ phải thu, phải trả; kết quả theo cửa hàng. Số tiền hiện đầy đủ theo đồng, rê chuột vào biểu đồ xem từng tháng, chọn năm, tháng trên hàng tab, có dải Thao tác nhanh.
 - T944: Màn Chi phí NVL tháng (từ Trang chủ) hiện công thức thành 4 thẻ: Tồn đầu kỳ + Mua trong tháng − Tồn cuối kỳ = Chi phí NVL. Thẻ Chi phí NVL có thanh % trên doanh thu. Cột Tỷ lệ trên doanh thu có thanh màu: dưới 35% xanh, 35–40% vàng, trên 40% đỏ. Điện thoại xếp các thẻ theo chiều dọc.
