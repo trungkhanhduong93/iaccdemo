@@ -3,14 +3,13 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import type { Col, Row, ScreenProps } from '../types'
 import { tenMan } from '../../app/registry'
 import { useSession } from '../../app/session'
-import { CHE_DO } from '../../app/che-do'
 import { Icon } from '../../ui/Icon'
 import { Select } from '../../ui/Dropdown'
-import { Note, PageHead } from '../../ui/Page'
+import { Note } from '../../ui/Page'
 import { Table } from '../../ui/Table'
 import { fold } from '../../ui/format'
-import { ThanhLoc, LocO } from '../../ui/ThanhLoc'
-import { NutTuyChinhCot, useCotDs } from '../../ui/LocNangCao'
+import { IconFigmaSearch } from '../../ui/IconFigma'
+import { NutTuyChinhCot, useCotDs, BoLoc, ChipTrangThai, useLocNhap, useCauHinhLoc, type Chip, type OLocDef } from '../../ui/LocNangCao'
 import { NutExcel } from '../../ui/CongCuDs'
 import { heThongTk, type TaiKhoanDef, type TinhChatTk } from './he-thong-tk'
 
@@ -155,7 +154,6 @@ function taoMacDinh(tk?: TkHien | null): FormState {
 
 export function HeThongTaiKhoan({ sc, mod }: ScreenProps) {
   const { s, toast } = useSession()
-  const cdDef = CHE_DO[s.cheDo]
   const base = useMemo(() => heThongTk(s.cheDo), [s.cheDo])
   // Tài khoản thêm trong phiên và chỉnh sửa (Tổng hợp, Đang dùng, tên, kiểu số dư); đổi chế độ thì làm lại
   const [them, setThem] = useState<TaiKhoanDef[]>([])
@@ -173,11 +171,13 @@ export function HeThongTaiKhoan({ sc, mod }: ScreenProps) {
   }, [base, them, chinh])
   const bySo = useMemo(() => new Map(all.map(t => [t.so, t])), [all])
   const sai = useMemo(() => all.filter(saiTinhChat), [all])
-  const [loc, setLoc] = useState({ loai: '', tongHop: '', tinhChat: '', trangThai: '' })
+  // Lọc như các danh mục khác: gõ, chọn là nháp, bấm Lọc (hoặc Enter) mới áp dụng; chip trạng thái áp ngay
+  const loc0 = useLocNhap(() => ({ tim: '', loai: '', tongHop: '', tinhChat: '', trangThai: '' }))
+  const { nhap, ap: loc, dat } = loc0
+  const q = loc.tim
   const [chiSai, setChiSai] = useState(false)
   const locRong = !loc.loai && !loc.tongHop && !loc.tinhChat && !loc.trangThai
 
-  const [q, setQ] = useState('')
   const [moRong, setMoRong] = useState<Set<string>>(() => new Set())
   const [panelOpen, setPanelOpen] = useState(false)
   const [dangSua, setDangSua] = useState<TkHien | null>(null)
@@ -258,6 +258,36 @@ export function HeThongTaiKhoan({ sc, mod }: ScreenProps) {
     const ds = all.filter(tk => hien.has(tk.so))
     return { rows: ds, khopCount: khop.size }
   }, [all, q, loc, locRong, chiSai, moRong, bySo])
+
+  const chips: Chip[] = useMemo(() => [
+    { k: 'tat-ca', ten: 'Tất cả', mau: 'var(--blue)', so: all.length },
+    { k: '1', ten: 'Đang sử dụng', mau: 'var(--green)', so: all.filter(t => t.dangDung).length },
+    { k: '0', ten: 'Ngừng sử dụng', mau: 'var(--amber)', so: all.filter(t => !t.dangDung).length },
+  ], [all])
+  const oLoc: OLocDef[] = useMemo(() => [
+    {
+      k: 'tim', ten: 'Tìm kiếm', coGiaTri: Boolean(nhap.tim.trim()),
+      o: <input className="ds-o-inp" value={nhap.tim} placeholder="Tìm số, tên TK" onChange={e => dat('tim', e.target.value)}
+        onKeyDown={e => { if (e.key === 'Enter') loc0.loc() }} />,
+    },
+    {
+      k: 'loai', ten: 'Loại tài khoản', coGiaTri: Boolean(nhap.loai),
+      o: <Select className="ds-o-sel" value={nhap.loai} aria-label="Loại tài khoản"
+        ds={[{ v: '', t: 'Tất cả' }, ...LOAI_TK.filter(l => l.v !== '0')]} onChange={e => dat('loai', e.target.value)} />,
+    },
+    {
+      k: 'tongHop', ten: 'Tổng hợp', coGiaTri: Boolean(nhap.tongHop),
+      o: <Select className="ds-o-sel" value={nhap.tongHop} aria-label="Tổng hợp"
+        ds={[{ v: '', t: 'Tất cả' }, { v: '1', t: 'Tổng hợp' }, { v: '0', t: 'Chi tiết' }]} onChange={e => dat('tongHop', e.target.value)} />,
+    },
+    {
+      k: 'tinhChat', ten: 'Kiểu số dư', coGiaTri: Boolean(nhap.tinhChat),
+      o: <Select className="ds-o-sel" value={nhap.tinhChat} aria-label="Kiểu số dư"
+        ds={[{ v: '', t: 'Tất cả' }, { v: 'Dư Nợ', t: 'Dư Nợ' }, { v: 'Dư Có', t: 'Dư Có' }, { v: 'Lưỡng tính', t: 'Lưỡng tính' }]}
+        onChange={e => dat('tinhChat', e.target.value)} />,
+    },
+  ], [nhap, dat])
+  const [cauHinhLoc, datCauHinhLoc] = useCauHinhLoc('/danh-muc/1-1', oLoc.map(o => o.k), ['tim', 'loai'])
 
   const moThem = () => {
     setDangSua(null)
@@ -468,63 +498,57 @@ export function HeThongTaiKhoan({ sc, mod }: ScreenProps) {
 
   return (
     <div className="page page-voucher page-dm">
-      <PageHead
-        title={ten}
-        meta={
-          <>
-            <span className="chip info">{cdDef.ngan}</span>
-            {cdDef.choDuyet && <span className="chip warn">Chờ kế toán trưởng duyệt</span>}
-          </>
-        }
-      />
-
       <section className="card dm-bang tk-tbl-wrap">
-        <ThanhLoc
-          tim={{
-            value: q,
-            onChange: setQ,
-            placeholder: 'Tìm số, tên TK',
-          }}
-          dangLoc={!locRong}
-          onLamMoi={() => setLoc({ loai: '', tongHop: '', tinhChat: '', trangThai: '' })}
-          boLoc={<>
-            <LocO nhan="Loại tài khoản">
-              <Select className="inp" value={loc.loai} aria-label="Loại tài khoản"
-                ds={[{ v: '', t: 'Tất cả' }, ...LOAI_TK.filter(l => l.v !== '0')]}
-                onChange={e => setLoc(l => ({ ...l, loai: e.target.value }))} />
-            </LocO>
-            <LocO nhan="Tổng hợp">
-              <Select className="inp" value={loc.tongHop} aria-label="Tổng hợp"
-                ds={[{ v: '', t: 'Tất cả' }, { v: '1', t: 'Tổng hợp' }, { v: '0', t: 'Chi tiết' }]}
-                onChange={e => setLoc(l => ({ ...l, tongHop: e.target.value }))} />
-            </LocO>
-            <LocO nhan="Kiểu số dư">
-              <Select className="inp" value={loc.tinhChat} aria-label="Kiểu số dư"
-                ds={[{ v: '', t: 'Tất cả' }, { v: 'Dư Nợ', t: 'Dư Nợ' }, { v: 'Dư Có', t: 'Dư Có' }, { v: 'Lưỡng tính', t: 'Lưỡng tính' }]}
-                onChange={e => setLoc(l => ({ ...l, tinhChat: e.target.value }))} />
-            </LocO>
-            <LocO nhan="Trạng thái">
-              <Select className="inp" value={loc.trangThai} aria-label="Trạng thái"
-                ds={[{ v: '', t: 'Tất cả' }, { v: '1', t: 'Đang sử dụng' }, { v: '0', t: 'Ngừng sử dụng' }]}
-                onChange={e => setLoc(l => ({ ...l, trangThai: e.target.value }))} />
-            </LocO>
-          </>}
-          phai={
-            <div className="row" style={{ gap: 8 }}>
+        <div className="voucher-top" style={{ flex: 'none', border: 0, borderRadius: 0, boxShadow: 'none' }}>
+          <div className="ds-toolbar-figma">
+            <BoLoc
+              ds={oLoc}
+              cauHinh={cauHinhLoc}
+              datCauHinh={datCauHinhLoc}
+              dangLoc={loc0.dangLoc}
+              khacNhap={loc0.khacNhap}
+              onLoc={loc0.loc}
+              onXoaHet={loc0.xoaHet}
+              ngoaiRieng={{
+                tim: (
+                  <div key="tim" className="ds-tim-figma">
+                    <IconFigmaSearch size={16} />
+                    <input
+                      value={nhap.tim}
+                      placeholder="Tìm số, tên TK"
+                      title="Tìm số, tên TK"
+                      aria-label="Tìm kiếm"
+                      onChange={e => dat('tim', e.target.value)}
+                      onKeyDown={e => { if (e.key === 'Enter') loc0.loc() }}
+                    />
+                  </div>
+                ),
+              }}
+            />
+            <div className="ds-toolbar-phai">
+              <button type="button" className="btn pri" onClick={moThem}>
+                <Icon n="plus" className="ic sm" />
+                <span>Thêm mới</span>
+              </button>
+            </div>
+          </div>
+          <div className="ds-hang-trang-thai">
+            <div className="ds-thanh-h2-trai">
+              <ChipTrangThai ds={chips} chon={loc.trangThai || 'tat-ca'} onChon={k => loc0.datVaAp('trangThai', k === 'tat-ca' ? '' : k)} />
+            </div>
+            <div className="ds-toolbar-phai ds-cong-cu-h2">
+              <span className="muted" style={{ fontSize: 12, marginRight: 4 }}>{khopCount}/{all.length} dòng</span>
               <button type="button" className="btn sm" onClick={moRongHet}>Mở rộng hết</button>
               <button type="button" className="btn sm" onClick={thuGonHet}>Thu gọn hết</button>
-              <NutTuyChinhCot cols={cot.colsDu} an={cot.an} coDinh={COT_CO_DINH} macDinh={cot.macDinh} dongBang={cot.dongBang}
-                onLuu={cot.luu} onDoRongTuDong={cot.datDoRongTuDong} />
               <NutExcel
                 onNhap={() => toast('Nhập tài khoản từ Excel')}
                 onXuat={() => toast(`Đã xuất ${all.length} tài khoản ra Excel`)}
               />
-              <button type="button" className="btn pri" onClick={moThem}>
-                <Icon n="plus" className="ic sm" />Thêm tài khoản
-              </button>
+              <NutTuyChinhCot cols={cot.colsDu} an={cot.an} coDinh={COT_CO_DINH} macDinh={cot.macDinh} dongBang={cot.dongBang}
+                onLuu={cot.luu} onDoRongTuDong={cot.datDoRongTuDong} />
             </div>
-          }
-        />
+          </div>
+        </div>
 
         {sai.length > 0 && (
           <Note kind="warn" icon="alert">
@@ -538,7 +562,7 @@ export function HeThongTaiKhoan({ sc, mod }: ScreenProps) {
         {rows.length > 0 ? bang : (
           <div className="empty">
             <b>Không tìm thấy tài khoản phù hợp</b>
-            <button type="button" className="btn sm" style={{ marginTop: 10 }} onClick={() => setQ('')}>Xoá tìm kiếm</button>
+            <button type="button" className="btn sm" style={{ marginTop: 10 }} onClick={() => loc0.xoaHet()}>Xoá bộ lọc</button>
           </div>
         )}
 
