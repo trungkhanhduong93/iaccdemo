@@ -2,6 +2,9 @@
 
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
+## 27/11/2026
+- T948: Phiếu thu, chi, chuyển quỹ gói Pro: dòng chi tiết có TK Nợ, TK Có (tự lấy theo quỹ, lý do, đối tượng, chọn lại được), kèm cột Đối tượng, Công việc, Thành phẩm, VTHH theo cặp Nợ, Có khi tài khoản theo dõi chi tiết; lưu phải đủ tài khoản và mã chi tiết. Cột Thành tiền đổi thành Số tiền, tạm ẩn cột Khoản mục. Tuỳ chỉnh giao diện thêm Tuỳ chọn chung: Lý do nghiệp vụ hiển thị đầu phiếu.
+
 ## 26/11/2026
 - T946: Danh mục cửa hàng: nút Tuỳ chỉnh cột nằm cùng hàng nút Đồng bộ lại, khu lọc thấp hơn, thông báo gọn hơn và ghi "gán quỹ" thay "map quỹ".
 - T946: Danh mục cửa hàng, hộp Chi tiết cửa hàng: combo Công ty có nút X để bỏ trống công ty; đổi công ty hay bỏ trống thì bấm Lưu mới hỏi xác nhận. Cả xoá lẫn chuyển đều xoá mọi chứng từ đã phát sinh của cửa hàng ở công ty cũ, hộp xác nhận báo rõ bằng chữ đỏ. Xong thì cửa hàng không còn trong danh mục. Cửa hàng đã khoá sổ thì không cho xoá, chuyển.

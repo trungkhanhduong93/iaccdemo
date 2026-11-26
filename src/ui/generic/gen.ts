@@ -59,6 +59,14 @@ export interface Dong {
   kho?: string
   tkNo?: string
   tkCo?: string
+  dtNo?: string                // Pro, phiếu thu chi: chi tiết đi kèm TK Nợ, TK Có (đối tượng, công việc, thành phẩm, vật tư hàng hoá)
+  dtCo?: string
+  cvNo?: string
+  cvCo?: string
+  tpNo?: string
+  tpCo?: string
+  vtNo?: string
+  vtCo?: string
   stt?: number
   dt?: string
   ly?: string                  // lý do thu, chi của dòng phiếu tiền (T49)

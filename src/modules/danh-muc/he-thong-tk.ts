@@ -398,3 +398,25 @@ export function heThongTk(cd: CheDo): TaiKhoanDef[] {
   const k: CheDo = cd === 'TT99' ? 'TT99' : 'TT133'
   return CACHE[k] ??= dung(k === 'TT99' ? TT99 : TT133)
 }
+
+/** QD119, bản Pro: ô chọn tài khoản chỉ hiện tài khoản chi tiết (không có tài khoản con); gói khác giữ nguyên danh sách.
+ *  Mọi màn có ô tài khoản dùng hàm này, không viết lọc riêng. */
+export function locTkChiTiet<T extends { laCha: boolean }>(ds: T[], goi: string): T[] {
+  return goi === 'PR' ? ds.filter(t => !t.laCha) : ds
+}
+
+/** QD119: lỗi khi lưu tài khoản tổng hợp ở bản Pro; null nếu hợp lệ hoặc không phải bản Pro */
+export function loiTkTongHop(so: unknown, cd: CheDo, goi: string): string | null {
+  const ma = String(so ?? '').trim()
+  if (goi !== 'PR' || !ma) return null
+  return heThongTk(cd).find(t => t.so === ma)?.laCha ? `Tài khoản ${ma} là tài khoản tổng hợp, chọn tài khoản chi tiết` : null
+}
+
+/** Chi tiết đi kèm tài khoản trên dòng chứng từ: đối tượng, công việc, thành phẩm, vật tư hàng hoá.
+ *  Cùng quy tắc suy theo số tài khoản với ô "Theo dõi chi tiết theo" ở màn 1.1 (HeThongTaiKhoan.taoMacDinh) */
+export interface ChiTietTk { dt: boolean; cv: boolean; tp: boolean; vt: boolean }
+export function chiTietTheoTk(so: string | undefined): ChiTietTk {
+  const s = so ?? ''
+  const vt = /^(152|153|155|156)/.test(s)
+  return { dt: /^(131|331)/.test(s), cv: /^(154|631)/.test(s), tp: /^(154|631)/.test(s), vt }
+}
