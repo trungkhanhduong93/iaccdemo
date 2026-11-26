@@ -341,7 +341,9 @@ const danhMuc: ModuleDef = {
         ['BT07', 'Mua nguyên vật liệu chưa trả tiền', 'Phiếu mua hàng', 'Nhóm nhà cung cấp Thịt, cá; Tinh bột; Pha chế', '1331', '331', 'Tiền thuế GTGT'],
       ].map(([ma, ten, lct, loc, no, co, tien]) => ({ ma, ten, lct, loc, no: tkTheoCheDo(no, cd).so, co: tkTheoCheDo(co, cd).so, tien })) } },
     '1.16': { catalog: { them: 'Thêm lý do nghiệp vụ', locGoi: (goi, r) => goi !== 'S' || r.dung === 'Thu tiền' || r.dung === 'Chi tiền',   // gói Standard chỉ lý do thu, chi (T144)
-      nhomLoc: 'dung', nhanLoc: 'Dùng cho', cols: [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Lý do nghiệp vụ' }, { k: 'dung', t: 'Dùng cho' },
+      nhomLoc: 'dung', nhanLoc: 'Dùng cho', cols: goi => [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Lý do nghiệp vụ' }, { k: 'dung', t: 'Dùng cho' },
+        // Tài khoản của lý do: chỉ gói Pro, đứng ngay sau Dùng cho, trước Nguồn
+        ...(goi === 'PR' ? [{ k: 'tk', t: 'Tài khoản', w: 100, cls: 'code' }] : []),
         // Nguồn: lý do có sẵn từ FABi, lý do người dùng thêm là Thủ công (T708)
         { k: 'nguon', t: 'Nguồn', w: 100, r: r => r.nguon === 'FABi' ? 'FABi' : 'Thủ công' },
         // Là chi phí: chỉ lý do chi tiền có ô này (T231)

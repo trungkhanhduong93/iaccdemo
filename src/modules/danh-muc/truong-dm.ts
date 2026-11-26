@@ -749,7 +749,7 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
 
   // 1.16 Lý do (chưa có bảng DM_ trong schema, chờ đối chiếu)
   '1.16': {
-    chiSua: ['chiPhi', 'phanBo', 'nhomCp'],   // lý do có sẵn không sửa, chỉ tích Là chi phí (T334), Chi phí phân bổ nhiều kỳ (T700) và chọn lại nhóm lý do (T473)
+    chiSua: ['chiPhi', 'phanBo', 'nhomCp', 'tk'],   // lý do có sẵn không sửa, chỉ tích Là chi phí (T334), Chi phí phân bổ nhiều kỳ (T700) và chọn lại nhóm lý do (T473)
     chiSuaKhi: v => v.nguon === 'FABi',      // chỉ lý do nguồn FABi bị khoá; lý do thủ công sửa được hết (T708)
     moi: () => ({ nguon: 'Thủ công' }),
     // Mã đã tạo không xoá, chỉ tắt Đang sử dụng (T940); trước đây lý do thủ công xoá được (T708)
@@ -762,6 +762,8 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
           // cùng chữ với danh sách lý do (LY_DO); gói Free chỉ lý do thu, chi (T144)
           { k: 'dung', nhan: 'Dùng cho nghiệp vụ', kieu: 'chon', ds: ['Thu tiền', 'Chi tiền'], batBuoc: true, goi: ['S'] },
           { k: 'dung', nhan: 'Dùng cho nghiệp vụ', kieu: 'chon', ds: ['Thu tiền', 'Chi tiền', 'Nhập kho', 'Xuất kho'], batBuoc: true, goi: ['PL', 'PR'] },
+          // Tài khoản của lý do, chỉ gói Pro, đứng ngay sau Dùng cho nghiệp vụ; chỉ lấy tài khoản chi tiết (QD119)
+          { k: 'tk', nhan: 'Tài khoản', kieu: 'chon', goi: ['PR'] },
           // Nguồn tự ghi, không sửa: FABi khi đồng bộ, Thủ công khi thêm trên IACC (T708)
           { k: 'nguon', nhan: 'Nguồn', kieu: 'chu', chiDoc: true },
           // Lý do chi tiền là chi phí thì báo cáo chi phí lấy lên (T231)

@@ -241,6 +241,14 @@ export function nhomLyTuDong(ten: string): string {
 export const MA_LY_CHO_PHAN_BO = 'CHI35'
 /** Lý do mặc định tích Chi phí phân bổ nhiều kỳ: Chi phí chờ phân bổ, Chi tiền thuê nhà; loại trừ với Là chi phí (T700) */
 const LY_PHAN_BO = [MA_LY_CHO_PHAN_BO, 'CHI14']
+/** Tài khoản của lý do nghiệp vụ gói Pro (số hiệu TT133); lý do chưa khai thì chi tiền lấy 6422, loại khác để trống */
+export const TK_LY_DO: Record<string, string> = {
+  'Thu tiền bán hàng': '5111', 'Thu Nợ': '131', 'Thu tiền hoàn ứng của nhân viên': '141', 'Thu khác': '711',
+  'Chi phí nguyên liệu phụ': '152', 'Thanh toán tiền cho nhà cung cấp': '331', 'Thanh Toán Công Nợ Nhà Cung Cấp': '331',
+  'Thanh toán tiền lương': '334', 'Tạm ứng cho nhân viên': '141',
+  'Chi tiền thuê nhà': '6422', 'Chi phí công cụ dụng cụ': '153', 'Chi phí tài sản cố định': '211', 'Chi phí chờ phân bổ': '242',
+  'Chi phí khác': '6422',
+}
 export const LY_DO = [
   ['THU01', 'Khách hàng đặt cọc', 'Thu tiền'],
   ['THU02', 'Thu Nợ', 'Thu tiền'],
@@ -294,7 +302,7 @@ export const LY_DO = [
 // nguon: lý do có sẵn đồng bộ từ FABi, không xoá, chỉ sửa các ô tích; lý do người dùng thêm là Thủ công (T708)
 ].map(([ma, ten, dung]) => {
   const phanBo = LY_PHAN_BO.includes(ma), chiPhi = !phanBo && LY_LA_CHI_PHI.includes(ma)
-  return { ma, ten, dung, nguon: 'FABi', chiPhi, phanBo, nhomCp: chiPhi ? nhomLyTuDong(ten) : '' }
+  return { ma, ten, dung, nguon: 'FABi', tk: TK_LY_DO[ten] ?? (dung === 'Chi tiền' ? '6422' : ''), chiPhi, phanBo, nhomCp: chiPhi ? nhomLyTuDong(ten) : '' }
 })
 /** Tên lý do thu, chi bắt buộc chọn đối tượng: Thu nợ, Đi vay, Thanh toán công nợ nhà cung cấp, Cho vay; lý do khác để trống được (T330) */
 export const LY_CAN_DOI_TUONG = LY_DO.filter(x => ['THU02', 'THU10', 'CHI02', 'CHI34'].includes(x.ma)).map(x => x.ten)
@@ -311,7 +319,7 @@ export function ganLyDo<R extends { ma?: unknown }>(r: R, s: Pick<Session, 'donV
 export function luuLyDo(v: Record<string, unknown>, s: Session): Partial<Session> {
   if (!v._sua || !v.ma) return {}
   const tich = (x: unknown) => x === 1 || x === true || x === '1' ? 1 : 0
-  const cua = { ...s.lyDoGhiDe?.[s.donVi], [String(v.ma)]: { chiPhi: tich(v.chiPhi), phanBo: tich(v.phanBo), nhomCp: String(v.nhomCp ?? '') } }
+  const cua = { ...s.lyDoGhiDe?.[s.donVi], [String(v.ma)]: { chiPhi: tich(v.chiPhi), phanBo: tich(v.phanBo), nhomCp: String(v.nhomCp ?? ''), tk: String(v.tk ?? '') } }
   return { lyDoGhiDe: { ...s.lyDoGhiDe, [s.donVi]: cua } }
 }
 

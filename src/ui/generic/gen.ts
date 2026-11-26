@@ -1,6 +1,6 @@
 // Sinh dữ liệu giả cho màn chung. Có hạt giống theo mã màn nên mở lại vẫn ra đúng số cũ.
 import type { Row, VoucherCfg } from '../../modules/types'
-import { CUA_HANG, HANG, HOM_NAY, KHACH, KHOAN_MUC, NCC, NHAN_VIEN, NVL, TK_NGAN_HANG } from '../../data/mock'
+import { CUA_HANG, HANG, HOM_NAY, KHACH, KHOAN_MUC, NCC, NHAN_VIEN, NVL, TK_LY_DO, TK_NGAN_HANG } from '../../data/mock'
 import { between, dmy, fold, k, pad, pick, rng } from '../format'
 
 /** Bỏ lượt rng đầu (số phút) để form, bản in, điện thoại ra cùng người với cột danh sách (T824) */
@@ -169,14 +169,7 @@ export function doanLyDoThuChi(loai: string, ten: string): string {
   return ''
 }
 
-// Tài khoản đối ứng ngầm định của từng lý do thu chi (danh mục LY_DO chưa có cột tài khoản), số hiệu TT133
-const TK_LY_DO: Record<string, string> = {
-  'Thu tiền bán hàng': '5111', 'Thu Nợ': '131', 'Thu tiền hoàn ứng của nhân viên': '141', 'Thu khác': '711',
-  'Chi phí nguyên liệu phụ': '152', 'Thanh toán tiền cho nhà cung cấp': '331', 'Thanh Toán Công Nợ Nhà Cung Cấp': '331',
-  'Thanh toán tiền lương': '334', 'Tạm ứng cho nhân viên': '141',
-  'Chi tiền thuê nhà': '6422', 'Chi phí công cụ dụng cụ': '153', 'Chi phí tài sản cố định': '211', 'Chi phí chờ phân bổ': '242',
-  'Chi phí khác': '6422',
-}
+// Tài khoản đối ứng ngầm định của từng lý do thu chi, bảng TK_LY_DO nằm ở data/mock
 const tkDoiUngTheoLyDo = (ly: string) => TK_LY_DO[ly] ?? '6422'
 
 /** TK Nợ, Có của dòng thu chi theo loại phiếu (thu, chi, bc, unc hoặc nhóm nhthu, nhchi) và lý do; loại khác trả rỗng (T233) */
