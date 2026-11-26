@@ -6,7 +6,7 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import type { Col, Row, ScreenProps } from '../types'
 import { tenMan } from '../../app/registry'
 import { congTyCn, donViHienTai, dsDonVi, ngayDauNam, useSession, type CnThem, type Session } from '../../app/session'
-import { CUA_HANG, DON_VI } from '../../data/mock'
+import { CUA_HANG, DON_VI, khoaSoDenCua, type KyKhoa } from '../../data/mock'
 import { Icon } from '../../ui/Icon'
 import { Note, PageHead } from '../../ui/Page'
 import { Table } from '../../ui/Table'
@@ -45,7 +45,7 @@ export function DanhMucCuaHang({ sc, mod }: ScreenProps) {
   const rows: Row[] = useMemo(() => [
     ...(coSan ? CUA_HANG.map(c => ({ id: c.id, ma: c.id.toUpperCase(), posId: c.posId, ten: c.ten, kv: 'TP.HCM', kho: kho(c.id, c.ten), nguon: 'FABi' })) : []),
     ...them.map((c, i) => ({ id: c.id, ma: c.id.toUpperCase(), posId: `2000${i + 1}`, ten: c.ten, kv: c.khuVuc, kho: kho(c.id, c.ten), nguon: 'FABi', moi: !c.banDau })),
-  ], [coSan, them, standard])   // eslint-disable-line react-hooks/exhaustive-deps
+  ].filter(r => !daRoiCty(s, String(r.id))), [coSan, them, standard, s.cnCongTy, s.donVi])   // eslint-disable-line react-hooks/exhaustive-deps
 
   const colsGoc: Col[] = useMemo(() => [
     { k: 'ma', t: 'Mã', cls: 'code', w: 100 },
@@ -55,7 +55,6 @@ export function DanhMucCuaHang({ sc, mod }: ScreenProps) {
       {r.moi && <span className="chip info" style={{ marginLeft: 8 }}>Mới lên sổ</span>}</> },
     // Công ty của cửa hàng: tên, MST của đơn vị đang mở (T285), hoặc công ty chọn lại ở hộp chi tiết (T711)
     { k: 'cty', t: 'Công ty', w: 300, r: (r: Row) => {
-      if (khongCty(s, String(r.id))) return <span className="chip warn">Chưa thuộc công ty nào</span>   // bỏ trống công ty (T946)
       const c = congTyCn(s, String(r.id)); return <span className="dmcn-cty"><span>{c.ten}</span>{c.mst && <small>MST {c.mst}</small>}</span> } },
     { k: 'kv', t: 'Khu vực', cls: 'dim' },
     { k: 'kho', t: 'Kho', cls: 'dim', r: r => <>{r.kho}{standard && <span className="chip" style={{ marginLeft: 8 }}>Mặc định</span>}</> },
@@ -199,29 +198,48 @@ export function DanhMucCuaHang({ sc, mod }: ScreenProps) {
       </section>
       {mo && <HopThemCuaHang onDong={() => setMo(false)} onLenSo={lenSo} />}
       {xem && <HopChiTietCn r={xem} onDong={() => setXem(null)} onDoiCty={(cn, ten, cty) => setDoiCty({ cn, ten, cty })} />}
-      {doiCty && <HopDoiCty x={doiCty} onDong={() => setDoiCty(null)} />}
+      {doiCty && <HopDoiCty x={doiCty} onDong={() => setDoiCty(null)} onXong={() => { setDoiCty(null); setXem(null) }} />}
     </div>
   )
 }
 
-/** Cửa hàng đã bị bỏ trống công ty ở hộp chi tiết: lưu '' trong cnCongTy (T946) */
-const khongCty = (s: Session, cn: string) => s.cnCongTy?.[s.donVi]?.[cn] === ''
+/** Cửa hàng đã xoá khỏi công ty (lưu '') hoặc chuyển sang công ty khác: không còn trong danh mục của đơn vị đang mở (T946) */
+const daRoiCty = (s: Session, cn: string) => { const v = s.cnCongTy?.[s.donVi]?.[cn]; return v !== undefined && v !== s.donVi }
+
+/** Cửa hàng mẫu đã khoá sổ kỳ nào từ ngày bắt đầu năm tài chính thì chưa xoá, chuyển được (T946).
+ *  Cửa hàng mới lên sổ chưa có kỳ khoá */
+const khoaSoCn = (s: Session, cn: string): KyKhoa | null => {
+  if (!CUA_HANG.some(c => c.id === cn)) return null
+  const k = khoaSoDenCua(cn)
+  const [, m, y] = ngayDauNam(s).split('/').map(Number)
+  return k.nam * 100 + k.thang >= y * 100 + m ? k : null
+}
 
 /** Hỏi xác nhận xoá cửa hàng khỏi công ty (cty rỗng) hoặc chuyển sang công ty khác (T946).
  *  Cả hai luôn xoá mọi chứng từ đã phát sinh của cửa hàng ở công ty cũ, không có ô tích chọn (bản mẫu chỉ báo, chưa xoá thật). */
-function HopDoiCty({ x, onDong }: { x: { cn: string; ten: string; cty: string }; onDong: () => void }) {
+function HopDoiCty({ x, onDong, onXong }: { x: { cn: string; ten: string; cty: string }; onDong: () => void; onXong: () => void }) {
   const { s, set, toast } = useSession()
+  const nav = useNavigate()
   const cu = congTyCn(s, x.cn)
   const moi = x.cty ? dsDonVi(s).find(d => d.id === x.cty) : undefined
   const xoa = !x.cty
+  const khoa = khoaSoCn(s, x.cn)
+  if (khoa) return (
+    <ThongBao loai="chan" nhan={xoa ? 'Không xoá được' : 'Không chuyển được'}
+      tieuDe="Cửa hàng đã khoá sổ"
+      moTa={<><b>{x.ten}</b> đã khoá sổ đến tháng {khoa.thang}/{khoa.nam}. Xoá hay chuyển công ty sẽ xoá chứng từ trong kỳ đã khoá, nên chưa làm được.</>}
+      buoc={['Mở khoá sổ các kỳ của cửa hàng ở Khoá sổ kế toán.', `Quay lại đây ${xoa ? 'xoá cửa hàng khỏi công ty' : 'chuyển công ty'}.`]}
+      nut={{ ten: 'Mở Khoá sổ kế toán', onClick: () => { onXong(); nav('/app/tong-hop/10-1-6') } }}
+      onDong={onDong} />
+  )
   const xacNhan = () => {
     set({ cnCongTy: { ...s.cnCongTy, [s.donVi]: { ...s.cnCongTy?.[s.donVi], [x.cn]: x.cty } } })
-    onDong()
+    onXong()
     toast((xoa ? `Đã xoá ${x.ten} khỏi ${cu.ten}.` : `Đã chuyển ${x.ten} sang ${moi?.ten}.`) + ` Đã xoá chứng từ của cửa hàng ở ${cu.ten}.`)
   }
   return (
     <ThongBao loai={xoa ? 'xoa' : 'canhBao'} nhan={xoa ? 'Xoá khỏi công ty' : 'Chuyển công ty'}
-      tieuDe={xoa ? 'Xoá cửa hàng khỏi công ty?' : 'Chuyển cửa hàng sang công ty khác?'}
+      tieuDe={xoa ? 'Xoá cửa hàng khỏi công ty?' : 'Chuyển sang công ty khác?'}
       moTa={xoa ? <>Cửa hàng <b>{x.ten}</b> sẽ không còn thuộc <b>{cu.ten}</b>.</> : <>Cửa hàng <b>{x.ten}</b></>}
       duKien={xoa ? undefined : [{ nhan: 'Từ', gt: cu.ten }, { nhan: 'Sang', gt: moi?.ten ?? '' }]}
       onDong={onDong}
@@ -248,8 +266,7 @@ function HopChiTietCn({ r, onDong, onDoiCty }: { r: Row; onDong: () => void; onD
   useDongEsc(onDong)
   const id = String(r.id)
   const dv = congTyCn(s, id)
-  const trong = khongCty(s, id)
-  const ctyGoc = trong ? '' : dv.id
+  const ctyGoc = dv.id
   // Công ty chọn nháp trong hộp: undefined là chưa đổi, '' là bỏ trống (T946)
   const [ctyNhap, setCtyNhap] = useState<string | undefined>(undefined)
   const ctyHien = ctyNhap ?? ctyGoc
@@ -259,7 +276,7 @@ function HopChiTietCn({ r, onDong, onDoiCty }: { r: Row; onDong: () => void; onD
   const [dm, setDm] = useState({ nvl: String(dinhMucCh(s, id, 'nvl') ?? ''), haoHut: String(dinhMucCh(s, id, 'haoHut') ?? '') })
   const coDm = s.goi !== 'S'   // định mức chỉ có ở gói Plus, Pro
   const doiDm = coDm && (dm.nvl !== String(dinhMucCh(s, id, 'nvl') ?? '') || dm.haoHut !== String(dinhMucCh(s, id, 'haoHut') ?? ''))
-  // Lưu: ghi định mức; công ty đổi thì hỏi xác nhận (hộp chi tiết vẫn mở), đang trống thì gán luôn (T946)
+  // Lưu: ghi định mức; công ty đổi thì hỏi xác nhận, xong thì đóng hộp vì cửa hàng rời danh mục (T946)
   const luu = () => {
     let vua: Partial<Session> = {}
     if (doiDm) {
@@ -270,13 +287,8 @@ function HopChiTietCn({ r, onDong, onDoiCty }: { r: Row; onDong: () => void; onD
       const p1 = datDinhMucCh(s, id, 'nvl', a)
       vua = { ...p1, ...datDinhMucCh({ ...s, ...p1 }, id, 'haoHut', b) }
     }
-    const ganLuon = doiCtyNhap && ctyGoc === ''
-    if (ganLuon) vua = { ...vua, cnCongTy: { ...s.cnCongTy, [s.donVi]: { ...s.cnCongTy?.[s.donVi], [id]: ctyHien } } }
-    if (doiDm || ganLuon) {
-      set(vua)
-      toast(ganLuon ? `Đã gán ${r.ten} vào ${dsDonVi(s).find(d => d.id === ctyHien)?.ten ?? ctyHien}` : `Đã lưu định mức của ${r.ten}`)
-    }
-    if (doiCtyNhap && !ganLuon) { onDoiCty(id, String(r.ten), ctyHien); return }
+    if (doiDm) { set(vua); toast(`Đã lưu định mức của ${r.ten}`) }
+    if (doiCtyNhap) { onDoiCty(id, String(r.ten), ctyHien); return }
     onDong()
   }
   const dong: [string, React.ReactNode][] = [
@@ -284,7 +296,6 @@ function HopChiTietCn({ r, onDong, onDoiCty }: { r: Row; onDong: () => void; onD
     ['POS ID', <span className="code">{r.posId}</span>],
     ['Tên cửa hàng', r.ten],
     // Nút X bỏ trống công ty, chọn công ty khác là chuyển. Chỉ là nháp, bấm Lưu mới hỏi xác nhận ở HopDoiCty (T946).
-    // Đang trống thì chọn công ty rồi Lưu là gán luôn, cửa hàng nhập phát sinh lại được.
     ['Công ty', (
       <span className="dmcn-cty-o">
         <Select className="inp dmcn-nvl" value={ctyHien} aria-label={`Công ty của ${r.ten}`}
@@ -294,8 +305,7 @@ function HopChiTietCn({ r, onDong, onDoiCty }: { r: Row; onDong: () => void; onD
           onClick={() => setCtyNhap('')}><Icon n="x" className="ic sm" /></button>}
       </span>
     )],
-    ...(trong ? [['Trạng thái', <span className="chip warn">Chưa thuộc công ty nào, không nhập được phát sinh</span>]] as [string, React.ReactNode][] : []),
-    ['Mã số thuế', !trong && dv.mst ? <span className="code">{dv.mst}</span> : '—'],
+    ['Mã số thuế', dv.mst ? <span className="code">{dv.mst}</span> : '—'],
     ['Khu vực', r.kv],
     ['Kho', r.kho],
     ['Nguồn', r.nguon],

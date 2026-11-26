@@ -9,9 +9,9 @@
 - Mẫu trên artifact: https://claude.ai/artifact/6wVahYNmqtZSTCQ2YewQy2 (5 khung: hộp chi tiết, popup xoá, xoá có tích dữ liệu, popup chuyển, chuyển có tích dữ liệu).
 - `src/modules/danh-muc/DanhMucCuaHang.tsx`, hộp Chi tiết cửa hàng (`HopChiTietCn`):
   - Combo Công ty có nút X bỏ trống công ty. Đổi công ty hoặc bấm X chỉ là nháp, bấm Lưu mới hỏi xác nhận. Nút Lưu luôn hiện (trước chỉ hiện ở gói Plus, Pro để lưu định mức).
-  - Đang trống công ty thì chọn công ty rồi Lưu là gán luôn, không hỏi.
-  - Trống công ty: dòng Trạng thái "Chưa thuộc công ty nào, không nhập được phát sinh"; cột Công ty của bảng hiện nhãn vàng.
-  - Lưu bỏ trống trong `cnCongTy` là chuỗi rỗng `''` (hàm `khongCty`).
+  - Xoá hay chuyển xong thì cửa hàng biến khỏi danh mục của đơn vị đang mở, hộp chi tiết đóng. Lưu trong `cnCongTy`: `''` là xoá, mã đơn vị khác là chuyển (hàm `daRoiCty`).
+  - Cửa hàng mẫu đã khoá sổ kỳ nào từ ngày bắt đầu năm tài chính thì không cho xoá, chuyển: hộp chặn "Cửa hàng đã khoá sổ", nút mở Khoá sổ kế toán (hàm `khoaSoCn`). Cửa hàng mới lên sổ chưa có kỳ khoá.
+  - Tiêu đề popup chuyển rút gọn "Chuyển sang công ty khác?" cho vừa một dòng.
 - Hộp xác nhận mới `HopDoiCty` (dùng `ThongBao`), thay hộp chuyển công ty cũ của T711. Theo người dùng: không có ô tích chọn, cả xoá lẫn chuyển luôn xoá mọi chứng từ đã phát sinh của cửa hàng ở công ty cũ.
   - Gạch đầu dòng đầu chữ đỏ: chứng từ đã phát sinh ở công ty cũ bị xoá vĩnh viễn.
   - Xoá: không nhập thêm phát sinh, thu chi FABi ngừng đồng bộ. Nút "Xoá cửa hàng và dữ liệu".
@@ -22,7 +22,7 @@
 
 - `npm run typecheck`, `npm run build`: không lỗi.
 - `python tools/kiem_van.py src/modules/danh-muc/DanhMucCuaHang.tsx`: Sạch.
-- Bấm thử trên trình duyệt gói Pro: X, Lưu, popup xoá, xác nhận; bảng hiện "Chưa thuộc công ty nào". Chưa bấm thử luồng chuyển công ty (chung code với xoá).
+- Bấm thử trên trình duyệt gói Pro: X, Lưu, popup xoá, popup chặn khoá sổ (cửa hàng mẫu khoá đến 8/2026); gán `cnCongTy` thì cửa hàng biến khỏi bảng. Chưa bấm thử luồng chuyển công ty (chung code với xoá).
 - `python tools/kiem_tra.py --nhanh`: dừng ở `.bc-ban-du-lieu table.tbl` quá 8 giây, lỗi cũ đã ghi ở T933, không do việc này.
 
 ## Dở dang, việc tiếp theo
