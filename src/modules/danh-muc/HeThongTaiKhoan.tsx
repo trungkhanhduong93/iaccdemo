@@ -159,14 +159,16 @@ export function HeThongTaiKhoan({ sc, mod }: ScreenProps) {
   const base = useMemo(() => heThongTk(s.cheDo), [s.cheDo])
   // Tài khoản thêm trong phiên và chỉnh sửa (Tổng hợp, Đang dùng, tên, kiểu số dư); đổi chế độ thì làm lại
   const [them, setThem] = useState<TaiKhoanDef[]>([])
-  const [chinh, setChinh] = useState<Record<string, Partial<Pick<TkHien, 'tongHop' | 'dangDung' | 'ten' | 'tinhChat'>>>>({})
+  const [chinh, setChinh] = useState<Record<string, Partial<Pick<TkHien, 'tongHop' | 'dangDung' | 'ten' | 'tinhChat' | 'loai' | 'cha' | 'cap'>>>>({})
   useEffect(() => { setThem([]); setChinh({}) }, [s.cheDo])
   const all: TkHien[] = useMemo(() => {
-    const ds = them.length ? [...base, ...them].sort((a, b) => a.so.localeCompare(b.so)) : base
+    const ds0 = them.length ? [...base, ...them].sort((a, b) => a.so.localeCompare(b.so)) : base
+    // Chỉnh loại, tài khoản mẹ xong mới tính tài khoản nào có con
+    const ds = ds0.map(t => ({ ...t, ...chinh[t.so] }))
     const coCha = new Set(ds.map(t => t.cha))
     return ds.map(t => {
       const laCha = coCha.has(t.so)
-      return { ...t, laCha, tongHop: laCha, dangDung: true, ...chinh[t.so] }
+      return { ...t, laCha, tongHop: chinh[t.so]?.tongHop ?? laCha, dangDung: chinh[t.so]?.dangDung ?? true }
     })
   }, [base, them, chinh])
   const bySo = useMemo(() => new Map(all.map(t => [t.so, t])), [all])
@@ -342,7 +344,7 @@ export function HeThongTaiKhoan({ sc, mod }: ScreenProps) {
     const so = form.so.trim()
     const coCon = dangSua ? all.some(t => t.cha === dangSua.so) : false
     if (dangSua) {
-      setChinh(c => ({ ...c, [so]: { ...c[so], ten: form.ten.trim(), tinhChat: form.tinhChat, tongHop: form.laCha, dangDung: form.dangDung } }))
+      setChinh(c => ({ ...c, [so]: { ...c[so], ten: form.ten.trim(), tinhChat: form.tinhChat, tongHop: form.laCha, dangDung: form.dangDung, loai: LOAI_TK.find(l => l.v === form.loai)?.t ?? dangSua.loai, cha: form.cha || undefined, cap: form.cap } }))
     } else {
       setThem(d => [...d, { so, ten: form.ten.trim(), cap: form.cap, cha: form.cha || undefined, laCha: false, tinhChat: form.tinhChat, loai: LOAI_TK.find(l => l.v === form.loai)?.t ?? '' }])
       setChinh(c => ({ ...c, [so]: { tongHop: form.laCha, dangDung: form.dangDung } }))
@@ -435,21 +437,6 @@ export function HeThongTaiKhoan({ sc, mod }: ScreenProps) {
       k: 'tinhChat',
       t: 'Kiểu số dư',
       w: 130,
-    },
-    {
-      k: 'tenAnh',
-      t: 'Tên tiếng Anh',
-      w: 220,
-      r: (r: Row) => <span className="muted">{TEN_ANH[r.so] ?? ''}</span>,
-    },
-    {
-      k: 'chiTiet',
-      t: 'Theo dõi chi tiết',
-      w: 230,
-      r: (r: Row) => {
-        const ct = dsTheoDoiChiTiet(r.so)
-        return <span className="muted pn-chu-nho">{ct.join(', ')}</span>
-      },
     },
     {
       k: 'trangThai',
@@ -586,8 +573,8 @@ export function HeThongTaiKhoan({ sc, mod }: ScreenProps) {
                 {moKhoi.thongTin && (
                   <div className="pn-khoi-than">
                     {/* Mỗi trường một hàng: số, tên, loại, tài khoản mẹ, kiểu số dư, Tổng hợp, Đang sử dụng, diễn giải */}
-                    <div className="pn-luoi pn-luoi-2">
-                      <div className="f pn-hang-dai">
+                    <div className="pn-luoi pn-luoi-2" style={{ gridTemplateColumns: 'repeat(6, minmax(0, 1fr))' }}>
+                      <div className="f" style={{ gridColumn: 'span 2' }}>
                         <label>Số tài khoản <em>*</em></label>
                         <input
                           className="inp"
@@ -601,7 +588,7 @@ export function HeThongTaiKhoan({ sc, mod }: ScreenProps) {
                         />
                         {errors.so && <span className="muted pn-loi">{errors.so}</span>}
                       </div>
-                      <div className="f pn-hang-dai">
+                      <div className="f" style={{ gridColumn: 'span 4' }}>
                         <label>Tên tài khoản <em>*</em></label>
                         <input
                           className="inp"
@@ -613,19 +600,13 @@ export function HeThongTaiKhoan({ sc, mod }: ScreenProps) {
                         />
                         {errors.ten && <span className="muted pn-loi">{errors.ten}</span>}
                       </div>
-                      <div className="f pn-hang-dai">
+                      <div className="f" style={{ gridColumn: 'span 2' }}>
                         <label>Loại tài khoản</label>
-                        <Select className="inp" value={form.loai} aria-label="Loại tài khoản" disabled={Boolean(dangSua)}
+                        <Select className="inp" value={form.loai} aria-label="Loại tài khoản"
                           ds={[{ v: '', t: '(Chọn loại tài khoản)' }, ...LOAI_TK]}
                           onChange={e => setForm(f => ({ ...f, loai: e.target.value, cha: '', cap: 1 }))} />
                       </div>
-                      <div className="f pn-hang-dai">
-                        <label>Tài khoản mẹ</label>
-                        <Select className="inp" value={form.cha} ds={dsCha} aria-label="Tài khoản mẹ" disabled={Boolean(dangSua)}
-                          onChange={e => handleChaChange(e.target.value)} />
-                        {errors.cha && <span className="muted pn-loi">{errors.cha}</span>}
-                      </div>
-                      <div className="f pn-hang-dai">
+                      <div className="f" style={{ gridColumn: 'span 2' }}>
                         <label>Kiểu số dư <em>*</em></label>
                         <Select
                           className="inp"
@@ -636,6 +617,12 @@ export function HeThongTaiKhoan({ sc, mod }: ScreenProps) {
                           <option value="Dư Có">Dư Có</option>
                           <option value="Lưỡng tính">Lưỡng tính</option>
                         </Select>
+                      </div>
+                      <div className="f" style={{ gridColumn: 'span 2' }}>
+                        <label>Tài khoản mẹ</label>
+                        <Select className="inp" value={form.cha} ds={dsCha} aria-label="Tài khoản mẹ"
+                          onChange={e => handleChaChange(e.target.value)} />
+                        {errors.cha && <span className="muted pn-loi">{errors.cha}</span>}
                       </div>
                       <div className="f pn-hang-dai">
                         <label className="row pn-tich">
@@ -665,15 +652,6 @@ export function HeThongTaiKhoan({ sc, mod }: ScreenProps) {
                           />
                           <span>Đang sử dụng</span>
                         </label>
-                      </div>
-                      <div className="f pn-hang-dai">
-                        <label>Diễn giải</label>
-                        <textarea
-                          className="inp"
-                          rows={2}
-                          value={form.dienGiai}
-                          onChange={e => setForm(f => ({ ...f, dienGiai: e.target.value }))}
-                        />
                       </div>
                     </div>
                   </div>
@@ -768,15 +746,6 @@ export function HeThongTaiKhoan({ sc, mod }: ScreenProps) {
                         <input
                           type="checkbox"
                           className="bat-tat"
-                          checked={form.soLuong}
-                          onChange={e => setForm(f => ({ ...f, soLuong: e.target.checked }))}
-                        />
-                        Theo dõi số lượng
-                      </label>
-                      <label className="row pn-tich">
-                        <input
-                          type="checkbox"
-                          className="bat-tat"
                           checked={form.khoanMuc}
                           onChange={e => setForm(f => ({ ...f, khoanMuc: e.target.checked }))}
                         />
@@ -813,82 +782,17 @@ export function HeThongTaiKhoan({ sc, mod }: ScreenProps) {
                         <input
                           type="checkbox"
                           className="bat-tat"
-                          checked={form.thanhToan}
-                          onChange={e => setForm(f => ({ ...f, thanhToan: e.target.checked }))}
-                        />
-                        Theo dõi thanh toán
-                      </label>
-                      <label className="row pn-tich">
-                        <input
-                          type="checkbox"
-                          className="bat-tat"
                           checked={form.ngoaiBang}
                           onChange={e => setForm(f => ({ ...f, ngoaiBang: e.target.checked }))}
                         />
-                        Tài khoản ngoại bảng
+                        Tài khoản ngoài bảng
                       </label>
                     </div>
                   </div>
                 )}
               </div>
 
-              {/* Khối 4: Tài khoản ngân hàng */}
-              <div className={`pn-khoi${moKhoi.nganHang ? ' mo' : ''}`}>
-                <div
-                  className="pn-khoi-dau"
-                  onClick={() => setMoKhoi(k => ({ ...k, nganHang: !k.nganHang }))}
-                >
-                  <span>Tài khoản ngân hàng</span>
-                  <Icon n={moKhoi.nganHang ? 'chevd' : 'chevr'} className="ic sm" />
-                </div>
-                {moKhoi.nganHang && (
-                  <div className="pn-khoi-than">
-                    <div className="pn-luoi">
-                      <div className="f pn-hang-dai">
-                        <label className="row pn-tich">
-                          <input
-                            type="checkbox"
-                            className="bat-tat"
-                            checked={form.nganHang}
-                            onChange={e => setForm(f => ({ ...f, nganHang: e.target.checked }))}
-                          />
-                          Theo dõi theo tài khoản ngân hàng
-                        </label>
-                      </div>
-                      {form.nganHang && (
-                        <>
-                          <div className="f">
-                            <label>Ngân hàng</label>
-                            <input
-                              className="inp"
-                              value={form.tenNganHang}
-                              onChange={e => setForm(f => ({ ...f, tenNganHang: e.target.value }))}
-                            />
-                          </div>
-                          <div className="f">
-                            <label>Cửa hàng</label>
-                            <input
-                              className="inp"
-                              value={form.cuaHang}
-                              onChange={e => setForm(f => ({ ...f, cuaHang: e.target.value }))}
-                            />
-                          </div>
-                          <div className="f pn-hang-dai">
-                            <label>Số tài khoản ngân hàng</label>
-                            <input
-                              className="inp"
-                              value={form.soTkNganHang}
-                              onChange={e => setForm(f => ({ ...f, soTkNganHang: e.target.value }))}
-                            />
-                          </div>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Khối 5: Tên theo ngôn ngữ */}
+              {/* Khối 4: Tên theo ngôn ngữ */}
               <div className={`pn-khoi${moKhoi.ngonNgu ? ' mo' : ''}`}>
                 <div
                   className="pn-khoi-dau"
