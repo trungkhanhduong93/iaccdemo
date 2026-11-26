@@ -20,10 +20,13 @@ export const NGHI_QUYET_GIAM_VAT: DongGiamVat[] = [
 /** Chưa lưu cấu hình thì hiểu là đang giảm theo nghị quyết mới nhất, như trước T754 (PhuongXT chốt 12/10/2026, T163) */
 export const GIAM_VAT_MAC_DINH: CauHinhGiamVat = { bat: true, ds: [{ ...NGHI_QUYET_GIAM_VAT[0] }] }
 
-/** Chỉ gói Plus, Pro bật tắt, chọn nghị quyết giảm thuế GTGT ở Cấu hình kế toán (T937) */
-export const coCauHinhGiamVat = (goi: string) => goi === 'PL' || goi === 'PR'
+/** Gói Pro không còn giảm thuế GTGT: không có thẻ cấu hình, không có cột Giảm thuế GTGT ở chứng từ bán hàng, hàng hoá không có ô Giảm thuế theo quy định */
+export const coGiamThue = (goi?: string) => goi !== 'PR'
+/** Chỉ gói Plus bật tắt, chọn nghị quyết giảm thuế GTGT ở Cấu hình kế toán (T937); gói Pro bỏ hẳn */
+export const coCauHinhGiamVat = (goi: string) => goi === 'PL'
 type PhienGiamVat = { donVi: string; goi?: string; giamVat?: Record<string, CauHinhGiamVat>; hangGiamVat?: Record<string, Record<string, boolean>> }
 export function cauHinhGiamVat(s: PhienGiamVat): CauHinhGiamVat {
+  if (s.goi && !coGiamThue(s.goi)) return { bat: false, ds: GIAM_VAT_MAC_DINH.ds }
   // Gói Free, Standard không cấu hình được: giảm thuế theo FABi (T937)
   if (s.goi && !coCauHinhGiamVat(s.goi)) return GIAM_VAT_MAC_DINH
   const c = s.giamVat?.[s.donVi] as (CauHinhGiamVat & { nq?: string; pt?: number }) | undefined

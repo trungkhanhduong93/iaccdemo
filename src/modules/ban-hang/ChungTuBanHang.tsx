@@ -34,7 +34,7 @@ import { ChungTuForm } from '../../ui/generic/ChungTuForm'
 import { dongTuHang, dtDong, tinhDong } from './BangHangBan'
 import { HopCotPhieu } from '../../ui/generic/BangSua'
 import { DS_PTTT } from '../danh-muc/data'
-import { cauHinhGiamVat, giamThueHang, giamThueHkd, hangDuocGiam } from './giam-thue'
+import { cauHinhGiamVat, coGiamThue, giamThueHang, giamThueHkd, hangDuocGiam } from './giam-thue'
 import {
   HopXemHd, HopXuatHddt, TEN_LOAI_CT, dauDong, dkCtMau, dsHdMoiCon, hdCua, hdGocCua, hdMau, laHdMoiCua, loaiCtCua, mauTuGoc, soHdMau, tenHd, thayTheNhap, ttHdGoc,
   KHACH_TRONG, type CtLq, type HdDaXuat, type HdGoc,
@@ -251,7 +251,7 @@ export function ttHkd<T extends NgayPOS>(x: T): T {
 }
 
 /** Cột theo phương pháp GTGT (T163, T450): theo % doanh thu bỏ Thuế suất, Tiền thuế, luôn hiện Giảm thuế GTGT; khấu trừ luôn hiện Thuế suất, Tiền thuế */
-const anTheoLoai = (an: string[], tyLe: boolean) => tyLe ? [...an.filter(k => k !== 'giamThue'), 'ts', 'thue'] : an.filter(k => k !== 'ts' && k !== 'thue')
+const anTheoLoai = (an: string[], tyLe: boolean, coGiam = true) => tyLe ? [...an.filter(k => k !== 'giamThue'), ...(coGiam ? [] : ['giamThue']), 'ts', 'thue'] : an.filter(k => k !== 'ts' && k !== 'thue')
 
 function dongMon(dt: number) {
   let con = dt
@@ -656,7 +656,7 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
     { k: 'kenh', t: 'Kênh bán', w: 140 },   // T113
     ...(cnChon ? [] : [{ k: 'cn', t: 'Cửa hàng', cls: 'dim' } as Col]),
     { k: 'tien', t: 'Doanh thu tính thuế', num: true, w: 160 },
-    tyLe ? { k: 'giamThue', t: 'Giảm thuế GTGT', num: true, w: 130 } : { k: 'thue', t: 'Tiền thuế', num: true, w: 120 },   // T163
+    ...(tyLe ? (coGiamThue(s.goi) ? [{ k: 'giamThue', t: 'Giảm thuế GTGT', num: true, w: 130 } as Col] : []) : [{ k: 'thue', t: 'Tiền thuế', num: true, w: 120 } as Col]),   // T163; gói Pro không có giảm thuế
     // bỏ cột Nguồn: Xuất bán POS chỉ có nguồn FABi (T115); gói Plus có thêm chứng từ lập tay, nhập Excel nên hiện lại (T753)
     // Hoá đơn điện tử của chứng từ lập tay (T763); hoá đơn FABi xuất tại máy POS lấy theo đơn POS (T802)
     // T765: Số hoá đơn tách cột riêng; Trạng thái phát hành ở cuối, sau Tổng tiền
@@ -855,7 +855,7 @@ const AN_POS_MAC_DINH = ['giamThue', 'phiVc', 'giamVat']
 
 function NoiDungTab({ x, tab, kieu, an: an0 = AN_POS_MAC_DINH, tyLe = false, hienLoc = false }: { x: (typeof DAILY)[number]; tab: string; kieu: ReturnType<typeof kieuGhiSo>; an?: string[]; tyLe?: boolean; hienLoc?: boolean }) {
   const { s } = useSession()
-  const an = anTheoLoai(an0, tyLe)
+  const an = anTheoLoai(an0, tyLe, coGiamThue(s.goi))
   useGiaVonBq()
   // Giá vốn bình quân của tháng bán, áp từ Tính giá vốn (5.1.7); tháng chưa tính thì trống
   const dong0 = dongCuaPhieu(x).map(d => { const giaVon = giaVonBq(d.ma, x.date); return { ...d, giaVon, tienVon: tienVon(giaVon, d.sl) } })
@@ -997,7 +997,7 @@ function ChiTiet({ sc, mod, row }: ScreenProps & { row: Row }) {
   // Cột thuế theo loại hình đơn vị, cố định nên không có trong Tuỳ chỉnh giao diện (T163)
   const tyLe = gtgtTyLe(s)
   // Giảm thuế theo quy định chỉ có khi theo % doanh thu và bật giảm thuế, không thì bỏ khỏi hộp chọn cột (T780)
-  const cotChinh = [...(tyLe ? ['ts', 'thue', 'giamThue'] : ['ts', 'thue']), ...(tyLe && cauHinhGiamVat(s).bat ? [] : ['giamVat'])]
+  const cotChinh = [...(tyLe ? ['ts', 'thue', ...(coGiamThue(s.goi) ? ['giamThue'] : [])] : ['ts', 'thue']), ...(tyLe && cauHinhGiamVat(s).bat ? [] : ['giamVat'])]
   const [hopCot, setHopCot] = useState(false)
   const doiAnCot = (an: string[]) => {
     setAnCot(an)
@@ -1066,10 +1066,10 @@ function ChiTiet({ sc, mod, row }: ScreenProps & { row: Row }) {
             <span className="pos-phep-dau">=</span>
             <span className="pos-phep-o nen"><small>Doanh thu tính thuế</small><b>{money(dtTinhThue)}</b></span>
           </span>
-          <span className="pos-phep-cum">
+          {(!tyLe || coGiamThue(s.goi)) && <span className="pos-phep-cum">
             <span className="pos-phep-dau">{tyLe ? '−' : '+'}</span>
             <span className="pos-phep-o"><small>{tyLe ? 'Giảm trừ thuế' : 'Thuế GTGT'}</small><b>{money(tyLe ? giamThue : x.vat)}</b></span>
-          </span>
+          </span>}
           <span className="pos-phep-cum">
             <span className="pos-phep-dau">=</span>
             <span className="pos-phep-o tong"><small>Tổng thanh toán</small><b>{moneyD(tong)}</b></span>

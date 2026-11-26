@@ -23,7 +23,7 @@ import type { CauHinhDM } from '../danh-muc/truong-dm'
 import type { KieuSo } from '../../ui/format'
 import { TheCauHinhHddt, cauHinhHddt, loiHddt, type CauHinhHddt } from '../ban-hang/hddt'
 import { CACH_NVL, DS_CACH_NVL, cachNvlHienTai, datCachNvl, type CachNvl } from '../home/chi-phi-nvl'
-import { NGHI_QUYET_GIAM_VAT, cauHinhGiamVat, coCauHinhGiamVat, type CauHinhGiamVat, type DongGiamVat } from '../ban-hang/giam-thue'
+import { NGHI_QUYET_GIAM_VAT, cauHinhGiamVat, coCauHinhGiamVat, coGiamThue, type CauHinhGiamVat, type DongGiamVat } from '../ban-hang/giam-thue'
 
 export const VAI_TRO = ['Chủ doanh nghiệp', 'Kế toán trưởng', 'Kế toán viên', 'Quản lý cửa hàng', 'Thủ kho']
 const PHAM_VI_DS = ['Tất cả cửa hàng', ...CUA_HANG.map(c => c.ten)]
@@ -687,7 +687,7 @@ export function CauHinh({ sc }: ScreenProps) {
   const [kieu, setKieu] = useState<KieuSo>(s.kieuSo?.[s.donVi] ?? 'vn')
   const ks = KIEU_SO[kieu]
   // Giảm thuế GTGT theo nghị quyết (T754): chỉ hộ kinh doanh, doanh nghiệp tính GTGT theo % doanh thu
-  const coGiamVat = gtgtTyLe(s)
+  const coGiamVat = gtgtTyLe(s) && coGiamThue(s.goi)   // gói Pro không còn giảm thuế GTGT
   const suaGiamVat = coGiamVat && coCauHinhGiamVat(s.goi)   // gói Free, Standard chỉ xem, giảm theo FABi (T937)
   const [gv, setGv] = useState<CauHinhGiamVat>(cauHinhGiamVat(s))
   // Một nghị quyết đang áp dụng. Có nghị quyết mới thì dev thêm vào NGHI_QUYET_GIAM_VAT; chọn nghị quyết thì điền sẵn % giảm, hiệu lực

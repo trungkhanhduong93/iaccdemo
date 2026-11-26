@@ -35,6 +35,7 @@ import { layNguoiKy } from '../bao-cao/khoMauIn'
 import { TuyChinhBC } from '../bao-cao/TuyChinhBC.tsx'
 import type { Session } from '../../app/session'
 import { ganLocNguon } from '../../modules/bao-cao/loc-nguon'
+import { coGiamThue } from '../../modules/ban-hang/giam-thue'
 import {
   thTT58,
   colsS1, rowsS1,
@@ -1219,7 +1220,7 @@ export function renderReport(cfg: ReportCfg, seed: string, thang: number, cd: Ch
     if (cfg.cols && cfg.rows) {
       // Báo cáo bán hàng (T450): GTGT theo % doanh thu bỏ cột thuế GTGT, hiện Giảm thuế GTGT; khấu trừ thì ngược lại
       const tyLe = Boolean(cfg.theoGtgt && session && gtgtTyLe(session))
-      const cols = (cfg.theoGtgt ? cfg.cols.filter(c => tyLe ? c.k !== 'thue' && c.k !== 'vat' : c.k !== 'giamThue') : cfg.cols)
+      const cols = (cfg.theoGtgt ? cfg.cols.filter(c => tyLe ? c.k !== 'thue' && c.k !== 'vat' && (c.k !== 'giamThue' || !session || coGiamThue(session.goi)) : c.k !== 'giamThue') : cfg.cols)
         .filter(c => !c.goi || !session || c.goi.includes(session.goi))   // cột theo gói (T502)
       // Ô Cửa hàng (xem tất cả cửa hàng): tính riêng từng cửa hàng chọn rồi cộng lại, để tổng hợp, số dư đúng theo lựa chọn (T576)
       const rows = cfg.theoCn && chonCh.length

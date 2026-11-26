@@ -4,7 +4,7 @@ import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-do
 import type { Row, ScreenProps, VoucherCfg } from '../../modules/types'
 import { duongDan, moDuoc, tenMan, timMan } from '../../app/registry'
 import { cuaHangHienTai, useSession, cheDoHienTai, ngayDauNam, truocDauNam, donViHienTai, loaiHinhDv, gtgtTyLe } from '../../app/session'
-import { giamThueHang } from '../../modules/ban-hang/giam-thue'
+import { coGiamThue, giamThueHang } from '../../modules/ban-hang/giam-thue'
 import { ApDauBangBan, BangHangBan, COT_BHB, dongTuHang, dtDong, theoChieu } from '../../modules/ban-hang/BangHangBan'
 import { kieuGhiSo, type Goi, kieuGhiSoDv, tcNhuStandard } from '../../app/plan'
 import { CHE_DO, type CheDo } from '../../app/che-do'
@@ -312,7 +312,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
   // Cột ẩn ở bảng chi tiết, nhớ theo màn trên máy người dùng
   const khoaCot = `iacc-cot-phieu:${mod.key}/${sc.slug}`
   // Hàng bán trả lại (T758): đủ cột như phiếu bán hàng, mặc định chỉ hiện Số lượng, Đơn giá, Thành tiền (kèm Mã, Tên, ĐVT); bật cột khác ở Tuỳ chỉnh giao diện
-  const boCotBan = sc.code === '3.1.4' ? ['phiVc'] : []   // hàng bán trả lại không có Phí vận chuyển (T758)
+  const boCotBan = [...(sc.code === '3.1.4' ? ['phiVc'] : []), ...(coGiamThue(s.goi) ? [] : ['giamThue'])]   // hàng bán trả lại không có Phí vận chuyển (T758)
   const anMacDinh = sc.code === '3.1.4' ? COT_BHB.map(([k]) => k).filter(k => !['ma', 'dvt', 'sl', 'gia', 'thanh'].includes(k)) : cfg.dongPos ? ['phiVc'] : []
   const [anCot, setAnCot] = useState<string[]>(() => {
     try { const g = localStorage.getItem(khoaCot); if (g === null) return anMacDinh; const v = JSON.parse(g); return Array.isArray(v) ? v : anMacDinh } catch { return anMacDinh }
