@@ -2,6 +2,7 @@
 // Nợ, Có lấy từ danh mục Quỹ tiền (1.12), Lý do nghiệp vụ (1.16), Đối tượng (1.5); người dùng chọn lại được trên dòng.
 import { CONG_VIEC, ganLyDo } from '../../data/mock'
 import type { Session } from '../../app/session'
+import type { Row } from '../types'
 import { fold } from '../../ui/format'
 import { getAllCatalogRows } from '../../ui/generic/danhMucStore'
 import { tkCuaQuy, type Dong } from '../../ui/generic/gen'
@@ -93,4 +94,41 @@ export function dsChiTiet(loai: 'dt' | 'cv' | 'tp' | 'vt'): Muc[] {
   }
   const hang = getAllCatalogRows('1.2').filter(r => chu(r.ma))
   return (loai === 'tp' ? hang.filter(r => r.loai === 'Thành phẩm') : hang).map(mucMa)
+}
+
+const LOAI_THU_CHI = ['thu', 'chi', 'bc', 'unc', 'cq']
+
+/** Phiếu thu, chi, chuyển quỹ bản Pro đã có trước khi có Nợ, Có chi tiết (phiếu mẫu, đồng bộ FABi, phiếu cũ): bổ sung tài khoản Nợ, Có
+ *  và mã chi tiết còn thiếu theo cùng quy tắc với phiếu lập mới, dòng đã đủ thì giữ nguyên */
+export function bosungDinhKhoan(dong: Dong[], r: Row | undefined, s: Pick<Session, 'donVi' | 'lyDoGhiDe'>): Dong[] {
+  const loai = String(r?.loai ?? '')
+  if (!LOAI_THU_CHI.includes(loai)) return dong
+  const dt = chu(r?.doiTuong)
+  const thu = loai === 'thu' || loai === 'bc'
+  const quy = chu(r?._quy) || (loai === 'thu' || loai === 'chi' ? 'Quỹ tiền mặt' : 'Ngân hàng')
+  const macDinh: Partial<Record<'cv' | 'tp' | 'vt', string>> = {}
+  const mucDau = (l: 'cv' | 'tp' | 'vt') => macDinh[l] ??= dsChiTiet(l)[0]?.v ?? ''
+  return dong.map(d => {
+    let n = d
+    if (!d.tkNo || !d.tkCo) {
+      if (loai === 'cq') {
+        n = { ...d, tkNo: d.tkNo || tkQuyCua(chu(r?._denQuy) || 'Ngân hàng'), tkCo: d.tkCo || tkQuyCua(chu(r?._tuQuy) || 'Quỹ tiền mặt') }
+      } else {
+        const tk = dinhKhoanThuChi({ loai, ly: d.ly ?? chu(r?._lyDo), doiTuong: dt, quy, s })
+        n = { ...d, tkNo: d.tkNo || tk.tkNo || (thu ? tkQuyCua(quy) : '6422'), tkCo: d.tkCo || tk.tkCo || (thu ? '711' : tkQuyCua(quy)) }
+      }
+    }
+    n = chuanChiTiet(n, dt)
+    for (const [k, , l, tk] of COT_CHI_TIET) {
+      if (l !== 'dt' && chiTietTheoTk(n[tk])[l] && !n[k]) n[k] = mucDau(l)
+    }
+    return n
+  })
+}
+
+/** Số tài khoản tổng hợp (có tài khoản con) mà dòng đang dùng, sau khi thiết lập lại hệ thống tài khoản; rỗng nếu không có */
+export function tkTongHopTrongDong(dong: Dong[], s: Pick<Session, 'cheDo' | 'goi'>): string[] {
+  const ds = heThongTk(s.cheDo), chiTiet = new Set(locTkChiTiet(ds, s.goi).map(t => t.so))
+  const cha = new Set(ds.filter(t => t.laCha).map(t => t.so))
+  return [...new Set(dong.flatMap(d => [d.tkNo, d.tkCo]).filter((x): x is string => Boolean(x) && !chiTiet.has(x!) && cha.has(x!)))]
 }

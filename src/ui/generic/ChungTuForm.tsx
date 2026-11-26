@@ -7,7 +7,7 @@ import { cuaHangHienTai, useSession, cheDoHienTai, ngayDauNam, truocDauNam, donV
 import { coGiamThue, giamThueHang } from '../../modules/ban-hang/giam-thue'
 import { ApDauBangBan, BangHangBan, COT_BHB, dongTuHang, dtDong, theoChieu } from '../../modules/ban-hang/BangHangBan'
 import { kieuGhiSo, type Goi, kieuGhiSoDv, tcNhuStandard } from '../../app/plan'
-import { chuanChiTiet, dinhKhoanThuChi, loiDinhKhoan, tkQuyCua } from '../../modules/tien/dinh-khoan-pro'
+import { bosungDinhKhoan, chuanChiTiet, dinhKhoanThuChi, loiDinhKhoan, tkQuyCua } from '../../modules/tien/dinh-khoan-pro'
 import { heThongTk, locTkChiTiet } from '../../modules/danh-muc/he-thong-tk'
 import { CHE_DO, type CheDo } from '../../app/che-do'
 import { tkTheoCheDo } from '../../modules/tong-hop/so-cai'
@@ -163,9 +163,11 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
 
   // Dữ liệu dòng
   const idSeed = row ? `${sc.code ?? sc.slug}-${row.id}` : 'moi'
+  // Pro, phiếu thu chi đã có thiếu Nợ, Có: bổ sung khi mở, kể cả mở xem
+  const boSungPro = (ds: Dong[]) => mod.key === 'tien' && kieuGhiSoDv(s, mod.key) === 'noco' ? bosungDinhKhoan(ds, row, s) : ds
   const dongGoc = useMemo(() => (
     lapHd ? dauDong((lapHd._dong as Dong[] | undefined) ?? [], loaiCt === 'HDDIEUCHINH' ? -1 : 1)   // điều chỉnh mặc định giảm, ghi âm (T787)
-    : moi ? traTu ? traTu.dong : (laSx || laDcn ? [] : cfg.khongKho ? [{ ma: '', ten: '', dvt: '', sl: 1, gia: 0, tien: 0, ts: 8, thue: 0, ptCk: 0, ck: 0 }] : cfg.dongPos ? [dongTuHang(HANG[0])] : dongCua(cfg, `mau-${loai?.k ?? ''}`).slice(0, 1)) : (row?._dong as Dong[] | undefined) ?? dongCua(cfg, idSeed)   // phiếu sản xuất mới chưa có dòng tới khi chọn kho, tham chiếu (T152)
+    : moi ? traTu ? traTu.dong : (laSx || laDcn ? [] : cfg.khongKho ? [{ ma: '', ten: '', dvt: '', sl: 1, gia: 0, tien: 0, ts: 8, thue: 0, ptCk: 0, ck: 0 }] : cfg.dongPos ? [dongTuHang(HANG[0])] : dongCua(cfg, `mau-${loai?.k ?? ''}`).slice(0, 1)) : boSungPro((row?._dong as Dong[] | undefined) ?? dongCua(cfg, idSeed))   // phiếu sản xuất mới chưa có dòng tới khi chọn kho, tham chiếu (T152)
   ), [idSeed, loai?.k, moi])
 
   const [dsDong, setDsDong] = useState<Dong[]>(dongGoc)
