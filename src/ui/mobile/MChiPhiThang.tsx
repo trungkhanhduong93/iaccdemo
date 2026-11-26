@@ -1,5 +1,5 @@
-// Chi phí trong tháng theo lý do chi trên điện thoại (T240): mở từ thẻ Chi phí trong tháng ở trang chủ Free.
-// Cùng số liệu với bản web, dạng dòng kiểu app: cộng từ phiếu chi thật có lý do là chi phí (T483).
+// Chi phí hoạt động trong tháng theo lý do chi trên điện thoại (T240, T945): mở từ thẻ Chi phí hoạt động ở trang chủ Standard.
+// Cùng số liệu với bản web: cộng từ phiếu chi thật có lý do là chi phí (T483).
 // Bấm một dòng mở ngay bên dưới các phiếu chi tiền mặt, ngân hàng của lý do đó, không sang phân hệ Thu chi
 import { useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
@@ -8,7 +8,9 @@ import { cuaHangHienTai, useSession } from '../../app/session'
 import { CUA_HANG } from '../../data/mock'
 import { Icon } from '../Icon'
 import { moneyD, pct } from '../format'
-import { chiPhiThangTuPhieu, moTaChiPhi, usePhieuChiPhi } from '../../modules/home/chiPhiPhieu'
+import { usePhieuChiPhi } from '../../modules/home/chiPhiPhieu'
+import { duLieuTongChiPhi } from '../../modules/home/ChiPhiThang'
+import { TheTongChiPhi } from '../../modules/home/TheTongChiPhi'
 import { MChon } from './MChon'
 
 export function MChiPhiThang(_: ScreenProps) {
@@ -17,20 +19,26 @@ export function MChiPhiThang(_: ScreenProps) {
   const thang = Math.min(10, Math.max(7, Number(tham.get('thang')) || 10))
   const cn = cuaHangHienTai(s)
   const phieu = usePhieuChiPhi(s)
-  const { tong: cpThang, ds: dsCp } = chiPhiThangTuPhieu(phieu, thang, cn ? [cn.id] : CUA_HANG.map(c => c.id))
-  const ds = dsCp.map(x => ({ ...x, ...moTaChiPhi(x) }))
+  const cns = cn ? [cn.id] : CUA_HANG.map(c => c.id)
+  const { cpThang, ds, soPhieu, dt, tyLe, cachTinh } = duLieuTongChiPhi(phieu, thang, cns)
   const [mo, setMo] = useState<string | null>(null)   // lý do đang mở danh sách phiếu
   const [chonLoai, setChonLoai] = useState(false)   // tấm chọn chi tiền mặt hay chi ngân hàng
   const nav = useNavigate()
 
   return (
     <div className="m-standard-cpt">
-      <div className="m-standard-cpt-tong-the">
-        <div className="m-standard-cpt-tong-nhan">
-          Tổng chi phí trong tháng {thang}/2026{cn ? ` · ${cn.ten}` : ''}
-          <small className="m-standard-cpt-tong-phu">Cộng các phiếu chi tiền mặt, ngân hàng có lý do nghiệp vụ là chi phí</small>
-        </div>
-        <div className="m-standard-cpt-tong-so">{moneyD(cpThang)}</div>
+      <TheTongChiPhi
+        nhan="Tổng chi phí hoạt động"
+        tien={cpThang}
+        phu={`Cộng phiếu chi tiền mặt, ngân hàng có lý do là chi phí · ${soPhieu} phiếu chi`}
+        tyLe={tyLe}
+        dt={dt}
+        cachTinh={cachTinh}
+      />
+
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 4px' }}>
+        <b style={{ fontSize: 14 }}>Theo lý do chi</b>
+        <span style={{ fontSize: 12.5, color: 'var(--muted)' }}>{soPhieu} phiếu chi</span>
       </div>
 
       <div className="m-standard-cpt-ds">
@@ -39,16 +47,15 @@ export function MChiPhiThang(_: ScreenProps) {
           return (
             <div key={x.ly} className={`m-standard-cpt-nhom${dangMo ? ' mo' : ''}`}>
               <button type="button" className="m-standard-cpt-dong" aria-expanded={dangMo} onClick={() => setMo(dangMo ? null : x.ly)}>
-                <div className="m-standard-cpt-ic">
-                  <Icon n={x.icon} className="ic sm" />
-                </div>
                 <div className="m-standard-cpt-info">
-                  <div className="m-standard-cpt-ten">{x.ly}</div>
-                  <div className="m-standard-cpt-phu">{x.phu}</div>
-                </div>
-                <div className="m-standard-cpt-so">
-                  <div className="m-standard-cpt-tien">{moneyD(x.v)}</div>
-                  <div className="m-standard-cpt-phantram">{pct(cpThang ? x.v / cpThang : 0)} chi phí</div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8 }}>
+                    <span className="m-standard-cpt-ten">{x.ly}</span>
+                    <span className="m-standard-cpt-tien">{moneyD(x.v)}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8 }}>
+                    <span className="m-standard-cpt-phu">{x.so} phiếu chi</span>
+                    <span className="m-standard-cpt-phantram">{pct(cpThang ? x.v / cpThang : 0)} chi phí</span>
+                  </div>
                 </div>
                 <Icon n={dangMo ? 'chevd' : 'chevr'} className="ic sm m-standard-cpt-mui" />
               </button>

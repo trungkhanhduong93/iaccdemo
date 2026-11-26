@@ -1,4 +1,4 @@
-// Chi phí NVL trong tháng gói Free trên điện thoại (T394): mở từ thẻ Chi phí nguyên vật liệu ở trang chủ.
+// Chi phí NVL trong tháng gói Standard trên điện thoại (T394, T945): mở từ thẻ Chi phí nguyên vật liệu ở trang chủ.
 // Cách tính chung cả công ty, đổi ở Thông tin đơn vị như web (T767): kiểm kê định kỳ hoặc tổng chi phí mua hàng trong tháng.
 // Xem mọi cửa hàng: danh sách từng cửa hàng, bấm dòng đổi luôn cửa hàng trên thanh đầu (T611).
 // Xem một cửa hàng: các số của công thức và phiếu mua hàng trong tháng.
@@ -6,26 +6,33 @@ import { useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import type { ScreenProps } from '../../modules/types'
 import { cuaHangHienTai, useSession } from '../../app/session'
-import { CUA_HANG, KY_MO } from '../../data/mock'
+import { CUA_HANG } from '../../data/mock'
 import { Icon } from '../Icon'
-import { moneyD, pct } from '../format'
+import { ThongBao } from '../ThongBao'
+import { moneyD, pct, rutGonSo } from '../format'
 import {
-  CACH_NVL,
   DI_DOI_CACH_NVL,
   daKhoaThang,
   nvlKy,
   phieuMuaKy,
   canKiemKeCuoiThang,
 } from '../../modules/home/chi-phi-nvl'
-import { HopChotTonHt } from '../../modules/home/HopChotTonHt'
-import { TheCongThucNvl, ThanhTyLeNvl } from '../../modules/home/TheCongThucNvl'
+import { TheTongChiPhi, type OCachTinh } from '../../modules/home/TheTongChiPhi'
 
 const THANG = [7, 8, 9, 10]
+
+function tomTatKk(dau: number, mua: number, cuoi: number) {
+  const cungTrieu = [dau, mua, cuoi].every(n => n >= 1e6 && n < 1e9)
+  return cungTrieu
+    ? `Đầu ${rutGonSo(dau, false)} · Mua ${rutGonSo(mua, false)} · Cuối ${rutGonSo(cuoi)}`
+    : `Đầu ${rutGonSo(dau)} · Mua ${rutGonSo(mua)} · Cuối ${rutGonSo(cuoi)}`
+}
 
 export function MChiPhiNvl(_: ScreenProps) {
   const { s, set } = useSession()
   const [tham, setTham] = useSearchParams()
-  const [moChot, setMoChot] = useState(false)
+  const [boQua, setBoQua] = useState(false)
+  const [moChiTiet, setMoChiTiet] = useState(false)
   const thang = THANG.includes(Number(tham.get('thang'))) ? Number(tham.get('thang')) : 10
   const cnThanh = cuaHangHienTai(s)
   const cn = cnThanh ?? CUA_HANG.find(c => c.id === tham.get('cn'))
@@ -38,117 +45,108 @@ export function MChiPhiNvl(_: ScreenProps) {
 
   const tong = nvlKy(s, cn ? [cn.id] : [], thang)
   const kk = tong.cach === 'kk'
+  const dt = tong.ds.reduce((a, x) => a + x.dt, 0)
   const khoa = daKhoaThang(thang)
-  const canKk = canKiemKeCuoiThang(s, thang)
-  const chuaKkIds = tong.chuaKk
-  const coCanhBao = canKk && chuaKkIds.length > 0
-  const tenChuaKk = CUA_HANG.filter(c => chuaKkIds.includes(c.id)).map(c => c.ten).join(', ')
-  const ngayCuoi = (th: number) => ({ 7: '31/07', 8: '31/08', 9: '30/09', 10: '31/10' }[th] ?? '30/09')
+  const dsChuaKk = tong.ds.filter(x => x.chuaKk)
+  const coCanhBao = canKiemKeCuoiThang(s, thang) && dsChuaKk.length > 0
+  const ngayCuoi = `${new Date(2026, thang, 0).getDate()}/${String(thang).padStart(2, '0')}`
+
+  const cachTinh: OCachTinh[] = kk
+    ? [
+        { nhan: 'Tồn đầu kỳ', so: tong.tonDau, phu: `Tồn cuối tháng ${thang - 1}` },
+        { dau: '+', nhan: 'Mua trong tháng', so: tong.mua, phu: <Link to="/app/mua-hang/4-1-1">Xem phiếu mua hàng</Link> },
+        { dau: '−', nhan: 'Tồn cuối kỳ', so: tong.tonCuoi, phu: 'Tồn tới thời điểm xem' },
+      ]
+    : [
+        { nhan: 'Mua trong tháng', so: tong.mua, phu: <Link to="/app/mua-hang/4-1-1">Xem phiếu mua hàng</Link> },
+        { nhan: 'Tổng chi phí mua hàng trong tháng', phu: 'Chi phí NVL là tổng tiền các phiếu mua hàng NVL trong tháng.', vien: true, rong: true },
+      ]
+
+  const phuThe = coCanhBao && boQua ? (
+    <button type="button" className="nvl-chip-bao" onClick={() => setMoChiTiet(true)}>
+      {dsChuaKk.length} chưa kiểm kê
+    </button>
+  ) : null
 
   return (
     <div className="m-standard-cpt">
-      {/* Thẻ công thức như máy tính, xếp dọc (T944) */}
-      <TheCongThucNvl tong={tong} ten={cn?.ten} />
-
-      {/* Dòng cách tính như web: tên, mô tả, nút Đổi cách tính mở Thông tin đơn vị */}
-      <div className="m-nvl-cach">
-        <span className="m-nvl-cach-chu">
-          Phương pháp tính chi phí NVL chung cả công ty: <b>{CACH_NVL[tong.cach].ten}</b> · {CACH_NVL[tong.cach].mota}
-        </span>
-        <Link to={DI_DOI_CACH_NVL} className="btn sm ghost m-nvl-cach-nut">Đổi cách tính</Link>
-        {cn && !cnThanh && (
-          <button
-            type="button"
-            className="btn sm ghost"
-            onClick={() => doi({ cn: undefined })}
-            style={{ fontSize: 12, padding: '4px 8px' }}
-          >
-            Mọi cửa hàng
-          </button>
-        )}
-      </div>
-      {/* mở form phiếu kiểm kê mới như web (T768) */}
-      <Link to="/app/kho/5-1-10/moi" className="m-tcf-nut-vien chu-xanh">
-        <Icon n="clipboard" className="ic sm" kieu="net" />
-        <span>Kiểm kê ngay</span>
-      </Link>
-      {/* Khung cảnh báo kiểm kê cuối tháng (T902) */}
-      {coCanhBao && (
-        <div className="m-nvl-bao" role="alert">
-          <div className="m-nvl-bao-dau">
+      {coCanhBao && !boQua && (
+        <section className="nvl-m-bao" role="alert">
+          <div className="nvl-m-bao-dau">
             <Icon n="alert" className="ic sm" />
-            <div className="m-nvl-bao-chu">
-              <b>Tháng {thang} chưa kiểm kê ở {tenChuaKk}.</b>
-              <p>
-                Chi phí NVL của {chuaKkIds.length === 1 ? 'cửa hàng này' : `${chuaKkIds.length} cửa hàng này`} chưa tính được. Lập phiếu kiểm kê ngày {ngayCuoi(thang)}, hoặc chốt tồn cuối bằng tồn hệ thống nếu không kiểm thực tế.
-              </p>
-            </div>
+            <span>
+              <b>{dsChuaKk.length} cửa hàng chưa kiểm kê ngày {ngayCuoi}.</b> Tồn cuối đang lấy theo báo cáo nhập xuất tồn.
+            </span>
           </div>
-          <div className="m-nvl-bao-nut">
-            <button
-              type="button"
-              className="btn nhat sm"
-              onClick={() => setMoChot(true)}
-            >
-              Chốt theo tồn hệ thống
-            </button>
-            <Link to="/app/kho/5-1-10/moi" className="btn pri sm">
-              Lập phiếu kiểm kê
-            </Link>
+          <div className="nvl-m-bao-nut">
+            <button type="button" className="btn nvl-bao-bo" onClick={() => setBoQua(true)}>Bỏ qua</button>
+            <button type="button" className="btn pri" onClick={() => setMoChiTiet(true)}>Xem chi tiết</button>
           </div>
-        </div>
+        </section>
       )}
-      {thang === KY_MO.thang && kk && (
-        <div className="m-nvl-ghi">
-          Chi phí NVL tạm tính, chốt khi có phiếu kiểm kê cuối tháng.
-        </div>
-      )}
+
+      <TheTongChiPhi
+        nhan={cn ? `Tổng chi phí NVL · ${cn.ten}` : 'Tổng chi phí NVL'}
+        tien={tong.tien}
+        phu={phuThe}
+        tyLe={dt ? tong.tien / dt : 0}
+        dt={dt}
+        cachTinh={cachTinh}
+      />
+
       {khoa && (
         <div className="m-nvl-ghi">Tháng {thang}/2026 đã khoá sổ: chi phí NVL giữ theo cách tính lúc khoá, không sửa được.</div>
       )}
 
+      <div className="nvl-m-tieu">
+        <b>{cn ? cn.ten : 'Theo cửa hàng'}</b>
+        {cn && !cnThanh ? (
+          <button type="button" className="nvl-m-link" onClick={() => doi({ cn: undefined })}>Mọi cửa hàng</button>
+        ) : (
+          <Link to={DI_DOI_CACH_NVL}>Đổi cách tính</Link>
+        )}
+      </div>
+
       {/* Khi chưa chọn cửa hàng: danh sách cửa hàng */}
       {!cn && (
-        <div className="m-standard-cpt-ds">
-          {tong.ds.map(d => {
-            const chuaKk = (d as { chuaKk?: boolean }).chuaKk ?? chuaKkIds.includes(d.cn)
-            return (
+        <>
+          <section className="nvl-m-ds">
+            {tong.ds.map(d => (
               <div
                 key={d.cn}
-                className="m-standard-cpt-dong"
+                className="nvl-m-dong"
                 onClick={() => set({ cuaHang: d.cn })}
                 role="button"
                 tabIndex={0}
-                style={{ cursor: 'pointer' }}
               >
-                <div className="m-standard-cpt-ic">
-                  <Icon n="khohang" className="ic sm" />
-                </div>
-                <div className="m-standard-cpt-info">
-                  <div className="m-standard-cpt-ten">{d.ten}</div>
-                  <div className="m-standard-cpt-phu">
-                    {kk
-                      ? chuaKk
-                        ? 'Chưa có phiếu kiểm kê cuối tháng'
-                        : `Tồn đầu ${moneyD(d.tonDau ?? 0)} · Mua ${moneyD(d.mua)} · Tồn cuối ${moneyD(d.tonCuoi ?? 0)}`
-                      : `Mua ${moneyD(d.mua)}`}
-                  </div>
-                </div>
-                <div className="m-standard-cpt-so">
-                  {chuaKk ? (
-                    <span className="chip cam">Chưa kiểm kê</span>
-                  ) : (
-                    <>
-                      <div className="m-standard-cpt-tien">{moneyD(d.tien)}</div>
-                      <div className="m-standard-cpt-phantram nvl-tl-o"><ThanhTyLeNvl tl={d.dt ? d.tien / d.dt : 0} />{pct(d.dt ? d.tien / d.dt : 0)} DT</div>
-                    </>
-                  )}
-                </div>
+                <span className="nvl-m-dong-than">
+                  <span className="nvl-m-dong-tren">
+                    <b>{d.ten}</b>
+                    <b className="num">{moneyD(d.tien)}</b>
+                  </span>
+                  <span className="nvl-m-dong-duoi">
+                    <span className="nvl-m-dong-phu">
+                      {d.chuaKk && <span className="nvl-chip-chua">Chưa kiểm kê</span>}
+                      {kk
+                        ? d.chuaKk
+                          ? `Cuối ${rutGonSo(d.tonCuoi ?? 0)}`
+                          : tomTatKk(d.tonDau ?? 0, d.mua, d.tonCuoi ?? 0)
+                        : `Doanh thu ${rutGonSo(d.dt)}`}
+                    </span>
+                    <span className="nvl-m-dong-tl">{pct(d.dt ? d.tien / d.dt : 0)} DT</span>
+                  </span>
+                </span>
                 <Icon n="chevr" className="ic sm m-standard-cpt-mui" />
               </div>
-            )
-          })}
-        </div>
+            ))}
+          </section>
+          {kk && !coCanhBao && (
+            <Link to="/app/kho/5-1-10/moi" className="nvl-m-nut-chinh">Kiểm kê ngay</Link>
+          )}
+          {!kk && (
+            <Link to="/app/mua-hang/4-1-1" className="nvl-m-nut-vien">Xem phiếu mua hàng</Link>
+          )}
+        </>
       )}
 
       {/* Khi đã chọn một cửa hàng: phiếu mua hàng trong tháng */}
@@ -181,13 +179,28 @@ export function MChiPhiNvl(_: ScreenProps) {
         </>
       )}
 
-      {/* Hộp chốt tồn hệ thống (T902) */}
-      {moChot && (
-        <HopChotTonHt
-          thang={thang}
-          cns={chuaKkIds}
-          onDong={() => setMoChot(false)}
-        />
+      {moChiTiet && coCanhBao && (
+        <ThongBao
+          loai="canhBao"
+          tieuDe={`Chưa kiểm kê ngày ${ngayCuoi}`}
+          moTa="Kiểm kê thực tế ngày cuối tháng để tồn cuối khớp hàng còn trong kho."
+          nutPhu="Đóng"
+          onDong={() => setMoChiTiet(false)}
+        >
+          <div className="nvl-hop-ds">
+            {dsChuaKk.map(c => (
+              <div key={c.cn} className="nvl-hop-dong">
+                <div className="nvl-hop-ten">
+                  <b>{c.ten}</b>
+                  <span>Tồn cuối theo NXT {moneyD(c.tonCuoi ?? 0)}</span>
+                </div>
+                <Link to="/app/kho/5-1-10/moi" className="btn sm pri" onClick={() => setMoChiTiet(false)}>
+                  Kiểm kê {ngayCuoi}
+                </Link>
+              </div>
+            ))}
+          </div>
+        </ThongBao>
       )}
     </div>
   )

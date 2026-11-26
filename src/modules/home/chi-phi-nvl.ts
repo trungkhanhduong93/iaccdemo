@@ -158,9 +158,9 @@ export function nvlCuaHang(s: SNvl, cn: string, thang: number): NvlCn {
   const hang = nvlHangKy(s, [cn], thang)
   const tien = (f: (h: NvlHang) => number) => Math.round(hang.reduce((a, h) => a + f(h) * h.gia, 0))
   const tonDau = tien(h => h.slDau), muaKk = tien(h => h.slMua), tonCuoi = tien(h => h.slCuoi)
-  // Tháng đã qua chưa kiểm kê: không tính chi phí (T902)
-  if (canKiemKeCuoiThang(s, thang) && cnChuaKiemKe(thang, [cn]).length) return { cn, ten, cach, tien: 0, dt, tonDau, mua: muaKk, chuaKk: true }
-  return { cn, ten, cach, tien: hang.reduce((a, h) => a + h.tien, 0), dt, tonDau, mua: muaKk, tonCuoi }
+  // Tháng đã qua chưa kiểm kê: vẫn tính chi phí theo NXT, gắn cờ để cảnh báo (T902, T945)
+  const chuaKk = canKiemKeCuoiThang(s, thang) && cnChuaKiemKe(thang, [cn]).length > 0
+  return { cn, ten, cach, tien: hang.reduce((a, h) => a + h.tien, 0), dt, tonDau, mua: muaKk, tonCuoi, ...(chuaKk ? { chuaKk: true } : {}) }
 }
 
 /** Chi phí NVL cộng các cửa hàng; cns rỗng là mọi cửa hàng */

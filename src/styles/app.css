@@ -50267,33 +50267,6 @@ td.xdl-cat > span { display: block; overflow: hidden; text-overflow: ellipsis; w
 .mdnh-ch.tong { background: var(--tint); border-color: transparent; margin-bottom: 0; }
 .mdnh-ch-ten { font-weight: 700; color: var(--ink); margin-bottom: 4px; }
 
-/* ── Chi phí NVL: thẻ công thức, thanh tỷ lệ trên doanh thu (T944) ── */
-.nvl-ct-hang { display: flex; gap: 22px; margin-bottom: 10px; }
-.nvl-ct-the { position: relative; flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 4px; padding: 14px 16px; background: var(--white); border: 1px solid var(--line); border-radius: var(--r-sm); }
-.nvl-ct-the[data-dau]::before { content: attr(data-dau); position: absolute; left: -18px; top: 50%; transform: translateY(-50%); width: 14px; text-align: center; font-size: 18px; font-weight: 700; color: var(--muted); }
-.nvl-ct-nhan { font-size: 13px; color: var(--body); }
-.nvl-ct-so { font-size: 18px; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; }
-.nvl-ct-phu { font-size: 12px; color: var(--muted); }
-.nvl-ct-the.chinh { flex-grow: 1.4; background: var(--orange-t); border-color: var(--orange-b); }
-.nvl-ct-the.chinh .nvl-ct-so { font-size: 24px; }
-.nvl-ct-tl { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--body); }
-.nvl-ct-tl .nvl-tl { flex: 1; height: 8px; }
-.nvl-ct-the.chinh .cht-chua-gom { text-align: left; }
-.nvl-tl { display: inline-block; width: 56px; height: 6px; border-radius: 4px; background: var(--line); overflow: hidden; vertical-align: middle; flex: none; }
-.nvl-tl i { display: block; height: 100%; border-radius: inherit; background: var(--green); }
-.nvl-tl-vua i { background: var(--amber); }
-.nvl-tl-cao i { background: var(--red); }
-.nvl-tl-o { display: inline-flex; align-items: center; justify-content: flex-end; gap: 8px; }
-/* Điện thoại: xếp dọc, nhãn trái số phải, dấu phép tính ở mép trái */
-.m-standard-cpt .nvl-ct-hang { flex-direction: column; gap: 6px; margin-bottom: 0; }
-.m-standard-cpt .nvl-ct-the { flex-direction: row; flex-wrap: wrap; align-items: baseline; column-gap: 8px; row-gap: 2px; padding: 10px 12px 10px 32px; border-radius: 10px; }
-.m-standard-cpt .nvl-ct-the[data-dau]::before { left: 10px; font-size: 16px; }
-.m-standard-cpt .nvl-ct-nhan { flex: 1; }
-.m-standard-cpt .nvl-ct-so { font-size: 15px; }
-.m-standard-cpt .nvl-ct-phu, .m-standard-cpt .nvl-ct-tl, .m-standard-cpt .nvl-ct-the.chinh .cht-chua-gom { flex-basis: 100%; }
-.m-standard-cpt .nvl-ct-the.chinh .nvl-ct-so { font-size: 20px; }
-.m-standard-cpt .nvl-tl { width: 40px; }
-
 /* ── Danh mục cửa hàng: nút X bỏ trống công ty, hộp xoá, chuyển công ty (T946) ── */
 .dmcn-cty-o { position: relative; display: inline-flex; align-items: center; gap: 6px; }
 .dmcn-cty-x { width: 28px; height: 28px; flex: none; border: 1px solid var(--line); border-radius: 999px; background: var(--white); color: var(--muted); cursor: pointer; display: grid; place-items: center; padding: 0; }
@@ -50305,3 +50278,92 @@ td.xdl-cat > span { display: block; overflow: hidden; text-overflow: ellipsis; w
 /* Khu lọc thấp hơn: hàng lọc bớt đệm trên dưới, các khối sát nhau hơn */
 .dmcn-trang { gap: 6px; }
 .page-voucher.dmcn-trang .ph:has(.ds-btn-pheu-figma) { min-height: 0; padding: 10px 16px 6px; }
+
+/* ── Thẻ tổng Chi phí NVL, Chi phí hoạt động: số to, % doanh thu, mục Cách tính (T945, thay T944) ── */
+.ttcp { background: var(--white); border: 1px solid var(--line); border-radius: 12px; padding: 18px 22px; display: flex; flex-direction: column; gap: 16px; margin-bottom: 12px; }
+.ttcp-dau { display: flex; align-items: flex-end; gap: 24px; flex-wrap: wrap; }
+.ttcp-trai { flex: 1 1 320px; display: flex; flex-direction: column; gap: 4px; }
+.ttcp-nhan { font-size: 13px; color: var(--body); }
+.ttcp-so { font-size: 34px; font-weight: 700; color: var(--ink); letter-spacing: -0.5px; font-variant-numeric: tabular-nums; }
+.ttcp-phu { font-size: 13px; color: var(--muted); }
+.ttcp-phai { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+.ttcp-phai b { font-size: 22px; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; }
+.ttcp-phai span { font-size: 13px; color: var(--muted); }
+.ttcp-cach { border-top: 1px dashed var(--line); padding-top: 14px; display: flex; flex-direction: column; gap: 10px; }
+.ttcp-tieu { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.3px; }
+.ttcp-hang { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.ttcp-o { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 4px; row-gap: 4px; align-content: start; background: var(--hdb-chan); border-radius: 10px; padding: 12px 14px; }
+.ttcp-o.vien { background: transparent; border: 1px dashed var(--line); }
+.ttcp-o.rong { grid-column: span 2; }
+.ttcp-o.mota .ttcp-o-phu { font-size: 13.5px; color: var(--body); }
+.ttcp-o > i { font-style: normal; font-weight: 700; font-size: 13px; }
+.ttcp-o > i:empty { display: none; }
+.ttcp-o > i.cong { color: var(--green); }
+.ttcp-o > i.tru { color: var(--red); }
+.ttcp-o-nhan { font-size: 12.5px; color: var(--body); }
+.ttcp-o-so { grid-column: 1 / -1; font-size: 17px; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; }
+.ttcp-o-phu { grid-column: 1 / -1; font-size: 11.5px; color: var(--muted); }
+/* Điện thoại: thẻ dọc, mục Cách tính thành dòng nhãn trái số phải, dấu + − một cột 16px */
+.m-standard-cpt .ttcp { padding: 16px; border-radius: 14px; gap: 12px; margin-bottom: 0; }
+.m-standard-cpt .ttcp-dau { flex-direction: column; align-items: stretch; gap: 8px; }
+.m-standard-cpt .ttcp-trai { flex: none; }
+.m-standard-cpt .ttcp-so { font-size: 28px; }
+.m-standard-cpt .ttcp-phai { flex-direction: row; align-items: baseline; gap: 6px; }
+.m-standard-cpt .ttcp-phai b { font-size: 13px; }
+.m-standard-cpt .ttcp-tieu { display: none; }
+.m-standard-cpt .ttcp-cach { padding-top: 10px; }
+.m-standard-cpt .ttcp-hang { grid-template-columns: minmax(0, 1fr); gap: 6px; }
+.m-standard-cpt .ttcp-o { grid-template-columns: 16px minmax(0, 1fr) auto; background: none; padding: 0; border-radius: 0; }
+.m-standard-cpt .ttcp-o > i:empty { display: block; }
+.m-standard-cpt .ttcp-o > i { text-align: center; }
+.m-standard-cpt .ttcp-o-nhan { font-size: 13px; }
+.m-standard-cpt .ttcp-o-so { grid-column: auto; font-size: 13px; font-weight: 500; }
+.m-standard-cpt .ttcp-o-phu, .m-standard-cpt .ttcp-o.an-dt { display: none; }
+.m-standard-cpt .ttcp-o.vien { border: 0; }
+.m-standard-cpt .ttcp-o.rong { grid-column: auto; }
+/* Ô chỉ có mô tả: điện thoại bỏ nhãn, mô tả thành dòng chữ nhỏ thẳng cột chữ */
+.m-standard-cpt .ttcp-o.mota .ttcp-o-nhan { display: none; }
+.m-standard-cpt .ttcp-o.mota .ttcp-o-phu { display: block; grid-column: 2 / -1; font-size: 12px; color: var(--muted); }
+
+/* ── Chi phí NVL: cảnh báo chưa kiểm kê cuối tháng (T945) ── */
+.nvl-bao { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; background: var(--amber-t); border: 1px solid var(--orange-b); border-radius: var(--r); padding: 12px 16px; margin-bottom: 12px; }
+.nvl-bao > .ic { color: var(--amber); flex: none; }
+.nvl-bao-chu { flex: 1 1 420px; font-size: 14px; color: var(--body); }
+.nvl-bao-chu b { color: var(--ink); }
+.nvl-bao-bo { border: 1px solid var(--orange-b); background: transparent; color: var(--body); }
+.nvl-chip-bao { display: inline-flex; align-items: center; font: inherit; font-size: 12px; font-weight: 600; color: var(--amber); background: var(--amber-t); border-radius: 99px; padding: 3px 10px; margin-left: 8px; vertical-align: middle; }
+.nvl-ten-o { display: inline-flex; align-items: center; gap: 8px; }
+.nvl-ten-o .nvl-ten-cn { margin-right: 0; }
+.nvl-chip-chua { display: inline-flex; align-items: center; font-size: 11px; font-weight: 600; color: var(--amber); background: var(--amber-t); border-radius: 99px; padding: 2px 8px; white-space: nowrap; }
+.nvl-hop-ds { border: 1px solid var(--line-2); border-radius: var(--r); overflow-y: auto; max-height: 360px; }
+.nvl-hop-dong { display: flex; align-items: center; gap: 12px; padding: 12px 16px; }
+.nvl-hop-dong + .nvl-hop-dong { border-top: 1px solid var(--line-2); }
+.nvl-hop-ten { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.nvl-hop-ten b { font-size: 14px; font-weight: 600; color: var(--ink); }
+.nvl-hop-ten span { font-size: 12.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.nvl-hop-dong .btn { flex: none; white-space: nowrap; }
+
+.m-standard-cpt .ttcp-phu:empty { display: none; }
+.m-standard-cpt .nvl-chip-bao { margin-left: 0; font-size: 11.5px; padding: 4px 10px; min-height: 28px; }
+.nvl-m-bao { background: var(--amber-t); border: 1px solid var(--orange-b); border-radius: 14px; padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; }
+.nvl-m-bao-dau { display: flex; gap: 8px; align-items: flex-start; font-size: 13.5px; color: var(--body); }
+.nvl-m-bao-dau .ic { color: var(--amber); flex: none; margin-top: 1px; }
+.nvl-m-bao-dau b { color: var(--ink); }
+.nvl-m-bao-nut { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; }
+.nvl-m-bao-nut .btn { height: 44px; border-radius: 10px; font-size: 13.5px; justify-content: center; }
+.nvl-m-tieu { display: flex; align-items: center; justify-content: space-between; padding: 0 4px; }
+.nvl-m-tieu b { font-size: 14px; color: var(--ink); }
+.nvl-m-tieu a, .nvl-m-link { font-size: 13px; color: var(--blue); }
+.nvl-m-ds { background: var(--white); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+.nvl-m-dong { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-bottom: 1px solid var(--line-2); color: var(--ink); min-height: 44px; cursor: pointer; }
+.nvl-m-dong:last-child { border-bottom: 0; }
+.nvl-m-dong-than { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 0; }
+.nvl-m-dong-tren { display: flex; justify-content: space-between; gap: 8px; font-size: 14px; }
+.nvl-m-dong-tren b:first-child { font-weight: 600; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.nvl-m-dong-duoi { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); }
+.nvl-m-dong-phu { display: inline-flex; align-items: center; gap: 6px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.nvl-m-dong-phu .nvl-chip-chua { padding: 1px 7px; }
+.nvl-m-dong-tl { flex: none; font-variant-numeric: tabular-nums; }
+.nvl-m-nut-chinh, .nvl-m-nut-vien { display: flex; align-items: center; justify-content: center; height: 44px; border-radius: 12px; font-size: 14px; font-weight: 600; }
+.nvl-m-nut-chinh { background: var(--blue); color: var(--white); }
+.nvl-m-nut-vien { background: var(--white); border: 1px solid var(--line); color: var(--blue); }
