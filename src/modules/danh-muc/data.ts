@@ -241,9 +241,9 @@ export const DS_CONG_VIEC_17 = [
 
 /** Nguồn dữ liệu danh mục quỹ tiền 1.12 (T181) */
 export const DS_QUY_TIEN_112 = [
-  ...CUA_HANG.map((c, i) => ({ ma: `TM0${i + 1}`, ten: `Quỹ tiền mặt ${c.ngan}`, loai: 'Tiền mặt', stk: '', cn: c.ten })),
-  { ma: 'NH01', ten: 'Vietcombank, chi nhánh Sài Gòn', loai: 'Ngân hàng', stk: '0071 0012 3456', cn: 'Tất cả' },
-  { ma: 'NH02', ten: 'Techcombank, nhận tiền QR', loai: 'Ngân hàng', stk: '1903 6655 8899', cn: 'Tất cả' },
+  ...CUA_HANG.map((c, i) => ({ ma: `TM0${i + 1}`, ten: `Quỹ tiền mặt ${c.ngan}`, loai: 'Tiền mặt', tkQuy: '1111', stk: '', cn: c.ten })),
+  { ma: 'NH01', ten: 'Vietcombank, chi nhánh Sài Gòn', loai: 'Ngân hàng', tkQuy: '1121', stk: '0071 0012 3456', cn: 'Tất cả' },
+  { ma: 'NH02', ten: 'Techcombank, nhận tiền QR', loai: 'Ngân hàng', tkQuy: '1121', stk: '1903 6655 8899', cn: 'Tất cả' },
 ]
 
 export interface PhuongThucTT {
