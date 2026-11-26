@@ -76,7 +76,7 @@ const nhomLyDo: ScreenDef = {   // lý do lưu tên nhóm nên cột, bộ lọc
       { k: 'dung', t: 'Dùng cho', w: 110 },   // nhóm dành cho thu hay chi (T473)
       { k: 'soLy', t: 'Số lý do', num: true, w: 100 },
     ],
-    rows: () => NHOM_LY_DO.map(n => ({ ...n, soLy: LY_DO.filter(l => l.chiPhi && l.nhomCp === n.ten).length })),
+    rows: () => NHOM_LY_DO.map(n => ({ ...n, soLy: LY_DO.filter(l => l.nhomCp === n.ten).length })),
   },
 }
 
@@ -347,11 +347,13 @@ const danhMuc: ModuleDef = {
         // Nguồn: lý do có sẵn từ FABi, lý do người dùng thêm là Thủ công (T708)
         { k: 'nguon', t: 'Nguồn', w: 100, r: r => r.nguon === 'FABi' ? 'FABi' : 'Thủ công' },
         // Là chi phí: chỉ lý do chi tiền có ô này (T231)
-        { k: 'chiPhi', t: 'Là chi phí', c: true, w: 100, r: r => r.dung !== 'Chi tiền' ? '' : createElement('input', { type: 'checkbox', className: 'o-tich-xem', checked: Boolean(r.chiPhi), readOnly: true, tabIndex: -1, 'aria-label': 'Là chi phí' }) },
+        { k: 'chiPhi', t: 'Chi phí trong kỳ', c: true, w: 100, r: r => r.dung !== 'Chi tiền' ? '' : createElement('input', { type: 'checkbox', className: 'o-tich-xem', checked: Boolean(r.chiPhi), readOnly: true, tabIndex: -1, 'aria-label': 'Chi phí trong kỳ' }) },
         // Chi phí phân bổ nhiều kỳ: loại trừ với Là chi phí, phiếu chi lý do này gợi ý tạo thẻ chi phí (T700)
         { k: 'phanBo', t: 'Chi phí phân bổ nhiều kỳ', c: true, w: 120, r: r => r.dung !== 'Chi tiền' ? '' : createElement('input', { type: 'checkbox', className: 'o-tich-xem', checked: Boolean(r.phanBo), readOnly: true, tabIndex: -1, 'aria-label': 'Chi phí phân bổ nhiều kỳ' }) },
+        // Tài khoản chi phí trả trước của lý do chi phí phân bổ nhiều kỳ, chỉ gói Pro, đứng sau cột tích Chi phí phân bổ nhiều kỳ
+        ...(goi === 'PR' ? [{ k: 'tkTraTruoc', t: 'Tài khoản chi phí trả trước', w: 140, cls: 'code' }] : []),
         // Nhóm của lý do là chi phí (T473), tên nhóm dài nên cắt "..." trong ô, rê chuột xem đủ
-        { k: 'nhomCp', t: 'Nhóm lý do', w: 320, r: r => !r.chiPhi || !r.nhomCp ? '' : createElement('span', { className: 'o-cat', title: String(r.nhomCp) }, String(r.nhomCp)) }],
+        { k: 'nhomCp', t: 'Nhóm lý do', w: 320, r: r => !r.nhomCp ? '' : createElement('span', { className: 'o-cat', title: String(r.nhomCp) }, String(r.nhomCp)) }],
       rows: () => LY_DO,
       phien: { gan: ganLyDo, luu: luuLyDo } } },   // giữ tích Là chi phí, Chi phí phân bổ nhiều kỳ, nhóm lý do đã sửa (T700)
   }, NGAN).filter(sc => sc.code !== '1.13').map(sc => ({ ...sc, icon: BIEU_TUONG[sc.code ?? ''] ?? sc.icon, ...(AN_GOI_PLUS.includes(sc.code ?? '') ? { anTab: ['PL' as const] } : {}) })).flatMap(sc => {

@@ -2,7 +2,7 @@
 // Lấy theo bảng DM_ tương ứng trong CSDL kế toán iPOS (schema-dm.md)
 import { DON_VI_TINH, TEN_DVT, TEN_NHOM_HANG, TEN_NHOM_DOI_TUONG, TEN_NHOM_MUC_CP, TEN_NHOM_KHO, TEN_MUC_CHI_PHI, TEN_CONG_VIEC_17, NHOM_HANG, TEN_THUONG_HIEU, DS_THUONG_HIEU,
   DS_HANG_HOA_12, dienGiaiQd, maDvt, maHang, maKho, DS_CHUNG_TU_TIEN, DS_MUC_CHI_PHI_16, DS_CONG_VIEC_17, DS_QUY_TIEN_112 } from './data'
-import { CUA_HANG, KHACH, KHO, NCC, NHAN_VIEN, NHOM_LY_DO, nhomLyTuDong } from '../../data/mock'
+import { CUA_HANG, KHACH, KHO, NCC, NHAN_VIEN, NHOM_LY_DO, dsNhomChoLyDo, nhomMacDinh } from '../../data/mock'
 import { NGANH_NGHE_CON, timNganhNghe } from './nganh-nghe'
 import { DN_AN_UONG, NGANH_NGHE_DN, timNganhNgheDn } from './nganh-nghe-dn'
 import { cauHinhGiamVat, type CauHinhGiamVat } from '../ban-hang/giam-thue'
@@ -90,10 +90,12 @@ export interface TruongDM {
   hien?: (v: Record<string, any>) => boolean   // chỉ hiện ô khi điều kiện đúng theo giá trị form
   goi?: Goi[]                                  // chỉ hiện ô ở các gói này (T144)
   cheDo?: CheDo[]                              // chỉ hiện ô ở các chế độ/thông tư này (T147)
+  lop?: string                                 // class thêm cho khung ô trong form, để CSS căn riêng (vd ô tích ngang nhãn ô bên cạnh)
   pp?: PpThue                                  // chỉ hiện ô khi thuế đó tính theo tỷ lệ % trên doanh thu (TT58, T720)
   nhanDs?: (v: string) => string               // nhãn hiện trong ô chọn khác giá trị lưu, vd đơn vị tính hiện mã và tên (T144)
   chiDoc?: boolean | ((v: Record<string, any>, s?: { goi: Goi; cheDo: CheDo }) => boolean)   // ô tự sinh, không sửa được; hàm: chỉ đọc theo giá trị form, vd khi sửa thẻ có sẵn (T165)
   chuThich?: string | null | ((v: Record<string, any>, s?: { goi: Goi; cheDo: CheDo }) => string | null)   // dòng chú thích nhỏ dưới ô
+  dsTheoForm?: (v: Record<string, any>) => string[]   // danh sách chọn đổi theo giá trị các ô khác của form (vd nhóm lý do theo Dùng cho, Là chi phí)
   goiY?: string                                // chữ mờ khi ô chọn nhiều để trống (T151)
   maDs?: (v: string) => string                 // mã của mục trong ô chọn nhiều, ô chọn có tìm: dòng hiện "Mã: X", ô hiện "Tên (MÃ)" (T154)
   chiTen?: boolean                             // ô chọn có tìm đã chọn chỉ hiện tên, không kèm mã, vd đơn vị tính ở quy đổi ĐVT
@@ -742,7 +744,7 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
 
   // 1.16 Lý do (chưa có bảng DM_ trong schema, chờ đối chiếu)
   '1.16': {
-    chiSua: ['chiPhi', 'phanBo', 'nhomCp', 'tk'],   // lý do có sẵn không sửa, chỉ tích Là chi phí (T334), Chi phí phân bổ nhiều kỳ (T700) và chọn lại nhóm lý do (T473)
+    chiSua: ['chiPhi', 'phanBo', 'nhomCp', 'tk', 'tkTraTruoc'],   // lý do có sẵn không sửa, chỉ tích Là chi phí (T334), Chi phí phân bổ nhiều kỳ (T700) và chọn lại nhóm lý do (T473)
     chiSuaKhi: v => v.nguon === 'FABi',      // chỉ lý do nguồn FABi bị khoá; lý do thủ công sửa được hết (T708)
     moi: () => ({ nguon: 'Thủ công' }),
     // Mã đã tạo không xoá, chỉ tắt Đang sử dụng (T940); trước đây lý do thủ công xoá được (T708)
@@ -752,6 +754,9 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
         truong: [
           { k: 'ma', nhan: 'Mã lý do', kieu: 'chu', batBuoc: true },
           { k: 'ten', nhan: 'Lý do nghiệp vụ', kieu: 'chu', batBuoc: true, caHang: true },
+          // Lý do là chi phí thuộc một nhóm lý do (T473): tích Là chi phí thì tự xếp theo tên lý do, chọn lại được nhóm dành cho chi
+          { k: 'nhomCp', nhan: 'Nhóm lý do nghiệp vụ', kieu: 'chon', batBuoc: true, caHang: true, dsTheoForm: dsNhomChoLyDo,
+            chuThich: 'Tự xếp theo tên lý do, chọn lại được' },
           // cùng chữ với danh sách lý do (LY_DO); gói Free chỉ lý do thu, chi (T144)
           { k: 'dung', nhan: 'Dùng cho nghiệp vụ', kieu: 'chon', ds: ['Thu tiền', 'Chi tiền'], batBuoc: true, goi: ['S'] },
           { k: 'dung', nhan: 'Dùng cho nghiệp vụ', kieu: 'chon', ds: ['Thu tiền', 'Chi tiền', 'Nhập kho', 'Xuất kho'], batBuoc: true, goi: ['PL', 'PR'] },
@@ -760,12 +765,11 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
           // Nguồn tự ghi, không sửa: FABi khi đồng bộ, Thủ công khi thêm trên IACC (T708)
           { k: 'nguon', nhan: 'Nguồn', kieu: 'chu', chiDoc: true },
           // Lý do chi tiền là chi phí thì báo cáo chi phí lấy lên (T231)
-          { k: 'chiPhi', nhan: 'Là chi phí', kieu: 'tich', caHang: true, hien: v => v.dung === 'Chi tiền' },
+          { k: 'chiPhi', nhan: 'Chi phí trong kỳ', kieu: 'tich', caHang: true, hien: v => v.dung === 'Chi tiền' },
           // Chi phí phân bổ nhiều kỳ: phiếu chi lý do này gợi ý tạo thẻ chi phí; chỉ chọn một trong hai tích với Là chi phí, bỏ cả hai được (T700)
-          { k: 'phanBo', nhan: 'Chi phí phân bổ nhiều kỳ', kieu: 'tich', caHang: true, hien: v => v.dung === 'Chi tiền' },
-          // Lý do là chi phí thuộc một nhóm lý do (T473): tích Là chi phí thì tự xếp theo tên lý do, chọn lại được nhóm dành cho chi
-          { k: 'nhomCp', nhan: 'Nhóm lý do nghiệp vụ', kieu: 'chon', batBuoc: true, caHang: true, ds: NHOM_LY_DO.filter(n => n.dung === 'Chi tiền').map(n => n.ten), hien: v => v.dung === 'Chi tiền' && laTich(v.chiPhi),
-            chuThich: 'Tự xếp theo tên lý do, chọn lại được' },
+          { k: 'phanBo', nhan: 'Chi phí phân bổ nhiều kỳ', kieu: 'tich', caHang: false, lop: 'pn-ld-ngang-nhan', hien: v => v.dung === 'Chi tiền' },
+          // Tài khoản chi phí trả trước, chỉ gói Pro: phiếu chi lý do này hạch toán Nợ tài khoản này; khi phân bổ mới Nợ tài khoản chi phí của lý do (ô Tài khoản), Có tài khoản này
+          { k: 'tkTraTruoc', nhan: 'Tài khoản chi phí trả trước', kieu: 'chon', batBuoc: true, goi: ['PR'], hien: v => v.dung === 'Chi tiền' && laTich(v.phanBo) },
         ],
       },
       {
@@ -778,12 +782,17 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
     // Tích Là chi phí, đổi tên, đổi Dùng cho: lý do chi phí chưa có nhóm thì tự xếp nhóm; bỏ tích thì bỏ nhóm (T473)
     // Là chi phí và Chi phí phân bổ nhiều kỳ loại trừ nhau: tích ô này thì bỏ tích ô kia (T700)
     doi: (k, v) => {
-      if (k === 'phanBo') return laTich(v.phanBo) ? { chiPhi: 0, nhomCp: '' } : {}
-      if (k !== 'chiPhi' && k !== 'ten' && k !== 'dung') return {}
-      const boPb = k === 'chiPhi' && laTich(v.chiPhi) ? { phanBo: 0 } : {}
-      if (v.dung !== 'Chi tiền') return { phanBo: 0, nhomCp: '' }
-      if (!laTich(v.chiPhi)) return { ...boPb, nhomCp: '' }
-      return v.nhomCp ? boPb : { ...boPb, nhomCp: nhomLyTuDong(String(v.ten ?? '')) }
+      if (k !== 'chiPhi' && k !== 'phanBo' && k !== 'ten' && k !== 'dung') return {}
+      const dung = String(v.dung ?? '')
+      let ra: Record<string, unknown> = {}
+      if (dung !== 'Chi tiền') ra = { phanBo: 0, tkTraTruoc: '' }
+      else if (k === 'chiPhi' && laTich(v.chiPhi)) ra = { phanBo: 0, tkTraTruoc: '' }
+      else if (k === 'phanBo') ra = laTich(v.phanBo) ? { chiPhi: 0, tkTraTruoc: v.tkTraTruoc || '242' } : { tkTraTruoc: '' }
+      const ghep = { ...v, ...ra }
+      // Lý do nào cũng có nhóm: đổi Dùng cho, tích chi phí thì xếp lại nhóm mặc định; đổi tên thì chỉ xếp khi nhóm đang trống hoặc không còn hợp lệ
+      const hopLe = dsNhomChoLyDo(ghep).includes(String(v.nhomCp ?? ''))
+      if (k === 'ten' && hopLe) return ra
+      return { ...ra, nhomCp: nhomMacDinh(String(v.ten ?? ''), dung, laTich(ghep.chiPhi) || laTich(ghep.phanBo)) }
     },
   },
 

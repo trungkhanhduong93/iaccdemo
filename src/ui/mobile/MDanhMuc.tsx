@@ -389,7 +389,7 @@ export const MDanhMuc: FC<ScreenProps> = ({ sc }) => {
                   ? `Hàng hoá áp dụng: ${r.hangAd || 'Tất cả hàng hoá'}`
                   : laLyDo
                   ? [`Nguồn: ${r.nguon === 'FABi' ? 'FABi' : 'Thủ công'}`,   // T708
-                      r.dung === 'Chi tiền' && (laCo(r.phanBo) ? 'Chi phí phân bổ nhiều kỳ' : laCo(r.chiPhi) ? 'Là chi phí' : '')].filter(Boolean).join(' · ')   // T700
+                      r.dung === 'Chi tiền' && (laCo(r.phanBo) ? 'Chi phí phân bổ nhiều kỳ' : laCo(r.chiPhi) ? 'Chi phí trong kỳ' : '')].filter(Boolean).join(' · ')   // T700
                   : laHangHoa
                   ? `Đơn vị tính chính: ${r.dvt || 'Cái'}`
                   : (r.nhom ? `Nhóm: ${r.nhom}` : r.dvt ? `ĐVT: ${r.dvt}` : (r.mst ? `MST: ${r.mst}` : ''))}
@@ -692,7 +692,7 @@ export const MDanhMuc: FC<ScreenProps> = ({ sc }) => {
                 </div>
                 {xemLyDo.dung === 'Chi tiền' && (
                   <div className="m-xp-dong-tt">
-                    <span className="m-xp-nhan">Là chi phí:</span>
+                    <span className="m-xp-nhan">Chi phí trong kỳ:</span>
                     <span className="m-xp-tri dam">
                       {laCo(xemLyDo.chiPhi) ? 'Có' : 'Không'}
                     </span>

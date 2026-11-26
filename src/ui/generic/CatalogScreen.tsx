@@ -1086,7 +1086,7 @@ export function CatalogPanel({
                 if (tr.kieu === 'tich') {
                   // Ô tích mặc định chiếm cả hàng; caHang: false thì nằm cùng hàng với ô khác
                   return (
-                    <div className={tr.caHang === false ? 'f pn-tich-o' : 'f pn-hang-dai'} key={tr.k}>
+                    <div className={`${tr.caHang === false ? 'f pn-tich-o' : 'f pn-hang-dai'}${tr.lop ? ' ' + tr.lop : ''}`} key={tr.k}>
                       <label className="row pn-tich">
                         <input
                           type="checkbox"
@@ -1107,7 +1107,7 @@ export function CatalogPanel({
                   )
                 }
 
-                const chon = tr.kieu === 'chon' ? getOptions(tr) : []
+                const chon = tr.kieu === 'chon' ? (tr.dsTheoForm ? [{ v: '', t: `(Chọn ${thuongDau(tr.nhan)})` }, ...tr.dsTheoForm(formVal).map(d => ({ v: d, t: d }))] : getOptions(tr)) : []
                 // giá trị của dòng không có trong danh sách chọn thì thêm vào cuối, ô chọn khỏi bị trống
                 const gt = String(formVal[tr.k] ?? '')
                 const opts = gt && !chon.some(o => o.v === gt) ? [...chon, { v: gt, t: gt }] : chon

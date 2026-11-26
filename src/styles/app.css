@@ -5285,7 +5285,7 @@ table.tbl {
 .pb-o.pn-tien { text-align: right; }
 .tbl tr.pb-ngung td { color: var(--faint); background: var(--soft); }
 /* Ô tích nằm cùng hàng ô nhập: canh giữa theo chiều cao ô nhập */
-.pn-luoi .pn-tich-o { align-self: end; min-height: 32px; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; }
+.pn-luoi .pn-tich-o { align-self: end; min-height: 36px; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; }
 
 /* ── Mẫu sổ và báo cáo TT58 (T108) ── */
 .rpt thead th[colspan] {
@@ -50379,3 +50379,6 @@ td.xdl-cat > span { display: block; overflow: hidden; text-overflow: ellipsis; w
 .pn-mst .icon-btn { position: absolute; right: 4px; top: 50%; transform: translateY(-50%); width: 30px; height: 30px; color: var(--blue); }
 .pn-mst-tt { display: block; font-size: 12.5px; color: var(--green); margin-top: 4px; }
 .pn-mst-tt.loi { color: var(--red); }
+
+/* ── Lý do nghiệp vụ Pro: ô tích Chi phí phân bổ nhiều kỳ ngang hàng nhãn Tài khoản chi phí trả trước ── */
+.pn-luoi .pn-tich-o.pn-ld-ngang-nhan { align-self: start; min-height: 20px; }

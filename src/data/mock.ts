@@ -225,6 +225,11 @@ export const NHOM_LY_DO = [
   { ma: 'NLD04', dung: 'Chi tiền', ten: 'Chi phí dịch vụ mua ngoài như điện, nước, điện thoại, internet, vận chuyển, thuê tài sản, sửa chữa, bảo dưỡng' },
   { ma: 'NLD05', dung: 'Chi tiền', ten: 'Chi phí trả lãi tiền vay vốn sản xuất, kinh doanh của tổ chức tín dụng theo lãi suất thực tế. Chi phí trả lãi tiền vay vốn sản xuất, kinh doanh của đối tượng không phải là tổ chức tín dụng không vượt quá mức quy định tại Bộ luật Dân sự' },
   { ma: 'NLD06', dung: 'Chi tiền', ten: 'Các khoản chi khác phục vụ trực tiếp hoạt động sản xuất, kinh doanh' },
+  // Nhóm cho lý do còn lại: tên tạm, chờ Trum chốt (lý do nào cũng có nhóm)
+  { ma: 'NLD07', dung: 'Chi tiền', ten: 'Chi không phải chi phí (thanh toán công nợ, vay, tạm ứng, mua tài sản)' },
+  { ma: 'NLD08', dung: 'Thu tiền', ten: 'Thu tiền' },
+  { ma: 'NLD09', dung: 'Nhập kho', ten: 'Nhập kho' },
+  { ma: 'NLD10', dung: 'Xuất kho', ten: 'Xuất kho' },
 ]
 /** Tự xếp lý do là chi phí vào nhóm theo tên lý do, trả tên nhóm (T473); không khớp nhóm nào thì vào Các khoản chi khác (NLD06) */
 export function nhomLyTuDong(ten: string): string {
@@ -237,11 +242,26 @@ export function nhomLyTuDong(ten: string): string {
     : 'NLD06'
   return NHOM_LY_DO.find(n => n.ma === ma)!.ten
 }
+/** Nhóm mặc định của lý do: chi phí (tích Chi phí trong kỳ hoặc phân bổ nhiều kỳ) tự xếp vào 6 nhóm chi phí; chi tiền còn lại, thu, nhập kho, xuất kho vào nhóm riêng */
+export function nhomMacDinh(ten: string, dung: string, laChiPhi: boolean): string {
+  if (dung === 'Chi tiền' && laChiPhi) return nhomLyTuDong(ten)
+  const ma = dung === 'Chi tiền' ? 'NLD07' : dung === 'Thu tiền' ? 'NLD08' : dung === 'Nhập kho' ? 'NLD09' : dung === 'Xuất kho' ? 'NLD10' : ''
+  return NHOM_LY_DO.find(n => n.ma === ma)?.ten ?? ''
+}
+/** Các nhóm chọn được cho một lý do: chi phí chọn trong 6 nhóm chi phí (NLD01 đến NLD06), loại khác chọn nhóm cùng Dùng cho */
+export function dsNhomChoLyDo(v: Record<string, any>): string[] {
+  const tich = (x: unknown) => x === 1 || x === true || x === '1'
+  const dung = String(v.dung ?? '')
+  if (dung === 'Chi tiền') return NHOM_LY_DO.filter(n => tich(v.chiPhi) || tich(v.phanBo) ? n.ma <= 'NLD06' : n.ma === 'NLD07').map(n => n.ten)
+  return NHOM_LY_DO.filter(n => n.dung === dung).map(n => n.ten)
+}
 /** Mã lý do Chi phí chờ phân bổ: phiếu chi lý do này sinh thẻ chi phí phân bổ; sơ đồ Chi phí phân bổ mở phiếu chi với ?ly=mã này */
 export const MA_LY_CHO_PHAN_BO = 'CHI35'
 /** Lý do mặc định tích Chi phí phân bổ nhiều kỳ: Chi phí chờ phân bổ, Chi tiền thuê nhà; loại trừ với Là chi phí (T700) */
 const LY_PHAN_BO = [MA_LY_CHO_PHAN_BO, 'CHI14']
 /** Tài khoản của lý do nghiệp vụ gói Pro (số hiệu TT133); lý do chưa khai thì chi tiền lấy 6422, loại khác để trống */
+/** Tài khoản chi phí trả trước mặc định của lý do Chi phí phân bổ nhiều kỳ (gói Pro): phiếu chi hạch toán Nợ tài khoản này, khi phân bổ mới Nợ tài khoản chi phí của lý do, Có tài khoản này */
+export const TK_TRA_TRUOC = '242'
 export const TK_LY_DO: Record<string, string> = {
   'Thu tiền bán hàng': '5111', 'Thu Nợ': '131', 'Thu tiền hoàn ứng của nhân viên': '141', 'Thu khác': '711',
   'Chi phí nguyên liệu phụ': '152', 'Thanh toán tiền cho nhà cung cấp': '331', 'Thanh Toán Công Nợ Nhà Cung Cấp': '331',
@@ -302,7 +322,7 @@ export const LY_DO = [
 // nguon: lý do có sẵn đồng bộ từ FABi, không xoá, chỉ sửa các ô tích; lý do người dùng thêm là Thủ công (T708)
 ].map(([ma, ten, dung]) => {
   const phanBo = LY_PHAN_BO.includes(ma), chiPhi = !phanBo && LY_LA_CHI_PHI.includes(ma)
-  return { ma, ten, dung, nguon: 'FABi', tk: TK_LY_DO[ten] ?? (dung === 'Chi tiền' ? '6422' : ''), chiPhi, phanBo, nhomCp: chiPhi ? nhomLyTuDong(ten) : '' }
+  return { ma, ten, dung, nguon: 'FABi', tk: TK_LY_DO[ten] ?? (dung === 'Chi tiền' ? '6422' : ''), tkTraTruoc: phanBo ? TK_TRA_TRUOC : '', chiPhi, phanBo, nhomCp: nhomMacDinh(ten, dung, chiPhi || phanBo) }
 })
 /** Tên lý do thu, chi bắt buộc chọn đối tượng: Thu nợ, Đi vay, Thanh toán công nợ nhà cung cấp, Cho vay; lý do khác để trống được (T330) */
 export const LY_CAN_DOI_TUONG = LY_DO.filter(x => ['THU02', 'THU10', 'CHI02', 'CHI34'].includes(x.ma)).map(x => x.ten)
@@ -319,7 +339,7 @@ export function ganLyDo<R extends { ma?: unknown }>(r: R, s: Pick<Session, 'donV
 export function luuLyDo(v: Record<string, unknown>, s: Session): Partial<Session> {
   if (!v._sua || !v.ma) return {}
   const tich = (x: unknown) => x === 1 || x === true || x === '1' ? 1 : 0
-  const cua = { ...s.lyDoGhiDe?.[s.donVi], [String(v.ma)]: { chiPhi: tich(v.chiPhi), phanBo: tich(v.phanBo), nhomCp: String(v.nhomCp ?? ''), tk: String(v.tk ?? '') } }
+  const cua = { ...s.lyDoGhiDe?.[s.donVi], [String(v.ma)]: { chiPhi: tich(v.chiPhi), phanBo: tich(v.phanBo), nhomCp: String(v.nhomCp ?? ''), tk: String(v.tk ?? ''), tkTraTruoc: tich(v.phanBo) ? String(v.tkTraTruoc ?? '') : '' } }
   return { lyDoGhiDe: { ...s.lyDoGhiDe, [s.donVi]: cua } }
 }
 
