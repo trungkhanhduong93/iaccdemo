@@ -1277,3 +1277,13 @@ Trum chốt khi duyệt thiết kế T945.
 - Không cần phiếu kiểm kê cuối tháng mới chốt chi phí. Bỏ chữ "Tạm tính", "chốt khi có phiếu kiểm kê".
 - Bỏ QD115: tháng đã qua chưa kiểm kê vẫn tính chi phí cửa hàng đó, bỏ cảnh báo chưa kiểm kê và nút Chốt theo tồn hệ thống ở màn Chi phí NVL.
 - Màn Chi phí NVL và Chi phí hoạt động (mở từ Trang chủ) dùng chung khuôn: thẻ tổng có mục Cách tính gồm ô cố định, dưới là bảng như cũ, không thanh tiến trình. Chi phí hoạt động: Chi tiền mặt + Chi ngân hàng, không liệt kê theo lý do ở thẻ tổng.
+
+## QD119. Bản Pro: ô chọn tài khoản chỉ lấy tài khoản chi tiết (26/11/2026)
+
+Trum chốt, kèm ảnh form Sửa Nhóm hàng hoá (Ngầm định cho hàng hoá: TK kho, TK doanh thu, TK giá vốn, TK hàng bán trả lại).
+
+- Bản Pro, mọi danh mục và chứng từ có ô chọn tài khoản: danh sách thả xuống chỉ hiện tài khoản chi tiết, tức tài khoản không tích Tổng hợp. Tài khoản tổng hợp không hiện trong danh sách (ô tìm "155" chỉ ra 1551, 1557 nếu 155 là tổng hợp).
+- Lưu mà tài khoản đã chọn là tài khoản tổng hợp (dữ liệu cũ, nhập tay, sao chép) thì báo lỗi, không lưu. Kiểm cả lúc Lưu, Lưu và thêm, Ghi sổ, không chỉ lọc ở ô chọn.
+- Áp cho mọi màn hình có ô tài khoản, không chừa màn nào. Màn nào được phép dùng tài khoản tổng hợp thì Trum báo riêng, ghi thêm QD mới ("thay QD119 cho màn X"), agent không tự suy ra.
+- Phạm vi: bản Pro (hạch toán). Gói Free không hạch toán nên không có ô tài khoản (QD32).
+- Cách làm: dùng chung một hàm lọc và một hàm kiểm tài khoản chi tiết, không viết lọc riêng từng màn. Màn mới có ô tài khoản phải dùng hàm đó.

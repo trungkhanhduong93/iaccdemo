@@ -59,6 +59,7 @@ Mỗi lần agent gọi công cụ, cả cuộc trò chuyện được gửi l�
 
 - Sửa đúng chỗ cần sửa. Không viết lại cả file, không sửa thứ ngoài việc đang làm. Thấy lỗi khác thì ghi vào `docs/TIEN-DO.md` thành việc mới.
 - Làm theo quy ước trong `docs/KIEN-TRUC.md`.
+- Bản Pro: ô chọn tài khoản ở mọi danh mục, chứng từ chỉ lấy tài khoản chi tiết (không tích Tổng hợp); lưu tài khoản tổng hợp thì báo lỗi (QD119). Màn nào được dùng tài khoản tổng hợp thì Trum báo riêng.
 - Gặp lỗi mất hơn 15 phút mới ra nguyên nhân thì ghi vào `docs/BAY.md`: hiện tượng, nguyên nhân, cách tránh.
 - Trum chốt điều mới về bố cục, nghiệp vụ, thư viện hay cách làm việc thì ghi vào `docs/QUYET-DINH.md`.
 - Thêm CSS mới thì gom vào một mục riêng ở cuối `src/styles/app.css`, tiêu đề có mã việc, vd `/* ── Thanh lọc theo iFaster (T34) ── */`. Hai việc cùng thêm cuối file thì gộp bằng cách giữ cả hai mục.
