@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T949 | Danh sách Chứng từ tổng hợp (10.1.1) bản Pro liệt kê bút toán của mọi phân hệ, mỗi cặp Nợ/Có 2 dòng, cột Số tiền nợ, Số tiền có, Đối tượng, Công việc, Thành phẩm, VTHH nợ/có, Tính chất DEB/CRD, dòng tổng, gom nhóm, Bộ lọc nâng cao | dinhlanphuongipacc | 27/11/2026 | [nhật ký](../nhat-ky/2026-11-27-dinhlanphuongipacc-ds-but-toan-pro.md) |
 | T948 | Phiếu thu chi bản Pro: TK Nợ, TK Có theo quỹ, lý do, đối tượng; cột chi tiết Đối tượng, Công việc, Thành phẩm, VTHH theo cặp Nợ, Có; Tuỳ chọn chung Lý do hiển thị đầu phiếu; cột Số tiền | dinhlanphuongipacc | 27/11/2026 | [nhật ký](../nhat-ky/2026-11-27-dinhlanphuongipacc-thu-chi-pro-tai-khoan-no-co.md) |
 | T333 | Đổi chữ "map" thành "gán" khi nói về phương thức thanh toán và quỹ (Khoá sổ, Danh mục Quỹ tiền, Danh mục cửa hàng) | dinhlanphuongipacc | 26/11/2026 | [nhật ký](../nhat-ky/2026-11-26-dinhlanphuongipacc-xoa-chuyen-cua-hang-cong-ty.md) |
 | T946 | Danh mục cửa hàng, hộp Chi tiết cửa hàng: nút X ở combo Công ty bỏ trống công ty, đổi công ty bấm Lưu mới hỏi xác nhận; xoá hay chuyển đều xoá chứng từ đã phát sinh ở công ty cũ, cửa hàng rời danh mục, đã khoá sổ thì chặn | dinhlanphuongipacc | 26/11/2026 | [nhật ký](../nhat-ky/2026-11-26-dinhlanphuongipacc-xoa-chuyen-cua-hang-cong-ty.md) |

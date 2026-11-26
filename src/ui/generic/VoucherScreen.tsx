@@ -35,6 +35,7 @@ import { boO, nhomCua, theoLoai, TT_HD, TT_TIEN } from './nhom'
 import { BangKiemKe } from './BangKiemKe'
 import { BangSua } from './BangSua'
 import { ChungTuForm, HachToan, LichSu, VoucherDetail, lyDoKhongXoaTheCuaPhieu, lyMacDinh, xoaTheCuaPhieu } from './ChungTuForm'
+import { DanhSachButToan } from './DanhSachButToan'
 import { HopInChungTu, type PhieuIn } from '../bao-cao/InChungTu'
 
 /** Ngày tạo, người tạo (T132): phiếu lưu trong phiên có sẵn; phiếu mẫu đồng bộ từ phần mềm khác do Hệ thống tạo lúc đồng bộ,
@@ -244,6 +245,7 @@ export function VoucherScreen({ sc, mod }: ScreenProps) {
   const { id } = useParams()
   const loc = useLocation()
   const { cfg, rows } = useDongChungTu(sc, mod)
+  const { s } = useSession()
 
   if (id !== undefined) {
     const row = id === 'moi' ? undefined : rows.find(r => r.id === id)
@@ -252,6 +254,7 @@ export function VoucherScreen({ sc, mod }: ScreenProps) {
 
   // Lọc mở từ đường dẫn (?lyDo=, ?thang=) đọc lúc dựng danh sách: đổi hai tham số này khi đang ở danh sách thì dựng lại để lọc đúng (T483)
   const q = new URLSearchParams(loc.search)
+  if (sc.code === '10.1.1' && s.goi === 'PR') return <DanhSachButToan sc={sc} mod={mod} />   // Pro: danh sách bút toán Nợ/Có của mọi chứng từ
   return <VoucherList key={`${q.get('lyDo') ?? ''}|${q.get('thang') ?? ''}`} sc={sc} mod={mod} cfg={cfg} rows={rows} />
 }
 
