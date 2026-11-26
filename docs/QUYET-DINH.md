@@ -1247,6 +1247,8 @@ Trum chốt 21/11/2026 (T897, T898, T899).
 
 ## QD115. Cảnh báo kiểm kê cuối tháng và chốt theo tồn hệ thống (23/11/2026)
 
+Bỏ từ 26/11/2026, thay bằng QD118.
+
 Trum chốt 23/11/2026 (T902). Bản vẽ `backup/mau-T902/ban-ve.html`, spec `backup/spec-T902.md`.
 
 - Áp khi chi phí NVL tính theo kiểm kê định kỳ. Tháng đã qua, chưa khoá sổ mà còn cửa hàng chưa có phiếu kiểm kê thì cảnh báo ở màn Chi phí NVL (web, điện thoại) và ở bước Kiểm kê cuối tháng của hộp Khoá sổ. Tháng đang chạy chỉ ghi chú "tạm tính".
@@ -1266,3 +1268,12 @@ Trum chốt khi làm T940.
 - Mã danh mục đã tạo không xoá được. Ngừng dùng thì tắt Đang sử dụng.
 - Áp cho mọi danh mục, web và điện thoại. Lý do nghiệp vụ, Bảng giá bỏ nút Xoá, Bảng giá thêm công tắc Đang sử dụng.
 - Thẻ chi phí phân bổ là thẻ, không thuộc luật này.
+
+## QD118. Chi phí NVL tính theo báo cáo nhập xuất tồn, không chờ kiểm kê (26/11/2026)
+
+Trum chốt khi duyệt thiết kế T945.
+
+- Chi phí NVL = Tồn đầu kỳ + Mua trong tháng − Tồn cuối kỳ, khớp số xuất trên báo cáo nhập xuất tồn. Xem lúc nào trong tháng cũng ra số tới thời điểm xem.
+- Không cần phiếu kiểm kê cuối tháng mới chốt chi phí. Bỏ chữ "Tạm tính", "chốt khi có phiếu kiểm kê".
+- Bỏ QD115: tháng đã qua chưa kiểm kê vẫn tính chi phí cửa hàng đó, bỏ cảnh báo chưa kiểm kê và nút Chốt theo tồn hệ thống ở màn Chi phí NVL.
+- Màn Chi phí NVL và Chi phí hoạt động (mở từ Trang chủ) dùng chung khuôn: thẻ tổng có mục Cách tính gồm ô cố định, dưới là bảng như cũ, không thanh tiến trình. Chi phí hoạt động: Chi tiền mặt + Chi ngân hàng, không liệt kê theo lý do ở thẻ tổng.
