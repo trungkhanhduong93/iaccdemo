@@ -29,7 +29,7 @@ const tienIch: ModuleDef = {
       caiDat: [['Ngân hàng', 'Vietcombank, Techcombank'], ['Lịch tải', 'Mỗi giờ']],
       nhatKy: [['07/10/2026 14:00', '86 giao dịch, khớp 81', 'Còn 5 chờ khớp'], ['07/10/2026 13:00', '42 giao dịch, khớp 42', 'Xong']] } },
     '11.9': { tool: { nut: 'Kiểm tra kết nối', mota: 'Nộp tờ khai, tra cứu thông báo, tra trạng thái hoá đơn trực tiếp với cơ quan thuế, không phải đăng nhập cổng thuế riêng.',
-      caiDat: [['Mã số thuế', '0319 990 001'], ['Chữ ký số', 'Đã gắn, hạn 12/2027']] } },
+      caiDat: [['Mã số thuế', '0319990001'], ['Chữ ký số', 'Đã gắn, hạn 12/2027']] } },
     '11.10': { tool: { nut: 'Thử quét hoá đơn', mota: 'Chụp hoá đơn giấy hoặc nói "chi 450 nghìn mua rau chợ Bến Thành" để AI lập phiếu nháp kèm định khoản gợi ý. Kế toán xem lại rồi mới lưu.',
       caiDat: [['Ngôn ngữ', 'Tiếng Việt'], ['Tự lưu khi tin cậy trên', 'Không tự lưu']] } },
     '11.11': { kind: 'custom', comp: ThietKeMauIn },

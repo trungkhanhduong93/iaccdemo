@@ -82,6 +82,7 @@ export interface TruongDM {
   kieu: KieuTruong
   batBuoc?: boolean
   caHang?: boolean
+  traMst?: boolean                             // ô Mã số thuế có kính lúp tra cứu: điền Tên, Địa chỉ, hiện Trạng thái MST
   oVuong?: boolean                             // kiểu tich vẽ ô vuông thay cho nút bật tắt (T751)
   ds?: string[]
   dsGoi?: Partial<Record<Goi, string[]>>       // danh sách chọn riêng theo gói, thay cho ds (T605)
@@ -121,6 +122,7 @@ export interface KhoiDM {
   ve?: (v: Record<string, any>, doi: (k: string, val: unknown) => void, xem: boolean) => ReactNode   // khối vẽ riêng (vd Thông tin mua: ô nhập, hoặc chỉ xem khi lấy từ phiếu gốc); xem: form đang ở chế độ xem (T284)
   anDau?: boolean    // không vẽ thanh tiêu đề khối, khối luôn mở, nhường chỗ cho lưới bên dưới (T165)
   congTac?: string   // khoá ô tích hiện thành công tắc ở đầu khối, vd '_tt' trạng thái (T154)
+  dongMacDinh?: boolean // khối đóng sẵn khi mở form, người dùng bấm tiêu đề để mở
   khongGap?: boolean // khối luôn mở, không có nút gập ở đầu khối
   chiKhiXem?: boolean // khối chỉ hiện khi mở dòng có sẵn, ẩn khi thêm mới, vd Thông tin hệ thống
   chonDau?: { k: string; ds: string[] }   // nhóm nút chọn tròn ngay cạnh tên khối, vd Tổ chức / Cá nhân của đối tượng (T471)
@@ -390,15 +392,16 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
     khoi: [
       {
         ten: 'Thông tin chung',
-        // Tổ chức hay cá nhân là nút chọn cạnh tên khối (T471): tổ chức bắt buộc MST/CCCD chủ hộ, cá nhân điền CCCD
+        // Tổ chức hay cá nhân là nút chọn cạnh tên khối (T471): MST/CCCD chủ hộ không bắt buộc (bỏ bắt buộc theo yêu cầu), cá nhân điền CCCD
         chonDau: { k: 'kieuDt', ds: ['Tổ chức', 'Cá nhân'] },
         truong: [
-          { k: 'mst', nhan: 'MST/CCCD chủ hộ', kieu: 'chu', batBuoc: true, hien: v => v.kieuDt !== 'Cá nhân', cot: 'TAX_FILE_NUMBER' },
+          { k: 'mst', nhan: 'MST/CCCD chủ hộ', kieu: 'chu', hien: v => v.kieuDt !== 'Cá nhân', cot: 'TAX_FILE_NUMBER', traMst: true },   // kính lúp tra MST: điền tên, địa chỉ, hiện trạng thái MST
           { k: 'cccd', nhan: 'CCCD', kieu: 'chu', hien: v => v.kieuDt === 'Cá nhân' },
           { k: 'ma', nhan: 'Mã đối tượng', kieu: 'chu', batBuoc: true, cot: 'PR_DETAIL_ID' },
           { k: 'ten', nhan: 'Tên đối tượng', kieu: 'chu', batBuoc: true, caHang: true, cot: 'PR_DETAIL_NAME' },
-          { k: 'loai', nhan: 'Loại đối tượng', kieu: 'chon', ds: ['Khách hàng', 'Nhà cung cấp', 'Nhân viên'], batBuoc: true, cot: 'PR_DETAIL_TYPE_ID' },   // gói Free mở lại Khách hàng (T501, bỏ T470)
+          { k: 'loai', nhan: 'Loại đối tượng', kieu: 'chon', ds: ['Khách hàng', 'Nhà cung cấp', 'Nhân viên', 'Phòng ban', 'Khác'], batBuoc: true, cot: 'PR_DETAIL_TYPE_ID' },   // gói Free mở lại Khách hàng (T501, bỏ T470)
           { k: 'nhom', nhan: 'Nhóm đối tượng', kieu: 'chon', ds: TEN_NHOM_DOI_TUONG, cot: 'PR_DETAIL_CLASS_ID' },
+          { k: 'tkCn', nhan: 'TK công nợ', kieu: 'chon', cot: 'PR_ACCOUNT_ID', goi: ['PR'], cheDo: ['TT133', 'TT99'] },   // cùng hàng với Nhóm đối tượng; gói Standard, Plus ẩn (T180), TK chỉ dùng ở TT133, TT99 (T147)
         ],
       },
       {
@@ -407,27 +410,17 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
           { k: 'diaChi', nhan: 'Địa chỉ', kieu: 'chu', caHang: true, cot: 'ADDRESS' },
           { k: 'tinhThanh', nhan: 'Tỉnh / Thành phố', kieu: 'chu', cot: 'PROVINCE_ID' },
           { k: 'dienThoai', nhan: 'Điện thoại', kieu: 'chu', cot: 'PHONE' },
-          { k: 'fax', nhan: 'Fax', kieu: 'chu', cot: 'FAX' },
           { k: 'email', nhan: 'Email', kieu: 'chu', cot: 'EMAIL' },
         ],
       },
       {
         ten: 'Ngân hàng',
+        dongMacDinh: true,   // khai khi cần, người dùng tự mở
         truong: [
           { k: 'nganHang', nhan: 'Ngân hàng', kieu: 'chu', cot: 'BANK_NAME' },
           { k: 'chiNhanhNh', nhan: 'Chi nhánh ngân hàng', kieu: 'chu', cot: 'BANK_BRANCH' },
           { k: 'soTkNh', nhan: 'Số tài khoản ngân hàng', kieu: 'chu', cot: 'BANK_ACCOUNT' },
           { k: 'chuTk', nhan: 'Chủ tài khoản', kieu: 'chu', cot: 'BANK_ACCOUNT_HOLDER' },
-          { k: 'soThe', nhan: 'Số thẻ', kieu: 'chu', cot: 'BANK_CARD_NO', goi: ['PR'] },   // gói Standard, Plus ẩn (T180)
-        ],
-      },
-      {
-        ten: 'Công nợ',
-        goi: ['PR'],   // gói Standard, Plus ẩn (T180)
-        truong: [
-          { k: 'tkCn', nhan: 'TK công nợ', kieu: 'chon', cot: 'PR_ACCOUNT_ID', cheDo: ['TT133', 'TT99'] },   // TK chỉ dùng ở TT133, TT99 (T147)
-          { k: 'bangGia', nhan: 'Bảng giá', kieu: 'chu', cot: 'PRICE_LEVEL_ID' },
-          { k: 'dktt', nhan: 'Điều khoản thanh toán', kieu: 'chu', caHang: true, cot: 'PAYMENT_TERM_ID' },
         ],
       },
       {

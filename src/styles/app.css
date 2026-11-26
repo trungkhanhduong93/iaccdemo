@@ -50373,3 +50373,9 @@ td.xdl-cat > span { display: block; overflow: hidden; text-overflow: ellipsis; w
 .tk-cong-tac .tk-sai { color: var(--amber); }
 .tk-row-sai { box-shadow: inset 3px 0 0 var(--amber); }
 
+/* ── Danh mục Đối tượng: kính lúp tra cứu MST, trạng thái MST (T-doi-tuong-mst) ── */
+.pn-mst { position: relative; display: block; min-width: 0; }
+.pn-mst .inp { width: 100%; padding-right: 38px; }
+.pn-mst .icon-btn { position: absolute; right: 4px; top: 50%; transform: translateY(-50%); width: 30px; height: 30px; color: var(--blue); }
+.pn-mst-tt { display: block; font-size: 12.5px; color: var(--green); margin-top: 4px; }
+.pn-mst-tt.loi { color: var(--red); }

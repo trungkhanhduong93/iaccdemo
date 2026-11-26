@@ -491,7 +491,7 @@ export function OnboardFabi() {
                       <div className="form-grid">
                         <div className="f c2">{n.loai === 'hkd' ? <label>CCCD/MST</label> : <label>Mã số thuế <em>*</em></label>}
                           <div className="row"><input className="inp" value={n.mst} placeholder={n.loai === 'hkd' ? 'Nhập CCCD hoặc mã số thuế' : 'Nhập mã số thuế'} onChange={e => sua({ mst: e.target.value })} />
-                            <button className="btn" onClick={() => sua({ traCuu: true, mst: n.mst || '0319 990 088',   // kết quả tra cứu mẫu, khác 3 đơn vị mẫu
+                            <button className="btn" onClick={() => sua({ traCuu: true, mst: n.mst || '0319990088',   // kết quả tra cứu mẫu, khác 3 đơn vị mẫu
                               tenDv: n.loai === 'hkd' ? 'Hộ kinh doanh Nhà hàng Phố Mây' : 'Công ty TNHH Nhà hàng Phố Mây', diaChi: '24 Nguyễn Huệ, phường Sài Gòn, TP.HCM' })}>Tra cứu</button></div>
                         </div>
                         <div className="f c2"><label>{n.loai === 'hkd' ? 'Tên hộ kinh doanh' : 'Tên công ty'} <em>*</em></label><input className="inp" value={n.tenDv} onChange={e => sua({ tenDv: e.target.value })} /></div>
@@ -686,7 +686,7 @@ export function OnboardFabi() {
                         <div className="form-grid">
                           <div className="f c2">{n.loai === 'hkd' ? <label>CCCD/MST{n.thue && <> <em>*</em></>}</label> : <label>Mã số thuế <em>*</em></label>}
                             <div className="row"><input className="inp" value={n.mst} placeholder={n.loai === 'hkd' ? 'Nhập CCCD hoặc mã số thuế' : 'Nhập mã số thuế'} onChange={e => sua({ mst: e.target.value })} />
-                              <button className="btn" onClick={() => sua({ traCuu: true, mst: n.mst || '0319 990 088',   // kết quả tra cứu mẫu, khác 3 đơn vị mẫu
+                              <button className="btn" onClick={() => sua({ traCuu: true, mst: n.mst || '0319990088',   // kết quả tra cứu mẫu, khác 3 đơn vị mẫu
                                 tenDv: n.loai === 'hkd' ? 'Hộ kinh doanh Nhà hàng Phố Mây' : 'Công ty TNHH Nhà hàng Phố Mây', diaChi: '24 Nguyễn Huệ, phường Sài Gòn, TP.HCM' })}>Tra cứu</button></div>
                           </div>
                           {!n.thue && (   // từ FABi: ngày đầu năm đã tự đặt lúc kết nối, sửa ở Cấu hình hệ thống

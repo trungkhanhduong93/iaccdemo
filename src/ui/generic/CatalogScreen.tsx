@@ -37,6 +37,7 @@ const HANG_LOAT = 'hang-loat'
 const COT_CO_DINH = new Set(['_stt', 'ma', 'ten', 'so'])
 import { TEN_DVT } from '../../modules/danh-muc/data'
 import { GoiYLapPhieu } from './GoiYLapPhieu'
+import { traCuuMstDm, locMst, locCccd } from '../../modules/danh-muc/tra-mst'
 import { HOM_NAY } from '../../data/mock'
 import { dmy } from '../format'
 import { addCatalogRow, suaCatalogRow, useAddedCatalogRows, sinhMaKeTiep, apGhiDe, useCatalogVersion, useDanhDauNhap } from './danhMucStore'
@@ -897,8 +898,8 @@ export function CatalogPanel({
   const hienO = (tr: TruongDM) => (!tr.goi || tr.goi.includes(s.goi)) && (!tr.cheDo || tr.cheDo.includes(s.cheDo)) && hopPp(tr.pp, s) && (!tr.hien || tr.hien(formVal))
   // Nút phụ ở chân panel theo màn (vd Áp cho hàng hoá trong nhóm, T136)
   const nutPhu = typeof nutChanPhu === 'function' ? nutChanPhu(formVal) : nutChanPhu
-  const isMo = (tenK: string) => moKhoi[tenK] !== false
-  const toggleKhoi = (tenK: string) => setMoKhoi(m => ({ ...m, [tenK]: !isMo(tenK) }))
+  const isMo = (tenK: string, dong?: boolean) => moKhoi[tenK] ?? !dong   // dong: khối đóng sẵn khi mở form, người dùng tự mở
+  const toggleKhoi = (tenK: string, dong?: boolean) => setMoKhoi(m => ({ ...m, [tenK]: !isMo(tenK, dong) }))
 
   // Gõ một ô: ghi giá trị rồi cho cấu hình tự tính các ô phụ thuộc
   const doiO = (k: string, val: unknown) => {
@@ -919,6 +920,14 @@ export function CatalogPanel({
       }
     }
     setFormVal(m)
+  }
+
+  // Kính lúp ô MST: điền Tên đối tượng, Địa chỉ, hiện Trạng thái MST; sai dạng thì báo lỗi
+  const traMstO = (k: string) => {
+    const kq = traCuuMstDm(String(formVal[k] ?? ''))
+    setFormVal(m => kq
+      ? { ...m, ten: kq.ten, diaChi: kq.diaChi, _ttMst: kq.trangThai, _loiMst: '' }
+      : { ...m, _ttMst: '', _loiMst: 'Mã số thuế gồm số và dấu -, dài 10, 12 hoặc 14 ký tự' })
   }
 
   const handleLuu = (themTiep: boolean) => {
@@ -1038,10 +1047,10 @@ export function CatalogPanel({
   const veKhoi = (kh: KhoiDM) => {
     const truongHien = kh.truong.filter(hienO)
     if (!kh.bang && !kh.ve && truongHien.length === 0) return null
-    const mo = kh.anDau || kh.khongGap || isMo(kh.ten)
+    const mo = kh.anDau || kh.khongGap || isMo(kh.ten, kh.dongMacDinh)
     return (
       <div key={kh.ten} className={`pn-khoi${mo ? ' mo' : ''}${kh.anDau ? ' pn-an-dau' : ''}`}>
-        {!kh.anDau && <div className="pn-khoi-dau" onClick={() => !kh.khongGap && toggleKhoi(kh.ten)}>
+        {!kh.anDau && <div className="pn-khoi-dau" onClick={() => !kh.khongGap && toggleKhoi(kh.ten, kh.dongMacDinh)}>
           {/* Form toàn màn hình: mô tả nằm cạnh tên khối đầu, đầu form chỉ có nhãn cửa hàng như phiếu chi */}
           <span>{kh.ten}{cauHinh?.toanMan && cauHinh.moTa && kh === dsKhoi[0] && <small className="muted"> · {cauHinh.moTa}</small>}</span>
           {kh.chonDau && (
@@ -1169,6 +1178,28 @@ export function CatalogPanel({
                           setErrors(err => ({ ...err, [tr.k]: '' }))
                         }}
                       />
+                    ) : tr.traMst ? (
+                      // Kính lúp cuối ô Mã số thuế: trả về Tên đối tượng, Địa chỉ, Trạng thái MST
+                      <>
+                        <span className="pn-mst">
+                          <input
+                            className="inp"
+                            readOnly={isChiDoc}
+                            disabled={isChiDoc}
+                            value={formatGiaTri(tr, formVal[tr.k])}
+                            onChange={e => {
+                              if (isChiDoc) return
+                              setFormVal(m => ({ ...m, [tr.k]: locMst(e.target.value), _ttMst: '', _loiMst: '' }))
+                              setErrors(err => ({ ...err, [tr.k]: '' }))
+                            }}
+                            onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); traMstO(tr.k) } }}
+                          />
+                          {!isChiDoc && <button type="button" className="icon-btn" title="Tra cứu mã số thuế, lấy tên đối tượng, địa chỉ" aria-label="Tra cứu mã số thuế" onClick={() => traMstO(tr.k)}>
+                            <Icon n="search" className="ic sm" /></button>}
+                        </span>
+                        {formVal._ttMst && <small className={`pn-mst-tt${formVal._ttMst === 'Đang hoạt động' ? '' : ' loi'}`}>Trạng thái MST: {String(formVal._ttMst)}</small>}
+                        {formVal._loiMst && <small className="pn-mst-tt loi">{String(formVal._loiMst)}</small>}
+                      </>
                     ) : (
                       <input
                         className={`inp${tr.kieu === 'tien' ? ' pn-tien' : tr.kieu === 'so' ? ' pn-so' : ''}`}
@@ -1178,7 +1209,7 @@ export function CatalogPanel({
                         onChange={e => {
                           if (isChiDoc) return
                           // Ô mã danh mục luôn viết hoa (T597)
-                          doiO(tr.k, cauHinh?.soQuocTe && laSo(tr) ? nhapSoQT(e.target.value) : tr.k === 'ma' ? e.target.value.toUpperCase() : e.target.value)
+                          doiO(tr.k, cauHinh?.soQuocTe && laSo(tr) ? nhapSoQT(e.target.value) : tr.k === 'ma' ? e.target.value.toUpperCase() : tr.k === 'cccd' ? locCccd(e.target.value) : e.target.value)
                           setErrors(err => ({ ...err, [tr.k]: '' }))
                         }}
                       />

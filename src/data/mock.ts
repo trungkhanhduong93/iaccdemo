@@ -63,9 +63,9 @@ export const daKhoaSo = (ngay: unknown, ch?: unknown) => {
 
 export interface DonVi { id: string; ten: string; viettat: string; mst: string; goi: Goi; diaChi: string; diem: number; nguoiDaiDien: string }
 export const DON_VI: DonVi[] = [
-  { id: 'pm', ten: 'Công ty TNHH Ẩm thực Phố Mây', viettat: 'PM', mst: '0319 990 001', goi: 'PL', diaChi: '86 Lê Lợi, phường Sài Gòn, TP.HCM', diem: 3, nguoiDaiDien: 'Nguyễn Minh Anh' },
-  { id: 'tl', ten: 'Công ty CP Chuỗi Trà Lá', viettat: 'TL', mst: '0319 990 002', goi: 'PR', diaChi: '12 Nguyễn Văn Linh, phường Tân Hưng, TP.HCM', diem: 14, nguoiDaiDien: 'Nguyễn Minh Anh' },
-  { id: 'gn', ten: 'Hộ kinh doanh Cà phê Góc Nhỏ', viettat: 'GN', mst: '8090 112 233', goi: 'S', diaChi: '5 Hẻm 42 Trần Quang Khải, phường Tân Định, TP.HCM', diem: 1, nguoiDaiDien: 'Nguyễn Minh Anh' },
+  { id: 'pm', ten: 'Công ty TNHH Ẩm thực Phố Mây', viettat: 'PM', mst: '0319990001', goi: 'PL', diaChi: '86 Lê Lợi, phường Sài Gòn, TP.HCM', diem: 3, nguoiDaiDien: 'Nguyễn Minh Anh' },
+  { id: 'tl', ten: 'Công ty CP Chuỗi Trà Lá', viettat: 'TL', mst: '0319990002', goi: 'PR', diaChi: '12 Nguyễn Văn Linh, phường Tân Hưng, TP.HCM', diem: 14, nguoiDaiDien: 'Nguyễn Minh Anh' },
+  { id: 'gn', ten: 'Hộ kinh doanh Cà phê Góc Nhỏ', viettat: 'GN', mst: '8090112233', goi: 'S', diaChi: '5 Hẻm 42 Trần Quang Khải, phường Tân Định, TP.HCM', diem: 1, nguoiDaiDien: 'Nguyễn Minh Anh' },
 ]
 
 export interface CuaHang { id: string; posId?: string; ten: string; ngan: string; base: number; kho: string[] }
@@ -165,21 +165,21 @@ export const CCDC_HANG = [
 ]
 export const KHACH = [
   { ma: 'KL', ten: 'Khách lẻ POS', mst: '', nhom: 'Khách lẻ' },
-  { ma: 'KH001', ten: 'Công ty TNHH Giải pháp Sao Việt', mst: '0319 880 101', nhom: 'Khách công ty' },
-  { ma: 'KH002', ten: 'Công ty CP Du lịch Biển Xanh', mst: '0319 880 102', nhom: 'Khách công ty' },
-  { ma: 'KH003', ten: 'Văn phòng đại diện Hạ Long Tech', mst: '0319 880 103', nhom: 'Khách công ty' },
-  { ma: 'KH004', ten: 'Công ty TNHH Sự kiện Ánh Dương', mst: '0319 880 104', nhom: 'Khách công ty' },
-  { ma: 'GRAB', ten: 'GrabFood', mst: '0319 880 105', nhom: 'Sàn giao đồ ăn' },
-  { ma: 'SPF', ten: 'ShopeeFood', mst: '0319 880 106', nhom: 'Sàn giao đồ ăn' },
+  { ma: 'KH001', ten: 'Công ty TNHH Giải pháp Sao Việt', mst: '0319880101', nhom: 'Khách công ty' },
+  { ma: 'KH002', ten: 'Công ty CP Du lịch Biển Xanh', mst: '0319880102', nhom: 'Khách công ty' },
+  { ma: 'KH003', ten: 'Văn phòng đại diện Hạ Long Tech', mst: '0319880103', nhom: 'Khách công ty' },
+  { ma: 'KH004', ten: 'Công ty TNHH Sự kiện Ánh Dương', mst: '0319880104', nhom: 'Khách công ty' },
+  { ma: 'GRAB', ten: 'GrabFood', mst: '0319880105', nhom: 'Sàn giao đồ ăn' },
+  { ma: 'SPF', ten: 'ShopeeFood', mst: '0319880106', nhom: 'Sàn giao đồ ăn' },
 ]
 export const NCC = [
-  { ma: 'NCC001', ten: 'Công ty TNHH Thực phẩm Tươi An Phú', mst: '0319 770 201', nhom: 'Thịt, cá' },
-  { ma: 'NCC002', ten: 'Cơ sở bánh phở Bà Tư', mst: '8090 770 202', nhom: 'Tinh bột' },
-  { ma: 'NCC003', ten: 'Công ty CP Cà phê Cao Nguyên Xanh', mst: '0319 770 203', nhom: 'Pha chế' },
-  { ma: 'NCC004', ten: 'Công ty TNHH Nước giải khát Nam Bộ', mst: '0319 770 204', nhom: 'Bia, rượu' },
-  { ma: 'NCC005', ten: 'Hợp tác xã Rau sạch Củ Chi', mst: '0319 770 205', nhom: 'Rau củ' },
-  { ma: 'NCC006', ten: 'Công ty TNHH Thiết bị bếp Gia Phát', mst: '0319 770 206', nhom: 'Công cụ, thiết bị' },
-  { ma: 'NCC007', ten: 'Công ty Điện lực Sài Gòn', mst: '0319 770 207', nhom: 'Điện nước' },
+  { ma: 'NCC001', ten: 'Công ty TNHH Thực phẩm Tươi An Phú', mst: '0319770201', nhom: 'Thịt, cá' },
+  { ma: 'NCC002', ten: 'Cơ sở bánh phở Bà Tư', mst: '8090770202', nhom: 'Tinh bột' },
+  { ma: 'NCC003', ten: 'Công ty CP Cà phê Cao Nguyên Xanh', mst: '0319770203', nhom: 'Pha chế' },
+  { ma: 'NCC004', ten: 'Công ty TNHH Nước giải khát Nam Bộ', mst: '0319770204', nhom: 'Bia, rượu' },
+  { ma: 'NCC005', ten: 'Hợp tác xã Rau sạch Củ Chi', mst: '0319770205', nhom: 'Rau củ' },
+  { ma: 'NCC006', ten: 'Công ty TNHH Thiết bị bếp Gia Phát', mst: '0319770206', nhom: 'Công cụ, thiết bị' },
+  { ma: 'NCC007', ten: 'Công ty Điện lực Sài Gòn', mst: '0319770207', nhom: 'Điện nước' },
 ]
 export const NHAN_VIEN = [
   { ma: 'NV001', ten: 'Lê Quốc Bảo', bp: 'Kế toán' }, { ma: 'NV002', ten: 'Trần Thu Hà', bp: 'Kế toán' },
