@@ -12,7 +12,6 @@ const DS_TINH_CHAT: { v: TinhChatTk; t: string }[] = [
   { v: 'Dư Nợ', t: 'Dư Nợ' },
   { v: 'Dư Có', t: 'Dư Có' },
   { v: 'Lưỡng tính', t: 'Lưỡng tính' },
-  { v: 'Không số dư', t: 'Không số dư' },
 ]
 
 const DS_CAP = [1, 2, 3, 4, 5].map(c => ({ v: String(c), t: `Cấp ${c}` }))

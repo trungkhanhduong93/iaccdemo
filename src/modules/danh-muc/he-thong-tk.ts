@@ -2,10 +2,10 @@
 // TT133: theo phụ lục 1 Thông tư 133/2016/TT-BTC. TT99: dựng theo khung tài khoản Thông tư 200/2014/TT-BTC mà TT99/2025 thay thế,
 // chưa đối chiếu văn bản gốc TT99, chờ kế toán trưởng duyệt (T04). TT152, TT58 không có màn 1.1 (gói Free, Standard).
 // Mỗi dòng: "số|tên|tính chất". Tính chất bỏ trống thì lấy của tài khoản cha, không có cha thì theo đầu số:
-// 1, 2 Dư Nợ; 3, 4 Dư Có; 5 đến 9 Không số dư. N Dư Nợ, C Dư Có, L Lưỡng tính, K Không số dư.
+// 1, 2 Dư Nợ; 3, 4 Dư Có; 5, 7 Dư Có; 6, 8 Dư Nợ; 9 Lưỡng tính. N Dư Nợ, C Dư Có, L Lưỡng tính. Công nợ (131, 136, 138, 141, 331, 334, 336, 338) Lưỡng tính.
 import type { CheDo } from '../../app/che-do'
 
-export type TinhChatTk = 'Dư Nợ' | 'Dư Có' | 'Lưỡng tính' | 'Không số dư'
+export type TinhChatTk = 'Dư Nợ' | 'Dư Có' | 'Lưỡng tính'
 export interface TaiKhoanDef {
   so: string; ten: string; cap: number; cha?: string; laCha: boolean
   tinhChat: TinhChatTk; loai: string
@@ -28,14 +28,14 @@ const TT133 = `
 133|Thuế GTGT được khấu trừ
 1331|Thuế GTGT được khấu trừ của hàng hoá, dịch vụ
 1332|Thuế GTGT được khấu trừ của tài sản cố định
-136|Phải thu nội bộ
+136|Phải thu nội bộ|L
 1361|Vốn kinh doanh ở đơn vị trực thuộc
 1368|Phải thu nội bộ khác
 138|Phải thu khác|L
-1381|Tài sản thiếu chờ xử lý
+1381|Tài sản thiếu chờ xử lý|N
 1386|Cầm cố, thế chấp, ký quỹ, ký cược
 1388|Phải thu khác
-141|Tạm ứng
+141|Tạm ứng|L
 151|Hàng mua đang đi đường
 152|Nguyên liệu, vật liệu
 153|Công cụ, dụng cụ
@@ -81,9 +81,9 @@ const TT133 = `
 33381|Thuế bảo vệ môi trường
 33382|Các loại thuế khác
 3339|Phí, lệ phí và các khoản phải nộp khác
-334|Phải trả người lao động
+334|Phải trả người lao động|L
 335|Chi phí phải trả
-336|Phải trả nội bộ
+336|Phải trả nội bộ|L
 3361|Phải trả nội bộ về vốn kinh doanh
 3368|Phải trả nội bộ khác
 338|Phải trả, phải nộp khác|L
@@ -136,7 +136,7 @@ const TT133 = `
 711|Thu nhập khác
 811|Chi phí khác
 821|Chi phí thuế thu nhập doanh nghiệp
-911|Xác định kết quả kinh doanh
+911|Xác định kết quả kinh doanh|L
 `
 
 const TT99 = `
@@ -164,16 +164,16 @@ const TT99 = `
 133|Thuế GTGT được khấu trừ
 1331|Thuế GTGT được khấu trừ của hàng hoá, dịch vụ
 1332|Thuế GTGT được khấu trừ của tài sản cố định
-136|Phải thu nội bộ
+136|Phải thu nội bộ|L
 1361|Vốn kinh doanh ở đơn vị trực thuộc
 1362|Phải thu nội bộ về chênh lệch tỷ giá
 1363|Phải thu nội bộ về chi phí đi vay đủ điều kiện được vốn hoá
 1368|Phải thu nội bộ khác
 138|Phải thu khác|L
-1381|Tài sản thiếu chờ xử lý
+1381|Tài sản thiếu chờ xử lý|N
 1385|Phải thu về cổ phần hoá
 1388|Phải thu khác
-141|Tạm ứng
+141|Tạm ứng|L
 151|Hàng mua đang đi đường
 152|Nguyên liệu, vật liệu
 153|Công cụ, dụng cụ
@@ -251,11 +251,11 @@ const TT99 = `
 33381|Thuế bảo vệ môi trường
 33382|Các loại thuế khác
 3339|Phí, lệ phí và các khoản phải nộp khác
-334|Phải trả người lao động
+334|Phải trả người lao động|L
 3341|Phải trả công nhân viên
 3348|Phải trả người lao động khác
 335|Chi phí phải trả
-336|Phải trả nội bộ
+336|Phải trả nội bộ|L
 3361|Phải trả nội bộ về vốn kinh doanh
 3362|Phải trả nội bộ về chênh lệch tỷ giá
 3363|Phải trả nội bộ về chi phí đi vay đủ điều kiện được vốn hoá
@@ -321,7 +321,7 @@ const TT99 = `
 5117|Doanh thu kinh doanh bất động sản đầu tư
 5118|Doanh thu khác
 515|Doanh thu hoạt động tài chính
-521|Các khoản giảm trừ doanh thu
+521|Các khoản giảm trừ doanh thu|N
 5211|Chiết khấu thương mại
 5212|Hàng bán bị trả lại
 5213|Giảm giá hàng bán
@@ -363,15 +363,15 @@ const TT99 = `
 821|Chi phí thuế thu nhập doanh nghiệp
 8211|Chi phí thuế thu nhập doanh nghiệp hiện hành
 8212|Chi phí thuế thu nhập doanh nghiệp hoãn lại
-911|Xác định kết quả kinh doanh
+911|Xác định kết quả kinh doanh|L
 `
 
-const TC: Record<string, TinhChatTk> = { N: 'Dư Nợ', C: 'Dư Có', L: 'Lưỡng tính', K: 'Không số dư' }
+const TC: Record<string, TinhChatTk> = { N: 'Dư Nợ', C: 'Dư Có', L: 'Lưỡng tính' }
 const LOAI: Record<string, string> = {
   '1': 'Tài sản ngắn hạn', '2': 'Tài sản dài hạn', '3': 'Nợ phải trả', '4': 'Vốn chủ sở hữu', '5': 'Doanh thu',
   '6': 'Chi phí sản xuất, kinh doanh', '7': 'Thu nhập khác', '8': 'Chi phí khác', '9': 'Xác định kết quả kinh doanh',
 }
-const tcTheoDau = (so: string): TinhChatTk => so[0] === '1' || so[0] === '2' ? 'Dư Nợ' : so[0] === '3' || so[0] === '4' ? 'Dư Có' : 'Không số dư'
+const tcTheoDau = (so: string): TinhChatTk => '1268'.includes(so[0]) ? 'Dư Nợ' : so[0] === '9' ? 'Lưỡng tính' : 'Dư Có'
 
 function dung(nguon: string): TaiKhoanDef[] {
   const dong = nguon.trim().split('\n').map(l => l.split('|'))

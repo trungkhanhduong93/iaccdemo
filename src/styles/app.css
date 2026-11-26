@@ -50367,3 +50367,9 @@ td.xdl-cat > span { display: block; overflow: hidden; text-overflow: ellipsis; w
 .nvl-m-nut-chinh, .nvl-m-nut-vien { display: flex; align-items: center; justify-content: center; height: 44px; border-radius: 12px; font-size: 14px; font-weight: 600; }
 .nvl-m-nut-chinh { background: var(--blue); color: var(--white); }
 .nvl-m-nut-vien { background: var(--white); border: 1px solid var(--line); color: var(--blue); }
+
+/* ── Hệ thống tài khoản: công tắc Tổng hợp, Đang dùng, dòng sai tính chất tổng hợp ── */
+.tk-cong-tac { display: inline-flex; align-items: center; gap: 8px; }
+.tk-cong-tac .tk-sai { color: var(--amber); }
+.tk-row-sai { box-shadow: inset 3px 0 0 var(--amber); }
+
