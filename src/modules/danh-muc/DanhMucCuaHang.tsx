@@ -78,7 +78,7 @@ export function DanhMucCuaHang({ sc, mod }: ScreenProps) {
       )
     } },
   ], [standard, s, dv])   // eslint-disable-line react-hooks/exhaustive-deps
-  // Phiếu thu, chi FABi của cửa hàng đang bật mà PTTT chưa map quỹ: chờ, không vào sổ (T264)
+  // Phiếu thu, chi FABi của cửa hàng đang bật mà PTTT chưa gán quỹ: chờ, không vào sổ (T264)
   const cho = phieuThuChiFabi(s).cho
 
   const cot = useCotDs('/danh-muc/cua-hang', colsGoc, COT_CO_DINH)
@@ -146,7 +146,7 @@ export function DanhMucCuaHang({ sc, mod }: ScreenProps) {
   }
 
   return (
-    <div className="page page-voucher page-dm">
+    <div className="page page-voucher page-dm dmcn-trang">
       <PageHead
         crumb={[mod.ten]}
         title={
@@ -180,17 +180,17 @@ export function DanhMucCuaHang({ sc, mod }: ScreenProps) {
         }
       >
         <NutDongBo ten="FABi" onDongBo={() => setMo(true)} />
+        {/* Tuỳ chỉnh cột cùng hàng nút Đồng bộ lại, bỏ hàng trống bên dưới (T946) */}
+        <NutTuyChinhCot cols={cot.colsDu} an={cot.an} coDinh={COT_CO_DINH} macDinh={cot.macDinh} dongBang={cot.dongBang}
+          onLuu={cot.luu} onDoRongTuDong={cot.datDoRongTuDong} />
       </PageHead>
-      <div className="ds-hang-trang-thai">
-        <div className="ds-toolbar-phai ds-cong-cu-h2">
-          <NutTuyChinhCot cols={cot.colsDu} an={cot.an} coDinh={COT_CO_DINH} macDinh={cot.macDinh} dongBang={cot.dongBang}
-            onLuu={cot.luu} onDoRongTuDong={cot.datDoRongTuDong} />
-        </div>
-      </div>
-      {s.goi === 'S' && <Note icon="info">Gói Standard: mỗi cửa hàng tự có một kho mặc định theo iPOS Inventory, không cần khai báo kho.
-        Phương pháp tính chi phí NVL dùng chung cả công ty, đổi ở <Link to={DI_DOI_CACH_NVL}>Thông tin đơn vị</Link>.</Note>}
-      {cho.length > 0 && <Note kind="warn" icon="alert">{cho.length} phiếu thu, chi từ FABi đang chờ vì phương thức thanh toán chưa map quỹ
-        ({[...new Set(cho.map(x => `${x.pttt} · ${x.cn}`))].join('; ')}). <Link to="/app/danh-muc/1-12">Map ở Danh mục Quỹ tiền</Link></Note>}
+      {/* Thông báo gọn: chữ ngắn, khoảng cách hẹp; chi tiết phiếu chờ để ở chữ rê chuột (T946) */}
+      {(s.goi === 'S' || cho.length > 0) && <div className="dmcn-tb">
+        {s.goi === 'S' && <Note kind="gon" icon="info">Gói Standard: mỗi cửa hàng có sẵn một kho mặc định. Cách tính chi phí NVL dùng chung cả công ty,
+          đổi ở <Link to={DI_DOI_CACH_NVL}>Thông tin đơn vị</Link>.</Note>}
+        {cho.length > 0 && <Note kind="warn gon" icon="alert"><span title={[...new Set(cho.map(x => `${x.pttt} · ${x.cn}`))].join('; ')}>{cho.length} phiếu thu, chi FABi
+          đang chờ vì phương thức thanh toán chưa gán quỹ.</span> <Link to="/app/danh-muc/1-12">Gán ở Danh mục Quỹ tiền</Link></Note>}
+      </div>}
       <section className="card dm-bang">
         <Table cols={cot.colsHien} doRong={cot.doRong} rows={rowsTrang} />
         <PhanTrang tong={rowsLoc.length} trang={trangHt} coTrang={coTrang} dsCoTrang={CO_TRANG_DM}

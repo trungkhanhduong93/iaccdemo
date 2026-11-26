@@ -16,6 +16,8 @@
   - Gạch đầu dòng đầu chữ đỏ: chứng từ đã phát sinh ở công ty cũ bị xoá vĩnh viễn.
   - Xoá: không nhập thêm phát sinh, thu chi FABi ngừng đồng bộ. Nút "Xoá cửa hàng và dữ liệu".
   - Chuyển: Từ, Sang; phát sinh mới vào công ty mới, thu chi FABi đồng bộ về công ty mới. Nút "Chuyển và xoá dữ liệu".
+- Đầu màn Danh mục cửa hàng: nút Tuỳ chỉnh cột lên cùng hàng nút Đồng bộ lại, bỏ hàng trống bên dưới; khu lọc bớt đệm (lớp `dmcn-trang`, chỉ màn này); hai dòng thông báo gọn hơn (lớp `dmcn-tb`), danh sách phiếu chờ chuyển vào chữ rê chuột.
+- Xong luôn T333 ở file này: "chưa map quỹ", "Map ở Danh mục Quỹ tiền" thành "chưa gán quỹ", "Gán ở Danh mục Quỹ tiền".
 - CSS cuối `src/styles/app.css`, mục T946.
 
 ## Đã kiểm

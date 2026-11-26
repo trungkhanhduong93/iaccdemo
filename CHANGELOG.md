@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 26/11/2026
+- T946: Danh mục cửa hàng: nút Tuỳ chỉnh cột nằm cùng hàng nút Đồng bộ lại, khu lọc thấp hơn, thông báo gọn hơn và ghi "gán quỹ" thay "map quỹ".
 - T946: Danh mục cửa hàng, hộp Chi tiết cửa hàng: combo Công ty có nút X để bỏ trống công ty; đổi công ty hay bỏ trống thì bấm Lưu mới hỏi xác nhận. Cả xoá lẫn chuyển đều xoá mọi chứng từ đã phát sinh của cửa hàng ở công ty cũ, hộp xác nhận báo rõ bằng chữ đỏ. Xong thì cửa hàng không còn trong danh mục. Cửa hàng đã khoá sổ thì không cho xoá, chuyển.
 - T943: Điện thoại gói Plus, Pro: Trang chủ tab Quản trị hiện dashboard nhà hàng như web (thẻ Doanh thu, Chi phí NVL, Chi phí hoạt động, Lợi nhuận; kênh; cơ cấu chi phí; tiền và ngân hàng; Kết quả kinh doanh, Thu chi 13 tháng; chi phí NVL, hao hụt so với định mức; công nợ; kết quả theo cửa hàng), số tiền đầy đủ theo đồng.
 - T941: Gói Plus, Pro: màn Tổng quan thay bằng dashboard nhà hàng: thẻ Doanh thu, Chi phí NVL, Chi phí hoạt động, Lợi nhuận; doanh thu và biên LN gộp theo kênh; cơ cấu chi phí; tiền và ngân hàng; Kết quả kinh doanh và Thu chi 13 tháng; chi phí NVL và hao hụt NVL so với định mức cửa hàng; công nợ phải thu, phải trả; kết quả theo cửa hàng. Số tiền hiện đầy đủ theo đồng, rê chuột vào biểu đồ xem từng tháng, chọn năm, tháng trên hàng tab, có dải Thao tác nhanh.

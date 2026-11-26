@@ -50300,3 +50300,8 @@ td.xdl-cat > span { display: block; overflow: hidden; text-overflow: ellipsis; w
 .dmcn-cty-x:hover { background: var(--red-t); border-color: var(--red); color: var(--red); }
 .dmcn-hq-do { color: var(--red); font-weight: 600; }
 .dmcn-hq { margin: 0; padding-left: 18px; font-size: 13px; line-height: 1.65; color: var(--body); }
+.dmcn-tb { display: flex; flex-direction: column; gap: 6px; }
+.dmcn-tb .note.gon { padding: 6px 12px; align-items: center; }
+/* Khu lọc thấp hơn: hàng lọc bớt đệm trên dưới, các khối sát nhau hơn */
+.dmcn-trang { gap: 6px; }
+.page-voucher.dmcn-trang .ph:has(.ds-btn-pheu-figma) { min-height: 0; padding: 10px 16px 6px; }
