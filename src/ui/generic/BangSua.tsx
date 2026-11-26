@@ -4,6 +4,7 @@ import { createPortal } from 'react-dom'
 import type { VoucherCfg } from '../../modules/types'
 import { CCDC_HANG, CONG_VIEC, HANG, KHACH, KHO, KHOAN_MUC, NCC, NHAN_VIEN, NVL } from '../../data/mock'
 import { Select } from '../Dropdown'
+import { DS_LOAI_THUE_DONG, maThueDong, nhanThueDong, suaThueDong } from '../../modules/danh-muc/thue-suat'
 import { ChonDanhMuc, useMucDaThem, type TabDm } from '../ChonDanhMuc'
 import { Icon } from '../Icon'
 import { money } from '../format'
@@ -306,7 +307,7 @@ export function BangSua({
     ['sl', 'Số lượng', slCot, d => money(d.sl), d => d.sl || 0], ['gia', nhanGia, giaCot, d => money(d.gia), d => d.gia || 0],
     ['tien', nhanTien, tienCot, d => money(d.tien), d => d.tien || 0], ['ptCk', '% CK', ptCkCot, d => String(d.ptCk ?? 0), d => d.ptCk || 0],
     ['ck', 'Tiền CK', ckCot, d => money(d.ck || 0), d => d.ck || 0], ['truocThue', 'Tiền trước thuế', truocThueCot, d => money(tienSauCk(d)), tienSauCk],
-    ['ts', 'Thuế suất', tsCot, d => d.ts ? String(d.ts) : 'KCT'], ['thue', 'Tiền thuế', thueCot, d => money(d.thue), d => d.thue || 0],
+    ['ts', 'Thuế suất', tsCot, d => nhanThueDong(d)], ['thue', 'Tiền thuế', thueCot, d => money(d.thue), d => d.thue || 0],
     ['giamThue', 'Giảm thuế GTGT', giamCot, d => money(giamDong(d)), giamDong],
     ['nhomHhdv', 'Nhóm HHDV mua vào', nhomCot, d => d.nhomHhdv || NHOM_HHDV[0]],
     ['cpMua', 'Chi phí mua hàng', cpCot, d => money(d.cpMua || 0), d => d.cpMua || 0],
@@ -405,7 +406,7 @@ export function BangSua({
                 {ptCkCot && <td className="num">{d.ptCk ? `${d.ptCk}%` : '0%'}</td>}
                 {ckCot && <td className="num">{money(d.ck || 0)}</td>}
                 {truocThueCot && <td className="num">{money((d.tien || 0) - (d.ck || 0))}</td>}
-                {tsCot && <td className="num">{d.ts ? `${d.ts}%` : 'KCT'}</td>}
+                {tsCot && <td className="num">{nhanThueDong(d)}</td>}
                 {thueCot && <td className="num">{money(d.thue)}</td>}
                 {giamCot && <td className="num">{money(giamDong(d))}</td>}
                 {nhomCot && <td>{d.nhomHhdv || NHOM_HHDV[0]}</td>}
@@ -634,17 +635,14 @@ export function BangSua({
                   </td>
                 )}
                 {truocThueCot && <td className="num">{money((d.tien || 0) - (d.ck || 0))}</td>}
-                {tsCot && (chiDongCo ? <td>{d.ts ?? 0}%</td> :
+                {tsCot && (chiDongCo ? <td>{nhanThueDong(d)}</td> :
                   <td>
                     <Select
                       className="inp sm"
-                      value={String(d.ts ?? 0)}
-                      onChange={e => capNhat(i, { ts: Number(e.target.value) })}
+                      value={maThueDong(d)}
+                      onChange={e => capNhat(i, suaThueDong(e.target.value))}
                     >
-                      <option value={0}>0%</option>
-                      <option value={5}>5%</option>
-                      <option value={8}>8%</option>
-                      <option value={10}>10%</option>
+                      {DS_LOAI_THUE_DONG.map(t => <option key={t.v} value={t.v}>{t.t}</option>)}
                     </Select>
                   </td>
                 )}

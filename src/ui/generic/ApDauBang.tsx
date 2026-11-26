@@ -1,6 +1,6 @@
 // Ô Thuế GTGT, Chiết khấu trên thanh tab phiếu mua hàng, áp xuống mọi dòng chi tiết (T492)
 import { useEffect, useRef, useState } from 'react'
-import { DS_MUC_THUE_SUAT } from '../../modules/danh-muc/thue-suat'
+import { DS_LOAI_THUE_DONG, maThueDong, suaThueDong } from '../../modules/danh-muc/thue-suat'
 import { Select } from '../Dropdown'
 import { Icon } from '../Icon'
 import { money, dauThap } from '../format'
@@ -37,16 +37,16 @@ export function ApDauBang({ dong, onChange, an, coThue, coCk }: {
 }) {
   const [kieu, setKieu] = useState<KieuCk>('pt')
   const [gt, setGt] = useState(0)
-  const [tsDau, setTsDau] = useState<number | null>(null)   // thuế suất đã chọn ở đầu bảng, dòng thêm sau lấy mặc định mức này
+  const [tsDau, setTsDau] = useState<string | null>(null)   // mã loại thuế đã chọn ở đầu bảng, dòng thêm sau lấy mặc định mức này
   const soDong = useRef(dong.length)
   // Thuế suất chung: mọi dòng cùng mức thì hiện mức đó, khác nhau thì hiện "Nhiều mức"
-  const tsChung = dong.length && dong.every(d => (d.ts ?? 0) === (dong[0].ts ?? 0)) ? String(dong[0].ts ?? 0) : ''
+  const tsChung = dong.length && dong.every(d => maThueDong(d) === maThueDong(dong[0])) ? maThueDong(dong[0]) : ''
 
   function apThue(v: string) {
     if (v === '') return
-    const ts = Number(v)
-    setTsDau(ts)
-    onChange(dong.map(d => ({ ...d, ts, thue: Math.round(((d.tien || 0) - (d.ck || 0)) * ts / 100) })))
+    setTsDau(v)
+    const s = suaThueDong(v)
+    onChange(dong.map(d => ({ ...d, ...s, thue: Math.round(((d.tien || 0) - (d.ck || 0)) * s.ts / 100) })))
   }
 
   function doiCk(k: KieuCk, v: number) {
@@ -62,7 +62,7 @@ export function ApDauBang({ dong, onChange, an, coThue, coCk }: {
     const truoc = soDong.current
     soDong.current = dong.length
     let moi = tsDau === null || dong.length <= truoc ? dong
-      : dong.map((d, i) => i < truoc ? d : { ...d, ts: tsDau, thue: Math.round(((d.tien || 0) - (d.ck || 0)) * tsDau / 100) })
+      : dong.map((d, i) => i < truoc ? d : { ...d, ...suaThueDong(tsDau), thue: Math.round(((d.tien || 0) - (d.ck || 0)) * suaThueDong(tsDau).ts / 100) })
     if (gt) moi = apCk(moi, kieu, gt)
     if (moi.some((d, i) => d.ck !== dong[i].ck || d.ts !== dong[i].ts || d.thue !== dong[i].thue)) onChange(moi)
   }, [khoaTien])   // eslint-disable-line react-hooks/exhaustive-deps
@@ -85,7 +85,7 @@ export function ApDauBang({ dong, onChange, an, coThue, coCk }: {
         <div className="ct-ap-o">
           <span>Thuế GTGT</span>
           <Select className="inp sm ct-ap-ts" value={tsChung} aria-label="Thuế GTGT áp cho mọi dòng" onChange={e => apThue(e.target.value)}
-            ds={[...(tsChung === '' ? [{ v: '', t: 'Nhiều mức' }] : []), ...DS_MUC_THUE_SUAT]} />
+            ds={[...(tsChung === '' ? [{ v: '', t: 'Nhiều mức' }] : []), ...DS_LOAI_THUE_DONG]} />
         </div>
       )}
     </div>

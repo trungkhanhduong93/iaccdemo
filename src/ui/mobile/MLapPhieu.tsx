@@ -1,3 +1,4 @@
+import { DS_MUC_THUE_SUAT } from '../../modules/danh-muc/thue-suat'
 import { Fragment, useEffect, useMemo, useRef, useState, type FC } from 'react'
 import { baoDaLuu, ganForm, huongDanDangChay } from '../../ui/huongDanForm'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
@@ -3878,10 +3879,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
           tieuDe="Chọn thuế suất VAT"
           ds={[
             { k: '0-kct', ten: 'KCT (Không chịu thuế)' },
-            { k: '0', ten: '0%' },
-            { k: '5', ten: '5%' },
-            { k: '8', ten: '8%' },
-            { k: '10', ten: '10%' },
+            ...DS_MUC_THUE_SUAT.map(t => ({ k: t.v, ten: t.t })),
           ]}
           chon={dsDong[moChonVatIdx]?.ts === 0 ? '0-kct' : String(dsDong[moChonVatIdx]?.ts ?? 0)}
           onChon={k => {

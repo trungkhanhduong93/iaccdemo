@@ -32,3 +32,17 @@ export const nhanThueSuat = (gt: string): string => {
 
 /** Các mức % cho ô áp thuế chung ở chứng từ (không có KCT): { v: '8', t: '8%' }. */
 export const DS_MUC_THUE_SUAT = DM_THUE_SUAT.filter(t => t.chon && /^\d+$/.test(t.gt)).map(t => ({ v: t.gt, t: t.ts }))
+
+/** Dòng chứng từ lưu thuế suất số (ts) kèm mã loại thuế (ltn). KCT, KKKNT tính tiền thuế 0. Dòng cũ không có ltn: ts 0 coi là KCT. */
+export interface CoThueDong { ts: number; ltn?: string }
+
+/** Các loại thuế cho chọn ở dòng chứng từ: đủ theo danh mục, giá trị là mã loại thuế. */
+export const DS_LOAI_THUE_DONG = DM_THUE_SUAT.map(t => ({ v: t.ma, t: /^\d+$/.test(t.gt) ? t.ts : t.ma }))
+
+export const maThueDong = (d: CoThueDong): string =>
+  d.ltn ?? (d.ts ? (DM_THUE_SUAT.find(t => t.gt === String(d.ts))?.ma ?? String(d.ts)) : 'KCT')
+
+export const nhanThueDong = (d: CoThueDong): string => DS_LOAI_THUE_DONG.find(o => o.v === maThueDong(d))?.t ?? `${d.ts}%`
+
+/** Chọn mã loại thuế thì ghi ts số và ltn lên dòng. */
+export const suaThueDong = (ma: string): { ts: number; ltn: string } => ({ ts: Number(DM_THUE_SUAT.find(t => t.ma === ma)?.gt) || 0, ltn: ma })

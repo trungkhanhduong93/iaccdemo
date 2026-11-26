@@ -1,7 +1,7 @@
 // Bảng hàng bán gõ tay của chứng từ Bán hàng gói Plus (T753): cùng cột như chi tiết Xuất bán POS, thêm ô gõ
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import type { Dong } from '../../ui/generic/gen'
-import { DS_MUC_THUE_SUAT } from '../danh-muc/thue-suat'
+import { DS_LOAI_THUE_DONG, maThueDong, suaThueDong } from '../danh-muc/thue-suat'
 import { Select } from '../../ui/Dropdown'
 import { HANG } from '../../data/mock'
 import { ChonDanhMuc } from '../../ui/ChonDanhMuc'
@@ -95,9 +95,9 @@ function OApKhoan({ ten, kieu, gt, onDoi }: { ten: string; kieu: KieuAp; gt: num
 export function ApDauBangBan({ dong, onChange, an, coThue }: { dong: Dong[]; onChange: (d: Dong[]) => void; an?: boolean; coThue: boolean }) {
   const [ck, setCk] = useState<{ kieu: KieuAp; gt: number }>({ kieu: 'pt', gt: 0 })
   const [phi, setPhi] = useState<{ kieu: KieuAp; gt: number }>({ kieu: 'pt', gt: 0 })
-  const [tsDau, setTsDau] = useState<number | null>(null)
+  const [tsDau, setTsDau] = useState<string | null>(null)
   const soDong = useRef(dong.length)
-  const tsChung = dong.length && dong.every(d => (d.ts ?? 0) === (dong[0].ts ?? 0)) ? String(dong[0].ts ?? 0) : ''
+  const tsChung = dong.length && dong.every(d => maThueDong(d) === maThueDong(dong[0])) ? maThueDong(dong[0]) : ''
   const apHet = (ds: Dong[], c = ck, p = phi) => {
     let kq = ds
     if (c.gt) kq = apKhoan(kq, 'ck', c.kieu, c.gt)
@@ -116,16 +116,15 @@ export function ApDauBangBan({ dong, onChange, an, coThue }: { dong: Dong[]; onC
   }
   const apThue = (v: string) => {
     if (v === '') return
-    const ts = Number(v)
-    setTsDau(ts)
-    onChange(dong.map(d => tinhDong(d, { ts })))
+    setTsDau(v)
+    onChange(dong.map(d => tinhDong(d, suaThueDong(v))))
   }
   // Thêm, xoá dòng hoặc đổi thành tiền, giảm giá: dòng mới lấy thuế suất đầu bảng, áp lại chiết khấu, phí dịch vụ cả bill cho tổng vẫn đúng
   const khoa = dong.map(d => `${d.tien || 0}-${d.giam || 0}`).join(',')
   useEffect(() => {
     const truoc = soDong.current
     soDong.current = dong.length
-    const moi = apHet(tsDau === null || dong.length <= truoc ? dong : dong.map((d, i) => (i < truoc ? d : tinhDong(d, { ts: tsDau }))))
+    const moi = apHet(tsDau === null || dong.length <= truoc ? dong : dong.map((d, i) => (i < truoc ? d : tinhDong(d, suaThueDong(tsDau)))))
     if (moi.some((d, i) => d.ck !== dong[i].ck || d.phiDv !== dong[i].phiDv || d.ts !== dong[i].ts || d.thue !== dong[i].thue)) onChange(moi)
   }, [khoa])   // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -137,7 +136,7 @@ export function ApDauBangBan({ dong, onChange, an, coThue }: { dong: Dong[]; onC
         <div className="ct-ap-o">
           <span>Thuế GTGT</span>
           <Select className="inp sm ct-ap-ts" value={tsChung} aria-label="Thuế GTGT áp cho mọi dòng" onChange={e => apThue(e.target.value)}
-            ds={[...(tsChung === '' ? [{ v: '', t: 'Nhiều mức' }] : []), ...DS_MUC_THUE_SUAT]} />
+            ds={[...(tsChung === '' ? [{ v: '', t: 'Nhiều mức' }] : []), ...DS_LOAI_THUE_DONG]} />
         </div>
       )}
     </div>

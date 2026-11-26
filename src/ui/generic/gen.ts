@@ -45,6 +45,7 @@ export interface Dong {
   gia: number
   tien: number
   ts: number
+  ltn?: string                 // mã loại thuế theo danh mục (00, 05, KCT, KKKNT...); thiếu thì suy từ ts
   thue: number
   ptCk?: number
   ck?: number
