@@ -50373,6 +50373,11 @@ td.xdl-cat > span { display: block; overflow: hidden; text-overflow: ellipsis; w
 .tk-cong-tac .tk-sai { color: var(--amber); }
 .tk-row-sai { box-shadow: inset 3px 0 0 var(--amber); }
 
+
+/* ── Nhóm hàng hoá: dòng Mã, Tên chia 3 phần, mã 1 phần (T-nhom-hh) ── */
+.pn-luoi.pn-luoi-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.pn-luoi .pn-chiem-2 { grid-column: span 2; }
+
 /* ── Danh mục Đối tượng: kính lúp tra cứu MST, trạng thái MST (T-doi-tuong-mst) ── */
 .pn-mst { position: relative; display: block; min-width: 0; }
 .pn-mst .inp { width: 100%; padding-right: 38px; }

@@ -5,14 +5,13 @@ import { Popover } from '../../ui/Dropdown'
 import { Icon } from '../../ui/Icon'
 import { fold, locSo } from '../../ui/format'
 import { useSession } from '../../app/session'
-import { DON_VI_TINH, QUY_DOI_DVT, TEN_DVT } from './data'
-import { ChamTrangThai } from '../../ui/ChamTrangThai'
+import { DON_VI_TINH, TEN_DVT } from './data'
+import { getAllCatalogRows } from '../../ui/generic/danhMucStore'
 import { ChonHaiCot } from '../../ui/ChonHaiCot'
 
 /** Một dòng quy đổi của hàng hoá. nguoc: false là 1 ĐVT chính = tl dv, true là 1 dv = tl ĐVT chính */
 export interface QuyDoi { dv: string; tl: number; nguoc: boolean; apTatCa: boolean; bat: boolean }
 
-const TAT_CA = 'Tất cả hàng hoá'
 const maDvt = (ten: string) => DON_VI_TINH.find(d => d[1] === ten)?.[0] ?? ''
 /** Số kiểu Việt: phẩy thập phân, tối đa 4 chữ số lẻ */
 const soVn = (n: number) => n.toLocaleString(locSo(), { maximumFractionDigits: 4 })
@@ -27,8 +26,10 @@ const dienGiai = (q: Pick<QuyDoi, 'dv' | 'tl' | 'nguoc'>, chinh: string) =>
 export function quyDoiTuDanhMuc(tenHang: string, chinh: string): QuyDoi[] {
   if (!chinh) return []
   const kq: QuyDoi[] = []
-  const coHang = (q: typeof QUY_DOI_DVT[number]) => Boolean(q.hangAd) && q.hangAd.split(', ').includes(tenHang)
-  const ds = [...QUY_DOI_DVT.filter(coHang), ...QUY_DOI_DVT.filter(q => !q.hangAd)]
+  // Chỉ lấy dòng đang sử dụng ở danh mục Quy đổi ĐVT (kể cả dòng thêm, sửa trong phiên)
+  const dangDung = getAllCatalogRows('1.4').filter(q => q._tt !== 0 && q._tt !== false && q._tt !== '0') as { tu: string; den: string; tl: number; hangAd?: string }[]
+  const coHang = (q: { hangAd?: string }) => Boolean(q.hangAd) && String(q.hangAd).split(', ').includes(tenHang)
+  const ds = [...dangDung.filter(coHang), ...dangDung.filter(q => !q.hangAd)]
   for (const q of ds) {
     if (q.tu !== chinh && q.den !== chinh) continue
     // danh mục ghi 1 tu = tl den: ĐVT chính là tu thì giữ chiều xuôi, là den thì ghi chiều ngược
@@ -46,6 +47,7 @@ export function KhoiQuyDoi({ v, doi }: { v: Record<string, any>; doi: (k: string
   const tenHang = String(v.ten ?? '')
   const ds: QuyDoi[] = Array.isArray(v._quyDoi) ? v._quyDoi : quyDoiTuDanhMuc(tenHang, chinh)
   const [hop, setHop] = useState<{ i: number } | null>(null)   // i = -1: thêm mới
+  const hienDs = ds.map((q, i) => ({ q, i })).filter(x => x.q.bat)   // chỉ hiện quy đổi đang sử dụng
 
   const luu = (q: QuyDoi) => {
     doi('_quyDoi', hop && hop.i >= 0 ? ds.map((x, j) => j === hop.i ? q : x) : [...ds, q])
@@ -55,39 +57,28 @@ export function KhoiQuyDoi({ v, doi }: { v: Record<string, any>; doi: (k: string
   return (
     <div className="qd-khoi">
       <div className="qd-thanh">
-        <span className="muted">
-          {chinh ? <>ĐVT chính <b>{chinh}</b> · {ds.length ? `${ds.length} đơn vị quy đổi` : 'chưa có đơn vị quy đổi'}</> : 'Chọn đơn vị tính ở khối Thông tin chung để khai quy đổi.'}
-        </span>
+        <span className="muted">{!chinh && 'Chọn đơn vị tính ở khối Thông tin chung để khai quy đổi.'}</span>
         <button type="button" className="btn sm" disabled={!chinh} onClick={() => setHop({ i: -1 })}>
           <Icon n="plus" className="ic sm" />Thêm mới
         </button>
       </div>
-      {ds.length > 0 && (
+      {hienDs.length > 0 && (
         <table className="qd-bang">
           <thead>
             <tr>
-              <th>Đơn vị quy đổi</th>
-              <th className="qd-so">Tỷ lệ quy đổi</th>
+              <th>Từ ĐVT</th>
+              <th>Sang ĐVT</th>
+              <th className="qd-so">Tỷ lệ</th>
               <th>Diễn giải</th>
-              <th>Hàng hoá áp dụng</th>
-              <th className="qd-giua">Sử dụng</th>
             </tr>
           </thead>
           <tbody>
-            {ds.map((q, i) => (
-              <tr key={q.dv} className={q.bat ? '' : 'qd-tat'} onClick={() => setHop({ i })} title="Bấm để sửa">
-                <td><b>{q.dv}</b>{maDvt(q.dv) && <small className="qd-ma">{maDvt(q.dv)}</small>}</td>
+            {hienDs.map(({ q, i }) => (
+              <tr key={q.dv} onClick={() => setHop({ i })} title="Bấm để sửa">
+                <td><b>{q.nguoc ? q.dv : chinh}</b></td>
+                <td><b>{q.nguoc ? chinh : q.dv}</b></td>
                 <td className="qd-so">{soVn(q.tl)}</td>
                 <td>{dienGiai(q, chinh)}</td>
-                <td>{q.apTatCa ? TAT_CA : (tenHang || 'Hàng hoá này')}</td>
-                <td className="qd-giua">
-                  <ChamTrangThai
-                    bat={Boolean(q.bat)}
-                    ariaLabel={`Sử dụng quy đổi ${q.dv}`}
-                    title={`Sử dụng quy đổi ${q.dv}`}
-                    onToggle={() => doi('_quyDoi', ds.map((x, j) => j === i ? { ...x, bat: !x.bat } : x))}
-                  />
-                </td>
               </tr>
             ))}
           </tbody>

@@ -216,7 +216,7 @@ const danhMuc: ModuleDef = {
         { ma: 'HB02', ten: 'Hàng bán đơn vị tính 1', loai: '', nhom: 'Đồ ăn vặt', dvt: 'Cái', gia: 10000, ts: 8, tkDt: '', tkGv: '', tkKho: '', tonKho: false, thuongHieu: 'Phố Mây', _tt: 1 },
         { ma: 'NGUNG01', ten: 'Trà sữa trân châu đường đen', loai: 'Thành phẩm', nhom: 'Đồ uống', dvt: 'Ly', gia: 45000, ts: 8, tkDt: '', tkGv: '', tkKho: '', tonKho: false, thuongHieu: 'Mây Cà Phê', _tt: 0 },
         ...NVL.map(h => ({ ...h, loai: 'Nguyên vật liệu', gia: 0, tkDt: '', tkGv: '632', tkKho: '152', tonKho: true })),   // nguyên vật liệu luôn theo dõi tồn (T114)
-        ...CCDC_HANG.map(h => ({ ...h, loai: 'Khác (Công cụ dụng cụ)', gia: 0, ts: 10, tkDt: '', tkGv: '', tkKho: '153', tonKho: false })),   // CCDC: thẻ chi phí phân bổ chọn mã từ đây
+        ...CCDC_HANG.map(h => ({ ...h, loai: 'Khác (Công cụ dụng cụ)', gia: 0, ts: 10, tkDt: '', tkGv: '', tkKho: '1531', tonKho: false })),   // CCDC: thẻ chi phí phân bổ chọn mã từ đây
       ],
       // Ô Giảm thuế theo quy định lưu theo đơn vị, màn bán hàng đọc để tính tiền giảm thuế GTGT từng dòng (T754)
       phien: {

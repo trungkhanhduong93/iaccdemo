@@ -15,7 +15,7 @@ import { xongViecHuongDan } from '../../modules/home/HuongDan'
 import { Dropdown, MenuItem, Popover, Select } from '../Dropdown'
 import { LocO } from '../ThanhLoc'
 import { TRUONG_DM, hopPp, type CauHinhDM, type HoiThem, type KhoiDM, type TruongDM, type KieuTruong } from '../../modules/danh-muc/truong-dm'
-import { heThongTk } from '../../modules/danh-muc/he-thong-tk'
+import { heThongTk, locTkChiTiet, loiTkTongHop } from '../../modules/danh-muc/he-thong-tk'
 import { FormToanMan } from '../FormToanMan'
 import { ThongBao } from '../ThongBao'
 import { LichSu } from './ChungTuForm'
@@ -865,7 +865,7 @@ export function CatalogPanel({
     return []
   }, [cauHinh, cols0, s.goi, s.cheDo, s.ppGtgt, s.ppTndn, dangSua])
 
-  const dsTk = useMemo(() => heThongTk(s.cheDo), [s.cheDo])
+  const dsTk = useMemo(() => locTkChiTiet(heThongTk(s.cheDo), s.goi), [s.cheDo, s.goi])   // QD119
   // Lựa chọn của ô chọn tính một lần theo khoá trường, dùng lại giữa các lần vẽ
   const dsTkChon = useMemo(() => dsTk.map(t => ({ v: t.so, t: `${t.so} - ${t.ten}` })), [dsTk])
   const boNho = useMemo(() => new Map<string, { v: string; t: string }[]>(), [dsTkChon, nhoms, nhomLoc])
@@ -911,7 +911,7 @@ export function CatalogPanel({
     }
     if (cauHinh?.doi) m = { ...m, ...cauHinh.doi(k, m, all, s) }
     if (cauHinh?.hoiDoi && (!cauHinh.goiHoiDoi || cauHinh.goiHoiDoi.includes(s.goi))) {
-      const hd = cauHinh.hoiDoi(k, m, all)
+      const hd = cauHinh.hoiDoi(k, m, all, s)
       if (hd) {
         if (hd.dien) m = { ...m, ...hd.dien }
         if (hd.sua && Object.keys(hd.sua).length > 0) {
@@ -963,6 +963,11 @@ export function CatalogPanel({
           const truoc = truocDauNam(s, String(formVal[tr.k]))
           if (dn === 'tu' && truoc) errs[tr.k] = `Phải từ ngày đầu năm ${ngayDauNam(s)} trở đi`
           if (dn === 'truoc' && !truoc) errs[tr.k] = `Thẻ dư đầu kỳ phải có ngày trước ngày đầu năm ${ngayDauNam(s)}`
+        }
+        // QD119: bản Pro không lưu tài khoản tổng hợp
+        if (tr.kieu === 'chon' && tr.k.toLowerCase().startsWith('tk')) {
+          const loiTk = loiTkTongHop(formVal[tr.k], s.cheDo, s.goi)
+          if (loiTk) errs[tr.k] = loiTk
         }
         if (tr.batBuoc) {
           const val = formVal[tr.k]
@@ -1079,7 +1084,7 @@ export function CatalogPanel({
         {mo && kh.ve && <div className="pn-khoi-than">{kh.ve(formVal, doiO, xem)}</div>}
         {mo && !kh.bang && !kh.ve && (
           <div className="pn-khoi-than">
-            <div className={`pn-luoi${cauHinh?.haiCot ? ' pn-luoi-2' : ''}`}>
+            <div className={`pn-luoi${cauHinh?.haiCot ? ' pn-luoi-2' : ''}${kh.ba ? ' pn-luoi-3' : ''}`}>
               {truongHien.map(tr => khoaO(tr, (() => {
                 const isChiDoc = typeof tr.chiDoc === 'function' ? tr.chiDoc(formVal, s) : Boolean(tr.chiDoc)
                 const chuThich = typeof tr.chuThich === 'function' ? tr.chuThich(formVal, s) : tr.chuThich
@@ -1114,7 +1119,7 @@ export function CatalogPanel({
                 const hangDai = tr.caHang || tr.kieu === 'nhieuDong'
 
                 return (
-                  <div className={`f${hangDai ? ' pn-hang-dai' : ''}`} key={tr.k}>
+                  <div className={`f${hangDai ? ' pn-hang-dai' : ''}${tr.chiem === 2 ? ' pn-chiem-2' : ''}`} key={tr.k}>
                     <label>
                       {tr.nhan} {tr.batBuoc && <em>*</em>}
                     </label>

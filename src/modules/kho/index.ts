@@ -102,7 +102,7 @@ const kho: ModuleDef = {
   mota: 'Nhập, xuất, điều chuyển, kiểm kê kho; giá vốn, thẻ kho, tồn kho',
   quyTrinh,
   // Gói Plus xếp theo luồng: Nhập kho, Điều chuyển, Xuất huỷ, Xuất khác, Kiểm kê, Tính giá vốn, Tồn kho ban đầu (T721, T888)
-  xepTab: { PL: ['quy-trinh', '5-1-1', '5-1-4', '5-1-2-3', '5-1-2-4', '5-1-10', '5-1-7', '5-1-12'] },
+  xepTab: { PL: ['quy-trinh', '5-1-1', '5-1-4-2', '5-1-4', '5-1-2-3', '5-1-2-4', '5-1-10', '5-1-7', '5-1-12'] },
   // Màn Điều chỉnh kho đứng ngay sau Kiểm kê (T126); nhóm sản xuất xếp theo IVT (T152); ba tab điều chuyển liền nhau (T155)
   screens: chiGoiPro([...sauKiemKe(xepSanXuat(sauDieuChuyen(tuExcel(4, {
     '5.1.2-2': phieu('XBH', 'Thêm phiếu xuất bán hàng', ['Xuất bán nguyên liệu cho đối tác', 'Xuất bán set quà Trung thu'], [['632', '156', 'Giá vốn hàng bán']], 'kh', 'Khách hàng'),

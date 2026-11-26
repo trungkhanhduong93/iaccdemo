@@ -98,10 +98,10 @@ export const NHOM_HANG: NhomHang[] = [
   { ma: 'NHH14', ten: 'Bia, rượu', dienGiai: 'Bia, rượu bán thẳng và dùng chế biến', tkKho: '1561', tkDt: '5111', tkGv: '632', tkCp: '6421', tkTraLai: '', mucCp: 'Quảng cáo, khuyến mãi', ppGia: 'Bình quân cuối kỳ', ts: '10', nganhNghe: '101-1', nganhNgheDn: 'DN1-1' },
   { ma: 'NHH15', ten: 'Tinh bột', dienGiai: 'Gạo, bún, bánh phở, mì', tkKho: '152', tkDt: '', tkGv: '632', tkCp: '6421', tkTraLai: '', mucCp: '', ppGia: 'Bình quân cuối kỳ', ts: '8', nganhNghe: '', nganhNgheDn: '' },
   { ma: 'NHH16', ten: 'Pha chế', dienGiai: 'Nguyên liệu quầy bar, siro, trà, cà phê', tkKho: '152', tkDt: '', tkGv: '632', tkCp: '6421', tkTraLai: '', mucCp: '', ppGia: 'Bình quân cuối kỳ', ts: '8', nganhNghe: '', nganhNgheDn: '' },
-  { ma: 'NHH17', ten: 'Dụng cụ bếp', dienGiai: 'Nồi, chảo, dao thớt', tkKho: '153', tkDt: '', tkGv: '', tkCp: '6421', tkTraLai: '', mucCp: '', ppGia: 'Bình quân cuối kỳ', ts: '10', nganhNghe: '', nganhNgheDn: '' },
-  { ma: 'NHH18', ten: 'Nội thất', dienGiai: 'Bàn ghế, kệ tủ', tkKho: '153', tkDt: '', tkGv: '', tkCp: '6421', tkTraLai: '', mucCp: '', ppGia: 'Bình quân cuối kỳ', ts: '10', nganhNghe: '', nganhNgheDn: '' },
-  { ma: 'NHH19', ten: 'Thiết bị', dienGiai: 'Tủ lạnh, bếp, máy pha', tkKho: '153', tkDt: '', tkGv: '', tkCp: '6421', tkTraLai: '', mucCp: '', ppGia: 'Bình quân cuối kỳ', ts: '10', nganhNghe: '', nganhNgheDn: '' },
-  { ma: 'NHH20', ten: 'Dụng cụ quầy', dienGiai: 'Ly, bình, dụng cụ pha chế', tkKho: '153', tkDt: '', tkGv: '', tkCp: '6421', tkTraLai: '', mucCp: '', ppGia: 'Bình quân cuối kỳ', ts: '10', nganhNghe: '', nganhNgheDn: '' },
+  { ma: 'NHH17', ten: 'Dụng cụ bếp', dienGiai: 'Nồi, chảo, dao thớt', tkKho: '1531', tkDt: '', tkGv: '', tkCp: '6421', tkTraLai: '', mucCp: '', ppGia: 'Bình quân cuối kỳ', ts: '10', nganhNghe: '', nganhNgheDn: '' },
+  { ma: 'NHH18', ten: 'Nội thất', dienGiai: 'Bàn ghế, kệ tủ', tkKho: '1531', tkDt: '', tkGv: '', tkCp: '6421', tkTraLai: '', mucCp: '', ppGia: 'Bình quân cuối kỳ', ts: '10', nganhNghe: '', nganhNgheDn: '' },
+  { ma: 'NHH19', ten: 'Thiết bị', dienGiai: 'Tủ lạnh, bếp, máy pha', tkKho: '1531', tkDt: '', tkGv: '', tkCp: '6421', tkTraLai: '', mucCp: '', ppGia: 'Bình quân cuối kỳ', ts: '10', nganhNghe: '', nganhNgheDn: '' },
+  { ma: 'NHH20', ten: 'Dụng cụ quầy', dienGiai: 'Ly, bình, dụng cụ pha chế', tkKho: '1531', tkDt: '', tkGv: '', tkCp: '6421', tkTraLai: '', mucCp: '', ppGia: 'Bình quân cuối kỳ', ts: '10', nganhNghe: '', nganhNgheDn: '' },
   { ma: 'NHH21', ten: 'Đồ ăn vặt', dienGiai: 'Bánh, snack đóng gói bán thẳng', tkKho: '', tkDt: '5111', tkGv: '632', tkCp: '6421', tkTraLai: '', mucCp: 'Quảng cáo, khuyến mãi', ppGia: 'Bình quân cuối kỳ', ts: '8', nganhNghe: '301-5', nganhNgheDn: 'DN3-5' },
 ]
 export const TEN_NHOM_HANG = NHOM_HANG.map(n => n.ten)

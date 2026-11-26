@@ -711,12 +711,16 @@ export function CauHinh({ sc }: ScreenProps) {
   // Hoá đơn điện tử (T763): gói Plus, Pro có màn Xuất hoá đơn điện tử
   const coHddt = s.goi === 'PL' || s.goi === 'PR'
   const [hd, setHd] = useState<CauHinhHddt>(cauHinhHddt(s))
+  // Gói Pro: tài khoản hàng hoá kế thừa từ nhóm hàng hoá; chưa đặt là bật
+  const coTkNhom = s.goi === 'PR'
+  const [tkNhom, setTkNhom] = useState(s.tkTheoNhom?.[s.donVi] !== false)
   const luu = () => {
     const loi = loiGv() ?? (coHddt ? loiHddt(hd) : null)
     if (loi) { toast(loi, { loai: 'loi' }); return }
     const gvLuu = { ...gv, ds: [dongGv] }
     set({ kieuSo: { ...s.kieuSo, [s.donVi]: kieu }, ...(suaGiamVat ? { giamVat: { ...s.giamVat, [s.donVi]: gvLuu } } : {}),
-      ...(coHddt ? { hddt: { ...s.hddt, [s.donVi]: hd } } : {}) }); toast('Đã lưu cấu hình')
+      ...(coHddt ? { hddt: { ...s.hddt, [s.donVi]: hd } } : {}),
+      ...(coTkNhom ? { tkTheoNhom: { ...s.tkTheoNhom, [s.donVi]: tkNhom } } : {}) }); toast('Đã lưu cấu hình')
   }
   // Hai cột xếp riêng (T784): cột phải là Hoá đơn điện tử, Giảm thuế GTGT; không có hai thẻ này thì Bộ định khoản, Đánh số chứng từ sang cột phải
   const phai = coHddt || coGiamVat
@@ -757,6 +761,15 @@ export function CauHinh({ sc }: ScreenProps) {
         </div>
         <div className="grid" style={cot}>
         {!phai && theDuoi}
+        {coTkNhom && (
+          <Card title="Hàng hoá">
+            <div className="ch-gv" data-hd="tkTheoNhom">
+              <label className="ch-gv-bat"><input type="checkbox" className="bat-tat" checked={tkNhom} onChange={e => setTkNhom(e.target.checked)} />
+                Tài khoản hàng hoá theo nhóm hàng hoá</label>
+            </div>
+            <Note kind="gray">{tkNhom ? 'Chọn nhóm hàng hoá thì hàng hoá lấy tài khoản của nhóm, không sửa được ở hàng hoá.' : 'Không tích: sửa được tài khoản kho, doanh thu, giá vốn, chi phí, hàng bán trả lại ngay ở hàng hoá.'}</Note>
+          </Card>
+        )}
         {coHddt && <Card title="Hoá đơn điện tử"><TheCauHinhHddt s={s} h={hd} dat={setHd} toast={toast} /></Card>}
         {coGiamVat && (
           <Card title="Giảm thuế GTGT">

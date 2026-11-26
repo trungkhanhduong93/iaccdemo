@@ -55,6 +55,7 @@ export interface Session {
   kieuSo?: Record<string, KieuSo>   // quy định chữ số và dấu phân cách theo đơn vị, chọn ở Cấu hình kế toán: 'vn' 1.234.567,89 (mặc định), 'qt' 1,234,567.89 (T710)
   lyDoGhiDe?: Record<string, Record<string, { chiPhi: number; phanBo: number; nhomCp: string; tk?: string; tkTraTruoc?: string }>>   // lý do nghiệp vụ có sẵn sửa tích Là chi phí, Chi phí phân bổ nhiều kỳ, nhóm lý do theo đơn vị; khoá mã lý do (T700)
   giamVat?: Record<string, CauHinhGiamVat>   // giảm thuế GTGT theo nghị quyết theo đơn vị, chọn ở Cấu hình kế toán; chưa đặt là giảm 20% theo nghị quyết mới nhất (T754)
+  tkTheoNhom?: Record<string, boolean>   // gói Pro: Tài khoản hàng hoá theo nhóm hàng hoá, theo đơn vị; chưa đặt là bật, hàng hoá kế thừa tài khoản của nhóm, chỉ đọc
   hddt?: Record<string, CauHinhHddt>   // thiết lập xuất hoá đơn điện tử theo đơn vị, chọn ở Cấu hình kế toán (T763)
   hangGiamVat?: Record<string, Record<string, boolean>>   // ô tích Giảm thuế theo quy định của hàng hoá theo đơn vị; khoá mã hàng (T754)
 }

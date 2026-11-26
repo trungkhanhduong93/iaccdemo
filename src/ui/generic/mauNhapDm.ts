@@ -6,7 +6,7 @@ import type { Session } from '../../app/session'
 import { GOI } from '../../app/plan'
 import { HOM_NAY } from '../../data/mock'
 import { TRUONG_DM, hopPp, type TruongDM, type KhoiDM, type CauHinhDM, type KieuTruong } from '../../modules/danh-muc/truong-dm'
-import { heThongTk } from '../../modules/danh-muc/he-thong-tk'
+import { heThongTk, locTkChiTiet } from '../../modules/danh-muc/he-thong-tk'
 import { addCatalogRow, ghiDeCatalogRow, danhDauNhap, sinhMaKeTiep, getAllCatalogRows } from './danhMucStore'
 
 export interface CotMau {
@@ -91,7 +91,7 @@ export function layCotMauDm(catKey: string, s: Session): CotMau[] {
       let dsTraCuu: string[] | undefined
       if (!ds?.length && t.k.toLowerCase().startsWith('tk')) {
         // Ô TK lấy hệ thống TK theo thông tư như form Thêm mới (getOptions ở CatalogScreen)
-        const tk = heThongTk(s.cheDo)
+        const tk = locTkChiTiet(heThongTk(s.cheDo), s.goi)   // QD119
         const tenTk = new Map(tk.map(x => [x.so, x.ten]))
         ds = tk.map(x => x.so)
         nhanDs = so => `${so} - ${tenTk.get(so) ?? ''}`

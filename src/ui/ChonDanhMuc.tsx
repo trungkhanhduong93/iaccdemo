@@ -248,7 +248,7 @@ function HopThem({ nhan, coMa, tenGoc, onDong, onLuu }: { nhan: string; coMa?: b
 function HopThemHang({ meta, nhan, onDong, onLuu }: { meta: DmMeta; nhan: string; onDong: () => void; onLuu: (v: Record<string, any>) => void }) {
   const { s } = useSession()
   // Giá trị sẵn khi thêm mới của danh mục, vd ngành nghề 301-5 của hàng hoá (T469), rồi tới giá trị điền từ phiếu
-  const [v, setV] = useState<Row>(() => ({ ...meta.cauHinh?.moi?.(meta.all, { ngayDauNam: ngayDauNam(s) }), ...meta.dienSan, ten: meta.dienSan.ten ?? '' }))
+  const [v, setV] = useState<Row>(() => ({ ...meta.cauHinh?.moi?.(meta.all, { ngayDauNam: ngayDauNam(s) }), ...meta.dienSan, ten: meta.dienSan.ten ?? '', ...(s.goi === 'PR' && meta.dienSan.loai === 'Khác (Công cụ dụng cụ)' ? { loai: 'Công cụ dụng cụ' } : {}) }))   // gói Pro có loại Công cụ dụng cụ riêng
   const [maTay, setMaTay] = useState('')
   const ma = maTay || sinhMaKeTiep(meta.catKey, v, meta.all)
   const duoc = String(v.ten).trim() && ma.trim()

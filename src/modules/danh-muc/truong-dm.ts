@@ -74,7 +74,15 @@ const coTonKho = (v: Record<string, any>) => v.tonKho !== 0 && v.tonKho !== fals
 
 /** 5 loại hàng hoá theo iPOS Inventory; gói Pro có thêm Bán thành phẩm (T144) */
 export const LOAI_HANG = ['Nguyên vật liệu', 'Thành phẩm', 'Hàng bán thẳng', 'Khác (Công cụ dụng cụ)', 'Ghi chú']
-export const LOAI_HANG_PRO = ['Nguyên vật liệu', 'Thành phẩm', 'Hàng bán thẳng', 'Bán thành phẩm', 'Khác (Công cụ dụng cụ)', 'Ghi chú']
+export const LOAI_HANG_PRO = ['Nguyên vật liệu', 'Thành phẩm', 'Hàng bán thẳng', 'Bán thành phẩm', 'Công cụ dụng cụ', 'Khác', 'Ghi chú']
+/** Gói Pro: loại hàng mặc định không theo dõi tồn kho; các loại còn lại theo dõi. Đổi loại thì ô Theo dõi tồn kho đổi theo, sau đó vẫn tự sửa được */
+const LOAI_KHONG_TON_PRO = ['Thành phẩm', 'Khác', 'Ghi chú']
+
+/** Phiên làm việc rút gọn truyền vào ô: gói, chế độ, đơn vị, cờ Tài khoản hàng hoá theo nhóm hàng hoá */
+export interface NguCanh { goi: Goi; cheDo: CheDo; donVi?: string; tkTheoNhom?: Record<string, boolean> }
+/** Gói Pro: tài khoản của hàng hoá kế thừa từ nhóm, chỉ đọc; chưa đặt là bật. Bỏ tích ở Cấu hình kế toán thì sửa được ở hàng hoá */
+export const tkTheoNhom = (s?: NguCanh) => s?.goi === 'PR' && s.tkTheoNhom?.[s.donVi ?? ''] !== false
+const chiDocTk = (_v: Record<string, any>, s?: NguCanh) => tkTheoNhom(s)
 
 export interface TruongDM {
   k: string
@@ -82,20 +90,21 @@ export interface TruongDM {
   kieu: KieuTruong
   batBuoc?: boolean
   caHang?: boolean
+  lop?: string                                 // class thêm cho khung ô trong form, để CSS căn riêng (vd ô tích ngang nhãn ô bên cạnh)
+  chiem?: number                               // số phần lưới ô chiếm trong khối chia 3 phần (ba: true)
   traMst?: boolean                             // ô Mã số thuế có kính lúp tra cứu: điền Tên, Địa chỉ, hiện Trạng thái MST
-  oVuong?: boolean                             // kiểu tich vẽ ô vuông thay cho nút bật tắt (T751)
+  oVuong?: boolean                           // kiểu tich vẽ ô vuông thay cho nút bật tắt (T751)
   ds?: string[]
+  dsTheoForm?: (v: Record<string, any>) => string[]   // danh sách chọn đổi theo giá trị các ô khác của form (vd nhóm lý do theo Dùng cho, Là chi phí)
   dsGoi?: Partial<Record<Goi, string[]>>       // danh sách chọn riêng theo gói, thay cho ds (T605)
   cot?: string
   hien?: (v: Record<string, any>) => boolean   // chỉ hiện ô khi điều kiện đúng theo giá trị form
   goi?: Goi[]                                  // chỉ hiện ô ở các gói này (T144)
   cheDo?: CheDo[]                              // chỉ hiện ô ở các chế độ/thông tư này (T147)
-  lop?: string                                 // class thêm cho khung ô trong form, để CSS căn riêng (vd ô tích ngang nhãn ô bên cạnh)
   pp?: PpThue                                  // chỉ hiện ô khi thuế đó tính theo tỷ lệ % trên doanh thu (TT58, T720)
   nhanDs?: (v: string) => string               // nhãn hiện trong ô chọn khác giá trị lưu, vd đơn vị tính hiện mã và tên (T144)
-  chiDoc?: boolean | ((v: Record<string, any>, s?: { goi: Goi; cheDo: CheDo }) => boolean)   // ô tự sinh, không sửa được; hàm: chỉ đọc theo giá trị form, vd khi sửa thẻ có sẵn (T165)
-  chuThich?: string | null | ((v: Record<string, any>, s?: { goi: Goi; cheDo: CheDo }) => string | null)   // dòng chú thích nhỏ dưới ô
-  dsTheoForm?: (v: Record<string, any>) => string[]   // danh sách chọn đổi theo giá trị các ô khác của form (vd nhóm lý do theo Dùng cho, Là chi phí)
+  chiDoc?: boolean | ((v: Record<string, any>, s?: NguCanh) => boolean)   // ô tự sinh, không sửa được; hàm: chỉ đọc theo giá trị form, vd khi sửa thẻ có sẵn (T165)
+  chuThich?: string | null | ((v: Record<string, any>, s?: NguCanh) => string | null)   // dòng chú thích nhỏ dưới ô
   goiY?: string                                // chữ mờ khi ô chọn nhiều để trống (T151)
   maDs?: (v: string) => string                 // mã của mục trong ô chọn nhiều, ô chọn có tìm: dòng hiện "Mã: X", ô hiện "Tên (MÃ)" (T154)
   chiTen?: boolean                             // ô chọn có tìm đã chọn chỉ hiện tên, không kèm mã, vd đơn vị tính ở quy đổi ĐVT
@@ -118,6 +127,7 @@ export interface KhoiDM {
   goi?: Goi[]   // chỉ hiện khối ở các gói này (T144)
   cheDo?: CheDo[]   // chỉ hiện khối ở các chế độ/thông tư này (T147)
   pp?: PpThue   // chỉ hiện khối khi thuế tính theo tỷ lệ % (T720)
+  ba?: boolean   // khối luôn chia 3 phần đều, ô chiếm 1 phần hoặc chiem phần
   truong: TruongDM[]
   // khối dạng lưới tự tính từ giá trị form; doi ghi giá trị khi gõ trong lưới; goi: gói đang dùng (T159)
   bang?: (v: Record<string, any>, doi: (k: string, val: unknown) => void, goi: Goi, xem: boolean) => { cols: Col[]; rows: Row[]; sum?: Row; rowCls?: (r: Row) => string; chan?: ReactNode; trong: string }
@@ -146,9 +156,9 @@ export interface CauHinhDM {
   tienIch?: { xoa?: (v: Record<string, any>) => boolean; chanXoa?: (v: Record<string, any>) => string | null; saoChep?: (v: Record<string, any>) => Record<string, any> | null }
   bien?: { k: string; ten: string; nut: string; icon?: string; goi?: Goi[]; menu?: string }[]   // goi: chỉ hiện ở các gói này; menu: nhãn ở menu Thêm theo loại, thiếu thì lấy ten (T284)
   moi?: (rows: Row[], ctx: { kieu?: string; ngayDauNam: string }) => Record<string, any>   // giá trị sẵn khi thêm mới theo kiểu thêm mới, ngày đầu năm của đơn vị
-  doi?: (k: string, v: Record<string, any>, rows: Row[], s?: { goi: Goi; cheDo: CheDo }) => Record<string, any>   // ô tự tính khi ô k đổi
+  doi?: (k: string, v: Record<string, any>, rows: Row[], s?: NguCanh) => Record<string, any>   // ô tự tính khi ô k đổi
   goiHoiDoi?: Goi[]   // chỉ hỏi hoiDoi ở các gói này (T144: nhóm hàng hoá gói Free, Standard không có ngầm định)
-  hoiDoi?: (k: string, v: Record<string, any>, rows: Row[]) => ({ tieuDe: string; hoi: string; sua: Record<string, any>; dien?: Record<string, any> } & HoiThem) | null   // hỏi khi đổi ô (T136)
+  hoiDoi?: (k: string, v: Record<string, any>, rows: Row[], s?: NguCanh) => ({ tieuDe: string; hoi: string; sua: Record<string, any>; dien?: Record<string, any> } & HoiThem) | null   // hỏi khi đổi ô (T136)
   loi?: (v: Record<string, any>) => string | null   // lỗi chặn lưu, báo bằng thông báo
   kiemLuu?: (v: Record<string, any>) => ({ tieuDe: string; hoi: string; sua: Record<string, any> } & HoiThem) | null   // lỗi cần hỏi trước khi lưu; đồng ý thì áp sua rồi lưu
 }
@@ -162,17 +172,27 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
     khoi: [
       {
         ten: 'Thông tin chung',
+        ba: true,
         truong: [
           { k: 'ma', nhan: 'Mã hàng hoá', kieu: 'chu', batBuoc: true, cot: 'ITEM_ID' },
-          { k: 'ten', nhan: 'Tên hàng hoá', kieu: 'chu', batBuoc: true, caHang: true, cot: 'ITEM_NAME' },
-          { k: 'nhom', nhan: 'Nhóm hàng hoá', kieu: 'chon', ds: TEN_NHOM_HANG, cot: 'ITEM_CLASS_ID' },
+          { k: 'ten', nhan: 'Tên hàng hoá', kieu: 'chu', batBuoc: true, chiem: 2, cot: 'ITEM_NAME' },
+          { k: 'nhom', nhan: 'Nhóm hàng hoá', kieu: 'chon', ds: TEN_NHOM_HANG, goi: ['S', 'PL'], cot: 'ITEM_CLASS_ID' },
+          { k: 'nhom', nhan: 'Nhóm hàng hoá', kieu: 'chon', ds: TEN_NHOM_HANG, batBuoc: true, goi: ['PR'], cot: 'ITEM_CLASS_ID' },   // gói Pro bắt buộc chọn nhóm
           // loại hàng hoá theo iPOS Inventory; Bán thành phẩm chỉ gói Pro (PhuongXT 11/10/2026, T144)
           { k: 'loai', nhan: 'Loại hàng hoá', kieu: 'chon', ds: LOAI_HANG, batBuoc: true, goi: ['S', 'PL'], cot: 'ITEM_TYPE_ID' },
           { k: 'loai', nhan: 'Loại hàng hoá', kieu: 'chon', ds: LOAI_HANG_PRO, batBuoc: true, goi: ['PR'], cot: 'ITEM_TYPE_ID' },
           { k: 'dvt', nhan: 'Đơn vị tính', kieu: 'chon', ds: TEN_DVT, nhanDs: nhanDvt, batBuoc: true, cot: 'UNIT_ID' },
-          { k: 'dvtPhu', nhan: 'ĐVT phụ', kieu: 'chon', ds: TEN_DVT, nhanDs: nhanDvt, goi: ['PR'], cot: 'UNIT_ID_EXTRA' },   // gói Standard không có quy đổi ĐVT nên bỏ (T144); gói Plus bỏ (T719)
           { k: 'barcode', nhan: 'Mã vạch', kieu: 'chu', goi: ['PR'], cot: 'BARCODE' },   // gói Plus bỏ (T719)
           { k: 'thuongHieu', nhan: 'Thương hiệu', kieu: 'chon', ds: TEN_THUONG_HIEU, chiDoc: (v, s) => s?.goi === 'S' },   // thương hiệu FABi (T151), gói Standard chỉ xem
+          {
+            k: 'tonKho',
+            nhan: 'Theo dõi tồn kho',
+            kieu: 'tich',
+            caHang: false,   // nằm cùng dòng với Thương hiệu
+            cot: 'IS_INVENTORY',
+            chiDoc: (v, s) => s?.goi === 'S',
+            chuThich: (v, s) => s?.goi === 'S' ? 'Gói Standard tự đặt theo loại hàng' : null,
+          },   // tích thì nhập, xuất, tồn theo mặt hàng; gói Free cố định theo loại hàng (T380)
         ],
       },
       {
@@ -214,37 +234,11 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
         ten: 'Hạch toán',
         goi: ['PR'],   // gói Standard tạm bỏ (T144), gói Plus bỏ (T719)
         truong: [
-          { k: 'tkKho', nhan: 'TK kho', kieu: 'chon', cot: 'ACCOUNT_ID_COST', cheDo: ['TT133', 'TT99'] },
-          { k: 'tkDt', nhan: 'TK doanh thu', kieu: 'chon', cot: 'ACCOUNT_ID_INCOME', cheDo: ['TT133', 'TT99'] },
-          { k: 'tkGv', nhan: 'TK giá vốn', kieu: 'chon', cot: 'ACCOUNT_ID_SALE_COST', cheDo: ['TT133', 'TT99'] },
-          { k: 'tkCp', nhan: 'TK chi phí', kieu: 'chon', cot: 'DEFAULT_ACCOUNT_ID_EXPENSE', cheDo: ['TT133', 'TT99'] },
-          { k: 'tkTraLai', nhan: 'TK hàng bán trả lại', kieu: 'chon', cot: 'ACCOUNT_ID_RETURN', cheDo: ['TT133', 'TT99'] },
-          { k: 'mucCp', nhan: 'Mục chi phí', kieu: 'chon', ds: TEN_MUC_CHI_PHI },
-          { k: 'ppGia', nhan: 'Phương pháp tính giá', kieu: 'chon', ds: ['Bình quân cuối kỳ', 'Bình quân tức thời', 'Nhập trước xuất trước', 'Đích danh'] },
-        ],
-      },
-      {
-        ten: 'Tồn kho',
-        truong: [
-          {
-            k: 'tonKho',
-            nhan: 'Theo dõi tồn kho',
-            kieu: 'tich',
-            cot: 'IS_INVENTORY',
-            chiDoc: (v, s) => s?.goi === 'S',
-            chuThich: (v, s) => s?.goi === 'S' ? 'Gói Standard tự đặt theo loại hàng' : null,
-          },   // tích thì nhập, xuất, tồn theo mặt hàng; gói Free cố định theo loại hàng (T380)
-          { k: 'khoMacDinh', nhan: 'Kho mặc định', kieu: 'chon', ds: ['Kho tổng', 'Kho bếp Lê Lợi', 'Kho bar Lê Lợi', 'Kho bếp Thảo Điền', 'Kho bar Thảo Điền'], cot: 'DEFAULT_WAREHOUSE_ID', goi: ['PR'] },   // gói Plus bỏ kho mặc định, tồn tối thiểu, tối đa (T719)
-          { k: 'tonToiThieu', nhan: 'Tồn tối thiểu', kieu: 'so', cot: 'MIN_QUANTITY', goi: ['PR'] },
-          { k: 'tonToiDa', nhan: 'Tồn tối đa', kieu: 'so', cot: 'MAX_QUANTITY', goi: ['PR'] },
-          { k: 'khoTheoDoi', nhan: 'Kho theo dõi', kieu: 'chonNhieu', ds: KHO, maDs: maKho, caHang: true, hien: coTonKho, goi: ['PL', 'PR'], goiY: 'Để trống nếu hàng hoá theo dõi tồn tại mọi kho' },   // T151
-        ],
-      },
-      {
-        ten: 'Nhà cung cấp',
-        goi: ['PR'],   // gói Plus bỏ (T719)
-        truong: [
-          { k: 'ncc', nhan: 'Nhà cung cấp cung ứng', kieu: 'chonNhieu', ds: NCC.map(n => n.ten), maDs: maNcc, caHang: true, goiY: 'Để trống nếu hàng hoá này được tất cả nhà cung cấp đáp ứng' },   // T151, T380
+          { k: 'tkKho', nhan: 'TK kho', kieu: 'chon', cot: 'ACCOUNT_ID_COST', cheDo: ['TT133', 'TT99'], chiDoc: chiDocTk },
+          { k: 'tkDt', nhan: 'TK doanh thu', kieu: 'chon', cot: 'ACCOUNT_ID_INCOME', cheDo: ['TT133', 'TT99'], chiDoc: chiDocTk },
+          { k: 'tkGv', nhan: 'TK giá vốn', kieu: 'chon', cot: 'ACCOUNT_ID_SALE_COST', cheDo: ['TT133', 'TT99'], chiDoc: chiDocTk },
+          { k: 'tkCp', nhan: 'TK chi phí', kieu: 'chon', cot: 'DEFAULT_ACCOUNT_ID_EXPENSE', cheDo: ['TT133', 'TT99'], chiDoc: chiDocTk },
+          { k: 'tkTraLai', nhan: 'TK hàng bán trả lại', kieu: 'chon', cot: 'ACCOUNT_ID_RETURN', cheDo: ['TT133', 'TT99'], chiDoc: chiDocTk },
         ],
       },
       {
@@ -270,6 +264,7 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
           boSung.tonKho = v.loai === 'Thành phẩm' ? 0 : 1
         }
       }
+      if (s?.goi === 'PR' && k === 'loai') boSung.tonKho = LOAI_KHONG_TON_PRO.includes(String(v.loai ?? '')) ? 0 : 1
       if (k === 'nganhNghe') return { ...boSung, ...dienNganhNghe(String(v.nganhNghe ?? '')) }
       if (k === 'nganhNgheDn') return { ...boSung, ...dienNganhDn(String(v.nganhNgheDn ?? '')) }
       // T151: TT152, TT58 chỉ đi với gói Free, Standard nên không qua hoiDoi (gói Plus, Pro). Chọn nhóm thì điền ngành nghề
@@ -281,13 +276,20 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
       return { ...boSung, ...(nn ? { nganhNghe: nn, ...dienNganhNghe(nn) } : {}), ...(nd ? { nganhNgheDn: nd, ...dienNganhDn(nd) } : {}) }
     },
     goiHoiDoi: ['PR'],   // nhóm hàng hoá gói Standard, Plus không có ngầm định nên không hỏi áp (T144)
-    hoiDoi: (k, v) => {
-      if (k !== 'nhom' || !v.nhom) return null
+    hoiDoi: (k, v, _rows, s) => {
+      if (k !== 'nhom') return null
       const nhomMoi = NHOM_HANG.find(n => n.ten === v.nhom)
+      // Tài khoản theo nhóm: chọn nhóm là điền thẳng, không hỏi; bỏ chọn nhóm thì xoá tài khoản
+      if (tkTheoNhom(s)) {
+        const dien: Record<string, any> = {}
+        for (const f of ['tkKho', 'tkDt', 'tkGv', 'tkCp', 'tkTraLai'] as const) dien[f] = nhomMoi?.[f] ?? ''
+        if (nhomMoi && (v.ts === undefined || v.ts === null || v.ts === '')) dien.ts = nhomMoi.ts
+        return { tieuDe: '', hoi: '', sua: {}, dien }
+      }
       if (!nhomMoi) return null
 
       const O_NGAM_DINH: (keyof typeof nhomMoi)[] = [
-        'tkKho', 'tkDt', 'tkGv', 'tkCp', 'tkTraLai', 'mucCp', 'ppGia', 'ts',   // T154: nhóm không còn loại hàng, tồn kho, kho mặc định
+        'tkKho', 'tkDt', 'tkGv', 'tkCp', 'tkTraLai', 'ts',   // nhóm không còn loại hàng, tồn kho, kho, mục chi phí, phương pháp giá vốn
       ]
       const TEN_O: Record<string, string> = {
         tkKho: 'TK kho',
@@ -295,8 +297,6 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
         tkGv: 'TK giá vốn',
         tkCp: 'TK chi phí',
         tkTraLai: 'TK hàng bán trả lại',
-        mucCp: 'Mục chi phí',
-        ppGia: 'Phương pháp tính giá',
         ts: 'Thuế suất GTGT',
       }
 
@@ -801,9 +801,10 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
     khoi: [
       {
         ten: 'Thông tin chung',
+        ba: true,
         truong: [
-          { k: 'ma', nhan: 'Mã nhóm', kieu: 'chu', batBuoc: true },
-          { k: 'ten', nhan: 'Tên nhóm', kieu: 'chu', batBuoc: true, caHang: true },
+          { k: 'ma', nhan: 'Mã nhóm', kieu: 'chu', batBuoc: true },   // dòng đầu chia 3 phần: mã 1, tên 2
+          { k: 'ten', nhan: 'Tên nhóm', kieu: 'chu', batBuoc: true, chiem: 2 },
           { k: 'dienGiai', nhan: 'Diễn giải', kieu: 'chu', caHang: true },   // T154: bỏ loại hàng hoá
           // T151: ngầm định ngành nghề nằm ở Thông tin chung vì TT152, TT58 chỉ có ở gói Free, Standard, không có khối Ngầm định
           { k: 'nganhNghe', nhan: 'Nhóm ngành nghề con', kieu: 'chonTim', caHang: true, ds: MA_NGANH_NGHE, nhanDs: tenNganhNghe, cheDo: ['TT152'] },
@@ -819,8 +820,6 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
           { k: 'tkGv', nhan: 'TK giá vốn', kieu: 'chon', cheDo: ['TT133', 'TT99'] },
           { k: 'tkCp', nhan: 'TK chi phí', kieu: 'chon', cheDo: ['TT133', 'TT99'] },
           { k: 'tkTraLai', nhan: 'TK hàng bán trả lại', kieu: 'chon', cheDo: ['TT133', 'TT99'] },
-          { k: 'mucCp', nhan: 'Mục chi phí', kieu: 'chon', ds: TEN_MUC_CHI_PHI },
-          { k: 'ppGia', nhan: 'Phương pháp tính giá', kieu: 'chon', ds: ['Bình quân cuối kỳ', 'Bình quân tức thời', 'Nhập trước xuất trước', 'Đích danh'] },
           { k: 'ts', nhan: 'Thuế suất GTGT (%)', kieu: 'chon', ds: DS_GT_THUE_SUAT, nhanDs: nhanThueSuat, cheDo: ['TT133', 'TT99'] },
           // T154: bỏ theo dõi tồn kho, kho mặc định
         ],
