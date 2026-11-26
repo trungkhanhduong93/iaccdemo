@@ -940,22 +940,19 @@ export function ThongTinDonVi({ sc }: ScreenProps) {
             {s.goi === 'S' && <div className="f c2"><label>Phương pháp tính chi phí NVL</label>
               <Select className="inp" value={f.cachNvl} ds={DS_CACH_NVL} aria-label="Phương pháp tính chi phí NVL" onChange={e => sua({ cachNvl: e.target.value as CachNvl })} />
               <small className="muted">{CACH_NVL[f.cachNvl].mota}. Áp dụng chung mọi cửa hàng.</small></div>}
-            {s.goi !== 'S' && <div className="f c2"><label>Phương pháp tính giá xuất kho</label><Select className="inp"><option>Bình quân gia quyền cuối kỳ</option><option>Bình quân tức thời</option><option>Nhập trước xuất trước</option></Select></div>}
+            {s.goi !== 'S' && <div className="f c2"><label>Phương pháp tính giá xuất kho</label><Select className="inp"><option>Bình quân gia quyền cuối kỳ</option>{/* Tạm thời chỉ giữ bình quân gia quyền; bình quân tức thời, nhập trước xuất trước sẽ mở lại sau */}</Select></div>}
           </div>
         </Card>
       </div>
       {choDoi && (
-        <ThongBao loai="hoi" nhan="Thay đổi lớn" tieuDe="Đổi chế độ kế toán của đơn vị?"
+        <ThongBao loai="hoi" nhan="Cảnh báo thay đổi" tieuDe={`Chuyển sang ${CHE_DO[choDoi].soHieu}?`}
+          moTa="Hệ thống tài khoản, mẫu chứng từ, sổ sách và báo cáo sẽ chuyển theo chế độ mới. Chứng từ đã lập và danh mục được giữ nguyên."
           anhHuong={[
-            { nhan: 'Đang dùng', gt: `${CHE_DO[s.cheDo].soHieu} · ${CHE_DO[s.cheDo].ten}` },
-            { nhan: 'Đổi sang', gt: `${CHE_DO[choDoi].soHieu} · ${CHE_DO[choDoi].ten}`, mau: 'xanh' },
-          ]}
-          duKien={[
-            { nhan: 'Đổi theo', gt: 'Hệ thống tài khoản, mẫu chứng từ, mẫu in, sổ, báo cáo' },
-            { nhan: 'Giữ nguyên', gt: 'Chứng từ đã lập, danh mục' },
+            { nhan: 'Đang dùng', gt: CHE_DO[s.cheDo].soHieu },
+            { nhan: 'Đổi sang', gt: CHE_DO[choDoi].soHieu, mau: 'xanh' },
           ]}
           onDong={() => setChoDoi(null)}
-          nut={{ ten: 'Đổi chế độ', onClick: () => {
+          nut={{ ten: 'Xác nhận chuyển', onClick: () => {
             const cdDef = CHE_DO[choDoi]
             set({ cheDo: choDoi })
             setChoDoi(null)

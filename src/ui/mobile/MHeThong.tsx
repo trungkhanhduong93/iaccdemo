@@ -931,8 +931,7 @@ export const MThongTinDonVi: FC<ScreenProps> = () => {
             <label className="m-form-nhan">Tính giá xuất kho</label>
             <Select className="inp">
               <option>Bình quân gia quyền cuối kỳ</option>
-              {/* gói Free chỉ bình quân cuối kỳ (T268) */}
-              {s.goi !== 'S' && <><option>Bình quân tức thời</option><option>Nhập trước xuất trước</option></>}
+              {/* Tạm thời mọi gói chỉ giữ bình quân gia quyền; bình quân tức thời, nhập trước xuất trước sẽ mở lại sau */}
             </Select>
           </div>
         </div>
