@@ -1287,3 +1287,5 @@ Trum chốt, kèm ảnh form Sửa Nhóm hàng hoá (Ngầm định cho hàng ho
 - Áp cho mọi màn hình có ô tài khoản, không chừa màn nào. Màn nào được phép dùng tài khoản tổng hợp thì Trum báo riêng, ghi thêm QD mới ("thay QD119 cho màn X"), agent không tự suy ra.
 - Phạm vi: bản Pro (hạch toán). Gói Free không hạch toán nên không có ô tài khoản (QD32).
 - Cách làm: dùng chung một hàm lọc và một hàm kiểm tài khoản chi tiết, không viết lọc riêng từng màn. Màn mới có ô tài khoản phải dùng hàm đó.
+
+## QD120. Tiến trình đồng bộ nằm trên màn đang đồng bộ, kết quả ở hộp chồng lên (đang soạn)
