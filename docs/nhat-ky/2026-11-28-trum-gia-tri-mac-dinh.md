@@ -18,7 +18,7 @@
 
 - `npm run typecheck`, `npm run build`: chạy xong, không lỗi.
 - `python tools/kiem_van.py src/ui/generic/HopGiaTriMacDinh.tsx`: Sạch.
-- `python tools/kiem_tra.py --nhanh`: đỏ sẵn trên main, không do T955. Mục T870 crash (từ T923 Thẻ kho phải chọn Kho, Mặt hàng). Bỏ riêng T870 thì còn 8 lỗi, so với bản gốc 2fb6db16 giống hệt. Ghi thành T956.
+- `python tools/kiem_tra.py --nhanh`: đỏ sẵn trên main, không do T955. Mục T870 crash (từ T923 Thẻ kho phải chọn Kho, Mặt hàng). Bỏ riêng T870 thì còn 8 lỗi, so với bản gốc 2fb6db16 giống hệt. Ghi thành T957.
 - Worker chạy Playwright trên `#/app/mua-hang/4-1-1/moi`: gói Pro KTT tự điền đúng, phiếu cũ không đổi, gói Standard không có nút, KTV chỉ xem, Huỷ giữ danh sách ô cũ, 0 pageerror.
 
 ## Dở dang, việc tiếp theo
