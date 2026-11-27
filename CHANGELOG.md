@@ -2,6 +2,9 @@
 
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
+## 28/11/2026
+- T955: Gói Pro, Phiếu mua hàng: nút Giá trị mặc định cạnh nút Tuỳ chỉnh giao diện. Chủ doanh nghiệp, kế toán trưởng chọn ô cần tự điền (Nhà cung cấp, Kho nhập, Hình thức thanh toán, Diễn giải, Người giao, Kho dòng, Thuế suất) và đặt giá trị cho từng cửa hàng, chép được sang cửa hàng khác. Lập phiếu mới thì ô trống tự điền theo cửa hàng của phiếu. Kế toán viên chỉ xem.
+
 ## 27/11/2026
 - T954: Điện thoại gói Standard, Chi phí hoạt động: bấm lý do chi sang màn chi tiết lý do, không thả phiếu dưới dòng. Màn này có thẻ tổng tách tiền mặt, ngân hàng, chip lọc, danh sách phiếu bấm mở phiếu chi.
 - T953: Gói Standard, màn Chi phí NVL và Chi phí hoạt động: bấm cửa hàng hoặc lý do chi mở hộp chi tiết có ô tóm tắt, lọc từng cột, phân trang, xuất Excel.

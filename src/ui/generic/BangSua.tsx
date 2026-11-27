@@ -37,6 +37,7 @@ export interface BangSuaProps {
   coLo?: boolean
   coKm?: boolean               // dòng tiền có cột Khoản mục, Công việc; gói Free không có
   khoMacDinh?: string
+  macDinhDong?: { kho?: string; ts?: number; km?: string }   // giá trị mặc định dòng chi tiết theo cửa hàng, gói Pro (T955)
   lyDo?: { nhan: string; ds: string[]; macDinh: string }   // cột Lý do thu, chi trên dòng phiếu tiền (T49)
   dtMacDinh?: string           // đối tượng của dòng mới, theo đối tượng đầu phiếu (T49)
   an?: string[]                // mã cột người dùng ẩn qua Tuỳ chỉnh giao diện phiếu (T49)
@@ -103,6 +104,7 @@ export function BangSua({
   coLo = false,
   coKm = true,
   khoMacDinh = 'Kho tổng',
+  macDinhDong = {},
   lyDo,
   dtMacDinh = '',
   an = [],
@@ -220,7 +222,7 @@ export function BangSua({
     const tien = sl * gia
     const ptCk = dong[idx]?.ptCk ?? 0
     const ck = Math.round(tien * ptCk / 100)
-    const ts = cfg.thue === 0 ? 0 : item.ts
+    const ts = cfg.thue === 0 ? 0 : (item.ts ?? macDinhDong.ts ?? 0)
     const thue = Math.round((tien - ck) * ts / 100)
     capNhat(idx, {
       ma: item.ma,
@@ -233,7 +235,7 @@ export function BangSua({
       ck,
       ts,
       thue,
-      kho: dong[idx]?.kho || khoMacDinh,
+      kho: dong[idx]?.kho || macDinhDong.kho || khoMacDinh,
     })
   }
 
@@ -241,6 +243,8 @@ export function BangSua({
     if (!onChange) return
     const mauHang = danhMucHang[0]
     const tkMoi = tkTheoLy && lyDo?.macDinh ? tkTheoLy(lyDo.macDinh) : undefined
+    const tsHang = cfg.thue === 0 ? 0 : (mauHang?.ts ?? macDinhDong.ts ?? 0)
+    const tsKhac = cfg.thue ?? macDinhDong.ts ?? 0
     const dongMoi: Dong = hang && mauHang && !cfg.khongKho ? {   // hoá đơn mua không qua kho thêm dòng trống mã, gõ diễn giải (T821)
       ma: mauHang.ma,
       ten: mauHang.ten,
@@ -248,13 +252,13 @@ export function BangSua({
       sl: 1,
       gia: mauHang.gia,
       tien: mauHang.gia,
-      ts: cfg.thue === 0 ? 0 : mauHang.ts,
-      thue: Math.round(mauHang.gia * (cfg.thue === 0 ? 0 : mauHang.ts) / 100),
+      ts: tsHang,
+      thue: Math.round(mauHang.gia * tsHang / 100),
       ptCk: 0,
       ck: 0,
-      kho: khoMacDinh,
+      kho: macDinhDong.kho || khoMacDinh,
       dt: '',
-      km: '',
+      km: macDinhDong.km || '',
       cv: '',
       lo: '',
       hsd: '',
@@ -265,11 +269,11 @@ export function BangSua({
       sl: 1,
       gia: 1_000_000,
       tien: 1_000_000,
-      ts: cfg.thue ?? 0,
-      thue: Math.round(1_000_000 * (cfg.thue ?? 0) / 100),
+      ts: tsKhac,
+      thue: Math.round(1_000_000 * tsKhac / 100),
       dt: dtMacDinh,
       ly: lyDo?.macDinh,
-      km: '',
+      km: macDinhDong.km || '',
       cv: '',
       lo: '',
       hsd: '',
@@ -285,8 +289,8 @@ export function BangSua({
     onChange([...dong, ...ds.map((h): Dong => {
       const item = danhMucHang.find(x => x.ma === h.ma)
       const gia = item?.gia ?? 0
-      const ts = cfg.thue === 0 ? 0 : item?.ts ?? 0
-      return { ma: h.ma, ten: h.ten, dvt: h.dvt, sl: 1, gia, tien: gia, ts, thue: Math.round(gia * ts / 100), ptCk: 0, ck: 0, kho: khoMacDinh, dt: '', km: '', cv: '', lo: '', hsd: '' }
+      const ts = cfg.thue === 0 ? 0 : (item?.ts ?? macDinhDong.ts ?? 0)
+      return { ma: h.ma, ten: h.ten, dvt: h.dvt, sl: 1, gia, tien: gia, ts, thue: Math.round(gia * ts / 100), ptCk: 0, ck: 0, kho: macDinhDong.kho || khoMacDinh, dt: '', km: macDinhDong.km || '', cv: '', lo: '', hsd: '' }
     })])
   }
 
