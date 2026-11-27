@@ -16,7 +16,7 @@ export const TRUONG_MAC_DINH: Record<string, TruongMacDinh[]> = {
     { nhom: 'dau', k: 'kho', ten: 'Kho nhập', ds: khoCn },
     { nhom: 'dau', k: 'httt', ten: 'Hình thức thanh toán', ds: () => [['congno', 'Chưa thanh toán'], ['tienmat', 'Tiền mặt'], ['chuyenkhoan', 'Chuyển khoản']] },
     { nhom: 'dau', k: 'dienGiai', ten: 'Diễn giải' },
-    { nhom: 'dau', k: 'nguoiGiao', ten: 'Người giao', ds: () => NHAN_VIEN.map(n => [n.ten, n.ten]) },
+    { nhom: 'dau', k: 'nguoiGiao', ten: 'Người giao dịch', ds: () => NHAN_VIEN.map(n => [n.ten, n.ten]) },
     { nhom: 'luoi', k: 'kho', ten: 'Kho', ds: khoCn },
     { nhom: 'luoi', k: 'ts', ten: 'Thuế suất', ds: () => [['0', '0%'], ['5', '5%'], ['8', '8%'], ['10', '10%']] },
     { nhom: 'luoi', k: 'km', ten: 'Khoản mục', ds: () => KHOAN_MUC.map(km => [km.ma, km.ten]) },
