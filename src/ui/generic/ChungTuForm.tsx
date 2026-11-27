@@ -151,7 +151,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
   // Giá trị mặc định theo cửa hàng (T955): chỉ đọc một lần lúc khởi tạo phiếu mới, không áp lại khi đổi cửa hàng giữa chừng
   const coMacDinh = s.goi === 'PR' && Boolean(sc.code && TRUONG_MAC_DINH[sc.code])
   const cnId = CUA_HANG.find(c => c.ten === cuaHang)?.id ?? ''
-  const [md] = useState(() => (moi && !traTu && coMacDinh && cnId ? macDinhCuaHang(s.donVi, sc.code!, cnId) : {}))
+  const [md, setMd] = useState(() => (moi && !traTu && coMacDinh && cnId ? macDinhCuaHang(s.donVi, sc.code!, cnId) : {}))
   const coGtDaDat = coMacDinh && Boolean(cnId) && Object.values(macDinhCuaHang(s.donVi, sc.code!, cnId)).some(Boolean)
 
   const path = duongDan(mod, sc)
@@ -299,7 +299,8 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
   // Cột Khoản mục chỉ hiện ở dòng tiền khi được bật như BangSua (T955)
   const coCotKm = cfg.dong === 'tien' && kieu !== 'khong' && !anCot.includes('km') && !anDc.includes('km') && !anKmTam
   const anTruongMd = coCotKm ? undefined : ['luoi:km']
-  const [macDinhDong] = useState(() => {
+  // Tính lại từ md để sau khi chọn cửa hàng ở màn "Tất cả cửa hàng" vẫn có mặc định dòng (T955)
+  const macDinhDong = useMemo(() => {
     if (!moi || traTu || !coMacDinh || !cnId) return undefined
     const dsKho0 = CUA_HANG.find(c => c.ten === cuaHang)?.kho ?? KHO
     const ts = md['luoi:ts'] !== undefined && md['luoi:ts'] !== '' && Number.isFinite(Number(md['luoi:ts'])) ? Number(md['luoi:ts']) : undefined
@@ -308,7 +309,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
       ...(ts !== undefined ? { ts } : {}),
       ...(coCotKm && md['luoi:km'] ? { km: md['luoi:km'] } : {}),
     }
-  })
+  }, [moi, traTu, coMacDinh, cnId, md, cuaHang, coCotKm])
   const coLyTuyChon = Boolean(oLy) && !khoaLyDtStandard
   const lyDau = !coLyTuyChon || !anCot.includes('chung:lyDau')
   const dsChung: [string, string][] = coLyTuyChon ? [['lyDau', 'Lý do nghiệp vụ hiển thị đầu phiếu']] : []
@@ -950,6 +951,22 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
   // Tiêu đề form mọi phiếu chỉ là tên phiếu; trạng thái và số phiếu ở giữa đầu form (T49, T61)
   const tenPhieu = loaiCt !== 'XBAN' ? TEN_LOAI_CT[loaiCt] : loai?.ten ?? (cfg.them?.startsWith('Thêm ') ? cfg.them.charAt(5).toUpperCase() + cfg.them.slice(6) : tenMan(sc))
 
+  // Áp giá trị mặc định sau khi chọn cửa hàng từ màn "Tất cả cửa hàng" (T955)
+  function apMacDinhCn(cnIdMoi: string) {
+    if (!moi || traTu || !coMacDinh) return
+    const m = macDinhCuaHang(s.donVi, sc.code!, cnIdMoi)
+    setMd(m)
+    const dsKhoMoi = CUA_HANG.find(c => c.id === cnIdMoi)?.kho ?? []
+    if (!luuCu('kho') && m['dau:kho'] && dsKhoMoi.includes(m['dau:kho'])) setKho(m['dau:kho'])
+    if (!sp.get('dt') && m['dau:ncc']) setDoiTuong(m['dau:ncc'])
+    const httt = m['dau:httt']
+    if (nv?.ttTien !== 'da' && (httt === 'congno' || httt === 'tienmat' || httt === 'chuyenkhoan')) setHinhThucTt(httt)
+    if (m['dau:dienGiai']) setDienGiai(m['dau:dienGiai'])
+    if (luuCu('nguoiGiao') === undefined && m['dau:nguoiGiao'] && NHAN_VIEN.some(n => n.ten === m['dau:nguoiGiao'])) {
+      setNguoiGiao(m['dau:nguoiGiao'])
+    }
+  }
+
   // Đang xem tất cả cửa hàng thì phải chọn một cửa hàng trước khi lập chứng từ mới
   if (canChonCn) {
     return (
@@ -960,7 +977,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
           <p className="muted">Bạn đang xem tất cả cửa hàng. Chứng từ mới lập cho một cửa hàng và không đổi được sau khi lập.</p>
           <div className="chon-cn-ds">
             {CUA_HANG.map(c => (
-              <button key={c.id} type="button" className="btn" onClick={() => set({ cuaHang: c.id })}>
+              <button key={c.id} type="button" className="btn" onClick={() => { set({ cuaHang: c.id }); apMacDinhCn(c.id) }}>
                 <Icon n="cuahang" className="ic sm" />{c.ten}
               </button>
             ))}

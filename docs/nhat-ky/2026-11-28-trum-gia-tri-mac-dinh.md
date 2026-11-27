@@ -11,6 +11,7 @@
 - `src/ui/generic/ChungTuForm.tsx`: nút vuông Giá trị mặc định cạnh nút Tuỳ chỉnh giao diện (gói Pro, màn có trong `TRUONG_MAC_DINH`), chấm cam khi cửa hàng đã đặt; phiếu mới không `traTu` tự điền Nhà cung cấp, Kho nhập, Hình thức thanh toán, Diễn giải, Người giao. Khoản mục chỉ đưa ra chọn khi phiếu có cột Khoản mục (dòng tiền), phiếu mua không có.
 - `src/ui/generic/BangSua.tsx`: prop `macDinhDong` cho dòng mới (kho, thuế suất khi hàng không có thuế suất, khoản mục).
 - `src/styles/app.css`: mục cuối "Hộp Giá trị mặc định chứng từ (T955)", lớp `gtmd-`.
+- Sửa sau QA: đang xem Tất cả cửa hàng, chọn cửa hàng trên màn "Chọn cửa hàng lập chứng từ" thì đọc lại mặc định của cửa hàng đó và điền vào phiếu (`apMacDinhCn` trong `ChungTuForm.tsx`, `macDinhDong` tính lại theo `md`).
 - Mẫu duyệt: artifact 9fWCmd9NWi64QrKz9HvXAi, bản chép ở `backup/mau-T955-hop.dc.html` (không lên git).
 
 ## Đã kiểm
