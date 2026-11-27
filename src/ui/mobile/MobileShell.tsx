@@ -60,6 +60,9 @@ function layTieuDe(pathname: string, search = '', s?: Session): string {
   const modKey = parts[1]
   const slug = parts[2]
   if (!modKey) return 'Trang chủ'
+  // Màn chi tiết một lý do chi của Chi phí hoạt động (?ly=) lấy tên lý do làm tiêu đề (T954)
+  const lyChiPhi = modKey === 'trang-chu' && slug === 'chi-phi-thang' && new URLSearchParams(search).get('ly')
+  if (lyChiPhi) return lyChiPhi
   // Tiêu đề theo tab: Nhập kho, Xuất khác (T824)
   if (modKey === 'kho' && slug === '5-1-1') return 'Nhập kho'
   if (modKey === 'kho' && slug === '5-1-2-4') return 'Xuất khác'

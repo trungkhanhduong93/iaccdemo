@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 27/11/2026
+- T954: Điện thoại gói Standard, Chi phí hoạt động: bấm lý do chi sang màn chi tiết lý do, không thả phiếu dưới dòng. Màn này có thẻ tổng tách tiền mặt, ngân hàng, chip lọc, danh sách phiếu bấm mở phiếu chi.
 - T953: Gói Standard, màn Chi phí NVL và Chi phí hoạt động: bấm cửa hàng hoặc lý do chi mở hộp chi tiết có ô tóm tắt, lọc từng cột, phân trang, xuất Excel.
 - Điện thoại: menu Nghiệp vụ, nhóm Thu chi đổi từ Thu tiền, Chi tiền thành Tiền mặt, Ngân hàng (giữ Chuyển quỹ). Tiền mặt, Ngân hàng có tab Tất cả, Thu tiền, Chi tiền, Báo cáo.
 - T952: Danh mục cửa hàng, hộp Thêm cửa hàng từ FABi: chân hộp có thanh khi lấy danh sách và thanh % khi lên sổ, xong mở hộp kết quả.

@@ -4014,6 +4014,34 @@ def kiem_tra_dot_19_b():
                 loi.append('19B: màn Chi phí trong tháng không có dòng dữ liệu')
             kiem_man('Màn Chi phí trong tháng')
             pg.screenshot(path=str(SHOTS / 'm-19-chi-phi-thang.png'))
+            # T954: bấm lý do sang màn chi tiết lý do (?ly=), không thả phiếu dưới dòng; nút về quay lại danh sách
+            dong_ly = pg.locator('.m-standard-cpt-ds > button.m-standard-cpt-dong').first
+            if dong_ly.count():
+                ten_ly = dong_ly.locator('.m-standard-cpt-ten').inner_text().strip()
+                dong_ly.click()
+                pg.wait_for_timeout(300)
+                if 'ly=' not in pg.evaluate('location.hash') or pg.locator('.m-cpt-ly-the').count() == 0:
+                    loi.append('T954: bấm lý do chi không sang màn chi tiết lý do')
+                else:
+                    if pg.locator('.m-thanh-tren-tieu-de').inner_text().strip() != ten_ly:
+                        loi.append(f'T954: tiêu đề màn chi tiết không phải tên lý do "{ten_ly}"')
+                    tong = pg.locator('.m-cpt-ly-phieu').count()
+                    chip_tm = pg.locator('.m-cpt-ly-chip button', has_text='Tiền mặt')
+                    if tong == 0 or chip_tm.count() == 0:
+                        loi.append('T954: màn chi tiết lý do thiếu danh sách phiếu hoặc chip Tiền mặt')
+                    else:
+                        so_tm = int(chip_tm.inner_text().split()[-1])
+                        chip_tm.click()
+                        pg.wait_for_timeout(150)
+                        if pg.locator('.m-cpt-ly-phieu').count() != so_tm:
+                            loi.append(f'T954: chip Tiền mặt ghi {so_tm} phiếu nhưng hiện {pg.locator(".m-cpt-ly-phieu").count()}')
+                    kiem_man('Màn chi tiết lý do chi (T954)')
+                    pg.locator('.m-nut-back').first.click()
+                    pg.wait_for_timeout(300)
+                    if 'ly=' in pg.evaluate('location.hash') or pg.locator('.m-standard-cpt-ds').count() == 0:
+                        loi.append('T954: nút về không quay lại danh sách lý do chi')
+            else:
+                loi.append('T954: danh sách lý do chi không có dòng bấm sang màn chi tiết')
 
         # ── 4. Kiểm tra Lịch sử thu chi ──
         pg.goto(f'{URL}?goi=S&p=1903#/app')
