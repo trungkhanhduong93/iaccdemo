@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 27/11/2026
+- T949: Gói Pro, danh sách bút toán thêm cột Ghi chú, Đối tượng/Công việc/Thành phẩm/VTHH theo tài khoản và đối ứng, số chứng từ mở chứng từ gốc, giữ trang, lọc, vị trí cuộn khi quay lại, cảnh báo tài khoản tổng hợp kèm nút Chuyển tài khoản (popup Chuyển mã tài khoản theo kỳ, loại chứng từ, có hỏi xác nhận).
 - T949: Gói Pro, Chứng từ tổng hợp (10.1.1) đổi thành danh sách bút toán của mọi chứng từ: mỗi cặp Nợ/Có hai dòng, có Số tiền nợ, Số tiền có, Đối tượng, Công việc, Thành phẩm, VTHH nợ/có, Tính chất DEB/CRD, dòng tổng, gom nhóm và Bộ lọc nâng cao.
 - T948: Phiếu thu, chi, chuyển quỹ gói Pro: dòng chi tiết có TK Nợ, TK Có (tự lấy theo quỹ, lý do, đối tượng, chọn lại được), kèm cột Đối tượng, Công việc, Thành phẩm, VTHH theo cặp Nợ, Có khi tài khoản theo dõi chi tiết; lưu phải đủ tài khoản và mã chi tiết. Cột Thành tiền đổi thành Số tiền, tạm ẩn cột Khoản mục. Tuỳ chỉnh giao diện thêm Tuỳ chọn chung: Lý do nghiệp vụ hiển thị đầu phiếu.
 

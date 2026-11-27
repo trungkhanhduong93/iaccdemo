@@ -50387,3 +50387,12 @@ td.xdl-cat > span { display: block; overflow: hidden; text-overflow: ellipsis; w
 
 /* ── Lý do nghiệp vụ Pro: ô tích Chi phí phân bổ nhiều kỳ ngang hàng nhãn Tài khoản chi phí trả trước ── */
 .pn-luoi .pn-tich-o.pn-ld-ngang-nhan { align-self: start; min-height: 20px; }
+
+/* ── Cảnh báo tài khoản tổng hợp cùng hàng thanh lọc, danh sách bút toán Pro (T949) ── */
+.ds-canh-bao-dong { flex: 1; min-width: 0; }
+.ds-canh-bao-dong .note { margin: 0; padding: 6px 10px; }
+.ds-canh-bao-dong .note > div { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.ds-canh-bao-dong .ds-cb-chu { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.ds-canh-bao-dong .btn { flex: none; }
+body:has(.ds-chuyen-tk) .pop { z-index: 1200; }   /* danh sách thả xuống nằm trên hộp Chuyển mã tài khoản */
+.ds-chuyen-tk button.sel { width: 100%; height: 38px; padding: 0 12px; display: flex; align-items: center; justify-content: space-between; background: #fff; border: 1px solid #d5dbe5; border-radius: 8px; font-size: 14px; }   /* ô Từ tài khoản, Sang tài khoản có khung viền như ô ngày */
