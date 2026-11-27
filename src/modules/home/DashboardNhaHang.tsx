@@ -200,7 +200,7 @@ export function DashboardNhaHang() {
             <Chu mau="var(--dnh-dt)" ten="Doanh thu" /><Chu mau="var(--dnh-cp)" ten="Chi phí NVL" />
             <ChuDuong mau="var(--dnh-ln)" ten="Lợi nhuận" /><ChuDuong mau="var(--dnh-ton)" ten="Biên LN ròng (%)" net />
           </div>
-          <CotDuongChart nhan={THANG} h={280} chon={i}
+          <CotDuongChart nhan={THANG} h={220} chon={i}
             cot={[{ ten: 'Doanh thu', mau: 'var(--dnh-dt)', v: c.dt }, { ten: 'Chi phí NVL', mau: 'var(--dnh-cp)', v: c.nvl }]}
             duong={[{ ten: 'Lợi nhuận', mau: 'var(--dnh-ln)', v: c.ln }, { ten: 'Biên LN ròng', mau: 'var(--dnh-ton)', v: c.bien, phai: true, net: true }]} />
         </Card>
@@ -209,7 +209,7 @@ export function DashboardNhaHang() {
             <Chu mau="var(--dnh-thu)" ten="Thu" /><Chu mau="var(--dnh-chiT)" ten="Chi" />
             <ChuDuong mau="var(--dnh-thuan)" ten="Chênh lệch thu chi" /><ChuDuong mau="var(--dnh-ton)" ten="Số dư cuối kỳ" net />
           </div>
-          <CotDuongChart nhan={THANG} h={280} chon={i}
+          <CotDuongChart nhan={THANG} h={220} chon={i}
             cot={[{ ten: 'Thu', mau: 'var(--dnh-thu)', v: tc.thu }, { ten: 'Chi', mau: 'var(--dnh-chiT)', v: tc.chi }]}
             duong={[{ ten: 'Chênh lệch thu chi', mau: 'var(--dnh-thuan)', v: tc.chenh }, { ten: 'Số dư cuối kỳ', mau: 'var(--dnh-ton)', v: tc.soDu, net: true }]} />
         </Card>
@@ -266,7 +266,7 @@ export function DashboardNhaHang() {
                 <Chu mau="var(--red)" ten="Tháng vượt định mức" />
               </>}
             </div>
-            <SparkDinhMuc nhan={THANG} v={c.tyLeNvl} dm={dmNvl} min={28} max={38} h={180} mau="var(--dnh-cp)" ten="Tỷ lệ NVL" chon={i} />
+            <SparkDinhMuc nhan={THANG} v={c.tyLeNvl} dm={dmNvl} min={28} max={38} h={180} mau="var(--dnh-cp)" ten="Tỷ lệ NVL" chon={i} vuaKhung />
           </div>
         </div>
       </Card>

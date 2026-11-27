@@ -50860,25 +50860,19 @@ body:has(.ds-chuyen-tk) .pop { z-index: 1200; }   /* danh sách thả xuống n�
 .m-app .dnh-cv svg { min-width: 0; }   /* biểu đồ 13 tháng vừa khung điện thoại, không kéo lên 520px như bản web */
 
 /* ── Dashboard nhà hàng: sửa theo góp ý Trum (T958) ── */
-/* Tooltip biểu đồ: tên tháng có kẻ dưới, mỗi dòng chấm màu, tên canh trái, số canh phải */
-.nh-tip {
-  position: fixed; z-index: 1300; pointer-events: none; min-width: 210px; padding: 10px 12px 8px;
-  background: var(--white); border: 1px solid var(--line); border-radius: 10px;
-  box-shadow: 0 12px 28px -8px rgba(16, 24, 40, .28); font-size: 12.5px; color: var(--body); font-variant-numeric: tabular-nums;
-}
-.nh-tip-dau { font-weight: 700; color: var(--ink); font-size: 13px; padding-bottom: 7px; margin-bottom: 5px; border-bottom: 1px solid var(--line); }
-.nh-tip-dong { display: grid; grid-template-columns: 10px minmax(0, 1fr) auto; align-items: center; column-gap: 8px; padding: 3px 0; text-align: left; white-space: nowrap; }
-.nh-tip-dong i { width: 10px; height: 10px; border-radius: 3px; }
-.nh-tip-dong span { color: var(--muted); }
-.nh-tip-dong b { color: var(--ink); font-weight: 600; text-align: right; padding-left: 16px; }
+/* Tooltip biểu đồ dùng lớp ll-tip của gói Standard, chỉ đổi sang fixed để không bị thẻ cắt (T959) */
+.ll-tip.nh-tip { position: fixed; z-index: 1300; }
 /* Hộp nguồn hao hụt cùng kiểu tooltip biểu đồ */
 .dnh-hoi-tip { border-radius: 10px; box-shadow: 0 12px 28px -8px rgba(16, 24, 40, .28); }
 .dnh-hoi-tip > b { padding-bottom: 7px; border-bottom: 1px solid var(--line); }
+/* Hộp nguồn hao hụt mọc ngay dưới dòng có dấu ?, không đợi hết khối số (T959) */
+.dnh-hh-dau .dnh-hoi-tip { top: 26px; }
 
-/* Chi phí NVL: cột trái kéo cao bằng biểu đồ, số ở trên, 4 ô dồn đáy */
+/* Chi phí NVL: cột trái giữ chiều cao tự nhiên, biểu đồ bên phải co giãn cao đúng bằng cột trái (T959) */
 .dnh .dnh-nv { align-items: stretch; }
-.dnh .dnh-nv > div:first-child { display: flex; flex-direction: column; }
-.dnh .dnh-nv .dnh-nv-st { margin-top: auto; padding-top: 16px; }
+.dnh .dnh-nv > div:last-child { display: flex; flex-direction: column; min-width: 0; }
+.dnh-cv.dnh-vk { flex: 1; position: relative; min-height: 180px; overflow: hidden; }
+.dnh-cv.dnh-vk svg { position: absolute; inset: 0; width: 100%; height: 100%; }
 
 /* Công nợ: các dòng Đầu kỳ … Cuối kỳ giãn đều lấp chiều cao thẻ, không còn khoảng trống trên dải chênh lệch */
 .dnh-cn2 > div { display: flex; flex-direction: column; gap: 12px; }

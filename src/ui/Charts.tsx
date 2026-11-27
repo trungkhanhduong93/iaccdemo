@@ -1,5 +1,5 @@
 // Biểu đồ SVG tự vẽ, không thư viện
-import { useEffect, useId, useLayoutEffect, useRef, useState } from 'react'
+import { useEffect, useId, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { short, locSo, money, moneyD } from './format'
 
@@ -544,8 +544,8 @@ function useReCot(n: number, W: number, pl: number, pr: number) {
   return { chon: re?.i ?? null, toaDo: re, khung, props: { onMouseMove: di, onPointerDown: di, onMouseLeave: () => setRe(null) } }
 }
 
-/** Tooltip position fixed vẽ qua Portal để không bị cắt bởi thẻ có overflow; tự lật khi sát mép viewport */
-function Tip({ toaDo, tieuDe, dong }: { toaDo: { x: number; y: number }; tieuDe: string; dong: { mau: string; ten: string; gt: string }[] }) {
+/** Tooltip position fixed vẽ qua Portal, cùng kiểu tooltip gói Standard (lớp ll-tip); tự lật khi sát mép viewport (T959) */
+function Tip({ toaDo, tieuDe, phu, children }: { toaDo: { x: number; y: number }; tieuDe: string; phu?: ReactNode; children: ReactNode }) {
   const ref = useRef<HTMLDivElement>(null)
   const [viTri, setViTri] = useState({ left: toaDo.x + 16, top: toaDo.y + 14 })
   useLayoutEffect(() => {
@@ -555,20 +555,24 @@ function Tip({ toaDo, tieuDe, dong }: { toaDo: { x: number; y: number }; tieuDe:
     const left = toaDo.x + 16 + r.width > window.innerWidth ? Math.max(8, toaDo.x - r.width - 16) : toaDo.x + 16
     const top = toaDo.y + 14 + r.height > window.innerHeight ? Math.max(8, toaDo.y - r.height - 14) : toaDo.y + 14
     setViTri({ left, top })
-  }, [toaDo.x, toaDo.y, tieuDe, dong.length])
+  }, [toaDo.x, toaDo.y, tieuDe])
 
   return createPortal(
-    <div ref={ref} className="nh-tip" style={{ left: viTri.left, top: viTri.top }}>
-      <div className="nh-tip-dau">{tieuDe}</div>
-      {dong.map(d => (
-        <div key={d.ten} className="nh-tip-dong">
-          <i style={{ background: d.mau }} />
-          <span>{d.ten}</span>
-          <b>{d.gt}</b>
-        </div>
-      ))}
+    <div ref={ref} className="ll-tip nh-tip" style={{ left: viTri.left, top: viTri.top }} role="status">
+      <div className="ll-tip-dau"><b>{tieuDe.replace(/^T(\d+)\/(\d{2})$/, 'Tháng $1/20$2')}</b>{phu && <span>{phu}</span>}</div>
+      {children}
     </div>,
     document.body,
+  )
+}
+
+/** Một dòng tooltip: dấu màu (vuông là cột, tròn là đường, gạch là đường đứt), tên, số */
+function DongTip({ mk, mau, ten, gt, lop }: { mk?: 'tron' | 'net'; mau: string; ten: string; gt: string; lop?: string }) {
+  return (
+    <div className={lop ? `ll-tip-dong ${lop}` : 'll-tip-dong'}>
+      <i className={mk ? `ll-tip-mk ${mk}` : 'll-tip-mk'} style={mk === 'net' ? { borderColor: mau } : { background: mau }} />
+      <span>{ten}</span><b>{gt}</b>
+    </div>
   )
 }
 
@@ -624,7 +628,8 @@ export function CotDuongChart({ nhan, cot, duong, h = 280, phaiMax = 25, rong = 
       ? `M${x0},${y0}h${w}v${bh}h${-w}Z`
       : `M${x0},${y0 + bh}V${y0 + r}Q${x0},${y0} ${x0 + r},${y0}H${x0 + w - r}Q${x0 + w},${y0} ${x0 + w},${y0 + r}V${y0 + bh}Z`
   }
-  const giaTri = (d: { phai?: boolean; v: number[] }, i: number) => d.phai ? so1(d.v[i]) + '%' : money(d.v[i])
+  const bienD = duong.find(d => d.phai)
+  const [kq, ...duongKhac] = duong.filter(d => !d.phai)
 
   return (
     <div className="dnh-cv" ref={khung} {...props}>
@@ -682,19 +687,38 @@ export function CotDuongChart({ nhan, cot, duong, h = 280, phaiMax = 25, rong = 
       </svg>
       {re !== null && toaDo && (
         <Tip toaDo={toaDo} tieuDe={nhan[re]}
-          dong={[...cot.map(c => ({ mau: c.mau, ten: c.ten, gt: money(c.v[re]) })), ...duong.map(d => ({ mau: d.mau, ten: d.ten, gt: giaTri(d, re) }))]} />
+          phu={bienD && <>{bienD.ten} <b className={bienD.v[re] >= 0 ? 'll-tip-xanh' : 'll-tip-do'}>{so1(bienD.v[re])}%</b></>}>
+          {cot.map(c => <DongTip key={c.ten} mau={c.mau} ten={c.ten} gt={moneyD(c.v[re])} />)}
+          {kq && <>
+            <div className="ll-tip-ke" />
+            <DongTip mk="tron" lop={`kq ${kq.v[re] >= 0 ? 'll-tip-xanh' : 'll-tip-do'}`} mau={kq.mau} ten={kq.ten} gt={moneyD(kq.v[re])} />
+          </>}
+          {duongKhac.map(d => <DongTip key={d.ten} mk={d.net ? 'net' : 'tron'} mau={d.mau} ten={d.ten} gt={moneyD(d.v[re])} />)}
+        </Tip>
       )}
     </div>
   )
 }
 
 /** Đường cong mượt 13 tháng so với định mức kèm nhãn điểm đang chọn và tooltip fixed (T956) */
-export function SparkDinhMuc({ nhan, v, dm, min: _min, max: _max, h = 110, mau = 'var(--blue)', ten = 'Tỷ lệ', rong = 640, chon }: {
+export function SparkDinhMuc({ nhan, v, dm, min: _min, max: _max, h: hGoc = 110, mau = 'var(--blue)', ten = 'Tỷ lệ', rong = 640, chon, vuaKhung }: {
   nhan: string[]; v: number[]; dm?: number; min: number; max: number; h?: number; mau?: string; ten?: string; rong?: number; chon?: number
+  /** Cao theo khung cha thay cho h cố định: khung cha đặt chiều cao, biểu đồ lấp vừa (T959) */
+  vuaKhung?: boolean
 }) {
   const uid = useId().replace(/:/g, '')
+  const [hk, setHk] = useState(hGoc)
+  const h = vuaKhung ? hk : hGoc
   const W = rong, L = 44, Rr = 18, T = 34, B = 24, pw = W - L - Rr, ph = h - T - B, n = v.length
   const { chon: re, toaDo, khung, props } = useReCot(n, W, L, Rr)
+  useLayoutEffect(() => {
+    const el = khung.current
+    if (!vuaKhung || !el) return
+    // Khung cha đặt chiều cao, giữ viewBox rộng W rồi tính h theo tỷ lệ khung để chữ, điểm không méo
+    const ro = new ResizeObserver(() => { if (el.clientWidth && el.clientHeight) setHk(Math.max(100, Math.round(W * el.clientHeight / el.clientWidth))) })
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [vuaKhung, W, khung])
   const thangChon = chon ?? n - 1
   const tatCa = dm !== undefined ? [...v, dm] : v
   const lo = Math.floor(Math.min(...tatCa) - 0.5), hi = Math.ceil(Math.max(...tatCa) + 0.5)
@@ -708,7 +732,7 @@ export function SparkDinhMuc({ nhan, v, dm, min: _min, max: _max, h = 110, mau =
   const py = p[thangChon] ? p[thangChon][1] : T
 
   return (
-    <div className="dnh-cv dnh-spark" ref={khung} {...props}>
+    <div className={vuaKhung ? 'dnh-cv dnh-spark dnh-vk' : 'dnh-cv dnh-spark'} ref={khung} {...props}>
       <svg className="chart" viewBox={`0 0 ${W} ${h}`} width="100%" role="img" aria-label="Đường 13 tháng so với định mức">
         <defs>
           <linearGradient id={`${uid}-sp`} x1="0" y1="0" x2="0" y2="1">
@@ -748,8 +772,14 @@ export function SparkDinhMuc({ nhan, v, dm, min: _min, max: _max, h = 110, mau =
         ))}
       </svg>
       {re !== null && toaDo && (
-        <Tip toaDo={toaDo} tieuDe={nhan[re]}
-          dong={[{ mau: dm !== undefined && v[re] > dm ? 'var(--red)' : mau, ten, gt: phanTram(v[re]) }, ...(dm !== undefined ? [{ mau: 'var(--faint)', ten: 'Định mức', gt: phanTram(dm) }] : [])]} />
+        <Tip toaDo={toaDo} tieuDe={nhan[re]} phu={dm !== undefined && <>Định mức <b>{phanTram(dm)}</b></>}>
+          <DongTip mk="tron" mau={mau} ten={ten} gt={phanTram(v[re])} />
+          {dm !== undefined && <>
+            <div className="ll-tip-ke" />
+            <DongTip mk="tron" lop={`kq ${v[re] > dm ? 'll-tip-do' : 'll-tip-xanh'}`} mau={v[re] > dm ? 'var(--red)' : 'var(--green)'}
+              ten={v[re] > dm ? 'Vượt định mức' : 'Dưới định mức'} gt={phanTram(Math.abs(v[re] - dm))} />
+          </>}
+        </Tip>
       )}
     </div>
   )
