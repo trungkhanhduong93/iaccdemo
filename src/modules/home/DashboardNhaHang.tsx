@@ -184,13 +184,13 @@ export function DashboardNhaHang() {
 
       <div className="dnh-g3">
         <Card className="dnh-kc" title="Doanh thu theo kênh" sub="đồng · %">
-          <VanhKhuyen phan={cc.kenh} nhan="Doanh thu" tenCot="Kênh" />
+          <VanhKhuyen phan={cc.kenh} nhan="Doanh thu" tenCot="Kênh" ngang />
         </Card>
         <Card className="dnh-kc" title="Cơ cấu chi phí" sub="đồng · %">
-          <VanhKhuyen phan={cc.chiPhi} nhan="Tổng chi phí" tenCot="Khoản" />
+          <VanhKhuyen phan={cc.chiPhi} nhan="Tổng chi phí" tenCot="Khoản" ngang />
         </Card>
         <Card className="dnh-kc" title="Tiền và ngân hàng" sub="đồng · %">
-          <VanhKhuyen phan={cc.quy} nhan="Tổng số dư" tenCot="Quỹ" />
+          <VanhKhuyen phan={cc.quy} nhan="Tổng số dư" tenCot="Quỹ" ngang />
         </Card>
       </div>
 

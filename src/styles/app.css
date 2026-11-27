@@ -50884,3 +50884,7 @@ body:has(.ds-chuyen-tk) .pop { z-index: 1200; }   /* danh sách thả xuống n�
 .dnh-bch thead tr.t1 th { vertical-align: middle; padding: 9px 10px; }
 .dnh-bch thead tr.t2 th { padding: 7px 10px; }
 .dnh-bch thead tr.t1 th:first-child { vertical-align: middle; }
+
+/* Ba khối Kênh, Cơ cấu chi phí, Tiền: vành khuyên trái, bảng phải; khung hẹp thì tự xuống dòng như cũ (T959) */
+.dnh-kc .vk-nh.ngang { gap: 12px; }
+.dnh-kc .vk-nh.ngang .vk-nh-tbl th, .dnh-kc .vk-nh.ngang .vk-nh-tbl td { padding-left: 5px; padding-right: 5px; }

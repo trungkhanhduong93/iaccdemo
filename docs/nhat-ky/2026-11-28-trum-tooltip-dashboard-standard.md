@@ -6,6 +6,7 @@
 - Biểu đồ Chi phí NVL nhận prop `vuaKhung` của `SparkDinhMuc`: khung cha đặt chiều cao theo cột trái, biểu đồ tính lại viewBox theo tỷ lệ khung nên không méo.
 - Hai biểu đồ 13 tháng hạ `h` từ 280 xuống 220.
 - Hộp nguồn hao hụt mọc ngay dưới dòng có dấu ?, không còn đợi hết khối số.
+- Ba khối Doanh thu theo kênh, Cơ cấu chi phí, Tiền và ngân hàng bật `ngang` của `VanhKhuyen`: vành khuyên trái, bảng phải, thẻ thấp từ 384 xuống 265px ở khổ 1600. Khổ 1280 thẻ hẹp nên tự xuống dòng như cũ.
 
 ## Kiểm
 
