@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T960 | Tooltip dashboard nhà hàng Plus, Pro: hiện lại chấm màu (biến --dnh-* mất khi gắn ra body), tooltip Chi phí NVL và Hao hụt thêm số tiền như gói Standard | Trum | Xong | Chấm màu hiện lại, tooltip bám đúng con trỏ khi trang zoom 0.9, tooltip NVL và hao hụt có số tiền, hộp nguồn hao hụt cùng khung ll-tip |
 | T959 | Tooltip biểu đồ dashboard nhà hàng Plus, Pro theo kiểu tooltip gói Standard: tiêu đề Tháng m/yyyy, biên ở góc phải, dòng lãi tô màu | Trum | Xong | Tooltip dùng lớp ll-tip của Standard; biểu đồ NVL cao đúng bằng cột trái; 2 biểu đồ 13 tháng thấp xuống h 220; hộp hao hụt mọc ngay dưới dấu ? |
 | T958 | Dashboard nhà hàng Plus, Pro sửa theo góp ý Trum: tooltip biểu đồ, khối Chi phí NVL cân hai bên, công nợ hết khoảng trống, bảng cửa hàng bỏ nền dòng chọn, tiêu đề nhóm canh giữa | Trum | Xong | Tooltip biểu đồ có kẻ đầu, khối NVL đủ 4 ô khi chưa đặt định mức, công nợ giãn đều, bảng cửa hàng bỏ nền dòng chọn |
 | T956 | Gói Plus, Pro: dashboard nhà hàng web và điện thoại theo bản mẫu artifact S5Kx5AsqF93g7AxJjJ41RE (thẻ số có icon, vành khuyên 4 mục lớn + Khác, Chi phí NVL 4 ô số, công nợ, hao hụt, bảng cửa hàng tiêu đề hai tầng) | Trum | Xong | Xong 28/11/2026: 2 anti (web, điện thoại), 4 thẻ có icon và % so với DT, 4 vành khuyên gom 4 mục + Khác, khối NVL 4 ô, công nợ 2 cột, bảng cửa hàng tiêu đề 2 tầng, điện thoại xếp thẻ cửa hàng. Mẫu docs/thiet-ke/T956-dashboard-plus-pro.html |

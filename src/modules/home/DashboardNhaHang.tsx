@@ -266,7 +266,8 @@ export function DashboardNhaHang() {
                 <Chu mau="var(--red)" ten="Tháng vượt định mức" />
               </>}
             </div>
-            <SparkDinhMuc nhan={THANG} v={c.tyLeNvl} dm={dmNvl} min={28} max={38} h={180} mau="var(--dnh-cp)" ten="Tỷ lệ NVL" chon={i} vuaKhung />
+            <SparkDinhMuc nhan={THANG} v={c.tyLeNvl} dm={dmNvl} min={28} max={38} h={180} mau="var(--dnh-cp)" ten="Tỷ lệ NVL" chon={i} vuaKhung
+              tien={[{ ten: 'Doanh thu', mau: 'var(--dnh-dt)', v: c.dt }, { ten: 'Chi phí NVL', mau: 'var(--dnh-cp)', v: c.nvl }]} />
           </div>
         </div>
       </Card>
@@ -328,7 +329,8 @@ export function DashboardNhaHang() {
                 <div className="dnh-hoi-d tong"><span>Tổng hao hụt</span><b>{moneyD(hh.gia[i])}</b></div>
               </div>
             </div>
-            <SparkDinhMuc nhan={THANG} v={hh.tyLe} dm={dmHh} min={0} max={4} h={130} mau="var(--dnh-c4)" ten="Tỷ lệ hao hụt" chon={i} />
+            <SparkDinhMuc nhan={THANG} v={hh.tyLe} dm={dmHh} min={0} max={4} h={130} mau="var(--dnh-c4)" ten="Tỷ lệ hao hụt" chon={i}
+              tien={[{ ten: 'Chi phí NVL', mau: 'var(--dnh-cp)', v: c.nvl }, { ten: 'Giá trị hao hụt', mau: 'var(--dnh-c4)', v: hh.gia }]} />
             <VanhKhuyen phan={cc.haoHut} nhan="Hao hụt" tenCot="Nhóm" ngang />
           </div>
         </Card>

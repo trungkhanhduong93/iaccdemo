@@ -545,7 +545,9 @@ function useReCot(n: number, W: number, pl: number, pr: number) {
 }
 
 /** Tooltip position fixed vẽ qua Portal, cùng kiểu tooltip gói Standard (lớp ll-tip); tự lật khi sát mép viewport (T959) */
-function Tip({ toaDo, tieuDe, phu, children }: { toaDo: { x: number; y: number }; tieuDe: string; phu?: ReactNode; children: ReactNode }) {
+function Tip({ toaDo, tieuDe, phu, children }: {
+  toaDo: { x: number; y: number }; tieuDe: string; phu?: ReactNode; children: ReactNode
+}) {
   const ref = useRef<HTMLDivElement>(null)
   const [viTri, setViTri] = useState({ left: toaDo.x + 16, top: toaDo.y + 14 })
   useLayoutEffect(() => {
@@ -554,7 +556,9 @@ function Tip({ toaDo, tieuDe, phu, children }: { toaDo: { x: number; y: number }
     const r = el.getBoundingClientRect()
     const left = toaDo.x + 16 + r.width > window.innerWidth ? Math.max(8, toaDo.x - r.width - 16) : toaDo.x + 16
     const top = toaDo.y + 14 + r.height > window.innerHeight ? Math.max(8, toaDo.y - r.height - 14) : toaDo.y + 14
-    setViTri({ left, top })
+    // Trang đặt zoom 0.9: left, top của thẻ fixed bị nhân theo zoom, chia lại để tooltip bám đúng con trỏ (T960)
+    const z = el.offsetWidth ? r.width / el.offsetWidth : 1
+    setViTri({ left: left / z, top: top / z })
   }, [toaDo.x, toaDo.y, tieuDe])
 
   return createPortal(
@@ -701,10 +705,12 @@ export function CotDuongChart({ nhan, cot, duong, h = 280, phaiMax = 25, rong = 
 }
 
 /** Đường cong mượt 13 tháng so với định mức kèm nhãn điểm đang chọn và tooltip fixed (T956) */
-export function SparkDinhMuc({ nhan, v, dm, min: _min, max: _max, h: hGoc = 110, mau = 'var(--blue)', ten = 'Tỷ lệ', rong = 640, chon, vuaKhung }: {
+export function SparkDinhMuc({ nhan, v, dm, min: _min, max: _max, h: hGoc = 110, mau = 'var(--blue)', ten = 'Tỷ lệ', rong = 640, chon, vuaKhung, tien }: {
   nhan: string[]; v: number[]; dm?: number; min: number; max: number; h?: number; mau?: string; ten?: string; rong?: number; chon?: number
   /** Cao theo khung cha thay cho h cố định: khung cha đặt chiều cao, biểu đồ lấp vừa (T959) */
   vuaKhung?: boolean
+  /** Các dòng số tiền hiện trên tooltip, trước dòng tỷ lệ (T960) */
+  tien?: { ten: string; mau: string; v: number[] }[]
 }) {
   const uid = useId().replace(/:/g, '')
   const [hk, setHk] = useState(hGoc)
@@ -773,12 +779,10 @@ export function SparkDinhMuc({ nhan, v, dm, min: _min, max: _max, h: hGoc = 110,
       </svg>
       {re !== null && toaDo && (
         <Tip toaDo={toaDo} tieuDe={nhan[re]} phu={dm !== undefined && <>Định mức <b>{phanTram(dm)}</b></>}>
-          <DongTip mk="tron" mau={mau} ten={ten} gt={phanTram(v[re])} />
-          {dm !== undefined && <>
-            <div className="ll-tip-ke" />
-            <DongTip mk="tron" lop={`kq ${v[re] > dm ? 'll-tip-do' : 'll-tip-xanh'}`} mau={v[re] > dm ? 'var(--red)' : 'var(--green)'}
-              ten={v[re] > dm ? 'Vượt định mức' : 'Dưới định mức'} gt={phanTram(Math.abs(v[re] - dm))} />
-          </>}
+          {tien?.map(t => <DongTip key={t.ten} mau={t.mau} ten={t.ten} gt={moneyD(t.v[re])} />)}
+          {tien && <div className="ll-tip-ke" />}
+          <DongTip mk="tron" lop={dm === undefined ? 'kq' : `kq ${v[re] > dm ? 'll-tip-do' : 'll-tip-xanh'}`}
+            mau={dm !== undefined && v[re] > dm ? 'var(--red)' : mau} ten={ten} gt={phanTram(v[re])} />
         </Tip>
       )}
     </div>

@@ -50648,7 +50648,7 @@ body:has(.ds-chuyen-tk) .pop { z-index: 1200; }   /* danh sách thả xuống n�
 /* Ô chọn trong hộp: tối đa 5 dòng, dài hơn thì cuộn, có ô tìm (T955) */
 .pop-sel.gtmd-pop { max-height: 232px; overflow-y: auto; }
 /* ── Dashboard nhà hàng Plus, Pro web theo mẫu (T956) ── */
-.dnh {
+.dnh, .nh-tip {   /* .nh-tip: tooltip gắn ra body vẫn đọc được màu dashboard (T960) */
   --dnh-dt: #2f80ed; --dnh-cp: #f5a03a; --dnh-ln: #1f9d6b;
   --dnh-thu: #14a38b; --dnh-chiT: #ef6b5b; --dnh-ton: #5b5bd6; --dnh-thuan: #e29a2e;
   --dnh-c4: #7b6fe0; --dnh-track: #eef1f5; --dnh-chon: #e6eff7;
@@ -50888,3 +50888,8 @@ body:has(.ds-chuyen-tk) .pop { z-index: 1200; }   /* danh sách thả xuống n�
 /* Ba khối Kênh, Cơ cấu chi phí, Tiền: vành khuyên trái, bảng phải; khung hẹp thì tự xuống dòng như cũ (T959) */
 .dnh-kc .vk-nh.ngang { gap: 12px; }
 .dnh-kc .vk-nh.ngang .vk-nh-tbl th, .dnh-kc .vk-nh.ngang .vk-nh-tbl td { padding-left: 5px; padding-right: 5px; }
+
+/* Hộp nguồn hao hụt cùng khung, bóng, cỡ chữ với tooltip ll-tip của gói Standard (T960) */
+.dnh-hh-dau .dnh-hoi-tip { padding: 10px 12px; gap: 8px; box-shadow: 0 14px 34px rgba(14, 26, 43, .14), 0 2px 6px rgba(14, 26, 43, .06); font-size: 12.5px; }
+.dnh-hh-dau .dnh-hoi-tip > b { font-size: 13.5px; border-bottom-color: #eef1f5; }
+.dnh-hh-dau .dnh-hoi-d.tong { border-top-color: #eef1f5; }

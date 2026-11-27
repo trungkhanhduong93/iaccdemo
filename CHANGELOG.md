@@ -4,6 +4,8 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 28/11/2026
 
+- T960: dashboard nhà hàng Plus, Pro: tooltip biểu đồ hiện lại chấm màu, bám đúng con trỏ; tooltip Chi phí NVL và Hao hụt có thêm số tiền.
+
 - T959: dashboard nhà hàng Plus, Pro: tooltip biểu đồ cùng kiểu gói Standard, biểu đồ 13 tháng thấp gọn hơn, biểu đồ Chi phí NVL cao bằng cột số bên trái, hộp nguồn hao hụt hiện ngay dưới dấu ?; ba khối Doanh thu theo kênh, Cơ cấu chi phí, Tiền và ngân hàng xếp vành khuyên trái, bảng phải.
 
 - T958: dashboard nhà hàng Plus, Pro: tooltip biểu đồ dễ đọc hơn, khối Chi phí NVL cân hai bên, khối Công nợ hết khoảng trống, bảng cửa hàng canh giữa tiêu đề nhóm và bỏ nền xanh dòng đầu.
