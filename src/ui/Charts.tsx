@@ -558,13 +558,13 @@ function Tip({ toaDo, tieuDe, dong }: { toaDo: { x: number; y: number }; tieuDe:
   }, [toaDo.x, toaDo.y, tieuDe, dong.length])
 
   return createPortal(
-    <div ref={ref} className="dnh-tip" style={{ left: viTri.left, top: viTri.top }}>
-      <b>{tieuDe}</b>
+    <div ref={ref} className="nh-tip" style={{ left: viTri.left, top: viTri.top }}>
+      <div className="nh-tip-dau">{tieuDe}</div>
       {dong.map(d => (
-        <div key={d.ten}>
-          <span className="dnh-tip-dot" style={{ background: d.mau }} />
-          {d.ten}
-          <span>{d.gt}</span>
+        <div key={d.ten} className="nh-tip-dong">
+          <i style={{ background: d.mau }} />
+          <span>{d.ten}</span>
+          <b>{d.gt}</b>
         </div>
       ))}
     </div>,

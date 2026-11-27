@@ -50233,11 +50233,6 @@ td.xdl-cat > span { display: block; overflow: hidden; text-overflow: ellipsis; w
 .dnh-db span { position: relative; }
 .dnh .card { border: 1px solid var(--line, #e5e7eb); border-radius: 12px; }
 .dnh-cv { position: relative; }
-.dnh-tip { position: absolute; top: 8px; z-index: 5; min-width: 170px; padding: 8px 10px; background: var(--white); border: 1px solid var(--line); border-radius: 8px; box-shadow: var(--sh-lg); font-size: 12px; color: var(--body); pointer-events: none; }
-.dnh-tip b { display: block; color: var(--ink); margin-bottom: 4px; }
-.dnh-tip div { display: flex; align-items: center; gap: 6px; padding: 1px 0; white-space: nowrap; }
-.dnh-tip i { width: 8px; height: 8px; border-radius: 2px; flex: none; }
-.dnh-tip span { margin-left: auto; padding-left: 12px; font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; }
 .dnh-t td.dnh-ty { width: 64px; padding-left: 0; color: var(--muted); }
 /* Ba khối hàng hai: bảng giãn hết chiều cao thẻ để dòng tổng cộng thẳng hàng nhau */
 .dnh-kc { display: flex; flex-direction: column; }
@@ -50719,15 +50714,6 @@ body:has(.ds-chuyen-tk) .pop { z-index: 1200; }   /* danh sách thả xuống n�
 .dnh-cv .bang-re { fill: var(--dnh-track, #eef1f5); }
 .dnh-cv .dnh-grid line { stroke: var(--line); stroke-dasharray: 3 4; }
 .dnh-cv .dnh-grid line.day { stroke-dasharray: none; stroke: var(--line); }
-.dnh-tip {
-  position: fixed; pointer-events: none; background: var(--white); border: 1px solid var(--line);
-  border-radius: 8px; padding: 8px 10px; font-size: 12px; color: var(--body);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, .12); white-space: nowrap; font-variant-numeric: tabular-nums; z-index: 60;
-}
-.dnh-tip b { display: block; color: var(--ink); margin-bottom: 4px; }
-.dnh-tip div { display: flex; align-items: center; gap: 6px; padding: 1px 0; white-space: nowrap; }
-.dnh-tip-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; flex: none; }
-.dnh-tip span:last-child { margin-left: auto; padding-left: 12px; font-weight: 600; color: var(--ink); }
 
 /* Chi phí NVL */
 .dnh-big { font-size: 22px; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; }
@@ -50872,3 +50858,35 @@ body:has(.ds-chuyen-tk) .pop { z-index: 1200; }   /* danh sách thả xuống n�
 .mdnh-ch.mdnh-ch-tong .mdnh-ch-ss.dnh-tot { color: var(--green); }
 .mdnh-ch.mdnh-ch-tong .mdnh-ch-ss.dnh-xau { color: var(--red); }
 .m-app .dnh-cv svg { min-width: 0; }   /* biểu đồ 13 tháng vừa khung điện thoại, không kéo lên 520px như bản web */
+
+/* ── Dashboard nhà hàng: sửa theo góp ý Trum (T958) ── */
+/* Tooltip biểu đồ: tên tháng có kẻ dưới, mỗi dòng chấm màu, tên canh trái, số canh phải */
+.nh-tip {
+  position: fixed; z-index: 1300; pointer-events: none; min-width: 210px; padding: 10px 12px 8px;
+  background: var(--white); border: 1px solid var(--line); border-radius: 10px;
+  box-shadow: 0 12px 28px -8px rgba(16, 24, 40, .28); font-size: 12.5px; color: var(--body); font-variant-numeric: tabular-nums;
+}
+.nh-tip-dau { font-weight: 700; color: var(--ink); font-size: 13px; padding-bottom: 7px; margin-bottom: 5px; border-bottom: 1px solid var(--line); }
+.nh-tip-dong { display: grid; grid-template-columns: 10px minmax(0, 1fr) auto; align-items: center; column-gap: 8px; padding: 3px 0; text-align: left; white-space: nowrap; }
+.nh-tip-dong i { width: 10px; height: 10px; border-radius: 3px; }
+.nh-tip-dong span { color: var(--muted); }
+.nh-tip-dong b { color: var(--ink); font-weight: 600; text-align: right; padding-left: 16px; }
+/* Hộp nguồn hao hụt cùng kiểu tooltip biểu đồ */
+.dnh-hoi-tip { border-radius: 10px; box-shadow: 0 12px 28px -8px rgba(16, 24, 40, .28); }
+.dnh-hoi-tip > b { padding-bottom: 7px; border-bottom: 1px solid var(--line); }
+
+/* Chi phí NVL: cột trái kéo cao bằng biểu đồ, số ở trên, 4 ô dồn đáy */
+.dnh .dnh-nv { align-items: stretch; }
+.dnh .dnh-nv > div:first-child { display: flex; flex-direction: column; }
+.dnh .dnh-nv .dnh-nv-st { margin-top: auto; padding-top: 16px; }
+
+/* Công nợ: các dòng Đầu kỳ … Cuối kỳ giãn đều lấp chiều cao thẻ, không còn khoảng trống trên dải chênh lệch */
+.dnh-cn2 > div { display: flex; flex-direction: column; gap: 12px; }
+.dnh-cn2 .dnh-dc { flex: 1; }
+.dnh-cn2 .dnh-dc > * { display: flex; align-items: center; }
+.dnh-cn2 .dnh-dc > :nth-child(3n+2), .dnh-cn2 .dnh-dc > :nth-child(3n) { justify-content: flex-end; }
+
+/* Bảng cửa hàng: tiêu đề nhóm canh giữa cả ngang lẫn dọc */
+.dnh-bch thead tr.t1 th { vertical-align: middle; padding: 9px 10px; }
+.dnh-bch thead tr.t2 th { padding: 7px 10px; }
+.dnh-bch thead tr.t1 th:first-child { vertical-align: middle; }

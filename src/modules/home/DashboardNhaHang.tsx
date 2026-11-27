@@ -103,6 +103,8 @@ export function DashboardNhaHang() {
   const lechNvl = dmNvl !== undefined ? c.tyLeNvl[i] - dmNvl : 0
   const maxNvl = Math.max(...c.tyLeNvl)
   const thangMaxNvl = THANG[c.tyLeNvl.indexOf(maxNvl)]
+  const minNvl = Math.min(...c.tyLeNvl)
+  const thangMinNvl = THANG[c.tyLeNvl.indexOf(minNvl)]
   const bqNvl = c.tyLeNvl.reduce((a, v) => a + v, 0) / c.tyLeNvl.length
 
   const dongCuaHang = (ten: string, dt: number, nvl: number, ln: number, lnTr: number, dm: number | undefined, lop: string) => {
@@ -235,6 +237,17 @@ export function DashboardNhaHang() {
                   <b>{c.tyLeNvl.filter(v => v > dmNvl).length}/{c.tyLeNvl.length} tháng</b>
                 </div>
               </>}
+              {/* Chưa đặt định mức: thay 2 ô định mức bằng Thấp nhất, Tháng trước để lưới luôn đủ 4 ô (T958) */}
+              {dmNvl === undefined && i > 0 && <>
+                <div>
+                  <span>Thấp nhất</span>
+                  <b>{so1(minNvl)}% <small className="dnh-s">{thangMinNvl}</small></b>
+                </div>
+                <div>
+                  <span>Tháng trước ({THANG[i - 1]})</span>
+                  <b>{so1(c.tyLeNvl[i - 1])}%</b>
+                </div>
+              </>}
               <div>
                 <span>Bình quân 13 tháng</span>
                 <b>{so1(bqNvl)}%</b>
@@ -340,7 +353,7 @@ export function DashboardNhaHang() {
               </tr>
             </thead>
             <tbody>
-              {kq.map((r, n) => dongCuaHang(r.ten, r.dt, r.nvl, r.ln, kqTruoc[n].ln, dinhMuc(s, n, 'nvl'), n === k ? 'dnh-chon' : ''))}
+              {kq.map((r, n) => dongCuaHang(r.ten, r.dt, r.nvl, r.ln, kqTruoc[n].ln, dinhMuc(s, n, 'nvl'), ''))}
               {dongCuaHang('Tổng', tDt, tNvl, tLn, tLnTruoc, dmNvlTong, 'dnh-tong')}
             </tbody>
           </table>
