@@ -1162,7 +1162,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
         {coMacDinh && (
           <button type="button" className={`nut-vuong ds-nut-cot${hopGt ? ' on' : ''}`} onClick={() => setHopGt(true)}
             title="Giá trị mặc định theo cửa hàng" aria-label="Giá trị mặc định theo cửa hàng">
-            <Icon n="clipboard" className="ic sm" />
+            <Icon n="clipboard" kieu="net" className="ic sm" />
             {coGtDaDat && <span className="nut-vuong-dot" />}
           </button>
         )}
