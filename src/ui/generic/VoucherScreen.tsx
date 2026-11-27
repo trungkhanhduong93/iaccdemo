@@ -31,6 +31,7 @@ import { MAN_DC, MAN_KK, TEN_DC } from '../../modules/kho/dieu-chinh'
 import { NutDongBoThuChiFabi } from '../../modules/tien/DongBoThuChiFabi'
 
 import { CUA_HANG, HANG, NHAN_VIEN, NVL } from '../../data/mock'
+import { nhanThueDong } from '../../modules/danh-muc/thue-suat'
 import { NGUON, TT_CT, chungTu, dongCua, gioPhieu, loaiThuChiCua, nguoiTaoMau, quyCuaCq, tomTatTenHang, ttNghiepVu, type Dong } from './gen'
 import { boO, nhomCua, theoLoai, TT_HD, TT_TIEN } from './nhom'
 import { BangKiemKe } from './BangKiemKe'
@@ -317,6 +318,9 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
   const ghi = kieuGhiSoDv(s, mod.key) !== 'khong'   // gói Standard, Plus hộ kinh doanh không ghi sổ (QD81)
   const cnChon = cuaHangHienTai(s)
   const nhom = nhomCua(mod.key, cfg)
+  // Kê khai thuế mua vào (6.1.1), bán ra (6.1.2): thêm số hoá đơn, ký hiệu, ngày hoá đơn, tiền trước thuế, thuế suất (và Nhóm HHDV mua vào ở mua vào)
+  const laKkThue = mod.key === 'thue' && (sc.code === '6.1.1' || sc.code === '6.1.2')
+  const kkMua = sc.code === '6.1.1'
   const bo = boO(nhom, cfg)
   const path = duongDan(mod, sc)
   // Mua, bán (T92): thêm thông tin hoá đơn, hạn thanh toán, đã trả, còn nợ cho các cột mặc định ẩn.
@@ -341,6 +345,16 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
       ...r,
       lyDo: lyDoThuChi(cfg, r),
       ...(cq ? { _tuQuyHien: cq.tu, _denQuyHien: cq.den } : {}),   // T919
+    }
+  }) : laKkThue ? rowsGoc.map((r): Row => {
+    const nv = ttNghiepVu(r)
+    const d0 = (r._dong as Dong[] | undefined)?.[0]
+    const tien = Number(r.tien) || 0, thue = Number(r.thue) || 0
+    return {
+      ...r,
+      soHd: String(r._soHd ?? nv.soHd), kyHieuHd: String(r._kyHieuHd ?? nv.kyHieuHd), ngayHd: String(r._ngayHd ?? r.ngay ?? ''),
+      tsHien: d0?.ltn ? nhanThueDong(d0 as Dong & { ltn: string }) : tien > 0 ? `${Math.round(thue / tien * 100)}%` : '—',
+      nhomHhdv: String(r._nhomHhdv ?? '1'),
     }
   }) : nhom !== 'mua' && nhom !== 'ban' ? rowsGoc : rowsGoc.map((r): Row => {
     const dsDong = (r._dong as Dong[] | undefined) ?? dongCua(theoLoai(cfg, r.loai), `${sc.code ?? sc.slug}-${r.id}`)
@@ -574,7 +588,15 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
     // Phiếu kiểm kê không có tiền: thay Tiền thuế, Tổng tiền bằng Kho, Số mặt hàng (T124)
     ...(cfg.kiemKe ? [{ k: 'kho', t: 'Kho', w: 180 } as Col, { k: 'soMat', t: 'Số mặt hàng', num: true, w: 120 } as Col] : []),
     ...(cfg.dieuChinh ? [{ k: 'kho', t: 'Kho', w: 180 } as Col] : []),   // T126
+    ...(laKkThue ? [
+      { k: 'soHd', t: 'Số hoá đơn', cls: 'code', w: 110 } as Col,
+      { k: 'kyHieuHd', t: 'Ký hiệu HĐ', cls: 'code', w: 110 } as Col,
+      { k: 'ngayHd', t: 'Ngày hoá đơn', w: 115 } as Col,
+      { k: 'tien', t: kkMua ? 'Tiền trước thuế' : 'Doanh thu trước thuế', num: true, w: 140 } as Col,
+      { k: 'tsHien', t: 'Thuế suất', c: true, w: 90 } as Col,
+    ] : []),
     ...(!cfg.kiemKe && !cfg.dieuChinh && !laNk && (cfg.thue !== undefined || cfg.dong === 'hang') && !(giamGtgtCua(mod, cfg, s) && !coGiamThue(s.goi)) ? [giamGtgtCua(mod, cfg, s) ? { k: 'giamThue', t: 'Giảm thuế GTGT', num: true, w: 130 } as Col : { k: 'thue', t: 'Tiền thuế', num: true, w: 120 } as Col] : []),
+    ...(laKkThue && kkMua ? [{ k: 'nhomHhdv', t: 'Nhóm HHDV mua vào', c: true, w: 130 } as Col] : []),
     // Tham chiếu (T127, T270): các phiếu liên quan, một dòng, mở tab mới hoặc mở popup chọn mã; tab Chuyển quỹ không có (T925)
     ...(tabCq ? [] : [{
       k: 'thamChieu', t: 'Tham chiếu', w: 150,

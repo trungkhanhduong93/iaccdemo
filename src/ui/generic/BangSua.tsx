@@ -77,7 +77,7 @@ export function cotTuyChon(cfg: VoucherCfg, o: { coKho?: boolean; coLo?: boolean
 }
 
 /** Ô nhập số ở bảng chi tiết: đang gõ đã có chấm ngăn nghìn, báo số ngay để tổng tiền đổi theo; rời ô hiện định dạng có dấu chấm (T284) */
-function OSo({ val, onChange, disabled, placeholder = '0', className = 'inp sm num', max }: {
+export function OSo({ val, onChange, disabled, placeholder = '0', className = 'inp sm num', max }: {
   val: number
   max?: number
   onChange?: (v: number) => void

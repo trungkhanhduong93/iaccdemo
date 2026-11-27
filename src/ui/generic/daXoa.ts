@@ -27,9 +27,18 @@ let banSo = 0
 /** Đã xoá trong phiên chưa, dùng ngoài React (T439) */
 export const laDaXoa = (man: string, id: unknown) => daXoa.has(`${man}|${id}`)
 
+/** Phiếu sinh kèm từ phiếu khác (vd dòng kê khai mua vào của phiếu chi có hoá đơn): thay toàn bộ phiếu có id bắt đầu bằng tienTo bằng danh sách mới */
+export function thayPhieuLienKet(man: string, tienTo: string, rows: Row[]) {
+  phieuMoi.set(man, [...rows, ...(phieuMoi.get(man) ?? []).filter(r => !String(r.id).startsWith(tienTo))])
+  banSo++
+  nghe.forEach(f => f())
+}
+export const MAN_KE_KHAI_MUA = 'thue/6-1-1'
+
 export function xoaPhieu(man: string, ds: { id: string; so: string }[], ai: string) {
   for (const x of ds) {
     daXoa.add(`${man}|${x.id}`)
+    if (man === 'tien/2-1-1') phieuMoi.set(MAN_KE_KHAI_MUA, (phieuMoi.get(MAN_KE_KHAI_MUA) ?? []).filter(r => !String(r.id).startsWith(`kkmv-${x.id}-`)))   // xoá phiếu chi thì dòng kê khai mua vào đi theo
     nhatKy.unshift({ luc: bayGio(), ai, viec: 'Xoá chứng từ', so: x.so, man, id: x.id })
   }
   banSo++

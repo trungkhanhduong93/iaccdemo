@@ -2,7 +2,7 @@
 // Dòng đứng ở tài khoản Nợ ghi Số tiền nợ, dòng đứng ở tài khoản Có ghi Số tiền có; mỗi dòng lưu thêm tính chất định khoản DEB (Nợ) hoặc CRD (Có).
 import { useLayoutEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { suaPhieu } from './daXoa'
+import { apKhoPhieu, suaPhieu } from './daXoa'
 import { ThongBao } from '../ThongBao'
 import { Select } from '../Dropdown'
 import type { Col, ModuleDef, Row, ScreenDef, ScreenProps } from '../../modules/types'
@@ -63,8 +63,9 @@ function duyetPhieu(s: SPhien, cb: (p: PhieuGoc) => void) {
     const cfg = sc.voucher
     if (!cfg || cfg.kiemKe || cfg.dieuChinh) continue
     const ma = sc.code ?? sc.slug
-    const rows: Row[] = [...(cfg.phieuThem?.(s as never) ?? []), ...(cfg.rowsMau ? cfg.rowsMau() : cfg.loai ? gopLoai(cfg, ma) : chungTu(cfg, ma))]
+    const rows: Row[] = apKhoPhieu(`${mod.key}/${sc.slug}`, [...(cfg.phieuThem?.(s as never) ?? []), ...(cfg.rowsMau ? cfg.rowsMau() : cfg.loai ? gopLoai(cfg, ma) : chungTu(cfg, ma))])   // gồm phiếu lập trong phiên, bỏ phiếu đã xoá, áp phần đã sửa
     for (const r of rows) {
+      if (r._chiKeKhai) continue   // dòng kê khai mua vào sinh kèm phiếu chi: bút toán thuế đã nằm ở phiếu chi
       const cfgR = theoLoai(cfg, r.loai)
       let ds: Dong[] = (r._dong as Dong[] | undefined) ?? dongCua(cfgR, `${ma}-${r.id}`)
       if (mod.key === 'tien') ds = bosungDinhKhoan(ds, r, s)
@@ -92,10 +93,14 @@ export function gomButToan(s: SPhien): DongButToan[] {
     const dsRieng = ds.filter(d => d.tkNo && d.tkCo)
     if (dsRieng.length) {
       dsRieng.forEach((d, i) => out.push(...capDong({ ...goc, ghiChu: d.ghiChu || goc.ghiChu }, `${mod.key}-${ma}-${r.id}-${i}`, String(d.tkNo), String(d.tkCo), Number(d.tien) || 0, chiTietDong(d))))
-      return
+    } else {
+      const bt = tinhButToan(cfgR, ds, Number(r.tong ?? r.tien) || 0, 0, Number(r.thue) || 0, goc.doiTuong, String(r.cn ?? ''), s.cheDo, mod.key === 'mua-hang' ? 'mua' : 'ban')
+      for (let i = 0; i + 1 < bt.length; i += 2) out.push(...capDong(goc, `${mod.key}-${ma}-${r.id}-${i / 2}`, bt[i].so, bt[i + 1].so, bt[i].tien))
     }
-    const bt = tinhButToan(cfgR, ds, Number(r.tong ?? r.tien) || 0, 0, Number(r.thue) || 0, goc.doiTuong, String(r.cn ?? ''), s.cheDo, mod.key === 'mua-hang' ? 'mua' : 'ban')
-    for (let i = 0; i + 1 < bt.length; i += 2) out.push(...capDong(goc, `${mod.key}-${ma}-${r.id}-${i / 2}`, bt[i].so, bt[i + 1].so, bt[i].tien))
+    // Phiếu chi có hoá đơn: mỗi dòng kê khai thêm cặp thuế, Nợ TK thuế, Có tài khoản Có của dòng chi tiết
+    if (r._coHd) (r._kkHd as { tkThue: string; tkDu: string; thue: number }[] | undefined)?.forEach((k, i) => {
+      if (k.tkThue && k.tkDu && k.thue > 0) out.push(...capDong(goc, `${mod.key}-${ma}-${r.id}-t${i}`, k.tkThue, k.tkDu, k.thue))
+    })
   })
   return apQuyTac(out)
 }
