@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T961 | Phiếu mua hàng, hoá đơn mua hạch toán theo dòng: cột Tk thanh toán, Tk kho, Tk thuế (Pro), Đối tượng LQ của chi phí mua hàng, 10.1.1 ghi trả ngay một lần theo số phiếu mua và phiếu chi, thuế suất theo hàng | dinhlanphuongipacc | 28/11/2026 | [2026-11-28-dinhlanphuongipacc-phieu-mua-hach-toan-theo-dong](../nhat-ky/2026-11-28-dinhlanphuongipacc-phieu-mua-hach-toan-theo-dong.md) |
 | T960 | Tooltip dashboard nhà hàng Plus, Pro: hiện lại chấm màu (biến --dnh-* mất khi gắn ra body), tooltip Chi phí NVL và Hao hụt thêm số tiền như gói Standard | Trum | Xong | Chấm màu hiện lại, tooltip bám đúng con trỏ khi trang zoom 0.9, tooltip NVL và hao hụt có số tiền, hộp nguồn hao hụt cùng khung ll-tip |
 | T959 | Tooltip biểu đồ dashboard nhà hàng Plus, Pro theo kiểu tooltip gói Standard: tiêu đề Tháng m/yyyy, biên ở góc phải, dòng lãi tô màu | Trum | Xong | Tooltip dùng lớp ll-tip của Standard; biểu đồ NVL cao đúng bằng cột trái; 2 biểu đồ 13 tháng thấp xuống h 220; hộp hao hụt mọc ngay dưới dấu ? |
 | T958 | Dashboard nhà hàng Plus, Pro sửa theo góp ý Trum: tooltip biểu đồ, khối Chi phí NVL cân hai bên, công nợ hết khoảng trống, bảng cửa hàng bỏ nền dòng chọn, tiêu đề nhóm canh giữa | Trum | Xong | Tooltip biểu đồ có kẻ đầu, khối NVL đủ 4 ô khi chưa đặt định mức, công nợ giãn đều, bảng cửa hàng bỏ nền dòng chọn |

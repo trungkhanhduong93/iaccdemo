@@ -6,6 +6,7 @@ import { kieuGhiSo } from '../../app/plan'
 import { tkTheoCheDo } from '../../modules/tong-hop/so-cai'
 import { TAI_KHOAN } from '../../modules/danh-muc/data'
 import { layButToan } from '../generic/ChungTuForm'
+import { butToanMua } from '../generic/tk-mua'
 
 export interface ButToanDong {
   kieu: 'no' | 'co'
@@ -50,6 +51,19 @@ export function tinhButToan(
       return [
         { kieu: 'no' as const, so: soNo, ten: tenNo, tien: soTien },
         { kieu: 'co' as const, so: soCo, ten: tenCo, tien: soTien },
+      ]
+    })
+  }
+
+  // Phiếu mua hàng, hoá đơn mua: bút toán theo từng dòng hàng như bản máy tính (Tk kho, Tk thuế, Tk thanh toán)
+  if (nhom === 'mua' && (cfg.prefix === 'MH' || cfg.prefix === 'HDM') && dsDong.length > 0) {
+    const tkTt = hinhThucTt === 'tienmat' ? '1111' : hinhThucTt === 'chuyenkhoan' ? '1121' : '331'
+    return butToanMua(dsDong, tkTt, { khongKho: cfg.khongKho, soMua: '', thanhToanNgay: false }).flatMap(b => {
+      const tNo = tenTk(b.no, cheDo)
+      const tCo = tenTk(b.co, cheDo)
+      return [
+        { kieu: 'no' as const, so: tNo.so, ten: tNo.ten, tien: b.tien },
+        { kieu: 'co' as const, so: tCo.so, ten: tCo.ten, tien: b.tien },
       ]
     })
   }

@@ -1,4 +1,5 @@
 // Dựng dữ liệu in từ một phiếu trong danh sách chứng từ (dữ liệu giả của gen.ts)
+import { tkKhoCua, tkThanhToan } from '../generic/tk-mua'
 import type { Row, VoucherCfg, LoaiCT } from '../../modules/types'
 import type { MauIn } from '../../app/mau-in'
 import { dongCua, nguoiTaoMau, tongDong, ttNghiepVu, quyCuaCq, tkCuaQuy, loaiThuChiCua, type Dong } from '../generic/gen'
@@ -106,6 +107,12 @@ export function duLieuIn(
   const noCoList = loai?.noCo ?? cfg.noCo ?? []
   const capTien = noCoList[0] ?? ['1111', '131']
   let { no, co } = noCoCuaMau(mau.id, noCoList)
+  // Phiếu mua hàng, hoá đơn mua: Tk kho theo từng hàng, Có theo Tk thanh toán (quỹ tiền nếu trả ngay, ngược lại giữ TK công nợ của mẫu)
+  if ((cfg.prefix === 'MH' || cfg.prefix === 'HDM') && mau.id === 'phieu-nhap-kho') {
+    if (dsGoc.length) no = duyNhat(dsGoc.map(d => tkKhoCua(d, cfg.khongKho)))
+    const httt = row._httt as 'congno' | 'tienmat' | 'chuyenkhoan' | undefined
+    if (httt && httt !== 'congno') co = [tkThanhToan(httt, String(row._quy ?? ''))]
+  }
   const laCq = loai?.k === 'cq' || row.loai === 'cq' || mau.id === 'phieu-chuyen-quy' || loaiThuChiCua(cfg, String(row.id ?? '')) === 'cq'
   if (laCq) {
     const cq = quyCuaCq(row)

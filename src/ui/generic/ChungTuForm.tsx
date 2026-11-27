@@ -28,6 +28,7 @@ import { ChonDanhMuc } from '../ChonDanhMuc'
 import { heSoZoom } from '../zoom'
 import { BaoCaoDoRongCtx, St, Table, useDoRongCot } from '../Table'
 import { chuanKyHieuHd, chuanSoHd, dmy, fold, money, moneyD } from '../format'
+import { butToanMua, tkThanhToan, type DongButToan } from './tk-mua'
 import { NGUON, QUY_TIEN, dongCua, nguoiTaoMau, tkCuaQuy, tkTheoLyDo, ttNghiepVu, type Dong } from './gen'
 import { boO, nhomCua, theoLoai, TT_TIEN } from './nhom'
 import { BangKiemKe, COT_KK } from './BangKiemKe'
@@ -97,7 +98,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
   const suaTtc = dangSua && loaiCt !== 'HDDIEUCHINH'
   const [tab, setTab] = useState('ct')
   const [moLoc, setMoLoc] = useState(false)   // hàng lọc của bảng chi tiết, bấm nút Lọc mới hiện (T383)
-  const [hienTk, setHienTk] = useState(false)
+  const [hienTk, setHienTk] = useState(true)   // mặc định hiện cột tài khoản; công tắc Ẩn cột tài khoản ở chân form tắt
   const [modalPhim, setModalPhim] = useState(false)
   const [phieuIn, setPhieuIn] = useState<PhieuIn[] | null>(null)
   const [hoiXoa, setHoiXoa] = useState(false)
@@ -190,10 +191,12 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
   // Chi phí mua hàng (T757): tích cạnh Nhận kèm hoá đơn thì dải đáy có ô số tiền, nút Phân bổ
   const [cpMua, setCpMua] = useState(Number(row?._cpMua) || 0)
   const [batCp, setBatCp] = useState(Boolean(row?._cpMua))
+  const [dvVc, setDvVc] = useState(String(row?._dvVc ?? ''))   // đơn vị vận chuyển của chi phí mua hàng; trống là nhà cung cấp tự vận chuyển
   useEffect(() => {
     setDsDong(dongGoc)
     setCpMua(Number(row?._cpMua) || 0)
     setBatCp(Boolean(row?._cpMua))
+    setDvVc(String(row?._dvVc ?? ''))
   }, [dongGoc])
 
   const laTien = mod.key === 'tien'
@@ -518,15 +521,17 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
   const viecTt = nhom === 'mua' ? (traLai ? 'trả lại hàng mua' : 'mua hàng') : (traLai ? 'trả lại hàng bán' : 'bán hàng')
   const dgTt = `${chiTt ? 'Chi' : 'Thu'} tiền ${viecTt} theo ${soCt}`
   const lyTt = nhom === 'mua' ? (traLai ? 'Thu khác' : 'Thanh toán tiền cho nhà cung cấp') : (traLai ? 'Chi phí khác' : 'Thu tiền bán hàng')
+  // Chi phí vận chuyển do nhà cung cấp tự chở thì trả cùng tiền hàng; đơn vị vận chuyển khác thì ghi công nợ 331 cho đơn vị đó
+  const tienTtNcc = tongThanhToan + (nhom === 'mua' && cpCo && !dvVc ? cpMua : 0)
   function dongBoCtTt(idGoc: string): CtTt | undefined {
     if (!bo.tt) return ctTtCu
     if (ctTtCu && ctTtCu.loai !== loaiTt) xoaPhieu(MAN_THU_CHI, [{ id: ctTtCu.id, so: ctTtCu.so }], s.ten)
     if (!loaiTt) return undefined
     const dg = dgTt, ly = lyTt
     const nd = {
-      ngay: ngayCt, thang: Number(ngayCt.split('/')[1]) || 10, doiTuong, dienGiai: dg, tien: tongThanhToan, thue: 0, tong: tongThanhToan,
+      ngay: ngayCt, thang: Number(ngayCt.split('/')[1]) || 10, doiTuong, dienGiai: dg, tien: tienTtNcc, thue: 0, tong: tienTtNcc,
       _quy: quy, _lyDo: ly, _ghiChu: dg, _thamChieu: soCt, _thamChieuDi: `${path}/${idGoc}`,   // đường dẫn mở phiếu gốc từ cột Tham chiếu (T127)
-      _dong: [{ ma: '', ten: dg, dvt: '', sl: 1, gia: tongThanhToan, tien: tongThanhToan, ts: 0, thue: 0, ly, dt: doiTuong, km: '', cv: '' }],
+      _dong: [{ ma: '', ten: dg, dvt: '', sl: 1, gia: tienTtNcc, tien: tienTtNcc, ts: 0, thue: 0, ly, dt: doiTuong, km: '', cv: '' }],
     }
     if (ctTtCu && ctTtCu.loai === loaiTt) {
       suaPhieu(MAN_THU_CHI, ctTtCu.id, nd)
@@ -694,7 +699,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
       // Hoá đơn thay thế, điều chỉnh (T787): ghi sổ ngay khi lưu kể cả dự thảo, giữ hoá đơn gốc, lý do, tiền hoá đơn để phát hành sau
       ...(laHdMoi ? { tt: 'ghi', _loaiCt: loaiCt, _hdGoc: hdGoc, _lyDoHd: lyDoHd.trim(), _tienHd: tienHdTam, ...(loaiCt === 'HDDIEUCHINH' ? { _dcLoai: dcLoai } : {}) } : {}),
       ...(dsDc ? { _dsDc: dsDc } : {}),
-      ...(coCpMua ? { _cpMua: cpCo ? cpMua : 0 } : {}),
+      ...(coCpMua ? { _cpMua: cpCo ? cpMua : 0, _dvVc: cpCo ? dvVc : '' } : {}),
       ...(traTu ? { _thamChieu: traTu.so, _thamChieuDi: traTu.di, ...(traTu.ban ? { _traTuBan: traTu.id } : { _traTuMua: traTu.id }) } : {}),   // T727, T815
       ...(laTien ? { _traNo: traNoNcc ? traNo : undefined } : {}),
       // Phiếu sản xuất (T152): tham chiếu phiếu xuất, người cập nhật; phiếu xuất mới chờ nhập, phiếu nhập lưu là đã nhập
@@ -1102,6 +1107,10 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
     </div>
   )
 
+  // Phiếu mua hàng, hoá đơn mua: Tk thanh toán theo quỹ tiền hoặc công nợ, Tk kho theo hàng, Tk thuế mặc định cửa hàng
+  const laMuaTk = mod.key === 'mua-hang' && (cfg.prefix === 'MH' || cfg.prefix === 'HDM') && kieu === 'noco'   // chỉ gói Pro có ghi sổ Nợ/Có (QD81): Standard, Plus không hiện cột tài khoản
+  const tkTtMua = tkThanhToan(hinhThucTt, quy)
+  const butToanMuaDong = laMuaTk ? butToanMua(dsDong, tkTtMua, { khongKho: cfg.khongKho, dvVc: cpCo ? dvVc : '', soMua: soCt, soTt: ctTtCon(row)?.so, thanhToanNgay: hinhThucTt !== 'congno' }) : undefined
   const laPhieuChi = laTien && (loai?.k === 'chi' || loai?.k === 'unc')
   const laPhieuThu = laTien && (loai?.k === 'thu' || loai?.k === 'bc')
   const iconDau = (laPhieuChi || laPhieuThu) ? (
@@ -1132,7 +1141,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
             tyLe={Boolean(giamGtgt)} thue={giamGtgt ? tongGiam : tongThue} tong={tongThanhToan} an={[...anCot, ...boCotBan]}
             trai={coXuatHd ? <NhomTienHd tam={tienHdTam} hd={hdDaXuat} mau2={(hdDaXuat?.mau ?? kyHieuHd[0]) === '2'} /> : undefined} />
           : <DaiTong tong={tongThanhToan}
-            trai={cpCo ? <OChiPhiMua tien={cpMua} onTien={setCpMua} dong={dsDong} onPhanBo={setDsDong} sua={dangSua} /> : undefined}
+            trai={cpCo ? <OChiPhiMua tien={cpMua} onTien={setCpMua} dong={dsDong} onPhanBo={setDsDong} sua={dangSua} dvVc={dvVc} onDvVc={setDvVc} /> : undefined}
             muc={chiTien || truocThue || cfg.khongKho || laDc || laSx || laDcn || khoGon || (nhom === 'mua' && traLai) ? [] : [
             ['Tiền hàng', tongTien] as [string, number],
             ...(bo.ck ? [['Chiết khấu', tongCk ? -tongCk : 0] as [string, number]] : []),
@@ -1211,19 +1220,14 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
                 Huỷ
               </button>
             )}
-            <span className="grow" />
             {coTkGoi && !proTk && dcn !== 'ck' && (   // chuyển kho không hạch toán (T155); phiếu thu chi Pro luôn hiện cột tài khoản
-              <button
-                type="button"
-                className={`btn btn-tk-toggle ${hienTk ? 'on' : ''}`}
-                onClick={() => setHienTk(!hienTk)}
-                title={hienTk ? 'Bấm để ẩn cột tài khoản Nợ/Có trên dòng' : 'Bấm để hiển thị cột tài khoản Nợ/Có trên dòng'}
-              >
-                <Icon n="book" className="ic sm" />
-                <span>{hienTk ? 'Ẩn cột tài khoản' : 'Hiện cột tài khoản'}</span>
-                <span className={`tk-badge ${hienTk ? 'on' : ''}`}>{hienTk ? 'Đang hiện' : 'Đang ẩn'}</span>
-              </button>
+              <label className="row" style={{ gap: 6, cursor: 'pointer', fontSize: 12.5, color: 'var(--muted)', marginLeft: 6 }}
+                title="Bật để ẩn cột tài khoản trên dòng">
+                <input type="checkbox" className="bat-tat" checked={!hienTk} onChange={e => setHienTk(!e.target.checked)} />
+                Ẩn cột tài khoản
+              </label>
             )}
+            <span className="grow" />
             {/* Nút Tuỳ chỉnh giao diện ở góc trên phải đầu form (T297); hộp vẫn mở cả khi thêm mới, sửa (T161) */}
             {hopCot && (
               <HopCotPhieu dsDau={dsDau} dsChan={dsChan} dsChung={dsChung} ds={cfg.dongPos ? COT_BHB.filter(([k]) => !boCotBan.includes(k) && (giamGtgt ? k !== 'ts' && k !== 'thue' : k !== 'giamThue')) : laKk ? COT_KK : laSx ? cotSx(sx!) : laDcn ? cotDcn(dcn!) : cotTuyChon(cfg, { coNhomHhdv: nhom === 'mua' && nhanKemHd && s.goi === 'PR', coKho: Boolean(bo.kho) && !khoDau && !laDc && !khoGon, giaVon, coLo: nhom === 'mua' && s.goi === 'PR', coCk: Boolean(bo.ck), coKm: kieu !== 'khong', coLy: Boolean(oLy), coNhapKho: truocThue, coXuatKho: nhom === 'mua' && traLai, coGiamThue: giamGtgt, coCpMua: cpCo }).filter(([k]) => !anDc.includes(k) && !(coLyTuyChon && k === 'ly') && !(anKmTam && k === 'km'))}
@@ -1836,9 +1840,10 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
               dong={dsDong}
               onChange={setDsDong}
               cheDo={dangSua ? 'sua' : 'xem'}
-              coTk={hienTk || proTk}
+              coTk={(hienTk && !laMuaTk) || proTk}   // phiếu mua dùng 3 cột Tk thanh toán, Tk kho, Tk thuế thay cột TK Nợ/Có chung
               dsTk={dsTkPro}
               nhanTk={nhanTkDong}
+              tkMua={laMuaTk && hienTk ? { tt: tkTtMua, khongKho: cfg.khongKho } : undefined}   // theo nút Hiện, Ẩn cột tài khoản
               tkTheoLy={coTkTheoLy ? (proTk ? tkTheoLyPro : (ly => tkTheoLyDo(loaiPhieuTien, ly))) : undefined}
               coKho={Boolean(bo.kho) && !khoDau && !laDc && !khoGon}   // phiếu điều chỉnh, nhập khác, xuất huỷ: kho ở đầu phiếu (T126, T737, T741)
               giaVon={giaVon}
@@ -1855,7 +1860,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
               giamThue={giamGtgt ? giamThueHang : undefined}
               coNhomHhdv={nhom === 'mua' && nhanKemHd && s.goi === 'PR'}   // T162
               coCk={Boolean(bo.ck)}
-              coLo={nhom === 'mua' && s.goi === 'PR'}   // số lô, hạn dùng chỉ có ở gói Pro (T68)
+              coLo={false}   // tạm ẩn số lô, hạn dùng ở mọi gói, chưa làm logic lô (trước đây chỉ gói Pro có, T68); bật lại: nhom === 'mua' && s.goi === 'PR'
               coKm={kieu !== 'khong'}
               lyDo={oLy ? { nhan: oLy.nhan, ds: oLy.ds!, macDinh: lyDo } : undefined}
               dtMacDinh={laTien ? doiTuong : ''}
@@ -1904,6 +1909,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
                 dt={dcn === 'xdc' ? cnNhan : dcn === 'ndc' ? nguonDc.cn : doiTuong}
                 cn={cuaHang}
                 tkDoiUng={tkDoiUng}
+                dongHt={butToanMuaDong}
               />
             </div>
           )}
@@ -2227,6 +2233,7 @@ export function HachToan({
   dt,
   cn,
   tkDoiUng,
+  dongHt,
 }: {
   cfg: VoucherCfg
   tien: number
@@ -2234,6 +2241,7 @@ export function HachToan({
   dt: string
   cn: string
   tkDoiUng?: string
+  dongHt?: DongButToan[]   // phiếu mua: bút toán theo từng dòng hàng (Tk kho, Tk thuế, Tk thanh toán)
 }) {
   const { s } = useSession()
   const cd = cheDoHienTai(s)
@@ -2265,13 +2273,12 @@ export function HachToan({
     )
   }
 
-  const rows = layButToan(cfg, tien, thue, dt, cn, cd.ma, tkDoiUng)
+  const rows = dongHt
+    ? dongHt.map(r => ({ ...r, no: tkTheoCheDo(r.no, cd.ma).so, co: tkTheoCheDo(r.co, cd.ma).so, dt: r.dt || dt, cn }))
+    : layButToan(cfg, tien, thue, dt, cn, cd.ma, tkDoiUng)
 
   return (
     <div className="stack" style={{ gap: 10 }}>
-      <div className="row" style={{ fontSize: 12.5 }}>
-        <Icon n="book" className="ic sm" />Định khoản theo bộ mặc định ngành F&B, chế độ {cd.soHieu}. Sửa được trước khi ghi sổ.
-      </div>
       <Table
         cols={[
           { k: 'dg', t: 'Diễn giải' },

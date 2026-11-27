@@ -27,6 +27,8 @@ import { tinhButToan } from '../mobile/butToan'
 import { chungTu, dongCua, type Dong } from './gen'
 import { theoLoai } from './nhom'
 import { gopLoai } from './VoucherScreen'
+import { butToanMua, tkThanhToan } from './tk-mua'
+import { tkTheoCheDo } from '../../modules/tong-hop/so-cai'
 
 export type TinhChat = 'DEB' | 'CRD'
 export interface DongButToan {
@@ -58,13 +60,26 @@ type SPhien = Parameters<typeof bosungDinhKhoan>[2] & { cheDo: Parameters<typeof
 interface PhieuGoc { mod: ModuleDef; sc: ScreenDef; r: Row; ma: string; cfgR: ReturnType<typeof theoLoai>; ds: Dong[]; goc: Omit<DongButToan, 'id' | 'tk' | 'tenTk' | 'tkDoiUng' | 'dt' | 'dtDu' | 'cv' | 'cvDu' | 'tp' | 'tpDu' | 'vt' | 'vtDu' | 'tinhChat' | 'no' | 'co'> }
 
 /** Duyệt mọi chứng từ ở mọi phân hệ, kèm dòng chi tiết đã bổ sung Nợ, Có (thu chi) */
-function duyetPhieu(s: SPhien, cb: (p: PhieuGoc) => void) {
+function duyetPhieu(s: SPhien, cb: (p: PhieuGoc) => void, boPcTuSinh = false) {
+  const layRows = (mod: ModuleDef, sc: ScreenDef, cfg: NonNullable<ScreenDef['voucher']>, ma: string): Row[] =>
+    apKhoPhieu(`${mod.key}/${sc.slug}`, [...(cfg.phieuThem?.(s as never) ?? []), ...(cfg.rowsMau ? cfg.rowsMau() : cfg.loai ? gopLoai(cfg, ma) : chungTu(cfg, ma))])
+  // Phiếu mua trả tiền ngay: bút toán nằm ở chính phiếu mua (Nợ Tk kho, Có quỹ tiền), phiếu chi tự sinh kèm không liệt kê lần nữa
+  const pcTuSinh = new Set<string>()
+  if (boPcTuSinh) for (const mod of MODULES) if (mod.key === 'mua-hang') for (const sc of mod.screens) {
+    const cfg = sc.voucher
+    if (!cfg || (cfg.prefix !== 'MH' && cfg.prefix !== 'HDM')) continue
+    for (const r of layRows(mod, sc, cfg, sc.code ?? sc.slug)) {
+      const id = (r._ctTt as { id?: string } | undefined)?.id
+      if (id && r._httt && r._httt !== 'congno') pcTuSinh.add(id)
+    }
+  }
   for (const mod of MODULES) for (const sc of mod.screens) {
     const cfg = sc.voucher
     if (!cfg || cfg.kiemKe || cfg.dieuChinh) continue
     const ma = sc.code ?? sc.slug
-    const rows: Row[] = apKhoPhieu(`${mod.key}/${sc.slug}`, [...(cfg.phieuThem?.(s as never) ?? []), ...(cfg.rowsMau ? cfg.rowsMau() : cfg.loai ? gopLoai(cfg, ma) : chungTu(cfg, ma))])   // gồm phiếu lập trong phiên, bỏ phiếu đã xoá, áp phần đã sửa
+    const rows: Row[] = layRows(mod, sc, cfg, ma)   // gồm phiếu lập trong phiên, bỏ phiếu đã xoá, áp phần đã sửa
     for (const r of rows) {
+      if (mod.key === 'tien' && pcTuSinh.has(String(r.id))) continue
       if (r._chiKeKhai) continue   // dòng kê khai mua vào sinh kèm phiếu chi: bút toán thuế đã nằm ở phiếu chi
       const cfgR = theoLoai(cfg, r.loai)
       let ds: Dong[] = (r._dong as Dong[] | undefined) ?? dongCua(cfgR, `${ma}-${r.id}`)
@@ -86,11 +101,39 @@ function apQuyTac(out: DongButToan[]): DongButToan[] {
   }, d))
 }
 
+/** Phiếu mua hàng, hoá đơn mua có dòng hàng: bút toán sinh theo từng dòng hàng */
+const muaSinhButToan = (modKey: string, prefix: string, ds: Dong[]) => modKey === 'mua-hang' && (prefix === 'MH' || prefix === 'HDM') && ds.length > 0
+
 /** Gom bút toán của mọi chứng từ ở mọi phân hệ */
 export function gomButToan(s: SPhien): DongButToan[] {
   const out: DongButToan[] = []
+  // Phiếu mua trả ngay sinh kèm phiếu chi: bút toán chỉ ghi một lần, ở phiếu mua (Nợ Tk kho, Có Tk thanh toán).
+  // Dòng Tk kho lấy số phiếu mua; các dòng còn lại lấy thông tin phiếu chi (ngày, loại, diễn giải, số chứng từ). Phiếu chi tự sinh không ghi thêm
+  const thongTinTt = new Map<string, { so: string; ngay: string; loaiCt: string; dienGiai: string; ghiChu: string; to: string }>()
+  const ctTtMua = new Set<string>()
+  duyetPhieu(s, ({ mod, r, cfgR, ds, goc }) => {
+    if (mod.key === 'tien') thongTinTt.set(String(r.id), { so: goc.so, ngay: goc.ngay, loaiCt: goc.loaiCt, dienGiai: goc.dienGiai, ghiChu: goc.ghiChu, to: goc.to })
+    else if (muaSinhButToan(mod.key, cfgR.prefix, ds) && r._httt !== 'congno') { const id = (r._ctTt as { id?: string } | undefined)?.id; if (id) ctTtMua.add(id) }
+  })
   duyetPhieu(s, ({ mod, sc, r, ma, cfgR, ds, goc }) => {
+    if (mod.key === 'tien' && ctTtMua.has(String(r.id))) return
     const dsRieng = ds.filter(d => d.tkNo && d.tkCo)
+    // Phiếu mua hàng, hoá đơn mua: bút toán theo từng dòng hàng (Tk kho, Tk thuế, Tk thanh toán, chi phí vận chuyển).
+    // Số chứng từ: dòng Nợ Tk kho là số phiếu mua; thanh toán luôn thì các bên còn lại là số chứng từ thanh toán (phiếu chi, uỷ nhiệm chi)
+    if (muaSinhButToan(mod.key, cfgR.prefix, ds) && !dsRieng.length) {
+      const httt = (r._httt as 'congno' | 'tienmat' | 'chuyenkhoan' | undefined) ?? 'congno'
+      const ctTt = r._ctTt as { id?: string; so?: string } | undefined
+      const bt = butToanMua(ds, tkThanhToan(httt, String(r._quy ?? '')), { khongKho: cfgR.khongKho, dvVc: String(r._dvVc ?? ''), soMua: goc.so, soTt: ctTt?.so, soChuaCo: goc.so, thanhToanNgay: httt !== 'congno' })
+      const tt = ctTt?.id ? thongTinTt.get(ctTt.id) : undefined
+      const gocTt = tt ? { ngay: tt.ngay, loaiCt: tt.loaiCt, dienGiai: tt.dienGiai, ghiChu: tt.ghiChu, to: tt.to } : {}
+      bt.forEach((b, i) => {
+        const [n, c] = capDong(goc, `${mod.key}-${ma}-${r.id}-${i}`, tkTheoCheDo(b.no, s.cheDo).so, tkTheoCheDo(b.co, s.cheDo).so, b.tien, b.dt ? { ...TRONG, dtCo: b.dt } : TRONG)
+        const laTt = (so: string) => so !== goc.so   // khác số phiếu mua là số chứng từ thanh toán
+        const dg = b.thue ? `Thuế GTGT - ${b.dg}` : b.dg   // diễn giải theo tên hàng, dòng thuế thêm Thuế GTGT
+        out.push({ ...n, ...(laTt(b.soNo) ? gocTt : {}), dienGiai: dg, so: b.soNo }, { ...c, ...(laTt(b.soCo) ? gocTt : {}), dienGiai: dg, so: b.soCo })
+      })
+      return
+    }
     if (dsRieng.length) {
       dsRieng.forEach((d, i) => out.push(...capDong({ ...goc, ghiChu: d.ghiChu || goc.ghiChu }, `${mod.key}-${ma}-${r.id}-${i}`, String(d.tkNo), String(d.tkCo), Number(d.tien) || 0, chiTietDong(d))))
     } else {
@@ -101,8 +144,10 @@ export function gomButToan(s: SPhien): DongButToan[] {
     if (r._coHd) (r._kkHd as { tkThue: string; tkDu: string; thue: number }[] | undefined)?.forEach((k, i) => {
       if (k.tkThue && k.tkDu && k.thue > 0) out.push(...capDong(goc, `${mod.key}-${ma}-${r.id}-t${i}`, k.tkThue, k.tkDu, k.thue))
     })
-  })
-  return apQuyTac(out)
+  }, true)
+  // Ngày mới nhất lên đầu; sort ổn định nên cặp Nợ, Có và thứ tự phân hệ trong cùng ngày giữ nguyên
+  const ms = (d: DongButToan) => docNgay(d.ngay.split(' ')[0])?.getTime() ?? 0
+  return apQuyTac(out.sort((a, b) => ms(b) - ms(a)))
 }
 
 /** Chuyển mã tài khoản: đổi tài khoản từ → sang trên các chứng từ trong khoảng ngày. Phiếu có dòng Nợ, Có lưu riêng được sửa thẳng, mọi phiếu được ghi thành quy tắc áp lên danh sách. Trả về số chứng từ đã đổi */

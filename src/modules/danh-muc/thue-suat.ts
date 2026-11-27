@@ -42,7 +42,7 @@ export const DS_LOAI_THUE_DONG = DM_THUE_SUAT.map(t => ({ v: t.ma, t: /^\d+$/.te
 export const maThueDong = (d: CoThueDong): string =>
   d.ltn ?? (d.ts ? (DM_THUE_SUAT.find(t => t.gt === String(d.ts))?.ma ?? String(d.ts)) : 'KCT')
 
-export const nhanThueDong = (d: CoThueDong): string => DS_LOAI_THUE_DONG.find(o => o.v === maThueDong(d))?.t ?? `${d.ts}%`
+export const nhanThueDong = (d: CoThueDong): string => d.ltn === '' ? '' : DS_LOAI_THUE_DONG.find(o => o.v === maThueDong(d))?.t ?? `${d.ts}%`
 
 /** Chọn mã loại thuế thì ghi ts số và ltn lên dòng. */
 export const suaThueDong = (ma: string): { ts: number; ltn: string } => ({ ts: Number(DM_THUE_SUAT.find(t => t.ma === ma)?.gt) || 0, ltn: ma })

@@ -2,6 +2,8 @@
 // chia vào từng mặt hàng theo giá trị hàng, cộng vào giá trị nhập kho (T757)
 import { money } from '../format'
 import { OSoGo } from '../OSoGo'
+import { NCC } from '../../data/mock'
+import { ChonDanhMuc } from '../ChonDanhMuc'
 import type { Dong } from './gen'
 
 const giaTri = (d: Dong) => Math.max((d.tien || 0) - (d.ck || 0), 0)
@@ -16,12 +18,14 @@ export function phanBoCp(dong: Dong[], tong: number): Dong[] {
   return moi
 }
 
-export function OChiPhiMua({ tien, onTien, dong, onPhanBo, sua }: {
+export function OChiPhiMua({ tien, onTien, dong, onPhanBo, sua, dvVc, onDvVc }: {
   tien: number
   onTien: (v: number) => void
   dong: Dong[]
   onPhanBo: (dong: Dong[]) => void
   sua: boolean
+  dvVc: string                      // đơn vị vận chuyển; trống là nhà cung cấp tự vận chuyển
+  onDvVc: (v: string) => void
 }) {
   return (
     <span className="ct-cpm">
@@ -30,6 +34,19 @@ export function OChiPhiMua({ tien, onTien, dong, onPhanBo, sua }: {
       {sua && (
         <button type="button" className="btn sm pri" disabled={!dong.length} onClick={() => onPhanBo(phanBoCp(dong, tien))}>Phân bổ</button>
       )}
+      <small>Đối tượng LQ</small>
+      {sua
+        ? (
+          <span style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', flexShrink: 0 }}>
+            <ChonDanhMuc dm="ncc" nhan="đối tượng liên quan" value={dvVc} onChange={onDvVc} ds={NCC.map(n => n.ten)} trong="NCC tự vận chuyển" className="inp sm" style={{ width: 400, paddingRight: dvVc ? 52 : undefined }} />
+            {dvVc && (
+              <button type="button" title="Bỏ chọn: nhà cung cấp tự vận chuyển" aria-label="Bỏ chọn đối tượng liên quan"
+                onClick={e => { e.stopPropagation(); onDvVc('') }}
+                style={{ position: 'absolute', right: 30, top: '50%', transform: 'translateY(-50%)', border: 0, background: 'transparent', cursor: 'pointer', fontSize: 16, lineHeight: 1, color: 'var(--muted)', padding: '0 4px' }}>×</button>
+            )}
+          </span>
+        )
+        : <b>{dvVc || 'NCC tự vận chuyển'}</b>}
     </span>
   )
 }
