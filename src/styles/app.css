@@ -50650,3 +50650,5 @@ body:has(.ds-chuyen-tk) .pop { z-index: 1200; }   /* danh sách thả xuống n�
   .gtmd-dong { grid-template-columns: minmax(0, 1fr) 34px; gap: 6px 10px; }
   .gtmd-ten { grid-column: 1 / -1; }
 }
+/* Ô chọn trong hộp: tối đa 5 dòng, dài hơn thì cuộn, có ô tìm (T955) */
+.pop-sel.gtmd-pop { max-height: 232px; overflow-y: auto; }

@@ -144,9 +144,10 @@ export const MenuSep = () => <div className="ms" />
 
 /** Thay cho thẻ select: giữ cách viết <option>, value, defaultValue, onChange(e.target.value).
  *  Danh sách dài thì truyền `ds` (mảng dữ liệu) thay cho <option> để khỏi dựng JSX mỗi lần vẽ; trên 8 lựa chọn có ô tìm (T81) */
-export function Select({ value, defaultValue, onChange, children, ds, className = '', style, disabled, 'aria-label': ariaLabel }: {
+export function Select({ value, defaultValue, onChange, children, ds, className = '', style, disabled, tim: epTim, popClass = '', 'aria-label': ariaLabel }: {
   value?: string; defaultValue?: string; onChange?: (e: { target: { value: string } }) => void
   children?: ReactNode; ds?: { v: string; t: string }[]; className?: string; style?: CSSProperties; disabled?: boolean; 'aria-label'?: string
+  tim?: boolean; popClass?: string   // tim: ép hiện ô tìm (mặc định khi trên 8 lựa chọn); popClass: lớp thêm cho khung thả (T955)
 }) {
   const opts = ds ?? docOption(children)
   const [trong, setTrong] = useState(defaultValue ?? opts[0]?.v ?? '')
@@ -156,7 +157,7 @@ export function Select({ value, defaultValue, onChange, children, ds, className 
   const [tim, setTim] = useState('')
   const btn = useRef<HTMLButtonElement>(null)
   const dong = useCallback(() => { setOpen(false); setTim('') }, [])
-  const coTim = opts.length > 8
+  const coTim = epTim ?? opts.length > 8
   const boDau = (x: string) => x.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D').toLowerCase()
   const hien = open && coTim && tim ? opts.filter(o => boDau(o.t).includes(boDau(tim))) : opts
   const chon = (x: string) => {
@@ -174,7 +175,7 @@ export function Select({ value, defaultValue, onChange, children, ds, className 
         onKeyDown={e => { if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); setOpen(true) } }}>
         <span className="sel-v">{cur?.t}</span><Icon n="chevd" className="ic sm sel-c" />
       </button>
-      <Popover anchor={btn} open={open} onClose={dong} role="listbox" className={`pop-sel${coTim ? ' co-tim' : ''}`}>
+      <Popover anchor={btn} open={open} onClose={dong} role="listbox" className={`pop-sel${coTim ? ' co-tim' : ''}${popClass ? ' ' + popClass : ''}`}>
         {coTim && (
           <div className="pop-sel-tim">
             <Icon n="search" className="ic sm" />

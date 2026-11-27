@@ -231,6 +231,8 @@ export function HopGiaTriMacDinh(p: { ma: string; tenPhieu: string; anTruong?: s
                             className={v ? 'inp' : 'inp gtmd-trong'}
                             value={v}
                             ds={opts}
+                            tim={opts.length > 5}
+                            popClass="gtmd-pop"
                             onChange={e => dat(khoa, e.target.value)}
                             disabled={chiXem}
                             aria-label={tr.ten}
