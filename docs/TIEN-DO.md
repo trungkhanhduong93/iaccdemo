@@ -11,6 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T953 | Máy tính gói Standard, màn Chi phí NVL và Chi phí hoạt động: bấm dòng mở hộp chi tiết (5 ô, 4 ô tóm tắt), lọc từng cột, phân trang, xuất Excel, thay cho đổi cửa hàng và bung danh sách phiếu (T483) | Trum | Đang làm | Sửa `ChiPhiNvl.tsx`, `ChiPhiThang.tsx`, tạo `HopChiTietChiPhi.tsx`, cuối `app.css` (mục T953). Mẫu artifact H3fsL7ZzrZGsayd1kJWpjS khung NvlMoHop, HoatDongMoHop |
 | T947 | Điện thoại, Danh mục cửa hàng (`MCuaHang.tsx`): làm như web T946, nút X bỏ trống công ty, đổi công ty bấm Lưu mới hỏi, hộp xác nhận xoá chứng từ đã phát sinh ở công ty cũ | | Chờ | Ghi lúc làm T946. Hộp chuyển công ty điện thoại còn chữ cũ T711 "toàn bộ chứng từ chuyển theo" |
 | T942 | Dọn các khối Tổng quan cũ trong `TongQuan.tsx` (thác nước, sức khoẻ tài chính, cảnh báo, món bán chạy) và hộp Tuỳ chỉnh khối, không còn hiện ở gói Plus, Pro từ T941. Hỏi Trum trước khi xoá | | Chờ | Ghi lúc làm T941. `TongQuan.tsx`, `chiSo.ts` (`docBlocks`, `luuBlocks`) |
 | T938 | Danh mục cửa hàng thêm định mức chi phí NVL (% doanh thu), định mức hao hụt (%) theo cửa hàng, nhập ở bảng và hộp chi tiết, có nút Lưu | dinhlanphuongipacc | Xong | Chưa nơi nào dùng hai định mức để tính. File: `DanhMucCuaHang.tsx` (cùng file T333), `dinh-muc-cua-hang.tsx`, `session.tsx`, cuối `app.css` |
