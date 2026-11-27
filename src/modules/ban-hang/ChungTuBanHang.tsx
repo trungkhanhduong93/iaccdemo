@@ -834,10 +834,41 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
           nhanLamLai="Đồng bộ lại hoá đơn đã có"
           ghiChuLamLai="Lấy lại hoá đơn đã vào sổ trong kỳ, không nhân đôi"
           nutChinh="Đồng bộ ngay"
+          donVi="hoá đơn"
           onDong={() => setMoHopDongBo(false)}
-          onDongBo={({ tu, den, chon, lamLai }) => {
-            setMoHopDongBo(false)
-            toast(`Đang đồng bộ hoá đơn bán hàng ${chon.length} cửa hàng, ${dmy(tu)} đến ${dmy(den)}${lamLai ? ', lấy lại cả chứng từ đã có' : ''}`)
+          onDongBo={() => {}}
+          taoKetQua={({ tu, den, chon }) => {
+            const khoang = `${dmy(tu)} – ${dmy(den)}`
+            if (chon.length === 1) {
+              const tenCh = CUA_HANG.find(c => c.id === chon[0])?.ten ?? chon[0]
+              return {
+                loai: 'loi',
+                tieuDe: 'Chưa đồng bộ được hoá đơn POS',
+                dong: 'Máy POS không phản hồi sau 120 giây.',
+                thongTin: [
+                  ['Cửa hàng', tenCh],
+                  ['Khoảng thời gian', khoang],
+                ],
+              }
+            }
+            const tong = 120 * chon.length
+            return {
+              loai: 'motPhan',
+              tieuDe: 'Đã đồng bộ hoá đơn POS',
+              dong: `Đã đồng bộ ${tong} hoá đơn: thành công ${tong - 1}, thất bại 1.`,
+              chiTiet: [
+                'Thất bại 1 hoá đơn: chưa có công thức chế biến (1)',
+                '2 hoá đơn còn dòng chưa trừ kho',
+              ],
+              thongTin: [
+                ['Cửa hàng', `${chon.length} cửa hàng`],
+                ['Khoảng thời gian', khoang],
+              ],
+              nutChinh: {
+                ten: 'Xem ở màn Chưa đồng bộ',
+                onClick: () => setMoHopDongBo(false),
+              },
+            }
           }}
         />
       )}

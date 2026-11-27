@@ -74,11 +74,40 @@ export function DongBo({ sc, mod }: ScreenProps) {
             macDinh: true,
           }}
           onDong={() => setMoHop(false)}
-          onDongBo={({ tu: dTu, den: dDen, chon, tichPhu }) => {
-            setMoHop(false)
-            const soDon = chon.length === 3 ? 188 : chon.length * 62 + 2
-            const vThu = tichPhu ? `, sinh ${soDon} phiếu thu theo phương thức thanh toán` : ''
-            toast(`Đã đồng bộ ${soDon} đơn từ ${chon.length} kho, ${dmy(dTu)} đến ${dmy(dDen)}${vThu}`)
+          donVi="đơn"
+          onDongBo={() => {}}
+          taoKetQua={({ tu: dTu, den: dDen, chon }) => {
+            const khoang = `${dmy(dTu)} – ${dmy(dDen)}`
+            if (chon.length === 1) {
+              const tenKho = dsKho.find(k => k.ma === chon[0])?.ten ?? chon[0]
+              return {
+                loai: 'loi',
+                tieuDe: 'Chưa đồng bộ được đơn POS',
+                dong: 'Máy POS không phản hồi sau 120 giây.',
+                thongTin: [
+                  ['Kho hàng', tenKho],
+                  ['Khoảng thời gian', khoang],
+                ],
+              }
+            }
+            const tong = 120 * chon.length
+            return {
+              loai: 'motPhan',
+              tieuDe: 'Đã đồng bộ đơn POS',
+              dong: `Đã đồng bộ ${tong} đơn: thành công ${tong - 1}, thất bại 1.`,
+              chiTiet: [
+                'Thất bại 1 đơn: chưa có công thức chế biến (1)',
+                '2 đơn còn dòng chưa trừ kho',
+              ],
+              thongTin: [
+                ['Kho hàng', `${chon.length} kho hàng`],
+                ['Khoảng thời gian', khoang],
+              ],
+              nutChinh: {
+                ten: 'Xem ở màn Chưa đồng bộ',
+                onClick: () => setMoHop(false),
+              },
+            }
           }}
         />
       )}
@@ -136,11 +165,33 @@ export function HoaDonDauVao({ sc, mod }: ScreenProps) {
           ds={dsCuaHang}
           nhanLamLai="Tải lại hoá đơn đã có"
           nutChinh="Tải hoá đơn"
+          donVi="hoá đơn"
           onDong={() => setMoHop(false)}
-          onDongBo={({ tu: dTu, den: dDen, chon }) => {
-            setMoHop(false)
+          onDongBo={() => {}}
+          taoKetQua={({ tu: dTu, den: dDen, chon }) => {
+            const khoang = `${dmy(dTu)} – ${dmy(dDen)}`
+            if (chon.length === 1) {
+              const tenDv = dsCuaHang.find(c => c.ma === chon[0])?.ten ?? chon[0]
+              return {
+                loai: 'loi',
+                tieuDe: 'Chưa tải được hoá đơn đầu vào',
+                dong: 'Hệ thống thuế không phản hồi.',
+                thongTin: [
+                  ['Đơn vị nhận', tenDv],
+                  ['Khoảng thời gian', khoang],
+                ],
+              }
+            }
             const soHd = chon.length === 3 ? 23 : chon.length * 8 + 3
-            toast(`Đã tải ${soHd} hoá đơn từ ${chon.length} đơn vị nhận, ${dmy(dTu)} đến ${dmy(dDen)}`)
+            return {
+              loai: 'ok',
+              tieuDe: 'Đã tải hoá đơn đầu vào',
+              dong: `Đã tải ${soHd} hoá đơn từ ${chon.length} đơn vị nhận, ${dmy(dTu)} đến ${dmy(dDen)}.`,
+              thongTin: [
+                ['Đơn vị nhận', `${chon.length} đơn vị`],
+                ['Khoảng thời gian', khoang],
+              ],
+            }
           }}
         />
       )}

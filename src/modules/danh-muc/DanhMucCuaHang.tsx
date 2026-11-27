@@ -1,6 +1,6 @@
 // Danh mục cửa hàng (T142): cửa hàng của đơn vị và cửa hàng lên sổ thêm từ cửa hàng FABi.
 // Thêm cửa hàng từ FABi: chỉ chọn cửa hàng chưa dùng kế toán, lên sổ từ ngày bắt đầu năm tài chính của đơn vị, có thể mở ngay màn Số dư ban đầu để khai quỹ tiền của cửa hàng mới.
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import type { Col, Row, ScreenProps } from '../types'
@@ -20,6 +20,8 @@ import { DsCuaHang } from '../onboarding/OnboardFabi'
 import { Select } from '../../ui/Dropdown'
 import { useDongEsc } from '../../ui/LocNangCao'
 import { ThongBao } from '../../ui/ThongBao'
+import { HopKetQuaDongBo, type KetQuaHop } from '../../ui/HopKetQuaDongBo'
+import { useGiuManDongBo } from '../../ui/giuManDongBo'
 import { batDongBoThuChi, datDongBoThuChi, phieuThuChiFabi } from '../tien/dong-bo-fabi'
 import { DI_DOI_CACH_NVL } from '../home/chi-phi-nvl'
 import { ODinhMuc, dinhMucCh, datDinhMucCh } from './dinh-muc-cua-hang'
@@ -352,47 +354,179 @@ export function HopThemCuaHang({ onDong, onLenSo }: { onDong: () => void; onLenS
   }, {})
   const tuNgay = ngayDauNam(s)   // cửa hàng mới lên sổ từ ngày bắt đầu năm tài chính của đơn vị
   const [khaiSoDu, setKhaiSoDu] = useState(true)
+  const [trangThai, setTrangThai] = useState<'lay' | 'san' | 'len'>('lay')
+  const [giay, setGiay] = useState(0)
+  const [pt, setPt] = useState(0)
+  const [tongChay, setTongChay] = useState(0)
+  const [ketQua, setKetQua] = useState<KetQuaHop | null>(null)
+  const timerRef = useRef<number | null>(null)
+  const choLenRef = useRef<{ ds: CnThem[]; khaiSoDu: boolean; caiDat: Partial<Session> } | null>(null)
+
+  const dungTimer = () => {
+    if (timerRef.current !== null) {
+      window.clearInterval(timerRef.current)
+      timerRef.current = null
+    }
+  }
+
+  useEffect(() => {
+    const batDau = Date.now()
+    const iv = window.setInterval(() => {
+      setGiay(Math.floor((Date.now() - batDau) / 1000))
+    }, 1000)
+    const tm = window.setTimeout(() => {
+      window.clearInterval(iv)
+      setTrangThai('san')
+    }, 4000)
+    return () => {
+      window.clearInterval(iv)
+      window.clearTimeout(tm)
+      dungTimer()
+    }
+  }, [])
+
+  const dangChay = trangThai === 'len' && !ketQua
+  const hopGiuMan = useGiuManDongBo(dangChay, () => {
+    dungTimer()
+    setTrangThai('san')
+  })
+
+  const batDauLenSo = () => {
+    if (chon.length === 0 || trangThai !== 'san') return
+    dungTimer()
+    const dsLen = ds.filter(c => chon.includes(c.id)).map(c => ({ id: c.id, ten: c.ten, khuVuc: c.khuVuc, tuNgay }))
+    choLenRef.current = { ds: dsLen, khaiSoDu, caiDat: caiDat() }
+    setTongChay(dsLen.length)
+    setPt(0)
+    setTrangThai('len')
+
+    let buoc = 0
+    timerRef.current = window.setInterval(() => {
+      buoc += 1
+      const next = Math.min(100, buoc * 5)
+      setPt(next)
+      if (next >= 100) {
+        dungTimer()
+        setKetQua({
+          loai: 'ok',
+          tieuDe: 'Đã thêm cửa hàng từ FABi',
+          dong: `Đã thêm ${dsLen.length} cửa hàng vào danh mục.`,
+        })
+      }
+    }, 200)
+  }
+
+  const dongKetQua = () => {
+    const duLieu = choLenRef.current
+    choLenRef.current = null
+    setKetQua(null)
+    if (duLieu) onLenSo(duLieu.ds, duLieu.khaiSoDu, duLieu.caiDat)
+    onDong()
+  }
+
+  const dongHo = `${Math.floor(giay / 60)}:${String(giay % 60).padStart(2, '0')}`
+  const da = Math.round((tongChay * pt) / 100)
   const ok = chon.length > 0
-  return createPortal(
-    <div className="overlay ds-hop-nen" onMouseDown={e => { if (e.target === e.currentTarget) onDong() }}>
-      <div className="ds-hop dmcn-hop" role="dialog" aria-modal="true" aria-label="Thêm cửa hàng từ FABi">
-        <div className="ds-hop-dau"><b>Thêm cửa hàng từ FABi</b><span className="grow" />
-          <button type="button" className="btn ghost sm" title="Đóng" onClick={onDong}><Icon n="x" className="ic sm" /></button></div>
-        <div className="dmcn-than">
-          {ds.length ? <>
-            <p className="muted">Chỉ hiện cửa hàng FABi chưa dùng kế toán ở đơn vị nào. Tích cửa hàng muốn lên sổ.</p>
-            <DsCuaHang ds={ds} chon={chon} chinh="" doi={moi => setChon(moi)} coChinh={false} />
-            {chon.length > 0 && (
-              <div className="dmcn-ch">
-                <div className="dmcn-ch-dau">Cấu hình cửa hàng lên sổ</div>
-                <div className="dmcn-ch-dong dmcn-ch-tieu"><span>Cửa hàng</span><span>Đồng bộ thu chi FABi</span></div>
-                {ds.filter(c => chon.includes(c.id)).map(c => {
-                  const ch = chCua(c.id)
-                  return (
-                    <div key={c.id} className="dmcn-ch-dong">
-                      <span className="dmcn-ch-ten">{c.ten}</span>
-                      <span className="dmcn-db">
-                        <button type="button" role="switch" aria-checked={ch.dongBo} aria-label={`Tự động đồng bộ thu chi FABi ${c.ten}`} className={`ds-ct${ch.dongBo ? ' on' : ''}`}
-                          onClick={() => doiCh(c.id, { dongBo: !ch.dongBo })}><i /></button>
-                        <small>{ch.dongBo ? 'Tự động' : 'Không đồng bộ'}</small>
-                      </span>
-                    </div>
-                  )
-                })}
+
+  return (
+    <>
+      {createPortal(
+        <div className="overlay ds-hop-nen" onMouseDown={e => { if (e.target === e.currentTarget && !dangChay && !ketQua) onDong() }}>
+          <div className="ds-hop dmcn-hop" role="dialog" aria-modal="true" aria-label="Thêm cửa hàng từ FABi">
+            <div className="ds-hop-dau"><b>Thêm cửa hàng từ FABi</b><span className="grow" />
+              <button type="button" className={`btn ghost sm hdb-dong${dangChay ? ' mo' : ''}`}
+                title={dangChay ? 'Đang lên sổ cửa hàng' : 'Đóng'} disabled={dangChay} onClick={onDong}>
+                <Icon n="x" className="ic sm" />
+              </button></div>
+            {trangThai !== 'lay' && (
+              <div className="dmcn-than">
+                <fieldset className="pn-fs" disabled={dangChay}>
+                  {ds.length ? <>
+                    <p className="muted">Chỉ hiện cửa hàng FABi chưa dùng kế toán ở đơn vị nào. Tích cửa hàng muốn lên sổ.</p>
+                    <DsCuaHang ds={ds} chon={chon} chinh="" doi={moi => setChon(moi)} coChinh={false} />
+                    {chon.length > 0 && (
+                      <div className="dmcn-ch">
+                        <div className="dmcn-ch-dau">Cấu hình cửa hàng lên sổ</div>
+                        <div className="dmcn-ch-dong dmcn-ch-tieu"><span>Cửa hàng</span><span>Đồng bộ thu chi FABi</span></div>
+                        {ds.filter(c => chon.includes(c.id)).map(c => {
+                          const ch = chCua(c.id)
+                          return (
+                            <div key={c.id} className="dmcn-ch-dong">
+                              <span className="dmcn-ch-ten">{c.ten}</span>
+                              <span className="dmcn-db">
+                                <button type="button" role="switch" aria-checked={ch.dongBo} aria-label={`Tự động đồng bộ thu chi FABi ${c.ten}`} className={`ds-ct${ch.dongBo ? ' on' : ''}`}
+                                  onClick={() => doiCh(c.id, { dongBo: !ch.dongBo })}><i /></button>
+                                <small>{ch.dongBo ? 'Tự động' : 'Không đồng bộ'}</small>
+                              </span>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    )}
+                    <label className="row dmcn-tich"><input type="checkbox" className="bat-tat" checked={khaiSoDu} onChange={e => setKhaiSoDu(e.target.checked)} />
+                      <span>Khai số dư ban đầu cho cửa hàng mới ngay sau khi lên sổ</span></label>
+                  </> : <Note kind="ok" icon="check">Mọi cửa hàng trên FABi đã lên sổ kế toán.</Note>}
+                </fieldset>
               </div>
             )}
-            <label className="row dmcn-tich"><input type="checkbox" className="bat-tat" checked={khaiSoDu} onChange={e => setKhaiSoDu(e.target.checked)} />
-              <span>Khai số dư ban đầu cho cửa hàng mới ngay sau khi lên sổ</span></label>
-          </> : <Note kind="ok" icon="check">Mọi cửa hàng trên FABi đã lên sổ kế toán.</Note>}
-        </div>
-        <div className="ds-chan">
-          <button type="button" className="btn" onClick={onDong}>Huỷ</button>
-          {ds.length > 0 && <button type="button" className="btn pri" disabled={!ok}
-            onClick={() => onLenSo(ds.filter(c => chon.includes(c.id)).map(c => ({ id: c.id, ten: c.ten, khuVuc: c.khuVuc, tuNgay })), khaiSoDu, caiDat())}>
-            Lên sổ {chon.length} cửa hàng</button>}
-        </div>
-      </div>
-    </div>,
-    document.body,
+            <div className={`ds-chan${trangThai !== 'san' ? ' hdb-chan hdb-chan-cot' : ''}`}>
+              {trangThai === 'lay' && (
+                <div className="hdb-td" aria-live="polite">
+                  <div className="tdb-dau">
+                    <span className="tdb-trai">
+                      <Icon n="refresh" className="ic sm hdb-spin tdb-ic" />
+                      <b>Đang lấy danh sách cửa hàng từ FABi…</b>
+                    </span>
+                    <span className="tdb-gio">{dongHo}</span>
+                  </div>
+                  <div className="tdb-thanh">
+                    <div className="tdb-muc" />
+                  </div>
+                </div>
+              )}
+              {trangThai === 'len' && (
+                <div className="hdb-td" aria-live="polite">
+                  <div className="hdb-td-thanh">
+                    <div className="hdb-td-muc" style={{ width: `${pt}%` }} />
+                  </div>
+                  <div className="hdb-td-dong">
+                    <span className="hdb-td-chu">{da} / {tongChay} cửa hàng</span>
+                    <span className="hdb-td-pt">{pt}%</span>
+                  </div>
+                </div>
+              )}
+              {trangThai === 'san' ? (
+                <>
+                  <button type="button" className="btn" onClick={onDong}>Huỷ</button>
+                  {ds.length > 0 && (
+                    <button type="button" className="btn pri" disabled={!ok} onClick={batDauLenSo}>
+                      Lên sổ {chon.length} cửa hàng
+                    </button>
+                  )}
+                </>
+              ) : (
+                <div className="hdb-chan-hang">
+                  <span className="hdb-chan-chay">
+                    {trangThai === 'len' ? 'Đang lên sổ cửa hàng. Giữ nguyên màn hình này tới khi xong.' : ''}
+                  </span>
+                  <div className="hdb-chan-phai">
+                    <button type="button" className="btn" disabled={dangChay} onClick={onDong}>Huỷ</button>
+                    {trangThai === 'len' && ds.length > 0 && (
+                      <button type="button" className="btn pri" disabled>
+                        <Icon n="refresh" className="ic sm hdb-spin" />
+                        Đang lên sổ…
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>,
+        document.body,
+      )}
+      {hopGiuMan}
+      {ketQua && <HopKetQuaDongBo kq={ketQua} onDong={dongKetQua} />}
+    </>
   )
 }

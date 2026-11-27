@@ -3,7 +3,7 @@
 // data-hd: chỗ khoanh, chỗ tự bấm của Hướng dẫn nhanh Thu chi; nút Đóng hộp lý do mang hdbDong để tour tự đóng như hộp Đồng bộ (T706).
 // Nút Đồng bộ lại mở hộp Đồng bộ thu chi từ FABi chọn kỳ, cửa hàng rồi lấy phiếu về, báo bao nhiêu phiếu vừa vào sổ, bao nhiêu còn chờ (T883).
 // Đơn vị vừa Kết nối FABi mà phiếu còn đổ về thì báo đang đồng bộ x / y phiếu như Trang chủ (T687).
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { Link } from 'react-router-dom'
 import { useSession } from '../../app/session'
@@ -49,12 +49,13 @@ function useLan(tong: number): [LanDongBo, (next: LanDongBo) => void] {
 }
 
 export function NutDongBoThuChiFabi() {
-  const { s, toast } = useSession()
+  const { s } = useSession()
   const db = useDongBoFabi()
   const [hop, setHop] = useState(false)
   const { cho, khoa } = phieuThuChiFabi(s)
   const tong = cho.length + khoa.length
   const [lan, capNhatLan] = useLan(tong)
+  const ketQuaRef = useRef<{ vao: number; conCho: number }>({ vao: 0, conCho: 0 })
 
   if (db) return null
 
@@ -72,14 +73,40 @@ export function NutDongBoThuChiFabi() {
           nhanLamLai="Đồng bộ lại phiếu đã có"
           ghiChuLamLai="Lấy lại phiếu đã vào sổ trong kỳ, không nhân đôi"
           nutChinh="Đồng bộ ngay"
+          donVi="phiếu thu chi"
           onDong={() => setHop(false)}
           onDongBo={({ tu, den, chon }) => {
-            setHop(false)
             const tenChon = CUA_HANG.filter(c => chon.includes(c.id)).map(c => c.ten)
             const conCho = [...cho, ...khoa].filter(p => tenChon.includes(p.cn) && ngayCua(p.ngay) >= tu && ngayCua(p.ngay) <= den).length
             const vao = Math.max(0, lan.cho - tong)
-            capNhatLan({ luc: gioNay(), cho: tong })
-            toast(`Đã đồng bộ thu chi từ FABi ${chon.length} cửa hàng, ${dmy(tu)} đến ${dmy(den)}: ${vao ? `${vao} phiếu vào sổ` : 'không có phiếu mới vào sổ'}${conCho ? `, còn ${conCho} phiếu chờ` : ''}`)
+            ketQuaRef.current = { vao, conCho }
+            // Chọn đúng 1 cửa hàng là ca lỗi giả, không ghi lần đồng bộ cuối (T950)
+            if (chon.length > 1) capNhatLan({ luc: gioNay(), cho: tong })
+          }}
+          taoKetQua={({ tu, den, chon }) => {
+            const khoang = `${dmy(tu)} – ${dmy(den)}`
+            if (chon.length === 1) {
+              const tenCh = CUA_HANG.find(c => c.id === chon[0])?.ten ?? chon[0]
+              return {
+                loai: 'loi',
+                tieuDe: 'Chưa đồng bộ được thu chi FABi',
+                dong: 'FABi không phản hồi.',
+                thongTin: [
+                  ['Cửa hàng', tenCh],
+                  ['Khoảng thời gian', khoang],
+                ],
+              }
+            }
+            const { vao, conCho } = ketQuaRef.current
+            return {
+              loai: 'ok',
+              tieuDe: 'Đã đồng bộ thu chi FABi',
+              dong: `Đã đồng bộ thu chi từ FABi ${chon.length} cửa hàng, ${dmy(tu)} đến ${dmy(den)}: ${vao ? `${vao} phiếu vào sổ` : 'không có phiếu mới vào sổ'}${conCho ? `, còn ${conCho} phiếu chờ` : ''}.`,
+              thongTin: [
+                ['Cửa hàng', `${chon.length} cửa hàng`],
+                ['Khoảng thời gian', khoang],
+              ],
+            }
           }}
         />
       )}

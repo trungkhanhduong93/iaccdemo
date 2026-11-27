@@ -18,6 +18,8 @@ import { TRUONG_DM, hopPp, type CauHinhDM, type HoiThem, type KhoiDM, type Truon
 import { heThongTk, locTkChiTiet, loiTkTongHop } from '../../modules/danh-muc/he-thong-tk'
 import { FormToanMan } from '../FormToanMan'
 import { ThongBao } from '../ThongBao'
+import { ThanhDongBo } from '../ThanhDongBo'
+import { HopKetQuaDongBo, type KetQuaHop } from '../HopKetQuaDongBo'
 import { LichSu } from './ChungTuForm'
 import { HopCotPhieu } from './BangSua'
 import { NutPhimTat, phimDong } from '../BangPhimTat'
@@ -120,6 +122,8 @@ export function CatalogScreen({ sc }: ScreenProps) {
   const laHangHoa = sc.code === '1.2' || sc.slug === 'hang-hoa' || sc.slug === '1-2'
   const laDongBoFabi = laHangHoa || sc.slug === 'nhom-hang-hoa' || sc.slug === 'phuong-thuc-thanh-toan' || sc.code === '1.17' || sc.code === '1.3'
   const coTrangThai = !cfg.dsChungTu
+  const [dangDongBo, setDangDongBo] = useState(false)
+  const [ketQuaDongBo, setKetQuaDongBo] = useState<KetQuaHop | null>(null)
 
   const [tabPhanLoai, setTabPhanLoai] = useState<'tat-ca' | 'da-phan-loai' | 'chua-phan-loai'>('tat-ca')
   // Tab theo giá trị một cột (cfg.tabTheo, vd Bảng giá: Giá nhập, Giá bán, T724)
@@ -138,6 +142,8 @@ export function CatalogScreen({ sc }: ScreenProps) {
     locDm.xoaHet()
     setTabPhanLoai('tat-ca')
     setTabGt(cfg.tabTheo?.ds[0] ?? '')
+    setDangDongBo(false)
+    setKetQuaDongBo(null)
   }, [sc])
 
   // Lọc theo trạng thái trước để tính số đếm tab
@@ -313,6 +319,8 @@ export function CatalogScreen({ sc }: ScreenProps) {
         sum={{ [cols[0].k]: `Tổng: ${rowsTrang.length}`, ...cong(rowsTrang) }} />
     : <Table cols={anTheoTab.size ? cot.colsHien.filter(c => !anTheoTab.has(c.k)) : cot.colsHien} doRong={cot.doRong} rows={rowsTrang} motDong onRow={moSua} rowCls={layRowCls} />, [dsct, anTheoTab, cot.colsHien, cot.doRong, rowsTrang, dangChon, cols0, cols, moSua, layRowCls])
   const ten = tenMan(sc)
+  const gocTenDm = (sc.ngan ?? (ten !== sc.slug ? ten : '')).replace(/^Danh mục\s+/i, '').trim()
+  const tenDmDongBo = gocTenDm ? thuongDau(gocTenDm) : 'danh mục'
 
 
   // Mở thẳng form thêm mới từ sơ đồ Quy trình: ?moi=<kiểu>, mở xong bỏ tham số khỏi đường dẫn
@@ -551,10 +559,11 @@ export function CatalogScreen({ sc }: ScreenProps) {
                   <button
                     type="button"
                     className="btn"
-                    onClick={() => toast(cfg.nutPhu!.bao)}
+                    disabled={dangDongBo}
+                    onClick={() => setDangDongBo(true)}
                   >
-                    <Icon n={cfg.nutPhu.icon ?? 'refresh'} className="ic sm" />
-                    <span>{cfg.nutPhu.nhan}</span>
+                    <Icon n={cfg.nutPhu.icon ?? 'refresh'} className={`ic sm${dangDongBo ? ' hdb-spin' : ''}`} />
+                    <span>{dangDongBo ? 'Đang đồng bộ…' : cfg.nutPhu.nhan}</span>
                   </button>
                 )}
                 {choThem && (
@@ -615,6 +624,20 @@ export function CatalogScreen({ sc }: ScreenProps) {
               </div>
             </div>
           </div>
+        )}
+        {dangDongBo && cfg.nutPhu && (
+          <ThanhDongBo
+            ten={tenDmDongBo}
+            onXong={() => {
+              setDangDongBo(false)
+              setKetQuaDongBo({
+                loai: 'ok',
+                tieuDe: `Đã đồng bộ ${tenDmDongBo}`,
+                dong: cfg.nutPhu!.bao,
+              })
+            }}
+            onHuy={() => setDangDongBo(false)}
+          />
         )}
         {/* Dải cảnh báo trên bảng; không có nút riêng, chỉ sang nút thêm hàng loạt đang có số đếm ngay phía trên (T287) */}
         {canhBao && !dsct && <DaiCanhBao cb={canhBao} />}   {/* danh sách kiểu chứng từ: cảnh báo gọn trong thanh công cụ (T429) */}
@@ -714,6 +737,7 @@ export function CatalogScreen({ sc }: ScreenProps) {
           onDong={() => setMoNhapExcel(false)}
         />
       )}
+      {ketQuaDongBo && <HopKetQuaDongBo kq={ketQuaDongBo} onDong={() => setKetQuaDongBo(null)} />}
     </div>
   )
 }

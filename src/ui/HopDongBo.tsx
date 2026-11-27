@@ -3,6 +3,9 @@ import { createPortal } from 'react-dom'
 import { ChonKhoangNgay, type KhoangNgay } from './ChonNgay'
 import { Popover } from './Dropdown'
 import { Icon } from './Icon'
+import { HopKetQuaDongBo, type KetQuaHop } from './HopKetQuaDongBo'
+import { ThongBao } from './ThongBao'
+import { useGiuManDongBo } from './giuManDongBo'
 import { HOM_NAY } from '../data/mock'
 
 export interface MucDongBo {
@@ -41,6 +44,8 @@ export interface HopDongBoProps {
   tichPhu?: { nhan: string; ghiChu?: string; macDinh?: boolean }   // ô tích thứ hai ở chân hộp (T137)
   onDong: () => void
   onDongBo: (ketQua: KetQuaDongBo) => void
+  taoKetQua: (kq: KetQuaDongBo) => KetQuaHop
+  donVi: string
 }
 
 function fNgay(d: Date): string {
@@ -69,6 +74,8 @@ export function HopDongBo({
   tichPhu,
   onDong,
   onDongBo,
+  taoKetQua,
+  donVi,
 }: HopDongBoProps) {
   const [khoangNgay, setKhoangNgay] = useState<KhoangNgay>(() => ({
     tu: new Date(2026, 9, 1),
@@ -81,13 +88,31 @@ export function HopDongBo({
   const [timMon, setTimMon] = useState('')
   const [lamLai, setLamLai] = useState(lamLaiMacDinh)
   const [tichPhuVal, setTichPhuVal] = useState(tichPhu?.macDinh ?? false)
-  const [dangChay, setDangChay] = useState(false)
+  const [trangThai, setTrangThai] = useState<'san' | 'chay' | 'huy'>('san')
+  const [pt, setPt] = useState(0)
+  const [soMucChay, setSoMucChay] = useState(0)
+  const [hoiHuy, setHoiHuy] = useState(false)
+  const [ketQua, setKetQua] = useState<KetQuaHop | null>(null)
   const [loaiThu, setLoaiThu] = useState(true)
   const [loaiChi, setLoaiChi] = useState(true)
+
+  const dangChay = trangThai === 'chay'
 
   const timRef = useRef<HTMLInputElement>(null)
   const monAnchorRef = useRef<HTMLDivElement>(null)
   const timerRef = useRef<number | null>(null)
+  const onDongBoRef = useRef(onDongBo)
+  onDongBoRef.current = onDongBo
+  const taoKetQuaRef = useRef(taoKetQua)
+  taoKetQuaRef.current = taoKetQua
+  const handleDongBoRef = useRef<() => void>(() => {})
+
+  const dungTimer = () => {
+    if (timerRef.current !== null) {
+      window.clearInterval(timerRef.current)
+      timerRef.current = null
+    }
+  }
 
   useEffect(() => {
     timRef.current?.focus()
@@ -97,21 +122,17 @@ export function HopDongBo({
     return () => clearTimeout(t)
   }, [])
 
-  useEffect(() => {
-    return () => {
-      if (timerRef.current) clearTimeout(timerRef.current)
-    }
-  }, [])
+  useEffect(() => dungTimer, [])
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && !dangChay) {
+      if (e.key === 'Escape' && !dangChay && !hoiHuy && !ketQua) {
         onDong()
       }
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [onDong, dangChay])
+  }, [onDong, dangChay, hoiHuy, ketQua])
 
   const dongAnToan = () => {
     if (dangChay) return
@@ -159,60 +180,98 @@ export function HopDongBo({
 
   const handleDongBo = () => {
     if (chon.length === 0 || dangChay || (coLoaiPhieu && !loaiThu && !loaiChi)) return
-    setDangChay(true)
-    timerRef.current = window.setTimeout(() => {
-      setDangChay(false)
-      onDongBo({
-        tu: khoangNgay.tu,
-        den: khoangNgay.den,
-        chon,
-        mon,
-        lamLai,
-        tichPhu: Boolean(tichPhuVal),
-        loaiThu,
-        loaiChi,
-      })
-    }, 900)
+    dungTimer()
+    setHoiHuy(false)
+    setKetQua(null)
+    setPt(0)
+    setSoMucChay(chon.length)
+    setTrangThai('chay')
+
+    const kq: KetQuaDongBo = {
+      tu: khoangNgay.tu,
+      den: khoangNgay.den,
+      chon: [...chon],
+      mon: [...mon],
+      lamLai,
+      tichPhu: Boolean(tichPhuVal),
+      loaiThu,
+      loaiChi,
+    }
+
+    let buoc = 0
+    timerRef.current = window.setInterval(() => {
+      buoc += 1
+      const next = Math.min(100, buoc * 5)
+      setPt(next)
+      if (next >= 100) {
+        dungTimer()
+        setHoiHuy(false)
+        setTrangThai('san')
+        onDongBoRef.current(kq)
+        const hopKq = taoKetQuaRef.current(kq)
+        setKetQua(
+          hopKq.loai === 'loi' && !hopKq.nutChinh
+            ? {
+                ...hopKq,
+                nutChinh: {
+                  ten: 'Thử lại',
+                  onClick: () => {
+                    setKetQua(null)
+                    handleDongBoRef.current()
+                  },
+                },
+              }
+            : hopKq,
+        )
+      }
+    }, 200)
   }
+  handleDongBoRef.current = handleDongBo
 
-  const chuDangChay =
-    nutDangChay ??
-    (nutChinh === 'Đồng bộ ngay'
-      ? 'Đang đồng bộ…'
-      : nutChinh.toLowerCase().startsWith('tải')
-        ? 'Đang tải…'
-        : 'Đang đồng bộ…')
+  const hopGiuMan = useGiuManDongBo(dangChay, () => {
+    dungTimer()
+    setHoiHuy(false)
+    setTrangThai('huy')
+  })
 
-  return createPortal(
-    <div
-      className="overlay hdb-overlay"
-      role="dialog"
-      aria-modal="true"
-      aria-label={tieuDe}
-      onMouseDown={e => {
-        if (e.target === e.currentTarget) dongAnToan()
-      }}
-    >
-      <div className="hdb-hop">
-        <header className="hdb-dau">
-          <div className="hdb-ic-wrap">
-            <Icon n="refresh" className="ic sm" />
-          </div>
-          <div className="hdb-dau-chu">
-            <div className="hdb-tieu-de">{tieuDe}</div>
-            <div className="hdb-phu">{phu}</div>
-          </div>
-          <button
-            type="button"
-            className="icon-btn hdb-dong"
-            title="Đóng (Esc)"
-            data-hd="hdbDong"
-            disabled={dangChay}
-            onClick={dongAnToan}
-          >
-            <Icon n="x" />
-          </button>
-        </header>
+  const tong = 120 * soMucChay
+  const da = Math.round((tong * pt) / 100)
+  const mucDangChay = soMucChay > 0 ? Math.min(soMucChay, Math.max(1, Math.ceil((pt / 100) * soMucChay))) : 0
+
+  const chuDangChay = nutDangChay ?? (nutChinh.toLowerCase().startsWith('tải') ? 'Đang tải…' : 'Đang đồng bộ…')
+
+  return (
+    <>
+      {createPortal(
+        <div
+          className="overlay hdb-overlay"
+          role="dialog"
+          aria-modal="true"
+          aria-label={tieuDe}
+          onMouseDown={e => {
+            if (e.target === e.currentTarget) dongAnToan()
+          }}
+        >
+          <div className="hdb-hop">
+            <header className="hdb-dau">
+              <div className="hdb-ic-wrap">
+                <Icon n="refresh" className="ic sm" />
+              </div>
+              <div className="hdb-dau-chu">
+                <div className="hdb-tieu-de">{tieuDe}</div>
+                <div className="hdb-phu">{phu}</div>
+              </div>
+              <button
+                type="button"
+                className={`icon-btn hdb-dong${dangChay ? ' mo' : ''}`}
+                title={dangChay ? 'Đang đồng bộ, bấm Huỷ tiến trình nếu muốn dừng' : 'Đóng (Esc)'}
+                data-hd="hdbDong"
+                disabled={dangChay}
+                onClick={dongAnToan}
+              >
+                <Icon n="x" />
+              </button>
+            </header>
 
         <div className="hdb-than">
           <div className="hdb-muc hdb-ngay" data-hd="hdbNgay">
@@ -453,9 +512,50 @@ export function HopDongBo({
           </div>
         </div>
 
-        <footer className="hdb-chan">
-          {tichPhu ? (
-            <div className="hdb-chan-trai-ds">
+        <footer className={`hdb-chan${trangThai !== 'san' ? ' hdb-chan-cot' : ''}`}>
+          {trangThai !== 'san' && (
+            <div className="hdb-td" aria-live="polite">
+              <div className="hdb-td-thanh">
+                <div
+                  className={`hdb-td-muc${trangThai === 'huy' ? ' huy' : ''}`}
+                  style={{ width: `${pt}%` }}
+                />
+              </div>
+              <div className="hdb-td-dong">
+                <span className="hdb-td-chu">
+                  {trangThai === 'huy'
+                    ? `Đã huỷ ở ${pt}% · ${da} ${donVi} đã về giữ nguyên`
+                    : `${da} / ${tong} ${donVi} · ${tenNhanDs} ${mucDangChay}/${soMucChay}`}
+                </span>
+                <span className={`hdb-td-pt${trangThai === 'huy' ? ' huy' : ''}`}>{pt}%</span>
+              </div>
+            </div>
+          )}
+          <div className="hdb-chan-hang">
+            {dangChay ? (
+              <span className="hdb-chan-chay">Đang đồng bộ. Giữ nguyên màn hình này tới khi xong.</span>
+            ) : tichPhu ? (
+              <div className="hdb-chan-trai-ds">
+                <label className="hdb-chan-trai" data-hd="hdbLamLai">
+                  <input
+                    type="checkbox"
+                    checked={lamLai}
+                    disabled={dangChay}
+                    onChange={e => setLamLai(e.target.checked)}
+                  />
+                  <span>{nhanLamLai}{ghiChuLamLai && <small className="hdb-chu-nho">{ghiChuLamLai}</small>}</span>
+                </label>
+                <label className="hdb-chan-trai">
+                  <input
+                    type="checkbox"
+                    checked={tichPhuVal}
+                    disabled={dangChay}
+                    onChange={e => setTichPhuVal(e.target.checked)}
+                  />
+                  <span>{tichPhu.nhan}{tichPhu.ghiChu && <small className="hdb-chu-nho">{tichPhu.ghiChu}</small>}</span>
+                </label>
+              </div>
+            ) : (
               <label className="hdb-chan-trai" data-hd="hdbLamLai">
                 <input
                   type="checkbox"
@@ -465,50 +565,64 @@ export function HopDongBo({
                 />
                 <span>{nhanLamLai}{ghiChuLamLai && <small className="hdb-chu-nho">{ghiChuLamLai}</small>}</span>
               </label>
-              <label className="hdb-chan-trai">
-                <input
-                  type="checkbox"
-                  checked={tichPhuVal}
-                  disabled={dangChay}
-                  onChange={e => setTichPhuVal(e.target.checked)}
-                />
-                <span>{tichPhu.nhan}{tichPhu.ghiChu && <small className="hdb-chu-nho">{tichPhu.ghiChu}</small>}</span>
-              </label>
+            )}
+            <div className="hdb-chan-phai">
+              {dangChay ? (
+                <button
+                  type="button"
+                  className="btn hdb-nut-dung"
+                  onClick={() => setHoiHuy(true)}
+                >
+                  Huỷ tiến trình
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  className="btn hdb-nut-huy"
+                  onClick={dongAnToan}
+                >
+                  Huỷ bỏ
+                </button>
+              )}
+              <button
+                type="button"
+                className="btn pri hdb-nut-chinh"
+                disabled={chon.length === 0 || dangChay || (coLoaiPhieu && !loaiThu && !loaiChi)}
+                data-hd="hdbNut"
+                onClick={handleDongBo}
+              >
+                {dangChay && <Icon n="refresh" className="ic sm hdb-spin" />}
+                {dangChay ? chuDangChay : trangThai === 'huy' ? 'Đồng bộ lại' : nutChinh}
+              </button>
             </div>
-          ) : (
-            <label className="hdb-chan-trai" data-hd="hdbLamLai">
-              <input
-                type="checkbox"
-                checked={lamLai}
-                disabled={dangChay}
-                onChange={e => setLamLai(e.target.checked)}
-              />
-              <span>{nhanLamLai}{ghiChuLamLai && <small className="hdb-chu-nho">{ghiChuLamLai}</small>}</span>
-            </label>
-          )}
-          <div className="hdb-chan-phai">
-            <button
-              type="button"
-              className="btn hdb-nut-huy"
-              disabled={dangChay}
-              onClick={dongAnToan}
-            >
-              Huỷ bỏ
-            </button>
-            <button
-              type="button"
-              className="btn pri hdb-nut-chinh"
-              disabled={chon.length === 0 || dangChay || (coLoaiPhieu && !loaiThu && !loaiChi)}
-              data-hd="hdbNut"
-              onClick={handleDongBo}
-            >
-              {dangChay && <Icon n="refresh" className="ic sm hdb-spin" />}
-              {dangChay ? chuDangChay : nutChinh}
-            </button>
           </div>
         </footer>
       </div>
     </div>,
     document.body,
+  )}
+      {hopGiuMan}
+      {hoiHuy && (
+        <ThongBao
+          loai="hoi"
+          tieuDe="Huỷ tiến trình đồng bộ?"
+          moTa="Dữ liệu đã về giữ nguyên."
+          nut={{
+            ten: 'Huỷ tiến trình',
+            onClick: () => {
+              dungTimer()
+              setHoiHuy(false)
+              setTrangThai('huy')
+            },
+          }}
+          nutPhu={{
+            ten: 'Tiếp tục đồng bộ',
+            onClick: () => setHoiHuy(false),
+          }}
+          onDong={() => setHoiHuy(false)}
+        />
+      )}
+      {ketQua && <HopKetQuaDongBo kq={ketQua} onDong={() => setKetQua(null)} />}
+    </>
   )
 }

@@ -1288,4 +1288,11 @@ Trum chốt, kèm ảnh form Sửa Nhóm hàng hoá (Ngầm định cho hàng ho
 - Phạm vi: bản Pro (hạch toán). Gói Free không hạch toán nên không có ô tài khoản (QD32).
 - Cách làm: dùng chung một hàm lọc và một hàm kiểm tài khoản chi tiết, không viết lọc riêng từng màn. Màn mới có ô tài khoản phải dùng hàm đó.
 
-## QD120. Tiến trình đồng bộ nằm trên màn đang đồng bộ, kết quả ở hộp chồng lên (đang soạn)
+## QD120. Tiến trình đồng bộ nằm trên màn đang đồng bộ, kết quả ở hộp chồng lên (27/11/2026)
+
+- Mẫu: artifact https://claude.ai/artifact/U7rptTLgHo8WCrX5wqmZFp (IFASTER-604). Không dùng toast hay khay nổi góc màn.
+- Màn có hộp đồng bộ (`HopDongBo`, hộp Thêm cửa hàng từ FABi): thanh nằm ở chân hộp, ngay trên hàng nút. Đang chạy: nút X mờ, Escape và bấm nền không đóng, có nút "Huỷ tiến trình" (hỏi lại một lần).
+- Màn chỉ có nút Đồng bộ (Danh mục, chứng từ có nguồn): thanh `ThanhDongBo` nằm ngay dưới thanh công cụ, lưới vẫn xem được. Chưa có API trạng thái thì vạch chạy qua lại kèm đồng hồ, không vẽ % giả.
+- Chạy xong mở hộp kết quả `HopKetQuaDongBo` (dựng trên `ThongBao`, QD113) chồng lên: Thành công (xanh), Thành công một phần (vàng), Lỗi (đỏ, có nút Thử lại). Đóng hộp kết quả thì hộp đồng bộ về trạng thái sẵn sàng.
+- Đang chạy mà bấm link sang màn khác thì hỏi "Ở lại" / "Rời và huỷ" (`useGiuManDongBo`); đóng tab, tải lại trang thì trình duyệt hỏi. Không áp Onboard, Trang chủ (đã có thanh từ T687).
+- Bản mẫu chưa có máy chủ: thanh giả chạy 4 giây; hộp có danh sách chọn đúng 1 mục thì ra Lỗi, từ 2 mục thì POS ra một phần, chỗ khác ra Thành công.

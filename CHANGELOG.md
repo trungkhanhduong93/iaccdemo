@@ -3,6 +3,9 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 27/11/2026
+- T952: Danh mục cửa hàng, hộp Thêm cửa hàng từ FABi: chân hộp có thanh khi lấy danh sách và thanh % khi lên sổ, xong mở hộp kết quả.
+- T951: Danh mục (nút Đồng bộ FABi) và chứng từ có nút Đồng bộ lại: thanh tiến trình ngay dưới thanh công cụ kèm đồng hồ, xong mở hộp kết quả; đang chạy mà bấm sang màn khác thì hỏi lại.
+- T950: Hộp đồng bộ (Xuất bán POS, Tiện ích, Tải hoá đơn đầu vào, Thu chi FABi): thanh % ở chân hộp, nút Huỷ tiến trình, chạy xong mở hộp kết quả thành công, một phần hoặc lỗi có nút Thử lại.
 - T949: Gói Pro, danh sách bút toán: lưới luôn hiện khi không có dòng, độ rộng cột cố định khi lọc, cảnh báo tài khoản tổng hợp tính theo kỳ đang xem.
 - T949: Gói Pro, danh sách bút toán thêm cột Ghi chú, Đối tượng/Công việc/Thành phẩm/VTHH theo tài khoản và đối ứng, số chứng từ mở chứng từ gốc, giữ trang, lọc, vị trí cuộn khi quay lại, cảnh báo tài khoản tổng hợp kèm nút Chuyển tài khoản (popup Chuyển mã tài khoản theo kỳ, loại chứng từ, có hỏi xác nhận).
 - T949: Gói Pro, Chứng từ tổng hợp (10.1.1) đổi thành danh sách bút toán của mọi chứng từ: mỗi cặp Nợ/Có hai dòng, có Số tiền nợ, Số tiền có, Đối tượng, Công việc, Thành phẩm, VTHH nợ/có, Tính chất DEB/CRD, dòng tổng, gom nhóm và Bộ lọc nâng cao.

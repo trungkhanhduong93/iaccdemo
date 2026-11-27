@@ -19,6 +19,8 @@ import { PhanTrang } from '../PhanTrang'
 import { buildGroupedData } from '../virtual'
 import { ChonKhoangNgay, docNgay, khoangThang, thangMacDinh, trongKhoang, type KhoangNgay } from '../ChonNgay'
 import { NutDongBo, NutExcel, NutThemMoiSplit } from '../CongCuDs'
+import { ThanhDongBo } from '../ThanhDongBo'
+import { HopKetQuaDongBo, type KetQuaHop } from '../HopKetQuaDongBo'
 import { fold, money, pad, rng } from '../format'
 import { heSoZoom } from '../zoom'
 import { dangLoc, dsGiaTri, khopLoc, type GiaTriLoc, type KieuLoc } from '../LocCot'
@@ -309,6 +311,9 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
   const [moHangLoat, setMoHangLoat] = useState(false)
   const [phieuIn, setPhieuIn] = useState<PhieuIn[] | null>(null)
   const [activeId, setActiveId] = useState<string>(rowsGoc[0]?.id ?? '')
+  const [dangDongBo, setDangDongBo] = useState(false)
+  const [ketQuaDongBo, setKetQuaDongBo] = useState<KetQuaHop | null>(null)
+  useEffect(() => { setDangDongBo(false); setKetQuaDongBo(null) }, [sc])
 
   const ghi = kieuGhiSoDv(s, mod.key) !== 'khong'   // gói Standard, Plus hộ kinh doanh không ghi sổ (QD81)
   const cnChon = cuaHangHienTai(s)
@@ -696,7 +701,14 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
 
             <div className="ds-toolbar-phai">
               {cfg.nguon && cfg.nguon !== 'tay' && cfg.nguon !== 'excel' && !cfg.kiemKe && (
-                <NutDongBo ten={NGUON[cfg.nguon][1]} onDongBo={() => toast(`Đã đồng bộ 14 chứng từ mới từ ${NGUON[cfg.nguon!][1]}`)} />
+                dangDongBo ? (
+                  <button type="button" className="btn pri sm ds-nut-dong-bo" disabled>
+                    <Icon n="refresh" className="ic sm hdb-spin" />
+                    <span>Đang đồng bộ…</span>
+                  </button>
+                ) : (
+                  <NutDongBo ten={NGUON[cfg.nguon][1]} onDongBo={() => setDangDongBo(true)} />
+                )
               )}
               {!cfg.khongThem && (() => {
                 const dsLoai = nhomChon ? loaiNhom : cfg.loai
@@ -773,6 +785,22 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
               </div>
             </div>
 
+          {dangDongBo && cfg.nguon && (
+            <ThanhDongBo
+              ten={NGUON[cfg.nguon][1]}
+              onXong={() => {
+                const nguonTen = NGUON[cfg.nguon!][1]
+                setDangDongBo(false)
+                setKetQuaDongBo({
+                  loai: 'ok',
+                  tieuDe: `Đã đồng bộ từ ${nguonTen}`,
+                  dong: `Đã đồng bộ 14 chứng từ mới từ ${nguonTen}`,
+                })
+              }}
+              onHuy={() => setDangDongBo(false)}
+            />
+          )}
+
           {/* Bảng danh sách chứng từ */}
           {list.length ? (
             <>
@@ -822,6 +850,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
         </section>
       </div>
       {phieuIn && <HopInChungTu ds={phieuIn} onDong={() => setPhieuIn(null)} />}
+      {ketQuaDongBo && <HopKetQuaDongBo kq={ketQuaDongBo} onDong={() => setKetQuaDongBo(null)} />}
     </div>
   )
 }

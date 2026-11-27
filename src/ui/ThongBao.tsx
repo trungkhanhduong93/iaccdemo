@@ -51,6 +51,7 @@ const HINH = {
   moKhoa: <><rect x="5" y="11" width="14" height="10" rx="2" /><path d="M8 11V7a4 4 0 0 1 7.5-2" /></>,
   luu: <><path d="M5 4h11l3 3v13H5z" /><path d="M8 4v5h7V4M8 20v-6h8v6" /></>,
   cuaHang: <><path d="M4 9.5 5.5 4h13L20 9.5" /><path d="M4 9.5a2.7 2.7 0 0 0 5.3 0 2.7 2.7 0 0 0 5.4 0 2.7 2.7 0 0 0 5.3 0M5 11v9h14v-9M10 20v-5h4v5" /></>,
+  loi: <><circle cx="12" cy="12" r="9" /><path d="M12 8v4M12 16h.01" /></>,
 }
 
 const LA_HOI: LoaiThongBao[] = ['xoa', 'canhBao', 'hoi']
