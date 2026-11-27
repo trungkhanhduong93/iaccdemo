@@ -1,6 +1,6 @@
 // Chi phí NVL trong tháng gói Standard (T232, T945): mở từ thẻ Chi phí nguyên vật liệu ở trang chủ.
 // Cách tính chung cả công ty, chọn ở Thông tin đơn vị (T767): kiểm kê định kỳ hoặc tổng chi phí mua hàng trong tháng.
-// Xem mọi cửa hàng: bảng từng cửa hàng, bấm dòng xem cửa hàng đó. Xem một cửa hàng (chọn trên thanh trên hoặc bấm từ bảng):
+// Xem mọi cửa hàng: bảng từng cửa hàng, bấm dòng mở hộp chi tiết cửa hàng đó (T953). Xem một cửa hàng (chọn trên thanh trên hoặc ?cn=):
 // bảng mặt hàng NVL gồm mã, tên, ĐVT, số lượng tồn đầu, mua, tồn cuối, sử dụng, giá gần nhất, giá vốn (T768).
 import { useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
@@ -17,6 +17,7 @@ import { NutXuatExcel } from '../../ui/CongCuDs'
 import { xuatBangExcel } from '../../ui/xuatBangExcel'
 import { CACH_NVL, DI_DOI_CACH_NVL, canKiemKeCuoiThang, daKhoaThang, nvlHangKy, nvlKy } from './chi-phi-nvl'
 import { TheTongChiPhi, type OCachTinh } from './TheTongChiPhi'
+import { HopChiTietChiPhi } from './HopChiTietChiPhi'
 
 const THANG = [7, 8, 9, 10]
 
@@ -40,6 +41,9 @@ export function ChiPhiNvl(_: ScreenProps) {
   const dsHang = cn ? nvlHangKy(s, [cn.id], thang) : []
   const [boQua, setBoQua] = useState(false)
   const [moChiTiet, setMoChiTiet] = useState(false)
+  const [moCn, setMoCn] = useState<string | null>(null)   // cửa hàng đang mở hộp chi tiết (T953)
+  const dongMo = tong.ds.find(x => x.cn === moCn)
+  const dsHangMo = dongMo ? nvlHangKy(s, [dongMo.cn], thang) : []
   const dsChuaKk = tong.ds.filter(x => x.chuaKk)
   const coCanhBao = canKiemKeCuoiThang(s, thang) && dsChuaKk.length > 0
   const ngayCuoi = `${new Date(2026, thang, 0).getDate()}/${String(thang).padStart(2, '0')}`
@@ -76,6 +80,9 @@ export function ChiPhiNvl(_: ScreenProps) {
     { k: 'gia', t: 'Giá gần nhất', num: true },
     { k: 'tien', t: 'Chi phí NVL', num: true },
   ]
+  // Hộp chi tiết ghi rõ cột số lượng (T953)
+  const TEN_SL: Record<string, string> = { slDau: 'SL tồn đầu', slMua: 'SL mua', slCuoi: 'SL tồn cuối', slDung: 'SL sử dụng' }
+  const cotHop = cotHang.map(c => ({ ...c, t: TEN_SL[c.k] ?? c.t }))
 
   const cotCn: Col[] = [
     // tên cửa hàng màu liên kết cho biết bấm được; bấm lan lên dòng mở bảng mặt hàng (T491, T768)
@@ -153,11 +160,31 @@ export function ChiPhiNvl(_: ScreenProps) {
           <Table cols={cotCn}
             rows={tong.ds.map(x => ({ id: x.cn, ten: x.ten, tonDau: x.tonDau, mua: x.mua, tonCuoi: x.tonCuoi, dt: x.dt, tien: x.tien, chuaKk: x.chuaKk, tyLe: x.dt ? x.tien / x.dt : 0 }))}
             sum={{ ten: 'Cộng', ...(kk ? { tonDau: tong.tonDau, mua: tong.mua, tonCuoi: tong.tonCuoi } : {}), dt, tien: tong.tien, tyLe: dt ? tong.tien / dt : 0 }}
-            onRow={r => doi({ cn: String(r.id) })} />
+            onRow={r => setMoCn(String(r.id))} />
           <div className="nvl-chan">{kk ? 'Bấm cửa hàng để xem chi phí từng mặt hàng NVL.' : 'Bấm cửa hàng để xem tiền mua từng mặt hàng NVL.'}</div>
         </>}
       </section>
       </div>
+      {dongMo && (
+        <HopChiTietChiPhi
+          tieuDe={`Chi phí NVL tháng ${String(thang).padStart(2, '0')}/2026`}
+          phu={dongMo.ten}
+          o={[
+            ...(kk ? [{ nhan: 'Tồn đầu kỳ', so: moneyD(dongMo.tonDau ?? 0) }] : []),
+            { nhan: kk ? '+ Mua trong tháng' : 'Mua trong tháng', so: moneyD(dongMo.mua) },
+            ...(kk ? [{ nhan: '− Tồn cuối kỳ', so: moneyD(dongMo.tonCuoi ?? 0) }] : []),
+            { nhan: '= Chi phí NVL', so: moneyD(dongMo.tien) },
+            { nhan: 'Tỷ lệ trên doanh thu', so: dongMo.dt ? pct(dongMo.tien / dongMo.dt) : '–', phu: `Doanh thu ${moneyD(dongMo.dt)}`, cam: true },
+          ]}
+          ghiChu="Chi phí NVL tính theo giá vốn xuất kho, không nhân theo giá gần nhất."
+          cols={cotHop}
+          rows={dsHangMo.map(h => ({ ...h }))}
+          onXuat={ds => xuatBangExcel(`Chi phí NVL ${dongMo.ten} tháng ${thang}/2026`, CACH_NVL[tong.cach].ten,
+            [{ t: '#', so: true }, { t: 'Mã hàng', rong: 12 }, { t: 'Tên hàng', rong: 30 }, { t: 'ĐVT', rong: 8 }, ...cotSl.map(([k]) => ({ t: TEN_SL[k], so: true })), { t: 'Giá gần nhất', so: true }, { t: 'Chi phí NVL', so: true }],
+            ds.map((h, i) => [i + 1, String(h.ma), String(h.ten), String(h.dvt), ...cotSl.map(([k]) => Number(h[k])), Number(h.gia), Number(h.tien)])).catch(loiXuat)}
+          onDong={() => setMoCn(null)}
+        />
+      )}
       {moChiTiet && coCanhBao && (
         <ThongBao
           loai="canhBao"

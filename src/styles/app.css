@@ -50431,3 +50431,22 @@ body:has(.ds-chuyen-tk) .pop { z-index: 1200; }   /* danh sách thả xuống n�
   from { transform: translateX(0); }
   to { transform: translateX(185%); }
 }
+
+/* ── Hộp chi tiết Chi phí NVL, Chi phí hoạt động (T953) ── */
+.ds-hop.hct-hop { width: min(1180px, 94vw); max-height: 90vh; }
+.hct-hop .ds-hop-dau { border-bottom: 1px solid var(--line); }
+.hct-dau { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.hct-tieu-de { color: var(--muted); font-size: 12.5px; }
+.hct-than { flex: 1; min-height: 0; overflow: auto; padding: 14px 16px; display: flex; flex-direction: column; gap: 12px; }
+.hct-o-luoi { display: grid; gap: 10px; }
+.hct-o { display: flex; flex-direction: column; gap: 4px; min-width: 0; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--white); }
+.hct-o-nhan { color: var(--muted); font-size: 12.5px; white-space: nowrap; }
+.hct-o-so { color: var(--ink); font-size: 16px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.hct-o-phu { color: var(--muted); font-size: 12px; white-space: nowrap; }
+.hct-o.cam { border-color: var(--orange-b); background: var(--orange-t); }
+.hct-o.cam .hct-o-so { color: var(--orange-d); font-size: 22px; }
+.hct-thanh { display: flex; align-items: center; gap: 10px; font-size: 13px; }
+.hct-than .tbl-wrap { overflow-x: auto; }
+.hct-than .tbl th, .hct-than .tbl td { white-space: nowrap; }
+.hct-than .tbl tfoot tr.sum td { background: var(--soft); }
+.hct-chan { display: flex; justify-content: flex-end; padding: 10px 16px; border-top: 1px solid var(--line); }
