@@ -14,6 +14,8 @@
 - Popup Chuyển mã tài khoản: Từ tài khoản (cả tổng hợp), Sang tài khoản (chi tiết), Từ ngày, Đến ngày, Loại chứng từ, hỏi xác nhận. Phiếu có dòng Nợ/Có lưu riêng thì sửa thẳng qua `suaPhieu`; mọi phiếu ghi thêm quy tắc `QUY_TAC` áp lên danh sách (mất khi F5, phiếu mua/bán dựng từ mẫu hạch toán không sửa được tại phiếu).
 - CSS cuối `app.css` mục T949: cảnh báo cùng hàng lọc, danh sách thả xuống trên popup, viền ô chọn tài khoản.
 
+- Đợt 3: lưới luôn hiện (kể cả không có dòng, thông báo nằm dưới); độ rộng cột cố định (`wCung`), kéo giãn vẫn ưu tiên; cảnh báo tài khoản tổng hợp chỉ đếm chứng từ trong kỳ đang xem; popup Chuyển mã mặc định theo kỳ, khoá nút Chuyển khi không có chứng từ.
+
 ## Đã kiểm
 
 - `npm run typecheck`, `npm run build`: không lỗi.

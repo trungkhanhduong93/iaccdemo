@@ -115,15 +115,15 @@ export function chuyenMaTaiKhoan(s: SPhien, q: QuyTacChuyen): number {
   return da.size
 }
 
-const COLS: Col[] = [
+const COLS_GOC: Col[] = [
   { k: 'ngay', t: 'Ngày', w: 100 },
   { k: 'so', t: 'Số chứng từ', w: 120, cls: 'code', r: r => r.to ? <Link className="ds-link-so" to={r.to} onClick={e => e.stopPropagation()} title="Mở chứng từ gốc">{r.so}</Link> : r.so },
   { k: 'loaiCt', t: 'Loại chứng từ', w: 150 },
   { k: 'dienGiai', t: 'Diễn giải', w: 240 },
   { k: 'tk', t: 'Tài khoản', w: 90 },
   { k: 'tkDoiUng', t: 'TK đối ứng', w: 90 },
-  { k: 'no', t: 'Số tiền nợ', num: true, w: 120, r: r => (r.no ? money(r.no) : '') },
-  { k: 'co', t: 'Số tiền có', num: true, w: 120, r: r => (r.co ? money(r.co) : '') },
+  { k: 'no', t: 'Số tiền nợ', num: true, w: 130, r: r => (r.no ? money(r.no) : '') },
+  { k: 'co', t: 'Số tiền có', num: true, w: 130, r: r => (r.co ? money(r.co) : '') },
   { k: 'dt', t: 'Đối tượng', w: 150 },
   { k: 'dtDu', t: 'Đối tượng đ/ứ', w: 150 },
   { k: 'cv', t: 'Công việc', w: 130 },
@@ -135,6 +135,7 @@ const COLS: Col[] = [
   { k: 'ghiChu', t: 'Ghi chú', w: 200 },
   { k: 'tinhChat', t: 'Tính chất', c: true, w: 80 },
 ]
+const COLS: Col[] = COLS_GOC.map(c => ({ ...c, wCung: true }))   // rộng đúng w: gõ lọc, đổi trang không làm cột đổi độ rộng; người dùng kéo giãn thì giữ độ rộng đã kéo
 interface GtLoc { thoiGian: KhoangNgay; tim: string; so: string; tk: string[]; tkDoiUng: string[]; doiTuong: string[]; cv: string[]; tp: string[]; vt: string[]; loaiCt: string[] }
 const locMacDinh = (): GtLoc => ({ thoiGian: thangMacDinh(), tim: '', so: '', tk: [], tkDoiUng: [], doiTuong: [], cv: [], tp: [], vt: [], loaiCt: [] })
 const NGAY = (r: Row) => String(r.ngay).split(' ')[0]
@@ -194,9 +195,12 @@ export function DanhSachButToan({ sc, mod }: ScreenProps) {
   const tkTongHop = useMemo(() => {
     const he = heThongTk(s.cheDo), chiTiet = new Set(locTkChiTiet(he, s.goi).map(x => x.so)), cha = new Set(he.filter(x => x.laCha).map(x => x.so))
     const so = new Set<string>(), tk = new Set<string>()
-    for (const d of tatCa) for (const x of [d.tk, d.tkDoiUng]) if (!chiTiet.has(x) && cha.has(x)) { so.add(d.to); tk.add(x) }
+    for (const d of tatCa) {
+      if (!trongKhoang(docNgay(d.ngay.split(' ')[0]), ap.thoiGian)) continue   // chỉ tính chứng từ trong kỳ đang xem, khớp với dòng trên lưới
+      for (const x of [d.tk, d.tkDoiUng]) if (!chiTiet.has(x) && cha.has(x)) { so.add(d.to); tk.add(x) }
+    }
     return { so: so.size, tk: [...tk] }
-  }, [tatCa, s.cheDo, s.goi])
+  }, [tatCa, s.cheDo, s.goi, ap.thoiGian])
   const dsTk = useMemo(() => [...new Set(tatCa.map(d => d.tk))].sort().map((v): MucHaiCot => ({ v, t: tenTk(v), ma: v })), [tatCa])
   const dsLoaiCt = useMemo(() => luaChon(d => [d.loaiCt]), [tatCa])   // eslint-disable-line react-hooks/exhaustive-deps
   const dsDt = useMemo(() => luaChon(d => [d.dt, d.dtDu]), [tatCa])   // eslint-disable-line react-hooks/exhaustive-deps
@@ -236,8 +240,10 @@ export function DanhSachButToan({ sc, mod }: ScreenProps) {
   const dsSang = useMemo(() => locTkChiTiet(heTk, 'PR').map(x => ({ v: x.so, t: x.so })), [heTk])
   // Khoảng ngày mặc định: từ phát sinh đầu tiên đến phát sinh cuối cùng của tài khoản chọn (không có thì theo kỳ đang lọc)
   const khoangCuaTk = (tu: string) => {
-    const ng = tatCa.filter(d => d.tk === tu || d.tkDoiUng === tu).map(d => docNgay(NGAY(d as unknown as Row)).getTime())
-    return ng.length ? { tuNgay: dmy(new Date(Math.min(...ng))), denNgay: dmy(new Date(Math.max(...ng))) } : { tuNgay: dmy(ap.thoiGian.tu), denNgay: dmy(ap.thoiGian.den) }
+    const co = tatCa.filter(d => d.tk === tu || d.tkDoiUng === tu)
+    const trongKy = co.filter(d => trongKhoang(docNgay(d.ngay.split(' ')[0]), ap.thoiGian))   // ưu tiên kỳ đang xem
+    const ng = (trongKy.length ? trongKy : co).map(d => docNgay(NGAY(d as unknown as Row)).getTime())
+    return trongKy.length ? { tuNgay: dmy(ap.thoiGian.tu), denNgay: dmy(ap.thoiGian.den) } : ng.length ? { tuNgay: dmy(new Date(Math.min(...ng))), denNgay: dmy(new Date(Math.max(...ng))) } : { tuNgay: dmy(ap.thoiGian.tu), denNgay: dmy(ap.thoiGian.den) }
   }
   const moChuyen = () => { const tu = tkTongHop.tk[0] ?? ''; setCt({ tu, sang: '', ...khoangCuaTk(tu), loaiCt: [] }) }
   const quyTac = ct && ct.tu && ct.sang && ct.tu !== ct.sang && ct.tuNgay && ct.denNgay && docNgay(ct.tuNgay) <= docNgay(ct.denNgay) ? { tu: ct.tu, sang: ct.sang, tuNgay: docNgay(ct.tuNgay), denNgay: docNgay(ct.denNgay), loaiCt: ct.loaiCt } : null
@@ -277,14 +283,11 @@ export function DanhSachButToan({ sc, mod }: ScreenProps) {
               gom={{ duoc: dsCotGom, ds: nhomCols, dat: setNhomCols }} onLuu={cot.luu} onDoRongTuDong={cot.datDoRongTuDong} />
           </div>
         </div>
-        {ds.length ? (
-          <>
-            <Table cols={cot.colsHien} rows={hien} motDong keDoc doRong={cot.doRong} onToggleGroup={doiNhom}
-              loc={{ gt: locCot, dat: (k, g) => { setLocCot(x => ({ ...x, [k]: g })); setTrang(1) }, bo: new Set<string>(), kieu: c => kieuCot(c.k), layLuaChon: k => dsGiaTri(tatCa as unknown as Row[], r => chuCot(k, r)) }}
-              sum={{ ngay: String(nhomCols.length ? ds.length : trangs.length), ...congCot(nhomCols.length ? ds : trangs) }} />
-            <PhanTrang tong={ds.length} tongCong={congCot(ds)} trang={trangHt} coTrang={coTrang} dsCoTrang={[50, 100, 200]} onTrang={setTrang} onCoTrang={c => { setCoTrang(c); setTrang(1) }} />
-          </>
-        ) : <div className="empty"><b>Không có bút toán khớp bộ lọc</b></div>}
+        <Table cols={cot.colsHien} rows={hien} motDong keDoc doRong={cot.doRong} onToggleGroup={doiNhom}
+          loc={{ gt: locCot, dat: (k, g) => { setLocCot(x => ({ ...x, [k]: g })); setTrang(1) }, bo: new Set<string>(), kieu: c => kieuCot(c.k), layLuaChon: k => dsGiaTri(tatCa as unknown as Row[], r => chuCot(k, r)) }}
+          sum={{ ngay: String(nhomCols.length ? ds.length : trangs.length), ...congCot(nhomCols.length ? ds : trangs) }} />
+        <PhanTrang tong={ds.length} tongCong={congCot(ds)} trang={trangHt} coTrang={coTrang} dsCoTrang={[50, 100, 200]} onTrang={setTrang} onCoTrang={c => { setCoTrang(c); setTrang(1) }} />
+        {ds.length === 0 && <div className="ds-trong-luoi">Không có bút toán khớp bộ lọc. Bỏ điều kiện lọc ở thanh lọc hoặc trên tiêu đề cột để xem lại dữ liệu.</div>}
       </section>
       {ct && !hoiCt && (
         <ThongBao loai="thongTin" nhan="Chuyển mã tài khoản" tieuDe="Chuyển mã tài khoản"
