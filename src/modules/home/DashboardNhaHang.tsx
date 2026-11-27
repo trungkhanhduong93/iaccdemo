@@ -1,5 +1,5 @@
-// Dashboard nhà hàng gói Plus, Pro, thay màn Tổng quan (T941). Mẫu: docs/thiet-ke/T939-dashboard-nha-hang-v2.html
-import { useState, type ReactNode } from 'react'
+// Dashboard nhà hàng gói Plus, Pro, thay màn Tổng quan (T941, T956). Mẫu: docs/thiet-ke/T956-dashboard-plus-pro.html
+import { useState, type CSSProperties, type ReactNode } from 'react'
 import { cuaHangHienTai, useSession } from '../../app/session'
 import { datThangLamViec, thangLamViec } from '../../app/thangLamViec'
 import { Link } from 'react-router-dom'
@@ -13,9 +13,10 @@ import { locSo, money, moneyD } from '../../ui/format'
 import { Card } from '../../ui/Page'
 import { Select } from '../../ui/Dropdown'
 import { CotDuongChart, SparkDinhMuc } from '../../ui/Charts'
+import { IconKpi, VanhKhuyen } from './VanhKhuyenNhaHang'
 import {
-  CONG_NO, CO_CAU_CHI_PHI, KENH, NHOM_HAO_HUT, QUY_TIEN, THANG,
-  chiaTheoTy, chuoiThang, dinhMuc, haoHut, ketQuaCuaHang, thuChi,
+  CONG_NO, NGUON_HAO_HUT, THANG,
+  chiaTheoTy, chuoiThang, coCauThang, dinhMuc, haoHut, ketQuaCuaHang, thuChi,
 } from './soLieuDashboardNhaHang'
 
 export const so1 = (n: number) => n.toLocaleString(locSo(), { minimumFractionDigits: 1, maximumFractionDigits: 1 })
@@ -47,8 +48,28 @@ export function SoDinhMuc({ r, dm }: { r: number; dm?: number }) {
   return <>Định mức {so1(dm)}%, <span className={c > 0 ? 'dnh-xau' : 'dnh-tot'}>{c > 0 ? 'vượt ' : 'thấp hơn '}{so1(Math.abs(c))}%</span></>
 }
 
-export function ODuLieu({ v, max, mau }: { v: number; max: number; mau: string }) {
-  return <div className="dnh-db"><i style={{ width: `${v / max * 100}%`, background: mau }} /><span>{money(v)}</span></div>
+function TheKpi({ loai, ten, giaTri, mau, ty, tyNhan, phu }: {
+  loai: 'dt' | 'nvl' | 'hd' | 'ln'
+  ten: string
+  giaTri: string
+  mau: string
+  ty?: number
+  tyNhan?: string
+  phu: ReactNode
+}) {
+  return (
+    <div className="dnh-kpi-v2" style={{ '--k': mau } as CSSProperties}>
+      <div className="dnh-kpi-dau">
+        <IconKpi loai={loai} />
+        <span className="dnh-kpi-ten">{ten}</span>
+      </div>
+      <div className="dnh-kpi-vh">
+        <div className="dnh-kpi-so">{giaTri}</div>
+        {ty !== undefined && <span className="dnh-kpi-ty">{so1(ty)}%<small>{tyNhan}</small></span>}
+      </div>
+      <div className="dnh-kpi-s">{phu}</div>
+    </div>
+  )
 }
 
 export function DashboardNhaHang() {
@@ -65,21 +86,50 @@ export function DashboardNhaHang() {
   const dmNvl = dinhMuc(s, k, 'nvl'), dmHh = dinhMuc(s, k, 'haoHut')
   const tang = (a: number[]) => (a[i] / a[j] - 1) * 100
   const hhDoi = hh.gia[i] - hh.gia[j]
-  const kenh = chiaTheoTy(c.dt[i], KENH.map(r => r.ty))
-  const chiPhi = c.dt[i] - c.ln[i]
-  const coCau = chiaTheoTy(chiPhi, CO_CAU_CHI_PHI.map(r => r.ty))
-  const quy = chiaTheoTy(tc.soDu[i], QUY_TIEN.map(r => r.ty))
-  const nhomHh = chiaTheoTy(hh.gia[i], NHOM_HAO_HUT.map(g => g.ty))
+  const cc = coCauThang(k, i)
+  const nguonHh = chiaTheoTy(hh.gia[i], NGUON_HAO_HUT.map(g => g.ty))
   const congNo = [
-    { ten: 'Phải thu', da: 'Đã thu', ...CONG_NO.thu },
-    { ten: 'Phải trả', da: 'Đã trả', ...CONG_NO.tra },
+    { ten: 'Phải thu cuối kỳ', da: 'Đã thu', mau: 'var(--dnh-thu)', ...CONG_NO.thu },
+    { ten: 'Phải trả cuối kỳ', da: 'Đã trả', mau: 'var(--dnh-chiT)', ...CONG_NO.tra },
   ]
+  const rong = CONG_NO.thu.cuoi - CONG_NO.tra.cuoi
   const kq = ketQuaCuaHang(i)
-  const max = (f: (r: (typeof kq)[number]) => number) => Math.max(...kq.map(f))
+  const kqTruoc = i > 0 ? ketQuaCuaHang(i - 1) : kq
   // Dòng Tổng lấy từ chuỗi toàn đơn vị để khớp thẻ đầu trang, không cộng số đã làm tròn từng cửa hàng
   const ct = chuoiThang(-1)
   const tDt = ct.dt[i], tNvl = ct.nvl[i], tLn = ct.ln[i], tHd = tDt - tNvl - tLn
+  const tLnTruoc = i > 0 ? ct.ln[i - 1] : ct.ln[i]
   const dmNvlTong = dinhMuc(s, -1, 'nvl')
+  const lechNvl = dmNvl !== undefined ? c.tyLeNvl[i] - dmNvl : 0
+  const maxNvl = Math.max(...c.tyLeNvl)
+  const thangMaxNvl = THANG[c.tyLeNvl.indexOf(maxNvl)]
+  const bqNvl = c.tyLeNvl.reduce((a, v) => a + v, 0) / c.tyLeNvl.length
+
+  const dongCuaHang = (ten: string, dt: number, nvl: number, ln: number, lnTr: number, dm: number | undefined, lop: string) => {
+    const hdC = dt - nvl - ln, tl = nvl / dt * 100, bien = ln / dt * 100
+    const dLn = lnTr ? (ln - lnTr) / Math.abs(lnTr) * 100 : 0
+    return (
+      <tr key={ten} className={lop || undefined}>
+        <td>{ten}</td>
+        <td className="nh">{money(dt)}</td>
+        <td className="pt">{so1(dt / tDt * 100)}%</td>
+        <td className="nh">{money(nvl)}</td>
+        <td className="pt">
+          <b className={dm === undefined ? undefined : tl > dm ? 'dnh-xau' : 'dnh-tot'}
+            title={dm !== undefined ? `Định mức ${so1(dm)}%` : undefined}>{so1(tl)}%</b>
+        </td>
+        <td className="nh">{money(hdC)}</td>
+        <td className="pt">{so1(hdC / dt * 100)}%</td>
+        <td className="nh">{money(ln)}</td>
+        <td className="pt">
+          <b className={bien >= 17 ? 'dnh-tot' : bien < 13 ? 'dnh-xau' : undefined}>{so1(bien)}%</b>
+        </td>
+        <td className="pt">
+          <span className={dLn >= 0 ? 'dnh-tot' : 'dnh-xau'}>{dLn >= 0 ? '▲' : '▼'} {so1(Math.abs(dLn))}%</span>
+        </td>
+      </tr>
+    )
+  }
 
   return (
     <div className="page">
@@ -117,59 +167,49 @@ export function DashboardNhaHang() {
       <HuongDan />
 
       <div className="dnh-g4">
-        <Kpi ten="Doanh thu" v={moneyD(c.dt[i])} phu={<Doi gia={tang(c.dt)} tot={c.dt[i] >= c.dt[j]} hau={`so với ${nhanTruoc}`} />} />
-        <Kpi ten="Chi phí NVL" v={moneyD(c.nvl[i])} phu={<><Doi gia={tang(c.nvl)} tot={c.nvl[i] <= c.nvl[j]} hau="" />· {so1(c.tyLeNvl[i])}% DT</>} />
-        <Kpi ten="Chi phí hoạt động" v={moneyD(hd[i])} phu={<><Doi gia={tang(hd)} tot={hd[i] <= hd[j]} hau="" />· {so1(hd[i] / c.dt[i] * 100)}% DT</>} />
-        <Kpi ten="Lợi nhuận" v={moneyD(c.ln[i])} phu={<><Doi gia={tang(c.ln)} tot={c.ln[i] >= c.ln[j]} hau="" />· biên {so1(c.bien[i])}%</>} />
+        <TheKpi loai="dt" ten="Doanh thu" giaTri={moneyD(c.dt[i])} mau="var(--dnh-dt)"
+          phu={<Doi gia={tang(c.dt)} tot={c.dt[i] >= c.dt[j]} hau={`so với ${nhanTruoc}`} />} />
+        <TheKpi loai="nvl" ten="Chi phí NVL" giaTri={moneyD(c.nvl[i])} mau="var(--dnh-cp)"
+          ty={c.tyLeNvl[i]} tyNhan="so với DT"
+          phu={<Doi gia={tang(c.nvl)} tot={c.nvl[i] <= c.nvl[j]} hau={`so với ${nhanTruoc}`} />} />
+        <TheKpi loai="hd" ten="Chi phí hoạt động" giaTri={moneyD(hd[i])} mau="var(--dnh-cp)"
+          ty={hd[i] / c.dt[i] * 100} tyNhan="so với DT"
+          phu={<Doi gia={tang(hd)} tot={hd[i] <= hd[j]} hau={`so với ${nhanTruoc}`} />} />
+        <TheKpi loai="ln" ten="Lợi nhuận" giaTri={moneyD(c.ln[i])} mau="var(--dnh-ln)"
+          ty={c.bien[i]} tyNhan="biên LN"
+          phu={<Doi gia={tang(c.ln)} tot={c.ln[i] >= c.ln[j]} hau={`so với ${nhanTruoc}`} />} />
       </div>
 
-      <div className="dnh-g4">
-        <Card className="dnh-sp2 dnh-kc" title="Doanh thu và biên LN gộp theo kênh" sub="đồng · %">
-          <ThanhTy phan={KENH} />
-          <table className="dnh-t">
-            <thead><tr><th>Kênh</th><th>Doanh thu</th><th>Tỷ trọng</th><th>Biên LN gộp</th></tr></thead>
-            <tbody>
-              {KENH.map((r, n) => (
-                <tr key={r.ten}><td><Chu mau={r.mau} ten={r.ten} /></td><td>{money(kenh[n])}</td><td>{r.ty}%</td><td className={r.bien < 62 ? 'dnh-xau' : ''}>{r.bien}%</td></tr>
-              ))}
-              <tr className="dnh-tong"><td>Tổng</td><td>{money(c.dt[i])}</td><td>100%</td><td>66,9%</td></tr>
-            </tbody>
-          </table>
+      <div className="dnh-g3">
+        <Card className="dnh-kc" title="Doanh thu theo kênh" sub="đồng · %">
+          <VanhKhuyen phan={cc.kenh} nhan="Doanh thu" tenCot="Kênh" />
         </Card>
-        <Card className="dnh-kc" title="Cơ cấu chi phí">
-          <ThanhTy phan={CO_CAU_CHI_PHI} />
-          <table className="dnh-t"><tbody>
-            {CO_CAU_CHI_PHI.map((r, n) => <tr key={r.ten}><td><Chu mau={r.mau} ten={r.ten} /></td><td>{money(coCau[n])}</td><td className="dnh-ty">{so1(r.ty)}%</td></tr>)}
-            <tr className="dnh-tong"><td>Tổng cộng</td><td>{money(chiPhi)}</td><td className="dnh-ty">100%</td></tr>
-          </tbody></table>
+        <Card className="dnh-kc" title="Cơ cấu chi phí" sub="đồng · %">
+          <VanhKhuyen phan={cc.chiPhi} nhan="Tổng chi phí" tenCot="Khoản" />
         </Card>
-        <Card className="dnh-kc" title="Tiền và ngân hàng">
-          <ThanhTy phan={QUY_TIEN} />
-          <table className="dnh-t"><tbody>
-            {QUY_TIEN.map((r, n) => <tr key={r.ten}><td><Chu mau={r.mau} ten={r.ten} /></td><td>{money(quy[n])}</td><td className="dnh-ty">{so1(r.ty)}%</td></tr>)}
-            <tr className="dnh-tong"><td>Tổng cộng</td><td>{money(tc.soDu[i])}</td><td className="dnh-ty">100%</td></tr>
-          </tbody></table>
+        <Card className="dnh-kc" title="Tiền và ngân hàng" sub="đồng · %">
+          <VanhKhuyen phan={cc.quy} nhan="Tổng số dư" tenCot="Quỹ" />
         </Card>
       </div>
 
       <div className="dnh-g2">
         <Card title="Kết quả kinh doanh 13 tháng" sub="đồng · biên ròng %">
           <div className="dnh-lg">
-            <Chu mau="var(--blue)" ten="Doanh thu" /><Chu mau="var(--amber)" ten="Chi phí NVL" />
-            <ChuDuong mau="var(--green)" ten="Lợi nhuận" /><ChuDuong mau="var(--orange)" ten="Biên LN ròng (%)" net />
+            <Chu mau="var(--dnh-dt)" ten="Doanh thu" /><Chu mau="var(--dnh-cp)" ten="Chi phí NVL" />
+            <ChuDuong mau="var(--dnh-ln)" ten="Lợi nhuận" /><ChuDuong mau="var(--dnh-ton)" ten="Biên LN ròng (%)" net />
           </div>
-          <CotDuongChart nhan={THANG} h={280}
-            cot={[{ ten: 'Doanh thu', mau: '#0560a6', v: c.dt }, { ten: 'Chi phí NVL', mau: '#d9a21b', v: c.nvl }]}
-            duong={[{ ten: 'Lợi nhuận', mau: '#138a52', v: c.ln }, { ten: 'Biên LN ròng', mau: '#f28020', v: c.bien, phai: true, net: true }]} />
+          <CotDuongChart nhan={THANG} h={280} chon={i}
+            cot={[{ ten: 'Doanh thu', mau: 'var(--dnh-dt)', v: c.dt }, { ten: 'Chi phí NVL', mau: 'var(--dnh-cp)', v: c.nvl }]}
+            duong={[{ ten: 'Lợi nhuận', mau: 'var(--dnh-ln)', v: c.ln }, { ten: 'Biên LN ròng', mau: 'var(--dnh-ton)', v: c.bien, phai: true, net: true }]} />
         </Card>
         <Card title="Thu chi 13 tháng" sub="đồng">
           <div className="dnh-lg">
-            <Chu mau="var(--blue)" ten="Thu" /><Chu mau="var(--faint)" ten="Chi" />
-            <ChuDuong mau="var(--green)" ten="Chênh lệch thu chi" net /><ChuDuong mau="var(--orange)" ten="Số dư cuối kỳ" />
+            <Chu mau="var(--dnh-thu)" ten="Thu" /><Chu mau="var(--dnh-chiT)" ten="Chi" />
+            <ChuDuong mau="var(--dnh-thuan)" ten="Chênh lệch thu chi" /><ChuDuong mau="var(--dnh-ton)" ten="Số dư cuối kỳ" net />
           </div>
-          <CotDuongChart nhan={THANG} h={280}
-            cot={[{ ten: 'Thu', mau: '#0560a6', v: tc.thu }, { ten: 'Chi', mau: '#9ca3af', v: tc.chi }]}
-            duong={[{ ten: 'Chênh lệch thu chi', mau: '#138a52', v: tc.chenh, net: true }, { ten: 'Số dư cuối kỳ', mau: '#f28020', v: tc.soDu }]} />
+          <CotDuongChart nhan={THANG} h={280} chon={i}
+            cot={[{ ten: 'Thu', mau: 'var(--dnh-thu)', v: tc.thu }, { ten: 'Chi', mau: 'var(--dnh-chiT)', v: tc.chi }]}
+            duong={[{ ten: 'Chênh lệch thu chi', mau: 'var(--dnh-thuan)', v: tc.chenh }, { ten: 'Số dư cuối kỳ', mau: 'var(--dnh-ton)', v: tc.soDu, net: true }]} />
         </Card>
       </div>
 
@@ -184,81 +224,127 @@ export function DashboardNhaHang() {
               {dmNvl !== undefined && <b style={{ left: `${dmNvl / 40 * 100}%` }} />}
             </div>
             <div className="dnh-s dnh-2dau"><span>0%</span><span>40%</span></div>
+            <div className="dnh-nv-st">
+              {dmNvl !== undefined && <>
+                <div>
+                  <span>{lechNvl > 0 ? 'Hao hụt vượt định mức' : 'Tiết kiệm so với định mức'}</span>
+                  <b className={lechNvl > 0 ? 'dnh-xau' : 'dnh-tot'}>{moneyD(Math.abs(lechNvl) / 100 * c.dt[i])}</b>
+                </div>
+                <div>
+                  <span>Tháng vượt định mức</span>
+                  <b>{c.tyLeNvl.filter(v => v > dmNvl).length}/{c.tyLeNvl.length} tháng</b>
+                </div>
+              </>}
+              <div>
+                <span>Bình quân 13 tháng</span>
+                <b>{so1(bqNvl)}%</b>
+              </div>
+              <div>
+                <span>Cao nhất</span>
+                <b>{so1(maxNvl)}% <small className="dnh-s">{thangMaxNvl}</small></b>
+              </div>
+            </div>
           </div>
           <div>
             <div className="dnh-lg">
-              <ChuDuong mau="var(--blue)" ten="Tỷ lệ NVL (%)" />
-              {dmNvl !== undefined && <ChuDuong mau="var(--faint)" ten={`Định mức NVL ${so1(dmNvl)}%`} net />}
+              <ChuDuong mau="var(--dnh-cp)" ten="Tỷ lệ NVL (%)" />
+              {dmNvl !== undefined && <>
+                <ChuDuong mau="var(--faint)" ten={`Định mức NVL ${so1(dmNvl)}%`} net />
+                <Chu mau="var(--red)" ten="Tháng vượt định mức" />
+              </>}
             </div>
-            <SparkDinhMuc nhan={THANG} v={c.tyLeNvl} dm={dmNvl} min={28} max={38} h={130} ten="Tỷ lệ NVL" />
+            <SparkDinhMuc nhan={THANG} v={c.tyLeNvl} dm={dmNvl} min={28} max={38} h={180} mau="var(--dnh-cp)" ten="Tỷ lệ NVL" chon={i} />
           </div>
         </div>
       </Card>
 
-      <div className="dnh-g4">
-        <Card className="dnh-sp2" title="Công nợ phải thu và phải trả" sub={`đồng · ${nhanT}`}>
-          <div className="dnh-cn">
-            {congNo.map(n => {
-              const ty = n.daThanhToan / (n.dau + n.phatSinh) * 100
-              const doi = n.cuoi - n.dau
-              return (
-                <div key={n.ten}>
-                  <div className="dnh-l">{n.ten} cuối kỳ</div>
-                  <div className="dnh-v">{moneyD(n.cuoi)}</div>
-                  <div className="dnh-s"><span className={doi > 0 ? 'dnh-xau' : 'dnh-tot'}>{doi > 0 ? '▲' : '▼'} {moneyD(Math.abs(doi))} ({so1(Math.abs(doi) / n.dau * 100)}%)</span> so với đầu kỳ</div>
-                  <ThanhTy phan={[{ ty, mau: 'var(--blue)' }, { ty: 100 - ty, mau: 'var(--amber)' }]} />
-                  <table className="dnh-t"><tbody>
-                    <tr><td><Chu mau="var(--blue)" ten={`${n.da} trong kỳ`} /></td><td>{money(n.daThanhToan)}</td><td className="dnh-ty">{so1(ty)}%</td></tr>
-                    <tr><td><Chu mau="var(--amber)" ten="Còn lại cuối kỳ" /></td><td>{money(n.cuoi)}</td><td className="dnh-ty">{so1(100 - ty)}%</td></tr>
-                    <tr><td>Đầu kỳ</td><td>{money(n.dau)}</td><td /></tr>
-                    <tr><td>Phát sinh trong kỳ</td><td>+ {money(n.phatSinh)}</td><td /></tr>
-                  </tbody></table>
-                </div>
-              )
-            })}
+      <div className="dnh-g2">
+        <Card className="dnh-cnc" title="Công nợ phải thu và phải trả" sub={`${nhanT} · đồng`}>
+          <div className="dnh-congno">
+            <div className="dnh-cn2">
+              {congNo.map(n => {
+                const S = n.dau + n.phatSinh
+                const pDa = S ? n.daThanhToan / S * 100 : 0
+                const doi = n.cuoi - n.dau
+                return (
+                  <div key={n.ten}>
+                    <div className="dnh-cn-l"><span className="dnh-dot" style={{ background: n.mau }} />{n.ten}</div>
+                    <div className="dnh-cn-v">{moneyD(n.cuoi)}</div>
+                    <div className="dnh-cn-p">
+                      <span className={doi > 0 ? 'dnh-xau' : 'dnh-tot'}>{doi > 0 ? '▲' : '▼'} {moneyD(Math.abs(doi))} ({so1(Math.abs(doi) / n.dau * 100)}%)</span> so với đầu kỳ
+                    </div>
+                    <div className="dnh-cn-bar" role="img" aria-label={`${n.da} ${so1(pDa)}%`}>
+                      <i style={{ width: `${pDa}%`, background: n.mau }} />
+                      <i style={{ flex: 1, background: `color-mix(in srgb, ${n.mau} 22%, var(--white))` }} />
+                    </div>
+                    <div className="dnh-dc">
+                      <span>Đầu kỳ</span><span>{money(n.dau)}</span><span className="pt" />
+                      <span>Phát sinh</span><span>+ {money(n.phatSinh)}</span><span className="pt" />
+                      <span>{n.da}</span><span>− {money(n.daThanhToan)}</span><span className="pt">{so1(pDa)}%</span>
+                      <span className="cuoi">Cuối kỳ</span><span className="cuoi">{money(n.cuoi)}</span><span className="cuoi pt">{so1(100 - pDa)}%</span>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+            <div className="dnh-cn-net">
+              <span>Phải thu trừ phải trả cuối kỳ</span>
+              <b className={rong < 0 ? 'dnh-xau' : 'dnh-tot'}>{rong < 0 ? '− ' : rong > 0 ? '+ ' : ''}{moneyD(Math.abs(rong))}</b>
+            </div>
           </div>
-          <div className="dnh-s">Phải thu trừ phải trả cuối kỳ: <span className="dnh-xau">− {moneyD(CONG_NO.tra.cuoi - CONG_NO.thu.cuoi)}</span></div>
         </Card>
-        <Card className="dnh-sp2" title="Hao hụt NVL">
-          <div className="dnh-l">Giá trị hao hụt</div>
-          <div className="dnh-hh">
-            <div className="dnh-v">{moneyD(hh.gia[i])} <span className="dnh-r">· {so1(hh.tyLe[i])}% giá trị NVL</span></div>
-            <div className="dnh-s dnh-pha"><SoDinhMuc r={hh.tyLe[i]} dm={dmHh} /></div>
+        <Card title="Hao hụt NVL">
+          <div className="dnh-hh-wrap">
+            <div className="dnh-hh-dau" tabIndex={0}>
+              <div className="dnh-s">Giá trị hao hụt {nhanT}<span className="dnh-hoi" aria-hidden="true">?</span></div>
+              <div>
+                <span className="dnh-big">{moneyD(hh.gia[i])}</span>{' '}
+                <span className="dnh-s">· {so1(hh.tyLe[i])}% giá trị NVL · <SoDinhMuc r={hh.tyLe[i]} dm={dmHh} /></span>
+              </div>
+              <div className="dnh-s">
+                <span className={hhDoi > 0 ? 'dnh-xau' : 'dnh-tot'}>{hhDoi > 0 ? '▲' : '▼'} {moneyD(Math.abs(hhDoi))}</span> so với {nhanTruoc}
+              </div>
+              <div className="dnh-hoi-tip" role="tooltip">
+                <b>Hao hụt {nhanT} lấy từ đâu</b>
+                {NGUON_HAO_HUT.map((g, n) => (
+                  <div className="dnh-hoi-d" key={g.ten}>
+                    <span><b>{g.ten}</b><small>{g.tu}</small></span>
+                    <b>{moneyD(nguonHh[n])}</b>
+                  </div>
+                ))}
+                <div className="dnh-hoi-d tong"><span>Tổng hao hụt</span><b>{moneyD(hh.gia[i])}</b></div>
+              </div>
+            </div>
+            <SparkDinhMuc nhan={THANG} v={hh.tyLe} dm={dmHh} min={0} max={4} h={130} mau="var(--dnh-c4)" ten="Tỷ lệ hao hụt" chon={i} />
+            <VanhKhuyen phan={cc.haoHut} nhan="Hao hụt" tenCot="Nhóm" ngang />
           </div>
-          <div className="dnh-s"><span className={hhDoi > 0 ? 'dnh-xau' : 'dnh-tot'}>{hhDoi > 0 ? '▲' : '▼'} {moneyD(Math.abs(hhDoi))}</span> so với {nhanTruoc}</div>
-          <SparkDinhMuc nhan={THANG} v={hh.tyLe} dm={dmHh} min={0} max={4} h={100} mau="var(--amber)" ten="Tỷ lệ hao hụt" />
-          <ThanhTy phan={NHOM_HAO_HUT.map(g => ({ ty: g.ty * 100, mau: g.mau }))} />
-          <table className="dnh-t"><tbody>
-            {NHOM_HAO_HUT.map((g, n) => <tr key={g.ten}><td><Chu mau={g.mau} ten={g.ten} /></td><td>{money(nhomHh[n])}</td><td className="dnh-ty">{Math.round(g.ty * 100)}%</td></tr>)}
-          </tbody></table>
         </Card>
       </div>
 
-      <Card title="Kết quả kinh doanh theo cửa hàng">
-        <table className="dnh-t dnh-tb">
-          <thead><tr><th>Cửa hàng</th><th>Doanh thu</th><th>Chi phí NVL</th><th>% NVL / DT</th><th>Chi phí hoạt động</th><th>Lợi nhuận</th><th>Biên LN ròng</th></tr></thead>
-          <tbody>
-            {kq.map((r, n) => {
-              const dm = dinhMuc(s, n, 'nvl')
-              return (
-                <tr key={r.id} className={n === k ? 'dnh-chon' : ''}>
-                  <td>{r.ten}</td>
-                  <td><ODuLieu v={r.dt} max={max(x => x.dt)} mau="var(--blue)" /></td>
-                  <td><ODuLieu v={r.nvl} max={max(x => x.nvl)} mau="var(--amber)" /></td>
-                  <td className={dm === undefined ? '' : r.tyLeNvl > dm ? 'dnh-xau' : 'dnh-tot'}>{so1(r.tyLeNvl)}%</td>
-                  <td><ODuLieu v={r.hoatDong} max={max(x => x.hoatDong)} mau="var(--orange)" /></td>
-                  <td><ODuLieu v={r.ln} max={max(x => x.ln)} mau="var(--green)" /></td>
-                  <td className={r.bien >= 17 ? 'dnh-tot' : r.bien < 13 ? 'dnh-xau' : ''}>{so1(r.bien)}%</td>
-                </tr>
-              )
-            })}
-            <tr className="dnh-tong">
-              <td>Tổng</td><td>{money(tDt)}</td><td>{money(tNvl)}</td>
-              <td className={dmNvlTong === undefined ? '' : tNvl / tDt * 100 > dmNvlTong ? 'dnh-xau' : 'dnh-tot'}>{so1(tNvl / tDt * 100)}%</td>
-              <td>{money(tHd)}</td><td>{money(tLn)}</td><td>{so1(tLn / tDt * 100)}%</td>
-            </tr>
-          </tbody>
-        </table>
+      <Card title="Kết quả kinh doanh theo cửa hàng" sub={`${nhanT} · đồng`}>
+        <div className="dnh-ch-cuon">
+          <table className="dnh-t dnh-bch">
+            <thead>
+              <tr className="t1">
+                <th rowSpan={2}>Cửa hàng</th>
+                <th colSpan={2} className="nh">Doanh thu</th>
+                <th colSpan={2} className="nh">Chi phí NVL</th>
+                <th colSpan={2} className="nh">Chi phí hoạt động</th>
+                <th colSpan={3} className="nh">Lợi nhuận</th>
+              </tr>
+              <tr className="t2">
+                <th className="nh">Số tiền</th><th>Tỷ trọng</th>
+                <th className="nh">Số tiền</th><th>% DT</th>
+                <th className="nh">Số tiền</th><th>% DT</th>
+                <th className="nh">Số tiền</th><th>Biên LN</th><th>So với {nhanTruoc}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {kq.map((r, n) => dongCuaHang(r.ten, r.dt, r.nvl, r.ln, kqTruoc[n].ln, dinhMuc(s, n, 'nvl'), n === k ? 'dnh-chon' : ''))}
+              {dongCuaHang('Tổng', tDt, tNvl, tLn, tLnTruoc, dmNvlTong, 'dnh-tong')}
+            </tbody>
+          </table>
+        </div>
       </Card>
     </div>
     </div>

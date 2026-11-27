@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 28/11/2026
+- T956: Gói Plus, Pro, Trang chủ nhà hàng làm lại theo bản mẫu: thẻ số có biểu tượng và tỷ lệ so với doanh thu, doanh thu theo kênh, cơ cấu chi phí, tiền và ngân hàng vẽ vành khuyên kèm bảng, khối Chi phí NVL thêm 4 ô (hao hụt vượt định mức, tháng vượt định mức, bình quân, cao nhất), bảng cửa hàng tiêu đề 2 tầng. Điện thoại xếp 1 cột, mỗi cửa hàng một thẻ.
 - T955: Gói Pro, Phiếu mua hàng: nút Giá trị mặc định cạnh nút Tuỳ chỉnh giao diện. Chủ doanh nghiệp, kế toán trưởng chọn ô cần tự điền (Nhà cung cấp, Kho nhập, Hình thức thanh toán, Diễn giải, Người giao, Kho dòng, Thuế suất) và đặt giá trị cho từng cửa hàng, chép được sang cửa hàng khác. Lập phiếu mới thì ô trống tự điền theo cửa hàng của phiếu. Kế toán viên chỉ xem.
 
 ## 27/11/2026

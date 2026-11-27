@@ -1,0 +1,451 @@
+<title>Dashboard nhà hàng Plus, bản vành khuyên</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap">
+<style>
+/* Bố cục: giữ đúng thứ tự khối của DashboardNhaHang.tsx (T941); lưới 4 cột, hẹp thì 2 rồi 1 cột */
+:root {
+  --bg: #f4f6f9; --card: #ffffff; --ink: #1f2225; --body: #363636; --muted: #6b7280; --line: #e5e8ee; --track: #eef1f5;
+  --blue: #0560a6; --orange: #f28020; --green: #138a52; --amber: #d9a21b; --gray: #9ca3af; --red: #c2362b; --chi: #b8bfca;
+  --tot: #138a52; --xau: #c2362b; --chon: #e6eff7;
+  --dt: #2f80ed; --cp: #f5a03a; --ln: #1f9d6b; --thu: #14a38b; --chiT: #ef6b5b; --ton: #5b5bd6; --thuan: #e29a2e;
+  --c1: #2f80ed; --c2: #14a38b; --c3: #f5a03a; --c4: #7b6fe0; --c5: #ef6b5b; --ck: #b8c2cc;
+  --fs: 'Be Vietnam Pro', -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #151821; --card: #1e222d; --ink: #eef0f4; --body: #d3d7df; --muted: #9aa2b1; --line: #2e3441; --track: #2a2f3b;
+  --blue: #4c9be0; --orange: #f59a4c; --green: #3cb37a; --amber: #e2b440; --gray: #7c8494; --red: #e8695e; --chi: #5d6575;
+  --tot: #3cb37a; --xau: #e8695e; --chon: #243247; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #151821; --card: #1e222d; --ink: #eef0f4; --body: #d3d7df; --muted: #9aa2b1; --line: #2e3441; --track: #2a2f3b;
+  --blue: #4c9be0; --orange: #f59a4c; --green: #3cb37a; --amber: #e2b440; --gray: #7c8494; --red: #e8695e; --chi: #5d6575;
+  --tot: #3cb37a; --xau: #e8695e; --chon: #243247; color-scheme: dark }
+body { background: var(--bg); color: var(--body); font-family: var(--fs); }
+.wrap { max-width: 1280px; margin: 0 auto; padding-block: 20px 40px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 16px; }
+.dau { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; justify-content: space-between; }
+h1 { margin: 0; font-size: 20px; color: var(--ink); }
+.loc { display: flex; gap: 8px; flex-wrap: wrap; }
+select { font: inherit; font-size: 13px; height: 34px; padding: 0 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--card); color: var(--ink); }
+select:focus-visible { outline: 2px solid var(--blue); outline-offset: 1px; }
+.ghi { margin: 0; font-size: 12px; color: var(--muted); line-height: 1.5; }
+.ttn { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-size: 13px; }
+.ttn > span { color: var(--muted); margin-right: 4px; }
+.ttn a { padding: 6px 12px; border: 1px solid var(--line); border-radius: 99px; background: var(--card); color: var(--ink); text-decoration: none; }
+.g4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+.g2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.sp2 { grid-column: span 2; }
+.g3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 1040px) { .g3 { grid-template-columns: 1fr; } }
+.vk.doc { flex-direction: column; align-items: stretch; }
+.vk.doc .tbl { flex: none; }
+.sodu svg { display: block; width: 100%; height: auto; }
+@media (max-width: 1040px) { .g4 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 720px) { .g4, .g2 { grid-template-columns: 1fr; } .sp2 { grid-column: auto; } }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; display: grid; gap: 10px; align-content: start; min-width: 0; }
+.card h2 { margin: 0; font-size: 14px; color: var(--ink); }
+.card h2 small { font-weight: 400; color: var(--muted); font-size: 12px; margin-left: 6px; }
+.kpi .l { font-size: 12px; color: var(--muted); }
+.kpi .v { font-size: 22px; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; }
+.s { font-size: 12px; color: var(--muted); }
+.tot { color: var(--tot); } .xau { color: var(--xau); }
+.big { font-size: 22px; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; }
+.vk { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+.vk .donut { flex: 0 0 184px; margin: 0 auto; }
+.vk .donut svg { display: block; width: 184px; height: 184px; overflow: visible; }
+.c-l { font-size: 11px; fill: var(--muted); letter-spacing: .02em; }
+.c-v { font-size: 21px; font-weight: 700; fill: var(--ink); font-variant-numeric: tabular-nums; }
+.c-d { font-size: 11.5px; font-weight: 600; fill: var(--muted); font-variant-numeric: tabular-nums; }
+circle.cung { transition: opacity .18s, stroke-width .18s; cursor: pointer; }
+.dim circle.cung:not(.on) { opacity: .25; }
+.dim circle.cung.on { stroke-width: 22; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; }
+th { text-align: right; font-weight: 500; color: var(--muted); font-size: 12px; padding: 4px 6px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+td { text-align: right; padding: 6px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+th:first-child, td:first-child { text-align: left; }
+tr.tong td { font-weight: 700; color: var(--ink); border-bottom: 0; }
+tr.chon td { background: var(--chon); }
+tr[data-i]:hover td { background: var(--track); }
+.dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 7px; vertical-align: -1px; }
+.thanh { display: inline-flex; align-items: center; gap: 6px; justify-content: flex-end; }
+.thanh i { display: block; height: 6px; border-radius: 3px; background: var(--blue); }
+.thanh.xau i { background: var(--xau); }
+.quy div { display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 13px; font-variant-numeric: tabular-nums; }
+.quy div b { color: var(--ink); }
+.quy div.tong { border-bottom: 0; font-weight: 700; color: var(--ink); }
+.lg { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12px; color: var(--muted); }
+.lg span { display: inline-flex; align-items: center; gap: 6px; }
+.lg i { display: inline-block; width: 16px; border-top: 2px solid; }
+.lg i.o { width: 10px; height: 10px; border: 0; border-radius: 3px; }
+.ve { position: relative; overflow-x: auto; }
+.ve svg { display: block; width: 100%; height: auto; min-width: 520px; }
+.ve.spark svg { min-width: 0; }
+.ax { font-size: 10px; fill: var(--muted); font-family: var(--fs); }
+.axChon { fill: var(--ink); font-weight: 700; }
+.nhanDiem { font-size: 11px; font-weight: 700; fill: #fff; font-family: var(--fs); font-variant-numeric: tabular-nums; }
+.grid line { stroke: var(--line); }
+.tip { position: fixed; pointer-events: none; background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; font-size: 12px; box-shadow: 0 4px 14px rgba(0,0,0,.12); white-space: nowrap; font-variant-numeric: tabular-nums; z-index: 2; }
+.tip b { color: var(--ink); }
+.nv { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: 24px; align-items: center; }
+@media (max-width: 720px) { .nv { grid-template-columns: 1fr; } }
+.nv-st { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; }
+.nv-st div { background: var(--track); border-radius: 8px; padding: 8px 10px; display: grid; gap: 2px; min-width: 0; }
+.nv-st span { font-size: 11.5px; color: var(--muted); }
+.nv-st b { font-size: 14.5px; color: var(--ink); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.nv-st b.xau { color: var(--xau); } .nv-st b.tot { color: var(--tot); }
+.bl { position: relative; height: 10px; border-radius: 5px; background: var(--track); margin-top: 8px; }
+.bl i { position: absolute; inset: 0 auto 0 0; border-radius: 5px; background: var(--cp); }
+.bl b { position: absolute; top: -4px; bottom: -4px; width: 2px; background: var(--ink); }
+.hai { display: flex; justify-content: space-between; }
+.chip { display: inline-block; padding: 2px 9px; border-radius: 99px; font-size: 12px; font-weight: 600; }
+.chip.tot { color: var(--tot); background: color-mix(in srgb, var(--tot) 13%, transparent); }
+.chip.xau { color: var(--xau); background: color-mix(in srgb, var(--xau) 13%, transparent); }
+.chip.vua { color: var(--muted); background: var(--card); box-shadow: inset 0 0 0 1px var(--line); }
+.db { display: flex; align-items: center; gap: 8px; justify-content: flex-end; }
+.db i { display: block; height: 8px; border-radius: 4px; }
+/* ── 4 thẻ số: nền nhuộm theo màu chỉ tiêu ── */
+.kpi { --k: var(--blue); position: relative; overflow: hidden; border-radius: 14px; padding: 16px 18px 14px; display: grid; gap: 8px; min-width: 0;
+  background: linear-gradient(160deg, color-mix(in srgb, var(--k) 6%, var(--card)) 0%, var(--card) 60%);
+  border: 1px solid var(--line);
+  box-shadow: 0 1px 2px rgba(16,24,40,.04); }
+.kpi-d { display: flex; align-items: center; gap: 11px; }
+.kpi-ic { width: 40px; height: 40px; border-radius: 11px; background: var(--k); display: grid; place-items: center; flex: none;
+  }
+.kpi-ic svg { width: 24px; height: 24px; }
+.kpi .l { font-size: 13.5px; font-weight: 600; color: var(--muted); }
+.kpi .v { font-size: 24px; letter-spacing: -.01em; }
+.kpi .v-h { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.kpi .ty { display: grid; text-align: right; font-size: 16px; font-weight: 700; color: var(--k); font-variant-numeric: tabular-nums; line-height: 1.15; }
+.kpi .ty small { font-size: 11px; font-weight: 500; color: var(--muted); }
+.kpi .s .tot, .kpi .s .xau { display: inline-block; padding: 1px 7px; border-radius: 99px; font-weight: 600; background: color-mix(in srgb, currentColor 12%, var(--card)); }
+/* ── Biểu đồ 13 tháng ── */
+.bang-chon { fill: var(--chon); }
+.bang-re { fill: var(--track); }
+.grid line { stroke-dasharray: 3 4; }
+.grid line.day { stroke-dasharray: none; stroke: var(--line); }
+/* ── Công nợ: hai cột phải thu, phải trả; bảng đối chiếu đầu kỳ + phát sinh − đã thu = cuối kỳ ── */
+.cnc { grid-template-rows: auto 1fr; }
+#congno { display: grid; grid-template-rows: 1fr auto; gap: 16px; }
+.cn2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+.cn2 > div { display: grid; gap: 12px; align-content: start; min-width: 0; }
+.cn2 > div + div { border-left: 1px solid var(--line); padding-left: 18px; margin-left: 18px; }
+@media (max-width: 560px) { .cn2 { grid-template-columns: 1fr; } .cn2 > div + div { border-left: 0; padding-left: 0; margin-left: 0; border-top: 1px solid var(--line); padding-top: 14px; margin-top: 14px; } }
+.cn-l { font-size: 12px; color: var(--muted); display: flex; align-items: center; }
+.cn-v { font-size: 26px; font-weight: 700; color: var(--ink); letter-spacing: -.01em; line-height: 1.15; font-variant-numeric: tabular-nums; }
+.cn-p { font-size: 12px; color: var(--muted); }
+.cn-bar { display: flex; gap: 2px; height: 10px; margin-top: 2px; }
+.cn-bar i { display: block; height: 100%; }
+.cn-bar i:first-child { border-radius: 5px 0 0 5px; } .cn-bar i:last-child { border-radius: 0 5px 5px 0; }
+.dc { display: grid; grid-template-columns: minmax(0, 1fr) auto 52px; font-size: 13px; font-variant-numeric: tabular-nums; }
+.dc > * { padding: 9px 0; border-bottom: 1px solid var(--line); white-space: nowrap; }
+.dc > :nth-child(3n+2) { padding-left: 10px; }
+.dc > :nth-child(3n+2), .dc > :nth-child(3n) { text-align: right; }
+.dc > :nth-child(3n) { color: var(--muted); }
+.dc .cuoi { font-weight: 700; color: var(--ink); border-bottom: 0; }
+.dc .cuoi.pt { color: var(--muted); font-weight: 600; }
+.cn-net { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; font-size: 13px; padding: 10px 12px; border-radius: 8px; background: var(--track); }
+.cn-net b { font-size: 14px; font-variant-numeric: tabular-nums; }
+/* ── Hao hụt: rê chuột xem nguồn ── */
+.hh-dau { position: relative; display: grid; gap: 6px; cursor: help; justify-self: start; }
+.hoi { display: inline-grid; place-items: center; width: 16px; height: 16px; border-radius: 50%; font-size: 10.5px; font-weight: 700; color: var(--muted); box-shadow: inset 0 0 0 1.5px var(--muted); margin-left: 6px; vertical-align: 1px; }
+.hoi-tip { display: none; position: absolute; left: 0; top: calc(100% + 8px); z-index: 20; width: 320px; padding: 12px 14px; gap: 10px;
+  background: var(--card); border: 1px solid var(--line); border-radius: 10px; box-shadow: 0 12px 28px -8px rgba(16,24,40,.25); font-size: 12.5px; cursor: default; }
+.hh-dau:hover .hoi-tip, .hh-dau:focus-within .hoi-tip { display: grid; }
+.hoi-tip > b { color: var(--ink); font-size: 13px; }
+.hoi-d { display: flex; justify-content: space-between; gap: 12px; font-variant-numeric: tabular-nums; }
+.hoi-d small { display: block; color: var(--muted); font-size: 11.5px; margin-top: 2px; }
+.hoi-d b { color: var(--ink); white-space: nowrap; }
+.hoi-d.tong { padding-top: 8px; border-top: 1px solid var(--line); font-weight: 700; color: var(--ink); }
+.vk .tbl { flex: 1 1 260px; min-width: 0; }
+.vk.nho .donut { flex-basis: 140px; } .vk.nho .donut svg { width: 140px; height: 140px; }
+/* ── Bảng theo cửa hàng ── */
+.ch-cuon { overflow-x: auto; }
+.bch { min-width: 980px; }
+.bch thead tr.t1 th { text-align: center; color: var(--ink); font-weight: 600; font-size: 12.5px; border-bottom: 1px solid var(--line); padding-bottom: 6px; }
+.bch thead tr.t1 th:first-child { text-align: left; vertical-align: bottom; }
+.bch thead tr.t2 th { font-size: 11.5px; padding-top: 6px; text-align: right; }
+.bch .nh { border-left: 1px solid var(--line); }
+.bch td.pt { color: var(--muted); font-size: 12.5px; }
+.bch td.pt b { font-size: 13px; }
+.bch td.pt .tot, .bch td.pt .xau { font-weight: 600; }
+.bch th, .bch td { padding: 11px 10px; }
+.bch td:first-child { font-weight: 600; color: var(--ink); }
+.bch tr.tong td { background: var(--track); }
+</style>
+
+<div class="wrap">
+  <div class="dau">
+    <h1>Tổng quan</h1>
+    <div class="loc">
+      <select id="ch" aria-label="Cửa hàng"></select>
+      <select id="nam" aria-label="Năm"><option>Năm 2026</option></select>
+      <select id="thang" aria-label="Tháng"><option value="10">Tháng 10</option><option value="9">Tháng 9</option><option value="8">Tháng 8</option><option value="7">Tháng 7</option></select>
+    </div>
+  </div>
+  <p class="ghi">Bản mẫu dựng lại từ dashboard T941, số giả giống bản đang chạy. Định mức NVL, hao hụt, số công nợ và tỷ lệ nguồn hao hụt là số giả định.</p>
+  <nav class="ttn" aria-label="Thao tác nhanh"><span>Thao tác nhanh</span><a href="#">Thu tiền</a><a href="#">Chi tiền</a><a href="#">Mua hàng</a><a href="#">Nhập kho</a><a href="#">Kê khai thuế</a></nav>
+
+  <div class="g4" id="kpi"></div>
+
+  <div class="g3">
+    <section class="card"><h2>Doanh thu theo kênh <small>đồng · %</small></h2><div class="vk doc" id="kenh"></div></section>
+    <section class="card"><h2>Cơ cấu chi phí <small>đồng · %</small></h2><div class="vk doc" id="cocau"></div></section>
+    <section class="card"><h2>Tiền và ngân hàng <small>đồng · %</small></h2><div class="vk doc" id="quy"></div></section>
+  </div>
+
+  <div class="g2">
+    <section class="card"><h2>Kết quả kinh doanh 13 tháng <small>đồng · biên ròng %</small></h2>
+      <div class="lg"><span><i class="o" style="background:var(--dt)"></i>Doanh thu</span><span><i class="o" style="background:var(--cp)"></i>Chi phí NVL</span><span><i style="border-color:var(--ln)"></i>Lợi nhuận</span><span><i style="border-color:var(--ton);border-top-style:dashed"></i>Biên LN ròng (%)</span></div>
+      <div class="ve" id="kqkd"></div></section>
+    <section class="card"><h2>Thu chi 13 tháng <small>đồng</small></h2>
+      <div class="lg"><span><i class="o" style="background:var(--thu)"></i>Thu</span><span><i class="o" style="background:var(--chiT)"></i>Chi</span><span><i style="border-color:var(--thuan)"></i>Chênh lệch thu chi</span><span><i style="border-color:var(--ton);border-top-style:dashed"></i>Số dư cuối kỳ</span></div>
+      <div class="ve" id="thuchi"></div></section>
+  </div>
+
+  <section class="card"><h2>Chi phí NVL <small>13 tháng · % doanh thu</small></h2><div class="nv" id="nvl"></div></section>
+
+  <div class="g2">
+    <section class="card cnc"><h2>Công nợ phải thu và phải trả <small id="cnSub"></small></h2><div id="congno"></div></section>
+    <section class="card"><h2>Hao hụt NVL</h2><div id="haohut"></div></section>
+  </div>
+
+  <section class="card"><h2>Kết quả kinh doanh theo cửa hàng <small id="chSub"></small></h2>
+    <div class="ch-cuon" id="theoch"></div></section>
+</div>
+
+<script>
+// ── Số liệu: chép nguyên logic src/modules/home/soLieuDashboardNhaHang.ts ──
+const THANG = ['T10/25','T11/25','T12/25','T1/26','T2/26','T3/26','T4/26','T5/26','T6/26','T7/26','T8/26','T9/26','T10/26'];
+const le = (tr, i, mix) => Math.round((tr * 1e6 + ((i + 1) * 7919 * mix + tr * 104729) % 1e6) / 100) * 100;
+const chuoi = (a, mix) => a.map((v, i) => le(v, i, mix));
+const DT = chuoi([1010,1150,1230,1040,1100,1130,1180,1180,1240,1310,1275,1310,1420], 3);
+const LN = chuoi([121,161,197,114,143,147,165,153,186,210,191,225,230], 5);
+const TY_LE_NVL = [33,33,30,35,34,33,31,33,32,34,33,34,33.1];
+const TY_LE_HH = [2.3,2.4,2.1,2.8,2.6,2.5,2.3,2.4,2.2,2.5,2.4,2.43,2.7];
+const THU = chuoi([985,1120,1195,1010,1070,1100,1150,1145,1205,1270,1240,1280,1380], 7);
+const CHI = chuoi([880,960,1000,930,940,980,1010,1010,1050,1100,1090,1070,1190], 11);
+const SO_DU = chuoi([140,175,220,190,210,205,225,230,245,260,255,270,286], 13);
+const CH = [{ id: 'q1', ten: 'Phố Mây Lê Lợi' }, { id: 'q5', ten: 'Phố Mây Nguyễn Trãi' }, { id: 'td', ten: 'Phố Mây Thảo Điền' }];
+const TY_TRONG = [0.45, 0.32, 0.23], HS_BIEN = [1.2, 0.95, 0.7], HS_NVL = [0.97, 1, 1.06], HS_HH = [0.85, 1, 1.25];
+const DM = { nvl: [31, 32, 33], haoHut: [2.2, 2.5, 2.8] };   // giả định thay cho Danh mục cửa hàng
+const r100 = n => Math.round(n / 100) * 100;
+function chiaCH(tong, hs) {
+  const kq = CH.map(() => []);
+  tong.forEach((t, i) => { let da = 0; CH.forEach((_, k) => { const v = k === CH.length - 1 ? t - da : r100(t * hs(k, i)); da += v; kq[k].push(v); }); });
+  return kq;
+}
+function chuoiThang(k) {
+  let dt = DT, nvl = DT.map((d, i) => r100(d * TY_LE_NVL[i] / 100)), ln = LN;
+  if (k >= 0) { nvl = chiaCH(nvl, kk => TY_TRONG[kk] * HS_NVL[kk])[k]; dt = chiaCH(DT, kk => TY_TRONG[kk])[k]; ln = chiaCH(LN, (kk, m) => TY_TRONG[kk] * HS_BIEN[kk] * (1 + .015 * Math.sin((m + 1) * (kk + 2))))[k]; }
+  return { dt, nvl, ln, bien: dt.map((x, i) => Math.round(ln[i] / x * 1000) / 10), tyLeNvl: nvl.map((x, i) => Math.round(x / dt[i] * 1000) / 10) };
+}
+function haoHut(k, c) { const hs = k < 0 ? 1 : HS_HH[k]; const tyLe = TY_LE_HH.map(x => Math.round(x * hs * 100) / 100); return { gia: c.nvl.map((n, i) => r100(n * tyLe[i] / 100)), tyLe }; }
+function thuChi(k) {
+  let thu = THU, chi = CHI, soDu = SO_DU;
+  if (k >= 0) { thu = chiaCH(THU, kk => TY_TRONG[kk])[k]; chi = chiaCH(CHI, kk => TY_TRONG[kk])[k]; soDu = chiaCH(SO_DU, kk => TY_TRONG[kk])[k]; }
+  return { thu, chi, chenh: thu.map((x, i) => x - chi[i]), soDu };
+}
+function chiaTheoTy(t, ty) { const tt = ty.reduce((a, b) => a + b, 0) || 1; let da = 0; return ty.map((x, n) => { const v = n === ty.length - 1 ? t - da : r100(t * x / tt); da += v; return v; }); }
+function dinhMuc(k, khoa) { if (k >= 0) return DM[khoa][k]; let t = 0; CH.forEach((_, n) => t += DM[khoa][n] * TY_TRONG[n]); return Math.round(t * 10) / 10; }
+const KENH = [{ ten: 'Tại chỗ', ty: 46, bien: 69 }, { ten: 'App giao hàng', ty: 24, bien: 60 }, { ten: 'Mang đi', ty: 13, bien: 68 }, { ten: 'Đặt trước', ty: 8, bien: 73 }, { ten: 'Tiệc, sự kiện', ty: 5, bien: 71 }, { ten: 'Bán voucher', ty: 4, bien: 75 }];
+const CP_KHAC = [{ ten: 'Nhân sự', ty: 33.8 }, { ten: 'Mặt bằng', ty: 11.3 }, { ten: 'Phí app', ty: 4.6 }, { ten: 'Điện, nước, gas', ty: 4.2 }, { ten: 'Marketing', ty: 2.6 }, { ten: 'Khấu hao', ty: 2.4 }, { ten: 'Khác', ty: 1.6 }];
+// Vành khuyên một màu đậm nhạt theo thứ hạng: kênh xanh dương, chi phí cam, quỹ xanh lá, hao hụt tím; dòng Khác màu xám
+const QUY = [{ ten: 'Vietcombank', ty: 52 }, { ten: 'Techcombank', ty: 22 }, { ten: 'MB Bank', ty: 10 }, { ten: 'Quỹ tiền mặt', ty: 8 }, { ten: 'Ví MoMo', ty: 5 }, { ten: 'VPBank', ty: 3 }];
+const THANG_MAU = { xanh: ['#1b5fbf', '#2f80ed', '#7fb0f3', '#bcd5f8'], cam: ['#b8600e', '#e0821f', '#f5a03a', '#f8c27f'], la: ['#137a52', '#3fb886', '#7fd0ab', '#bfe8d5'], tim: ['#5b3fc4', '#9a86ea', '#c4b8f3', '#e2dbfa'] }, MAU_KHAC = '#c7d2de';
+const NHOM_HH = [{ ten: 'Thịt, hải sản', ty: 0.48 }, { ten: 'Rau củ', ty: 0.29 }, { ten: 'Đồ khô, gia vị', ty: 0.10 }, { ten: 'Đồ uống', ty: 0.07 }, { ten: 'Khác', ty: 0.06 }];
+const NGUON_HH = [{ ten: 'Hủy hàng', tu: 'Phiếu xuất hủy hàng hỏng, hết hạn', ty: 58 }, { ten: 'Thiếu khi kiểm kê', tu: 'Biên bản kiểm kê, số đếm thực tế thấp hơn sổ kho', ty: 42 }];
+const cn = (dau, ps, tt) => ({ dau, ps, tt, cuoi: dau + ps - tt });
+const CONG_NO = [{ ten: 'Phải thu', da: 'Đã thu', mau: 'var(--thu)', tuoi: [62, 24, 9, 5], ...cn(30480500, 392012300, 384093800) }, { ten: 'Phải trả', da: 'Đã trả', mau: 'var(--chiT)', tuoi: [70, 20, 7, 3], ...cn(36812400, 478536700, 474045100) }];
+
+// ── Định dạng ──
+const money = n => Math.round(n).toLocaleString('vi-VN');
+const moneyD = n => money(n) + ' đ';
+const so1 = n => n.toLocaleString('vi-VN', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+const truc = v => Math.abs(v) >= 1e9 ? so1(v / 1e9) + ' tỷ' : Math.round(v / 1e6).toLocaleString('vi-VN') + ' tr';
+const doi = (p, tot, hau) => `<span class="${tot ? 'tot' : 'xau'}">${p >= 0 ? '▲' : '▼'} ${so1(Math.abs(p))}%</span> ${hau}`;
+const soDm = (r, dm) => { const c = Math.round((r - dm) * 10) / 10; return `Định mức ${so1(dm)}%, <span class="${c > 0 ? 'xau' : 'tot'}">${c > 0 ? 'vượt ' : 'thấp hơn '}${so1(Math.abs(c))}%</span>`; };
+const dot = m => `<span class="dot" style="background:${m}"></span>`;
+
+// ── Vành khuyên ──
+const gon = v => v >= 1e9 ? (v / 1e9).toLocaleString('vi-VN', { maximumFractionDigits: 2 }) + ' tỷ' : v >= 1e6 ? (v / 1e6).toLocaleString('vi-VN', { maximumFractionDigits: 1 }) + ' tr' : money(v);
+function vanh(phan, nhan, tong) {
+  const R = 72, C = 2 * Math.PI * R, GAP = 3; let di = 0;
+  const cung = phan.map((p, i) => { const dai = p.v / tong * C; const s = `<circle class="cung" data-i="${i}" cx="92" cy="92" r="${R}" fill="none" stroke="${p.mau}" stroke-width="16" stroke-dasharray="${Math.max(dai - GAP, .1)} ${C}" stroke-dashoffset="${-di}" transform="rotate(-90 92 92)"/>`; di += dai; return s; }).join('');
+  return `<svg viewBox="0 0 184 184" role="img" aria-label="${nhan} ${money(tong)} đồng"><circle cx="92" cy="92" r="${R}" fill="none" stroke="var(--track)" stroke-width="16"/>${cung}<text class="c-l" x="92" y="76" text-anchor="middle">${nhan}</text><text class="c-v" x="92" y="101" text-anchor="middle">${gon(tong)}</text><text class="c-d" x="92" y="120" text-anchor="middle">100%</text></svg>`;
+}
+// Bảng dưới vành khuyên: n mục lớn nhất (mặc định 4), Khác gom phần còn lại, Tổng cộng
+function top4(phan, thang, donVi, n = 4) {
+  const xep = phan.filter(p => p.ten !== 'Khác').sort((a, b) => b.v - a.v), khac0 = phan.filter(p => p.ten === 'Khác');
+  const du = xep.length + (khac0.length ? 1 : 0) <= n + 1, dau = du ? xep : xep.slice(0, n), con = (du ? [] : xep.slice(n)).concat(khac0);
+  const kq = dau.map((p, k) => ({ ...p, mau: thang[k] }));
+  if (con.length) { const v = con.reduce((a, p) => a + p.v, 0); kq.push({ ten: 'Khác', ghi: con.length > 1 ? con.length + ' ' + donVi : '', v, mau: MAU_KHAC, b: con.reduce((a, p) => a + p.v * (p.b || 0), 0) / v }); }
+  return kq;
+}
+function khoiVanh(el, phan, nhan, cotThem, tenCot) {
+  const tong = phan.reduce((a, p) => a + p.v, 0);
+  const dong = phan.map((p, i) => `<tr data-i="${i}"><td>${dot(p.mau)}${p.ten}${p.ghi ? ` <small class="s">${p.ghi}</small>` : ''}</td><td>${money(p.v)}</td><td>${so1(p.v / tong * 100)}%</td>${cotThem ? cotThem.dong(p) : ''}</tr>`).join('');
+  el.innerHTML = `<div class="donut">${vanh(phan, nhan, tong)}</div><div class="tbl"><table><thead><tr><th>${tenCot || 'Khoản'}</th><th>Số tiền</th><th>Tỷ trọng</th>${cotThem ? cotThem.dau : ''}</tr></thead><tbody>${dong}<tr class="tong"><td>Tổng cộng</td><td>${money(tong)}</td><td>100%</td>${cotThem ? cotThem.tong : ''}</tr></tbody></table></div>`;
+  const d = el.querySelector('.donut'), [tL, tV, tD] = d.querySelectorAll('text');
+  const sang = i => {
+    const p = i === null ? null : phan[i];
+    d.classList.toggle('dim', !!p);
+    d.querySelectorAll('.cung').forEach(c => c.classList.toggle('on', !!p && c.dataset.i === String(i)));
+    el.querySelectorAll('tr[data-i]').forEach(tr => tr.classList.toggle('chon', !!p && tr.dataset.i === String(i)));
+    tL.textContent = p ? p.ten : nhan; tV.textContent = gon(p ? p.v : tong); tD.textContent = p ? so1(p.v / tong * 100) + '%' : '100%';
+    tD.style.fill = p ? p.mau : '';
+  };
+  el.querySelectorAll('[data-i]').forEach(n => { n.onmouseenter = () => sang(Number(n.dataset.i)); n.onmouseleave = () => sang(null); });
+}
+
+// ── Biểu đồ cột và đường 13 tháng ──
+function tron(v) { const m = Math.pow(10, Math.floor(Math.log10(v))); return Math.ceil(v / m * 2) / 2 * m; }
+const mem = p => p.map((q, i) => { if (!i) return `M${q[0]},${q[1]}`; const a = p[i - 2] || p[i - 1], b = p[i - 1], d = p[i + 1] || q;
+  return `C${b[0] + (q[0] - a[0]) / 6},${b[1] + (q[1] - a[1]) / 6} ${q[0] - (d[0] - b[0]) / 6},${q[1] - (d[1] - b[1]) / 6} ${q[0]},${q[1]}`; }).join(' ');
+function cotDuong(el, cot, duong) {
+  const W = 640, H = 280, L = 52, Rr = 40, T = 18, B = 28, pw = W - L - Rr, ph = H - T - B, n = THANG.length, band = pw / n;
+  const chon = 12 - (10 - Number(selT.value));
+  const trai = [...cot.flatMap(c => c.v), ...duong.filter(d => !d.phai).flatMap(d => d.v)];
+  const max = tron(Math.max(...trai)), min = Math.min(0, ...trai);
+  const y = v => T + ph - (v - min) / (max - min) * ph;
+  const phai = duong.filter(d => d.phai).flatMap(d => d.v), maxP = phai.length ? Math.ceil(Math.max(...phai) * 1.3 / 5) * 5 : 1;
+  const yP = v => T + ph - v / maxP * ph;
+  const x = i => L + band * i + band / 2;
+  let s = '<defs>' + cot.map((c, ci) => `<linearGradient id="${el.id}c${ci}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:${c.mau}"/><stop offset="1" style="stop-color:${c.mau};stop-opacity:.6"/></linearGradient>`).join('') + '</defs>';
+  s += `<rect class="bang-chon" x="${L + band * chon + 2}" y="${T - 8}" width="${band - 4}" height="${ph + 8}" rx="8"/><rect class="bang-re" x="0" y="${T - 8}" width="${band - 4}" height="${ph + 8}" rx="8" visibility="hidden"/>`;
+  s += '<g class="grid">';
+  for (let t = 0; t <= 4; t++) { const v = min + (max - min) * t / 4, yy = y(v); s += `<line class="${t ? '' : 'day'}" x1="${L}" x2="${W - Rr}" y1="${yy}" y2="${yy}"/><text class="ax" x="${L - 8}" y="${yy + 3}" text-anchor="end">${truc(v)}</text>`; if (phai.length) s += `<text class="ax" x="${W - Rr + 8}" y="${yy + 3}">${Math.round(maxP * t / 4)}%</text>`; }
+  s += '</g>';
+  const bw = Math.min(band * 0.64 / cot.length, 14), le0 = (band - bw * cot.length - 2 * (cot.length - 1)) / 2;
+  const thanh = (x0, v, w) => { const y0 = y(Math.max(v, 0)), h = Math.abs(y(v) - y(0)), r = Math.min(4, w / 2, h);
+    return v < 0 ? `M${x0},${y0}h${w}v${h}h${-w}Z` : `M${x0},${y0 + h}V${y0 + r}Q${x0},${y0} ${x0 + r},${y0}H${x0 + w - r}Q${x0 + w},${y0} ${x0 + w},${y0 + r}V${y0 + h}Z`; };
+  cot.forEach((c, ci) => c.v.forEach((v, i) => { s += `<path d="${thanh(L + band * i + le0 + (bw + 2) * ci, v, bw)}" fill="url(#${el.id}c${ci})" opacity="${i === chon ? 1 : .55}"/>`; }));
+  duong.forEach(d => { const f = d.phai ? yP : y, p = d.v.map((v, i) => [x(i), f(v)]);
+    s += `<path d="${mem(p)}" fill="none" stroke="${d.mau}" stroke-width="2.5" stroke-linecap="round" ${d.net ? 'stroke-dasharray="6 5"' : ''}/>`;
+    s += `<circle cx="${p[chon][0]}" cy="${p[chon][1]}" r="4.5" fill="var(--card)" stroke="${d.mau}" stroke-width="2.5"/>`; });
+  THANG.forEach((t, i) => s += `<text class="ax${i === chon ? ' axChon' : ''}" x="${x(i)}" y="${H - 8}" text-anchor="middle">${t}</text>`);
+  THANG.forEach((_, i) => s += `<rect data-i="${i}" x="${L + band * i}" y="${T}" width="${band}" height="${ph}" fill="transparent"/>`);
+  el.innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Biểu đồ 13 tháng">${s}</svg><div class="tip" hidden></div>`;
+  const tip = el.querySelector('.tip'), re = el.querySelector('.bang-re'), svg = el.querySelector('svg');
+  svg.onmousemove = e => {
+    const i = e.target.dataset && e.target.dataset.i; if (i === undefined) { tip.hidden = true; re.setAttribute('visibility', 'hidden'); return; }
+    re.setAttribute('x', L + band * i + 2); re.setAttribute('visibility', Number(i) === chon ? 'hidden' : 'visible');
+    tip.innerHTML = `<b>${THANG[i]}</b><br>` + [...cot, ...duong].map(c => `${dot(c.mau)}${c.ten}: <b>${c.phai ? so1(c.v[i]) + '%' : money(c.v[i])}</b>`).join('<br>');
+    tip.hidden = false;
+    const r = tip.getBoundingClientRect();
+    tip.style.left = (e.clientX + 16 + r.width > innerWidth ? e.clientX - r.width - 16 : e.clientX + 16) + 'px';
+    tip.style.top = (e.clientY + 14 + r.height > innerHeight ? e.clientY - r.height - 14 : e.clientY + 14) + 'px';
+  };
+  svg.onmouseleave = () => { tip.hidden = true; re.setAttribute('visibility', 'hidden'); };
+}
+function spark(el, v, dm, mau, h) {
+  const W = 640, L = 44, Rr = 18, T = 34, B = 24, pw = W - L - Rr, ph = h - T - B, n = v.length;
+  const lo = Math.floor(Math.min(...v, dm) - .5), hi = Math.ceil(Math.max(...v, dm) + .5);
+  const x = i => L + pw * i / (n - 1), y = a => T + ph - (a - lo) / (hi - lo) * ph, day = y(lo);
+  const chon = 12 - (10 - Number(selT.value)), id = 'g' + el.id;
+  const p = v.map((a, i) => [x(i), y(a)]);
+  // Đường cong mượt qua từng điểm (Catmull-Rom sang Bézier)
+  const cong = p.map((q, i) => { if (!i) return `M${q[0]},${q[1]}`; const a = p[i - 2] || p[i - 1], b = p[i - 1], d = p[i + 1] || q;
+    return `C${b[0] + (q[0] - a[0]) / 6},${b[1] + (q[1] - a[1]) / 6} ${q[0] - (d[0] - b[0]) / 6},${q[1] - (d[1] - b[1]) / 6} ${q[0]},${q[1]}`; }).join(' ');
+  let s = `<defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:${mau};stop-opacity:.32"/><stop offset="1" style="stop-color:${mau};stop-opacity:0"/></linearGradient></defs>`;
+  [lo, (lo + hi) / 2, hi].forEach(a => s += `<line x1="${L}" x2="${W - Rr}" y1="${y(a)}" y2="${y(a)}" stroke="var(--line)"/><text class="ax" x="${L - 8}" y="${y(a) + 3}" text-anchor="end">${so1(a)}%</text>`);
+  p.forEach(([a, b]) => s += `<line x1="${a}" x2="${a}" y1="${day}" y2="${b}" stroke="${mau}" stroke-opacity=".22" stroke-dasharray="2 3"/>`);
+  s += `<path d="${cong} L${p[n - 1][0]},${day} L${p[0][0]},${day} Z" fill="url(#${id})"/>`;
+  s += `<line x1="${L}" x2="${W - Rr}" y1="${y(dm)}" y2="${y(dm)}" stroke="var(--muted)" stroke-opacity=".7" stroke-dasharray="4 4"/><text class="ax" x="${W - Rr}" y="${y(dm) + 13}" text-anchor="end">Định mức ${so1(dm)}%</text>`;
+  s += `<path d="${cong}" fill="none" stroke="${mau}" stroke-width="2.5" stroke-linecap="round"/>`;
+  v.forEach((a, i) => { const to = i === chon; s += `<circle cx="${p[i][0]}" cy="${p[i][1]}" r="${to ? 5.5 : 3.5}" fill="var(--card)" stroke="${a > dm ? 'var(--xau)' : mau}" stroke-width="${to ? 3 : 2}"><title>${THANG[i]}: ${so1(a)}%</title></circle>`; });
+  const px = Math.min(Math.max(p[chon][0], L + 24), W - 26), py = p[chon][1];
+  s += `<rect x="${px - 24}" y="${py - 31}" width="48" height="19" rx="9.5" fill="${v[chon] > dm ? 'var(--xau)' : mau}"/><text class="nhanDiem" x="${px}" y="${py - 18}" text-anchor="middle">${so1(v[chon])}%</text>`;
+  s += THANG.map((t, i) => `<text class="ax${i === chon ? ' axChon' : ''}" x="${x(i)}" y="${h - 6}" text-anchor="middle">${t.split('/')[0]}</text>`).join('');
+  el.innerHTML = `<svg viewBox="0 0 ${W} ${h}" role="img" aria-label="Đường 13 tháng so với định mức">${s}</svg>`;
+}
+
+// ── Vẽ cả màn ──
+const selCh = document.getElementById('ch'), selT = document.getElementById('thang');
+selCh.innerHTML = '<option value="-1">Tất cả cửa hàng</option>' + CH.map((c, k) => `<option value="${k}">${c.ten}</option>`).join('');
+function ve() {
+  const k = Number(selCh.value), thang = Number(selT.value), i = 12 - (10 - thang), j = i - 1;
+  const nT = `T${thang}`, nTr = `T${thang - 1}`;
+  const c = chuoiThang(k), hh = haoHut(k, c), tc = thuChi(k), hd = c.dt.map((x, m) => x - c.nvl[m] - c.ln[m]);
+  const dmN = dinhMuc(k, 'nvl'), dmH = dinhMuc(k, 'haoHut'), tang = a => (a[i] / a[j] - 1) * 100;
+
+  // Icon 2 tông: khối trắng trên nền màu chỉ tiêu, chi tiết vẽ bằng màu chỉ tiêu
+  const W = 'fill="#fff"', K = 'fill="none" stroke="var(--k)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"';
+  const ICON = [
+    `<rect x="3" y="13" width="4.6" height="8" rx="1.2" ${W} opacity=".6"/><rect x="9.7" y="9" width="4.6" height="12" rx="1.2" ${W} opacity=".8"/><rect x="16.4" y="4.5" width="4.6" height="16.5" rx="1.2" ${W}/>`,
+    `<rect x="2.5" y="12.5" width="9" height="8.5" rx="1.3" ${W}/><rect x="12.5" y="12.5" width="9" height="8.5" rx="1.3" ${W}/><rect x="7.5" y="3" width="9" height="8.5" rx="1.3" ${W}/><path d="M5.6 12.5v3h2.8v-3M15.6 12.5v3h2.8v-3M10.6 3v3h2.8V3" ${K}/>`,
+    `<path d="M5 3h14v18l-2.3-1.6L14.3 21 12 19.4 9.7 21l-2.4-1.6L5 21z" ${W}/><path d="M8.5 8h7M8.5 11.5h7M8.5 15h4" ${K}/>`,
+    `<circle cx="12" cy="12" r="9.5" ${W}/><path d="M12 6v12M15.2 8.6c-.6-.8-1.7-1.3-3.1-1.3-1.8 0-3 .9-3 2.3s1.2 1.9 3 2.4 3 1 3 2.4-1.2 2.3-3 2.3c-1.4 0-2.6-.5-3.2-1.4" fill="none" stroke="var(--k)" stroke-width="2" stroke-linecap="round"/>`];
+  document.getElementById('kpi').innerHTML = [
+    ['Doanh thu', c.dt, doi(tang(c.dt), c.dt[i] >= c.dt[j], 'so với ' + nTr), 'var(--dt)'],
+    ['Chi phí NVL', c.nvl, doi(tang(c.nvl), c.nvl[i] <= c.nvl[j], 'so với ' + nTr), 'var(--cp)', [c.tyLeNvl[i], 'so với DT']],
+    ['Chi phí hoạt động', hd, doi(tang(hd), hd[i] <= hd[j], 'so với ' + nTr), 'var(--cp)', [hd[i] / c.dt[i] * 100, 'so với DT']],
+    ['Lợi nhuận', c.ln, doi(tang(c.ln), c.ln[i] >= c.ln[j], 'so với ' + nTr), 'var(--ln)', [c.bien[i], 'biên LN']],
+  ].map(([t, a, p, m, ty], n) => `<div class="kpi" style="--k:${m}"><div class="kpi-d"><span class="kpi-ic"><svg viewBox="0 0 24 24" aria-hidden="true">${ICON[n]}</svg></span><span class="l">${t}</span></div><div class="v-h"><div class="v">${moneyD(a[i])}</div>${ty ? `<span class="ty">${so1(ty[0])}%<small>${ty[1]}</small></span>` : ''}</div><div class="s">${p}</div></div>`).join('');
+
+  // Kênh: biên từng kênh chỉnh theo tháng để cộng có trọng số ra đúng 100% − tỷ lệ NVL
+  const kenhV = chiaTheoTy(c.dt[i], KENH.map(r => r.ty));
+  const goc = KENH.reduce((a, r) => a + r.bien * r.ty, 0) / 100, dich = 100 - c.tyLeNvl[i];
+  const kenh = KENH.map((r, n) => ({ ...r, v: kenhV[n], b: r.bien * dich / goc }));
+  khoiVanh(document.getElementById('kenh'), top4(kenh, THANG_MAU.xanh, 'kênh'), 'Doanh thu', null, 'Kênh');
+
+  // Cơ cấu chi phí: NVL lấy đúng số thẻ, chi phí hoạt động chia cho các khoản còn lại
+  const khac = chiaTheoTy(hd[i], CP_KHAC.map(r => r.ty));
+  khoiVanh(document.getElementById('cocau'), top4([{ ten: 'NVL', v: c.nvl[i] }, ...CP_KHAC.map((r, n) => ({ ...r, v: khac[n] }))], THANG_MAU.cam, 'khoản'), 'Tổng chi phí');
+
+  const quy = chiaTheoTy(tc.soDu[i], QUY.map(r => r.ty));
+  khoiVanh(document.getElementById('quy'), top4(QUY.map((r, n) => ({ ...r, v: quy[n] })), THANG_MAU.la, 'quỹ'), 'Tổng số dư', null, 'Quỹ');
+
+  cotDuong(document.getElementById('kqkd'), [{ ten: 'Doanh thu', mau: 'var(--dt)', v: c.dt }, { ten: 'Chi phí NVL', mau: 'var(--cp)', v: c.nvl }],
+    [{ ten: 'Lợi nhuận', mau: 'var(--ln)', v: c.ln }, { ten: 'Biên LN ròng', mau: 'var(--ton)', v: c.bien, phai: true, net: true }]);
+  cotDuong(document.getElementById('thuchi'), [{ ten: 'Thu', mau: 'var(--thu)', v: tc.thu }, { ten: 'Chi', mau: 'var(--chiT)', v: tc.chi }],
+    [{ ten: 'Chênh lệch thu chi', mau: 'var(--thuan)', v: tc.chenh }, { ten: 'Số dư cuối kỳ', mau: 'var(--ton)', v: tc.soDu, net: true }]);
+
+  const nv = document.getElementById('nvl'), lech = c.tyLeNvl[i] - dmN;
+  nv.innerHTML = `<div><div class="s">Tỷ lệ NVL / doanh thu ${nT}</div><div class="big">${so1(c.tyLeNvl[i])}%</div><div class="s">${soDm(c.tyLeNvl[i], dmN)}</div>
+    <div class="bl" role="img" aria-label="Tỷ lệ NVL so với định mức"><i style="width:${c.tyLeNvl[i] / 40 * 100}%"></i><b style="left:${dmN / 40 * 100}%"></b></div><div class="s hai"><span>0%</span><span>40%</span></div>
+    <div class="nv-st"><div><span>${lech > 0 ? 'Hao hụt vượt định mức' : 'Tiết kiệm so với định mức'}</span><b class="${lech > 0 ? 'xau' : 'tot'}">${moneyD(Math.abs(lech) / 100 * c.dt[i])}</b></div>
+    <div><span>Tháng vượt định mức</span><b>${c.tyLeNvl.filter(v => v > dmN).length}/${c.tyLeNvl.length} tháng</b></div>
+    <div><span>Bình quân 13 tháng</span><b>${so1(c.tyLeNvl.reduce((a, v) => a + v, 0) / c.tyLeNvl.length)}%</b></div>
+    <div><span>Cao nhất</span><b>${so1(Math.max(...c.tyLeNvl))}% <small class="s">${THANG[c.tyLeNvl.indexOf(Math.max(...c.tyLeNvl))]}</small></b></div></div></div>
+    <div><div class="lg"><span><i style="border-color:var(--cp)"></i>Tỷ lệ NVL (%)</span><span><i style="border-color:var(--gray);border-top-style:dashed"></i>Định mức NVL ${so1(dmN)}%</span><span><i class="o" style="background:var(--xau)"></i>Tháng vượt định mức</span></div><div class="ve spark" id="spNvl"></div></div>`;
+  spark(document.getElementById('spNvl'), c.tyLeNvl, dmN, 'var(--cp)', 180);
+
+  document.getElementById('cnSub').textContent = nT + ' · đồng';
+  const [pt, ptr] = CONG_NO, rong = pt.cuoi - ptr.cuoi;
+  const cot = (n, nhan, da) => { const d = n.cuoi - n.dau, S = n.dau + n.ps, pDa = n.tt / S * 100;
+    const h = (ten, so, pt, lop = '') => `<span class="${lop}">${ten}</span><span class="${lop}">${so}</span><span class="${lop} pt">${pt}</span>`;
+    return `<div><div class="cn-l">${dot(n.mau)}${nhan}</div><div class="cn-v">${moneyD(n.cuoi)}</div>
+      <div class="cn-p"><span class="${d > 0 ? 'xau' : 'tot'}">${d > 0 ? '▲' : '▼'} ${moneyD(Math.abs(d))} (${so1(Math.abs(d) / n.dau * 100)}%)</span> so với đầu kỳ</div>
+      <div class="cn-bar" role="img" aria-label="${da} ${so1(pDa)}%"><i style="width:${pDa}%;background:${n.mau}"></i><i style="flex:1;background:color-mix(in srgb, ${n.mau} 22%, var(--card))"></i></div>
+      <div class="dc">${h('Đầu kỳ', money(n.dau), '')}${h('Phát sinh', '+ ' + money(n.ps), '')}${h(da, '− ' + money(n.tt), so1(pDa) + '%')}${h('Cuối kỳ', money(n.cuoi), so1(100 - pDa) + '%', 'cuoi')}</div></div>`; };
+  document.getElementById('congno').innerHTML = `<div class="cn2">${cot(pt, 'Phải thu cuối kỳ', 'Đã thu')}${cot(ptr, 'Phải trả cuối kỳ', 'Đã trả')}</div>
+    <div class="cn-net"><span>Phải thu trừ phải trả cuối kỳ</span><b class="${rong < 0 ? 'xau' : 'tot'}">${rong < 0 ? '− ' : '+ '}${moneyD(Math.abs(rong))}</b></div>`;
+
+  const hhDoi = hh.gia[i] - hh.gia[j], nhom = chiaTheoTy(hh.gia[i], NHOM_HH.map(g => g.ty)), nguon = chiaTheoTy(hh.gia[i], NGUON_HH.map(g => g.ty));
+  document.getElementById('haohut').innerHTML = `<div style="display:grid;gap:10px">
+    <div class="hh-dau" tabindex="0"><div class="s">Giá trị hao hụt ${nT}<span class="hoi" aria-hidden="true">?</span></div>
+      <div><span class="big">${moneyD(hh.gia[i])}</span> <span class="s">· ${so1(hh.tyLe[i])}% giá trị NVL · ${soDm(hh.tyLe[i], dmH)}</span></div>
+      <div class="s"><span class="${hhDoi > 0 ? 'xau' : 'tot'}">${hhDoi > 0 ? '▲' : '▼'} ${moneyD(Math.abs(hhDoi))}</span> so với ${nTr}</div>
+      <div class="hoi-tip" role="tooltip"><b>Hao hụt ${nT} lấy từ đâu</b>${NGUON_HH.map((g, n) => `<div class="hoi-d"><span><b>${g.ten}</b><small>${g.tu}</small></span><b>${moneyD(nguon[n])}</b></div>`).join('')}<div class="hoi-d tong"><span>Tổng hao hụt</span><b>${moneyD(hh.gia[i])}</b></div></div>
+    </div>
+    <div class="ve spark" id="spHh"></div><div class="vk nho" id="nhomHh"></div></div>`;
+  spark(document.getElementById('spHh'), hh.tyLe, dmH, 'var(--c4)', 130);
+  khoiVanh(document.getElementById('nhomHh'), top4(NHOM_HH.map((g, n) => ({ ...g, v: nhom[n] })), THANG_MAU.tim, 'nhóm', 2), 'Hao hụt', null, 'Nhóm');
+
+  // Theo cửa hàng: bảng số, tỷ lệ NVL so định mức từng cửa hàng
+  const ct = chuoiThang(-1);
+  // Bảng kiểu báo cáo ERP: tiêu đề hai tầng theo nhóm chỉ tiêu, mỗi khoản có số tiền và tỷ lệ trên doanh thu
+  const pc = (v, lop = '') => `<td class="pt ${lop}">${so1(v)}%</td>`;
+  const dong = (ten, dt, nvl, ln, lnTr, dm, lop) => { const hd = dt - nvl - ln, tl = nvl / dt * 100, bien = ln / dt * 100, d = (ln - lnTr) / Math.abs(lnTr) * 100;
+    return `<tr class="${lop}"><td>${ten}</td><td class="m-dt nh">${money(dt)}</td>${pc(dt / ct.dt[i] * 100)}`
+      + `<td class="m-cp nh">${money(nvl)}</td><td class="pt"><b class="${tl > dm ? 'xau' : 'tot'}" title="Định mức ${so1(dm)}%">${so1(tl)}%</b></td>`
+      + `<td class="m-hd nh">${money(hd)}</td>${pc(hd / dt * 100)}`
+      + `<td class="m-ln nh">${money(ln)}</td><td class="pt"><b class="${bien >= 17 ? 'tot' : bien < 13 ? 'xau' : ''}">${so1(bien)}%</b></td>`
+      + `<td class="pt"><span class="${d >= 0 ? 'tot' : 'xau'}">${d >= 0 ? '▲' : '▼'} ${so1(Math.abs(d))}%</span></td></tr>`; };
+  document.getElementById('chSub').textContent = nT + ' · đồng';
+  document.getElementById('theoch').innerHTML = `<table class="bch"><thead><tr class="t1"><th rowspan="2">Cửa hàng</th><th colspan="2" class="nh">Doanh thu</th><th colspan="2" class="nh">Chi phí NVL</th><th colspan="2" class="nh">Chi phí hoạt động</th><th colspan="3" class="nh">Lợi nhuận</th></tr>`
+    + `<tr class="t2"><th class="nh">Số tiền</th><th>Tỷ trọng</th><th class="nh">Số tiền</th><th>% DT</th><th class="nh">Số tiền</th><th>% DT</th><th class="nh">Số tiền</th><th>Biên LN</th><th>So với ${nTr}</th></tr></thead><tbody>`
+    + CH.map((ch, kk) => { const c2 = chuoiThang(kk); return dong(ch.ten, c2.dt[i], c2.nvl[i], c2.ln[i], c2.ln[i - 1], dinhMuc(kk, 'nvl'), kk === k ? 'chon' : ''); }).join('')
+    + dong('Tổng', ct.dt[i], ct.nvl[i], ct.ln[i], ct.ln[i - 1], dinhMuc(-1, 'nvl'), 'tong') + '</tbody></table>';
+}
+selCh.onchange = ve; selT.onchange = ve;
+ve();
+</script>
