@@ -8,7 +8,6 @@ import { cuaHangHienTai, donViHienTai, gtgtTyLe, loaiHinhDv, useSession } from '
 import { coGiamThue, giamThueHang, giamThueHkd } from '../../modules/ban-hang/giam-thue'
 import { dtDong } from '../../modules/ban-hang/BangHangBan'
 import { kieuGhiSoDv } from '../../app/plan'
-import { bosungDinhKhoan, tkTongHopTrongDong } from '../../modules/tien/dinh-khoan-pro'
 import { Icon } from '../Icon'
 import { IconExcel, IconFigmaSearch, IconFigmaSliders } from '../IconFigma'
 import { Note, PageHead } from '../Page'
@@ -362,18 +361,6 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
   }), [rowsGoc, nhom, cfg, sc, coKhoDs, khoDong, mod.key, laNk])
   // Cột Tham chiếu (T127): chữ để lọc, tìm theo cột
   // Nhập kho (T818): cột Người thực hiện lấy nhân viên thực hiện đã lưu trên phiếu, phiếu mẫu lấy người tạo như form
-  // Pro: chứng từ thu chi dùng tài khoản tổng hợp (sau khi thiết lập lại hệ thống tài khoản) thì cảnh báo trên danh sách
-  const tkTongHop = useMemo(() => {
-    if (mod.key !== 'tien' || kieuGhiSoDv(s, mod.key) !== 'noco') return { so: 0, tk: [] as string[] }
-    const tk = new Set<string>()
-    let so = 0
-    for (const r of rowsGoc) {
-      const ds = bosungDinhKhoan((r._dong as Dong[] | undefined) ?? dongCua(cfg, `${sc.code ?? sc.slug}-${r.id}`), r, s)
-      const co = tkTongHopTrongDong(ds, s)
-      if (co.length) { so++; co.forEach(x => tk.add(x)) }
-    }
-    return { so, tk: [...tk] }
-  }, [rowsGoc, s.goi, s.cheDo, s.donVi, mod.key])   // eslint-disable-line react-hooks/exhaustive-deps
   const rows = useMemo(() => rows0.map((r): Row => ({ ...r, thamChieu: thamChieuCua(r).map(x => x.so).join(', '), ...taoCua(r), ...(laNk && r._nhanVien ? { nguoiTao: String(r._nhanVien) } : {}) })), [rows0, laNk])
 
   const [trang, setTrang] = useState(1)
@@ -659,13 +646,6 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
       <h1 className="sr-only">{title ?? tenMan(sc)}</h1>
 
       {extra}
-
-      {/* Pro: sau khi thiết lập lại hệ thống tài khoản, phiếu còn dùng tài khoản tổng hợp thì cảnh báo ở danh sách */}
-      {tkTongHop.so > 0 && (
-        <Note kind="warn" icon="alert">
-          {tkTongHop.so} chứng từ đang dùng tài khoản tổng hợp ({tkTongHop.tk.join(', ')}). Mở chứng từ, chọn tài khoản chi tiết rồi lưu lại.
-        </Note>
-      )}
 
       <div className="voucher-split">
         <section className="card voucher-top">
