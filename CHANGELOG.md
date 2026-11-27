@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 27/11/2026
+- Điện thoại: menu Nghiệp vụ, nhóm Thu chi đổi từ Thu tiền, Chi tiền thành Tiền mặt, Ngân hàng (giữ Chuyển quỹ). Tiền mặt, Ngân hàng có tab Tất cả, Thu tiền, Chi tiền, Báo cáo.
 - T952: Danh mục cửa hàng, hộp Thêm cửa hàng từ FABi: chân hộp có thanh khi lấy danh sách và thanh % khi lên sổ, xong mở hộp kết quả.
 - T951: Danh mục (nút Đồng bộ FABi) và chứng từ có nút Đồng bộ lại: thanh tiến trình ngay dưới thanh công cụ kèm đồng hồ, xong mở hộp kết quả; đang chạy mà bấm sang màn khác thì hỏi lại.
 - T950: Hộp đồng bộ (Xuất bán POS, Tiện ích, Tải hoá đơn đầu vào, Thu chi FABi): thanh % ở chân hộp, nút Huỷ tiến trình, chạy xong mở hộp kết quả thành công, một phần hoặc lỗi có nút Thử lại.

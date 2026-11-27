@@ -34,10 +34,10 @@ const LOAI_THU_CHI = [
 // Quỹ của từng loại phiếu, hiện thành nhãn cạnh số phiếu (T653)
 const QUY_THEO_LOAI: Record<string, string> = { thu: 'Tiền mặt', chi: 'Tiền mặt', bc: 'Ngân hàng', unc: 'Ngân hàng', cq: 'Chuyển quỹ' }
 
-// Menu Nghiệp vụ tách Thu chi thành Thu tiền, Chi tiền, Chuyển quỹ: màn mở với ?nhom=thu|chi|cq, chỉ hiện các loại phiếu của nhóm
+// Menu Nghiệp vụ tách Thu chi thành Tiền mặt, Ngân hàng, Chuyển quỹ: màn mở với ?nhom=tm|nh|cq, chỉ hiện các loại phiếu của nhóm
 const NHOM_THU_CHI: Record<string, { ten: string; loai: string[] }> = {
-  thu: { ten: 'Thu tiền', loai: ['thu', 'bc'] },
-  chi: { ten: 'Chi tiền', loai: ['chi', 'unc'] },
+  tm: { ten: 'Tiền mặt', loai: ['thu', 'chi'] },
+  nh: { ten: 'Ngân hàng', loai: ['bc', 'unc'] },
   cq: { ten: 'Chuyển quỹ', loai: ['cq'] },
 }
 
@@ -148,6 +148,7 @@ export const MDtThuChiDs: FC<ScreenProps> = ({ sc, mod }) => {
   const dsLoaiTab = LOAI_THU_CHI.filter(l => (!nhom || nhom.loai.includes(l.k)) && (loaiChon === 'tien-mat' ? l.k === 'chi' || l.k === 'thu'
     : loaiChon === 'ngan-hang' ? l.k === 'unc' || l.k === 'bc'
     : loaiChon === 'cq' ? l.k === 'cq'
+    : loaiChon ? l.k === loaiChon
     : true))
   // Đổi tab thì loại phiếu đã chọn mà tab không có bị bỏ qua, không lọc ra danh sách trống
   const loaiPhieuLoc = (locVal.loaiPhieu ?? []).filter(k => dsLoaiTab.some(l => l.k === k))
@@ -272,11 +273,11 @@ export const MDtThuChiDs: FC<ScreenProps> = ({ sc, mod }) => {
   const chipHienTai = chips.find(c => c.k === chipTT)
   const nhanTrangThai = chipHienTai ? `Trạng thái: ${chipHienTai.ten}` : 'Trạng thái: Tất cả'
 
-  // Thu tiền, Chi tiền: Tất cả, Tiền mặt, Ngân hàng, Báo cáo; Chuyển quỹ: hiện thẳng danh sách chuyển quỹ, Báo cáo
+  // Tiền mặt: Tất cả, Thu, Chi, Báo cáo; Ngân hàng: Tất cả, Thu, Chi, Báo cáo; Chuyển quỹ: hiện thẳng danh sách chuyển quỹ, Báo cáo
   const tabsStandard = nhomK === 'cq'
     ? [{ k: 'cq', ten: 'Chuyển quỹ' }]
     : nhom
-      ? [{ k: '', ten: 'Tất cả' }, { k: 'tien-mat', ten: 'Tiền mặt' }, { k: 'ngan-hang', ten: 'Ngân hàng' }]
+      ? [{ k: '', ten: 'Tất cả' }, { k: nhomK === 'nh' ? 'bc' : 'thu', ten: 'Thu tiền' }, { k: nhomK === 'nh' ? 'unc' : 'chi', ten: 'Chi tiền' }]
       : [{ k: '', ten: 'Tất cả' }, { k: 'tien-mat', ten: 'Tiền mặt' }, { k: 'ngan-hang', ten: 'Ngân hàng' }, { k: 'cq', ten: 'Chuyển quỹ' }]
 
   // Thêm mới chỉ hiện loại phiếu của tab đang chọn; tab Tất cả hiện đủ (T539)

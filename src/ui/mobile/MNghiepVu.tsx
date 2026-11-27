@@ -54,10 +54,10 @@ export function MNghiepVu() {
   const layCacChucNang = (m: ModuleDef): ChucNang[] => {
     // 1. Phân hệ Thu chi chỉ một mục Thu, chi tiền (T572): Chuyển quỹ đã là tab trong danh sách, số dư ban đầu khai ở Danh mục Quỹ tiền
     if (m.key === 'tien') {
-      // Tách Thu chi thành 3 menu: Thu tiền, Chi tiền (tab Tất cả, Tiền mặt, Ngân hàng, Báo cáo), Chuyển quỹ (danh sách và Báo cáo)
+      // Tách Thu chi thành 3 menu: Tiền mặt, Ngân hàng (tab Tất cả, Thu, Chi, Báo cáo), Chuyển quỹ (danh sách và Báo cáo)
       return [
-        { ten: 'Thu tiền', to: '/app/tien/2-1-1?nhom=thu', icon: 'cashin', code: '2.1.1', slug: '2-1-1' },
-        { ten: 'Chi tiền', to: '/app/tien/2-1-1?nhom=chi', icon: 'cashout', code: '2.1.1', slug: '2-1-1' },
+        { ten: 'Tiền mặt', to: '/app/tien/2-1-1?nhom=tm', icon: 'cashin', code: '2.1.1', slug: '2-1-1' },
+        { ten: 'Ngân hàng', to: '/app/tien/2-1-1?nhom=nh', icon: 'bank', code: '2.1.1', slug: '2-1-1' },
         { ten: 'Chuyển quỹ', to: '/app/tien/2-1-1?nhom=cq', icon: 'swap', code: '2.1.1', slug: '2-1-1' },
       ]
     }
