@@ -28,7 +28,7 @@ export function PhieuDieuChuyen({ sc, mod }: ScreenProps) {
   const { s } = useSession()
   const nav = useNavigate()
   // Gói Plus gộp Xuất, Nhập điều chuyển vào một tab Điều chuyển, chuyển qua lại bằng tab con (T721)
-  const tabCon = s.goi === 'PL' && loai !== 'ck' ? (
+  const tabCon = (s.goi === 'PL' || s.goi === 'PR') && loai !== 'ck' ? (
     <div className="tabs dcn-tabs" role="tablist" aria-label="Xuất, nhập điều chuyển">
       {(['xdc', 'ndc'] as const).map(k => (
         <button key={k} type="button" role="tab" aria-selected={k === loai} className={k === loai ? 'on' : ''}

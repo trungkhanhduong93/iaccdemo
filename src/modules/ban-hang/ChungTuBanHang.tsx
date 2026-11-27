@@ -49,7 +49,7 @@ export const NGOAI_POS: VoucherCfg = {
 /** Gói Plus (T753): màn Xuất bán POS gọi là Bán hàng, lưu chứng từ FABi, Thủ công, Excel; lập tay theo form chung,
  *  dòng hàng như Xuất bán POS. Chứng từ FABi giữ như gói Standard: chỉ xem */
 export const BAN_TAY: VoucherCfg = { ...NGOAI_POS, them: 'Thêm chứng từ bán hàng', dongPos: true, dienGiai: ['Bán tiệc cho khách công ty', 'Bán set quà Trung thu', 'Bán suất ăn hội nghị'] }
-const laPlus = (goi: string) => goi === 'PL'
+const laPlus = (goi: string) => goi === 'PL' || goi === 'PR'   // Pro dùng chung thiết kế màn Bán hàng của Plus (T953)
 /** Màn chứng từ bán hàng lập tay gói Plus: nơi lưu hoá đơn thay thế, huỷ bán, hoá đơn điều chỉnh (T787) */
 export const MAN_BAN = 'ban-hang/3-1-1'
 /** Chứng từ mẫu lập tay, nhập từ Excel: số, số ngày lùi so với ngày cuối dữ liệu, giờ, cửa hàng thứ mấy, khách, diễn giải, nguồn,
@@ -374,7 +374,7 @@ export function ChungTuBanHang({ sc, mod }: ScreenProps) {
   const [moHd, setMoHd] = useState(false)   // popup xuất hoá đơn điện tử ở chi tiết chứng từ lập tay (T763)
   const tyLe = gtgtTyLe(s)
   const plus = laPlus(s.goi)
-  const scHien = plus ? { ...sc, ten: 'Bán hàng' } : sc
+  const scHien = plus && s.goi === 'PL' ? { ...sc, ten: 'Bán hàng' } : sc   // Pro giữ tên Xuất bán POS, vì đã có tab Bán hàng 3.1.7
   const tatCa = useMemo(() => DAILY.filter(x => x.date.getMonth() >= 8).slice().reverse().flatMap(x => theoDon(x).reverse())   // đồng bộ FABi chỉ kéo chi tiết, mỗi hoá đơn một chứng từ (T247)
    
     .map((x, i) => ({

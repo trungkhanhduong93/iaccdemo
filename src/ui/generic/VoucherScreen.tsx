@@ -323,7 +323,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
   // Mua, bán (T92): thêm thông tin hoá đơn, hạn thanh toán, đã trả, còn nợ cho các cột mặc định ẩn.
   // T94: kho, mã hàng trên dòng để lọc; gói dưới Pro một kho ở đầu phiếu (cột Kho), gói Pro kho trên từng dòng
   const coKhoDs = bo.kho === 'dong'
-  const khoDong = s.goi === 'PR'
+  const khoDong = false   // Pro dùng chung kho đầu phiếu của Plus (T953)
   const laNk = ['5.1.1', '5.1.2-3', '5.1.2-4'].includes(sc.code ?? '')   // phiếu nhập khác (T737, T738), xuất huỷ (T741), xuất khác (T745): kho ở đầu phiếu, Ghi chú, không thuế
   const locKhoHang = Boolean(cfg.kiemKe || cfg.dieuChinh || laNk)   // có lọc Kho, Hàng hoá, Nhóm hàng hoá
   // Thu chi (T96): lý do thu, chi của phiếu; phiếu chưa lưu lý do thì đoán theo diễn giải như form, chuyển quỹ không có

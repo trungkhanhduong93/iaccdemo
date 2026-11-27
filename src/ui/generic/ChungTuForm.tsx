@@ -400,7 +400,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
   // Cửa hàng chỉ có một kho thì phiếu mới lấy luôn kho đó
   const dsKhoCn = CUA_HANG.find(c => c.ten === cuaHang)?.kho ?? KHO
   const khoMotCn = dsKhoCn.length === 1 ? dsKhoCn[0] : ''
-  const khoDau = bo.kho === 'dong' && (nhom === 'mua' || nhom === 'ban') && s.goi !== 'PR'
+  const khoDau = bo.kho === 'dong' && (nhom === 'mua' || nhom === 'ban')   // Pro dùng chung bố cục kho đầu phiếu của Plus (T953)
   const [kho, setKho] = useState(() => luuCu('kho') || (moi ? traTu?.kho || khoMotCn : dongGoc.find(d => d.kho)?.kho ?? dsKhoCn[0] ?? ''))
   useEffect(() => {
     if (khoDau || khoGon) setDsDong(ds => ds.map(d => ({ ...d, kho })))
