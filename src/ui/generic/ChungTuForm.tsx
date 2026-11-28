@@ -11,7 +11,7 @@ import { bosungDinhKhoan, chuanChiTiet, dinhKhoanThuChi, loiDinhKhoan, tkQuyCua 
 import { heThongTk, locTkChiTiet } from '../../modules/danh-muc/he-thong-tk'
 import { CHE_DO, type CheDo } from '../../app/che-do'
 import { tkTheoCheDo } from '../../modules/tong-hop/so-cai'
-import { CUA_HANG, HANG, HOM_NAY, KHACH, KHO, LY_CAN_DOI_TUONG, LY_DO, NCC, NHAN_VIEN, TK_NGAN_HANG, daKhoaSo, khoaSoDenCua, dungCho } from '../../data/mock'
+import { CUA_HANG, HANG, HOM_NAY, KHACH, KHO, LY_CAN_DOI_TUONG, LY_DO, NCC, NHAN_VIEN, TK_NGAN_HANG, daKhoaSo, khoaSoDenCua } from '../../data/mock'
 import { laLyChiPhi, laLyPhanBo, laMaCcdc } from './danhMucStore'
 import { DS_PTTT } from '../../modules/danh-muc/data'
 import { ThongBao, type ThongBaoProps } from '../ThongBao'
@@ -251,7 +251,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
   // Lý do mặc định khi thêm mới: theo mã lý do trên đường dẫn (?ly=mã lý do Chi phí chờ phân bổ, vd mở từ sơ đồ Chi phí phân bổ), không có thì đoán từ diễn giải
   const lyUrl = moi ? LY_DO.find(x => x.ma === sp.get('ly'))?.ten : undefined
   // Lý do huỷ (T914): danh mục Lý do nghiệp vụ, Dùng cho Xuất kho; mặc định lý do đầu (Xuất huỷ hàng hỏng)
-  const dsLyHuy = laHuy ? LY_DO.filter(x => dungCho(x.dung, 'Xuất kho')).map(x => x.ten) : []
+  const dsLyHuy = laHuy ? LY_DO.filter(x => x.dung === 'Xuất kho').map(x => x.ten) : []
   const lyGoc = (dg: string) => laHuy ? dsLyHuy[0] ?? '' : lyUrl && oLy?.ds?.includes(lyUrl) ? lyUrl : lyMacDinh(oLy?.ds ?? [], dg)
   const [hoiThe, setHoiThe] = useState<{ moMoi: boolean; idMoi: string; tu: Record<string, unknown> } | null>(null)
   // Lập phiếu từ gợi ý sau khi tạo quỹ ở trang chủ: lưu xong hỏi quay lại trang chủ làm tiếp (T250)
