@@ -27,7 +27,7 @@ import { tinhButToan } from '../mobile/butToan'
 import { chungTu, dongCua, type Dong } from './gen'
 import { theoLoai } from './nhom'
 import { gopLoai } from './VoucherScreen'
-import { butToanMua, tkThanhToan } from './tk-mua'
+import { butToanMua, tkPhieuMua } from './tk-mua'
 import { tkTheoCheDo } from '../../modules/tong-hop/so-cai'
 
 export type TinhChat = 'DEB' | 'CRD'
@@ -123,7 +123,8 @@ export function gomButToan(s: SPhien): DongButToan[] {
     if (muaSinhButToan(mod.key, cfgR.prefix, ds) && !dsRieng.length) {
       const httt = (r._httt as 'congno' | 'tienmat' | 'chuyenkhoan' | undefined) ?? 'congno'
       const ctTt = r._ctTt as { id?: string; so?: string } | undefined
-      const bt = butToanMua(ds, tkThanhToan(httt, String(r._quy ?? '')), { khongKho: cfgR.khongKho, dvVc: String(r._dvVc ?? ''), soMua: goc.so, soTt: ctTt?.so, soChuaCo: goc.so, thanhToanNgay: httt !== 'congno' })
+      const tkPhieu = tkPhieuMua(r, httt, String(r._quy ?? ''))   // Tk thanh toán, Tk thuế user đã sửa ở đầu phiếu (T964)
+      const bt = butToanMua(ds, tkPhieu.tt, { khongKho: cfgR.khongKho, dvVc: String(r._dvVc ?? ''), soMua: goc.so, soTt: ctTt?.so, soChuaCo: goc.so, thanhToanNgay: httt !== 'congno', tkThue: tkPhieu.thue })
       const tt = ctTt?.id ? thongTinTt.get(ctTt.id) : undefined
       const gocTt = tt ? { ngay: tt.ngay, loaiCt: tt.loaiCt, dienGiai: tt.dienGiai, ghiChu: tt.ghiChu, to: tt.to } : {}
       bt.forEach((b, i) => {
