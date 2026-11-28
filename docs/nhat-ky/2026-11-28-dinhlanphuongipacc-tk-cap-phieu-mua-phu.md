@@ -19,6 +19,6 @@
 
 ## Dở dang
 
-- CPM trả tiền ngay: TK thanh toán đang đổi theo hình thức thanh toán (111x, 112x) như phiếu khác. Người dùng chưa trả lời riêng câu này, cần xác nhận.
+- CPM trả tiền ngay: TK thanh toán đổi theo hình thức thanh toán (111x, 112x) như phiếu khác. Người dùng đã xác nhận, không cần sửa.
 - Điện thoại chưa có ô sửa; mặc định chưa nối Giá trị mặc định (T962, Trum).
 - Bẫy: `ChungTuForm.tsx`, `DanhSachButToan.tsx` có sửa dở T969 của phiên khác, chỉ stage hunk của mình (`git apply --cached --unidiff-zero`). Preview: dùng cấu hình `iacc-demo-dir` ở thư mục cha.
