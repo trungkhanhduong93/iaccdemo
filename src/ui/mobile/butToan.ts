@@ -70,7 +70,6 @@ export function tinhButToan(
   }
 
   const tkDoiUng = tkPhieu?.tt || (hinhThucTt === 'tienmat' ? '1111' : hinhThucTt === 'chuyenkhoan' ? '1121' : (nhom === 'mua' ? '331' : '131'))
-  const doiThue = (so: string) => (tkPhieu?.thue && /^3331/.test(so) ? tkPhieu.thue : so)   // mẫu bán ghi thuế đầu ra ở 33311 (Có khi bán, Nợ khi trả lại)
   const bts = layButToan(
     cfg,
     tongTien - tongCk,
@@ -79,10 +78,12 @@ export function tinhButToan(
     cuaHang,
     cheDo,
     tkDoiUng,
+    tkPhieu?.thue,
+    tkPhieu?.tt,
   )
   return bts.flatMap(b => {
-    const tNo = tenTk(doiThue(b.no), cheDo)
-    const tCo = tenTk(doiThue(b.co), cheDo)
+    const tNo = tenTk(b.no, cheDo)
+    const tCo = tenTk(b.co, cheDo)
     return [
       { kieu: 'no' as const, so: tNo.so, ten: tNo.ten, tien: b.tien },
       { kieu: 'co' as const, so: tCo.so, ten: tCo.ten, tien: b.tien },
