@@ -4,7 +4,7 @@ import { CONG_VIEC, ganLyDo, dungCho } from '../../data/mock'
 import type { Session } from '../../app/session'
 import type { Row } from '../types'
 import { fold } from '../../ui/format'
-import { getAllCatalogRows } from '../../ui/generic/danhMucStore'
+import { getAllCatalogRows, laLyPhanBo } from '../../ui/generic/danhMucStore'
 import { tkCuaQuy, type Dong } from '../../ui/generic/gen'
 import { chiTietTheoTk, locTkChiTiet, heThongTk } from '../danh-muc/he-thong-tk'
 
@@ -18,9 +18,11 @@ export function tkQuyCua(quy: string): string {
   return chu(r?.tkQuy) || tkCuaQuy(quy)
 }
 
-/** Tài khoản chi phí gợi ý của lý do nghiệp vụ (danh mục 1.16) cho hoá đơn mua không qua kho; lý do chưa khai tài khoản thì 6422 (T964) */
+/** Tài khoản chi phí gợi ý của lý do nghiệp vụ (danh mục 1.16) cho hoá đơn mua không qua kho; lý do chưa khai tài khoản thì 6422.
+ *  Lý do tích Chi phí phân bổ nhiều kỳ thì ghi vào tài khoản chi phí trả trước của lý do (mặc định 242), khi phân bổ mới chuyển sang chi phí (T964) */
 export function tkChiPhiCuaLy(ly: string, s: Pick<Session, 'donVi' | 'lyDoGhiDe'>): string {
   const r = getAllCatalogRows('1.16').find(x => chu(x.ten) === ly)
+  if (r && laLyPhanBo(ly, s)) return chu(ganLyDo(r, s).tkTraTruoc) || '242'
   return chu(r ? ganLyDo(r, s).tk : '') || '6422'
 }
 
