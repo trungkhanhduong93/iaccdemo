@@ -33,6 +33,7 @@ export function tinhButToan(
   cheDo: Parameters<typeof tkTheoCheDo>[1],
   nhom: string,
   hinhThucTt?: 'congno' | 'tienmat' | 'chuyenkhoan' | string,
+  tkPhieu?: { tt?: string; thue?: string },   // Tk thanh toán, Tk thuế user sửa ở đầu phiếu (T964); bỏ trống thì theo mặc định
 ): ButToanDong[] {
   const kieu = kieuGhiSo(cheDo)
   const laKk = Boolean(cfg.kiemKe)
@@ -57,8 +58,8 @@ export function tinhButToan(
 
   // Phiếu mua hàng, hoá đơn mua: bút toán theo từng dòng hàng như bản máy tính (Tk kho, Tk thuế, Tk thanh toán)
   if (nhom === 'mua' && (cfg.prefix === 'MH' || cfg.prefix === 'HDM') && dsDong.length > 0) {
-    const tkTt = hinhThucTt === 'tienmat' ? '1111' : hinhThucTt === 'chuyenkhoan' ? '1121' : '331'
-    return butToanMua(dsDong, tkTt, { khongKho: cfg.khongKho, soMua: '', thanhToanNgay: false }).flatMap(b => {
+    const tkTt = tkPhieu?.tt || (hinhThucTt === 'tienmat' ? '1111' : hinhThucTt === 'chuyenkhoan' ? '1121' : '331')
+    return butToanMua(dsDong, tkTt, { khongKho: cfg.khongKho, soMua: '', thanhToanNgay: false, tkThue: tkPhieu?.thue }).flatMap(b => {
       const tNo = tenTk(b.no, cheDo)
       const tCo = tenTk(b.co, cheDo)
       return [
@@ -68,7 +69,8 @@ export function tinhButToan(
     })
   }
 
-  const tkDoiUng = hinhThucTt === 'tienmat' ? '1111' : hinhThucTt === 'chuyenkhoan' ? '1121' : (nhom === 'mua' ? '331' : '131')
+  const tkDoiUng = tkPhieu?.tt || (hinhThucTt === 'tienmat' ? '1111' : hinhThucTt === 'chuyenkhoan' ? '1121' : (nhom === 'mua' ? '331' : '131'))
+  const doiThue = (so: string) => (tkPhieu?.thue && /^3331/.test(so) ? tkPhieu.thue : so)   // mẫu bán ghi thuế đầu ra ở 33311 (Có khi bán, Nợ khi trả lại)
   const bts = layButToan(
     cfg,
     tongTien - tongCk,
@@ -79,8 +81,8 @@ export function tinhButToan(
     tkDoiUng,
   )
   return bts.flatMap(b => {
-    const tNo = tenTk(b.no, cheDo)
-    const tCo = tenTk(b.co, cheDo)
+    const tNo = tenTk(doiThue(b.no), cheDo)
+    const tCo = tenTk(doiThue(b.co), cheDo)
     return [
       { kieu: 'no' as const, so: tNo.so, ten: tNo.ten, tien: b.tien },
       { kieu: 'co' as const, so: tCo.so, ten: tCo.ten, tien: b.tien },

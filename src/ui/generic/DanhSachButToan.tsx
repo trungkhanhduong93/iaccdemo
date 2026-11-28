@@ -27,7 +27,7 @@ import { tinhButToan } from '../mobile/butToan'
 import { chungTu, dongCua, type Dong } from './gen'
 import { theoLoai } from './nhom'
 import { gopLoai } from './VoucherScreen'
-import { butToanMua, tkPhieuMua } from './tk-mua'
+import { butToanMua, tkPhieuMua, tkPhieuSua } from './tk-mua'
 import { tkTheoCheDo } from '../../modules/tong-hop/so-cai'
 
 export type TinhChat = 'DEB' | 'CRD'
@@ -138,7 +138,7 @@ export function gomButToan(s: SPhien): DongButToan[] {
     if (dsRieng.length) {
       dsRieng.forEach((d, i) => out.push(...capDong({ ...goc, ghiChu: d.ghiChu || goc.ghiChu }, `${mod.key}-${ma}-${r.id}-${i}`, String(d.tkNo), String(d.tkCo), Number(d.tien) || 0, chiTietDong(d))))
     } else {
-      const bt = tinhButToan(cfgR, ds, Number(r.tong ?? r.tien) || 0, 0, Number(r.thue) || 0, goc.doiTuong, String(r.cn ?? ''), s.cheDo, mod.key === 'mua-hang' ? 'mua' : 'ban')
+      const bt = tinhButToan(cfgR, ds, Number(r.tong ?? r.tien) || 0, 0, Number(r.thue) || 0, goc.doiTuong, String(r.cn ?? ''), s.cheDo, mod.key === 'mua-hang' ? 'mua' : 'ban', undefined, tkPhieuSua(r))
       for (let i = 0; i + 1 < bt.length; i += 2) out.push(...capDong(goc, `${mod.key}-${ma}-${r.id}-${i / 2}`, bt[i].so, bt[i + 1].so, bt[i].tien))
     }
     // Phiếu chi có hoá đơn: mỗi dòng kê khai thêm cặp thuế, Nợ TK thuế, Có tài khoản Có của dòng chi tiết

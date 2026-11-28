@@ -15,6 +15,13 @@ export function tkThanhToan(httt: HinhThucTt, quy: string, tkCongNoNcc?: string)
   return tkCuaQuy(quy) || (httt === 'tienmat' ? '1111' : '1121')
 }
 
+/** Tk cấp phiếu do user tự sửa ở đầu phiếu (T964), dùng chung mua và bán. Không sửa thì trường để undefined, nơi gọi dùng mặc định của mình
+ *  (mua 331, 1111, 1121 và 1331; bán 131, 1111, 1121 và 33311) */
+export function tkPhieuSua(r: Record<string, unknown> | undefined): { tt?: string; thue?: string } {
+  const tuRow = (k: string) => (typeof r?.[k] === 'string' ? (r[k] as string).trim() : '')
+  return { tt: tuRow('_tkTt') || undefined, thue: tuRow('_tkThue') || undefined }
+}
+
 /** Tài khoản cấp phiếu mua (T964): Tk thanh toán/công nợ và Tk thuế hiện ở đầu phiếu, user sửa được, lưu vào phiếu ở _tkTt, _tkThue.
  *  Phiếu chưa lưu hai trường này (hoặc user để trống) thì dùng mặc định theo hình thức thanh toán và giá trị mặc định cửa hàng */
 export function tkPhieuMua(r: Record<string, unknown> | undefined, httt: HinhThucTt, quy: string, tkCongNoNcc?: string): { tt: string; thue: string } {
