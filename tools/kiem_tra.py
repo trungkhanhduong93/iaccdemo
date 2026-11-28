@@ -4767,14 +4767,19 @@ def kiem_tra_t233_may_tinh():
             if val_no != '1111':
                 loi.append(f'T233: Phiếu thu mới dòng mới có TK Nợ "{val_no}", kỳ vọng "1111"')
 
-        # 5. Mở #/app/ban-hang/3-1-2/moi: cột tài khoản mặc định hiện sẵn, tiêu đề vẫn có "TK công nợ (131)"
+        # 5. Mở #/app/ban-hang/3-1-2/moi: TK công nợ, TK thuế lên đầu phiếu (T964), dòng chi tiết chỉ còn cột TK doanh thu
         pg.goto(URL + '?goi=PR&p=bh#/app/ban-hang/3-1-2/moi')
         pg.wait_for_timeout(600)
         chon_cn_neu_hoi()
 
         th_texts = pg.locator('.bang-sua thead th').all_inner_texts()
-        if not any('TK công nợ (131)' in t for t in th_texts):
-            loi.append(f'T233: Màn bán hàng 3-1-2 tiêu đề cột tài khoản thiếu "TK công nợ (131)" (thấy {th_texts})')
+        if any('TK công nợ' in t for t in th_texts):
+            loi.append(f'T233: Màn bán hàng 3-1-2 dòng chi tiết vẫn còn cột TK công nợ, đã chuyển lên đầu phiếu (thấy {th_texts})')
+        if not any('TK doanh thu' in t for t in th_texts):
+            loi.append(f'T233: Màn bán hàng 3-1-2 tiêu đề cột tài khoản thiếu "TK doanh thu" (thấy {th_texts})')
+        nhan_dau = pg.locator('.ct-tk-phieu label').all_inner_texts()
+        if not any('TK công nợ' in t for t in nhan_dau) or not any('TK thuế GTGT' in t for t in nhan_dau):
+            loi.append(f'T233: Màn bán hàng 3-1-2 đầu phiếu thiếu ô TK công nợ hoặc TK thuế GTGT (thấy {nhan_dau})')
 
         if con:
             loi.append(f'T233: lỗi console {con[:2]}')
