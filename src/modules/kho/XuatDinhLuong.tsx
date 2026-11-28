@@ -391,10 +391,6 @@ function ChiTietXuatDinhLuong({ sc, mod, row }: ScreenProps & { row?: PhieuXdl }
                 </button>
               </div>
             )}
-            <Dropdown btnClass="xp-btn-outline" align="start" width={220}
-              label={<><span>Tiện ích</span><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"><path d="M3.5 5.5L7 9L10.5 5.5" /></svg></>}>
-              {() => <MenuItem icon="doc" onClick={() => toast('Đã xuất mẫu Excel')}>Xuất Excel</MenuItem>}
-            </Dropdown>
             <button type="button" className="xp-btn-in" onClick={() => window.print()}>
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M4 12H2.66667C2.31304 12 1.97391 11.8595 1.72386 11.6095C1.47381 11.3594 1.33333 11.0203 1.33333 10.6667V7.33333C1.33333 6.97971 1.47381 6.64057 1.72386 6.39052C1.97391 6.14048 2.31304 6 2.66667 6H13.3333C13.687 6 14.0261 6.14048 14.2761 6.39052C14.5262 6.64057 14.6667 6.97971 14.6667 7.33333V10.6667C14.6667 11.0203 14.5262 11.3594 14.2761 11.6095C13.687 12 13.3333 12 13.3333 12H12" />
@@ -403,6 +399,13 @@ function ChiTietXuatDinhLuong({ sc, mod, row }: ScreenProps & { row?: PhieuXdl }
               </svg>
               <span>In phiếu</span>
             </button>
+          </div>
+          <div className="xp-footer-phai">
+            {/* Menu thao tác thêm thành nút ba chấm cuối chân phải (T965) */}
+            <Dropdown btnClass="xp-btn-outline xp-btn-ic" align="end" title="Thêm thao tác" width={220}
+              label={<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="3" r="1.4" /><circle cx="8" cy="8" r="1.4" /><circle cx="8" cy="13" r="1.4" /></svg>}>
+              {() => <MenuItem icon="doc" onClick={() => toast('Đã xuất mẫu Excel')}>Xuất Excel</MenuItem>}
+            </Dropdown>
           </div>
         </>
       }

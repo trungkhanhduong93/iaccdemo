@@ -4,6 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 28/11/2026
 
+- T965: Chi tiết chứng từ trên web: nút Xoá nằm ngay bên trái nút Sửa, nút Tiện ích đổi thành nút ba chấm dọc bên phải nút Sửa, bấm vào ra Sao chép, Trả hàng, Thanh toán, Xuất Excel và các mục khác. Phiếu không sửa được thì không hiện nút Xoá.
 - T962: Gói Pro: nút Giá trị mặc định có thêm ở phiếu thu, chi, báo có, uỷ nhiệm chi, chuyển quỹ, các chứng từ mua hàng, bán hàng, kho (trừ xuất, nhập điều chỉnh). Lập phiếu mới tự điền đối tượng, kho, quỹ, lý do, hình thức thanh toán theo cửa hàng.
 - T963: Gói Standard, màn Chi phí NVL tháng 9: dữ liệu mẫu có cửa hàng Thảo Điền chưa kiểm kê ngày 30/09, nên hiện dải cảnh báo chưa kiểm kê cuối tháng.
 - T964: Gói Pro, Phiếu mua hàng, Hoá đơn mua hàng, Hoá đơn bán hàng: TK công nợ (hoặc TK thanh toán) và TK thuế GTGT hiện ở đầu phiếu, tự đổi theo hình thức thanh toán, sửa được, không còn ở từng dòng; Hoá đơn mua hàng cột Tk kho thành Tk chi phí, gợi ý theo lý do nghiệp vụ (lý do phân bổ nhiều kỳ gợi ý TK chi phí trả trước), Diễn giải dòng ăn theo lý do; thẻ phân bổ lập từ hoá đơn lấy thành tiền đã trừ giảm giá, cộng thuế khi thuế tính theo doanh thu.

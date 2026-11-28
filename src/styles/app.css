@@ -50893,3 +50893,7 @@ body:has(.ds-chuyen-tk) .pop { z-index: 1200; }   /* danh sách thả xuống n�
 .dnh-hh-dau .dnh-hoi-tip { padding: 10px 12px; gap: 8px; box-shadow: 0 14px 34px rgba(14, 26, 43, .14), 0 2px 6px rgba(14, 26, 43, .06); font-size: 12.5px; }
 .dnh-hh-dau .dnh-hoi-tip > b { font-size: 13.5px; border-bottom-color: #eef1f5; }
 .dnh-hh-dau .dnh-hoi-d.tong { border-top-color: #eef1f5; }
+
+/* ── Chân chứng từ web: nút Xoá ngoài cạnh Sửa, Tiện ích thành nút ba chấm (T965) ── */
+.xp-btn-xoa { color: var(--red); }
+.xp-btn-xoa:hover { background: var(--red-t); border-color: var(--red); color: var(--red); }

@@ -907,7 +907,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
     }
   }
 
-  // Xoá chứng từ (Tiện ích, Ctrl+Delete): cùng luật xoá với danh sách (QD32): kỳ đã khoá sổ không xoá, gói có ghi sổ chỉ xoá phiếu chưa ghi
+  // Xoá chứng từ (nút Xoá ở chân phiếu, Ctrl+Delete): cùng luật xoá với danh sách (QD32): kỳ đã khoá sổ không xoá, gói có ghi sổ chỉ xoá phiếu chưa ghi
   function thuXoa() {
     if (!row || khoaSua) return
     // Chứng từ gây chặn có link mở thẳng, lấy đường dẫn từ dòng Tham chiếu (T889)
@@ -1328,7 +1328,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
         ) : (
           <>
             <div className="xp-footer-trai">
-              {/* Chứng từ trước, sau ra ngoài menu Tiện ích thành nút biểu tượng (T584) */}
+              {/* Chứng từ trước, sau ra ngoài menu thành nút biểu tượng (T584) */}
               {(coTruoc || coSau) && (
                 <div className="xp-chuyen-phieu">
                   <button type="button" className="xp-btn-outline xp-btn-ic" onClick={veTruoc} disabled={!coTruoc} title="Chứng từ trước" aria-label="Chứng từ trước">
@@ -1339,17 +1339,60 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
                   </button>
                 </div>
               )}
+              {/* Bỏ nút Ghi sổ, Bỏ ghi sổ ở chân form, mọi phiếu (T746) */}
+              {!anIn && (
+                <button type="button" className="xp-btn-in" onClick={moIn}>
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M4 12H2.66667C2.31304 12 1.97391 11.8595 1.72386 11.6095C1.47381 11.3594 1.33333 11.0203 1.33333 10.6667V7.33333C1.33333 6.97971 1.47381 6.64057 1.72386 6.39052C1.97391 6.14048 2.31304 6 2.66667 6H13.3333C13.687 6 14.0261 6.14048 14.2761 6.39052C14.5262 6.64057 14.6667 6.97971 14.6667 7.33333V10.6667C14.6667 11.0203 14.5262 11.3594 14.2761 11.6095C14.0261 11.8595 13.687 12 13.3333 12H12" />
+                    <path d="M4 6V2C4 1.82319 4.07024 1.65362 4.19526 1.5286C4.32029 1.40357 4.48986 1.33333 4.66667 1.33333H11.3333C11.5101 1.33333 11.6797 1.40357 11.8047 1.5286C11.9298 1.65362 12 1.82319 12 2V6" />
+                    <path d="M4.66667 9.33333H11.3333C11.7015 9.33333 12 9.63181 12 10V14C12 14.3682 11.7015 14.6667 11.3333 14.6667H4.66667C4.29848 14.6667 4 14.3682 4 14V10C4 9.63181 4.29848 9.33333 4.66667 9.33333Z" />
+                  </svg>
+                  <span>In phiếu</span>
+                </button>
+              )}
+              {chanThem}
+            </div>
+            <div className="xp-footer-phai">
+              {hdDaXuat && <span className="ct-hd-khoa" title="Chứng từ đã xuất hoá đơn điện tử không sửa, không xoá. Muốn đổi tiền, hàng, người mua thì lập hoá đơn điều chỉnh hoặc thay thế ở menu Hoá đơn điện tử">
+                <Icon n="lock" className="ic sm" />Đã xuất HĐĐT · không sửa được</span>}
+              {/* Huỷ bán sửa, xoá ở hoá đơn thay thế; hoá đơn thay thế, điều chỉnh dự thảo có nút Phát hành (T787) */}
+              {laHuyBan && row?._hdTt ? <span className="ct-hd-khoa"><Icon n="lock" className="ic sm" />Sửa hoặc xoá ở hoá đơn thay thế
+                <Link className="ds-link-so" to={`${path}/${(row._hdTt as CtLq).id}`}>{(row._hdTt as CtLq).so}</Link></span> : null}
+              {laHdMoi && row && !hdDaXuat && (
+                <button type="button" className="xp-btn-outline" onClick={phatHanhNhap}><Icon n="receipt" className="ic sm" /><span>Phát hành</span></button>
+              )}
+              {/* Nút Xoá ra chân phiếu cạnh Sửa, menu còn lại thành nút ba chấm cuối chân phải (T965) */}
+              {row && !khoaSua && (
+                <button type="button" className="xp-btn-outline xp-btn-xoa" onClick={thuXoa} title="Xoá chứng từ (Ctrl+Delete)">
+                  <Icon n="trash" className="ic sm" />
+                  <span>Xoá</span>
+                </button>
+              )}
+              {/* Phiếu nhập điều chuyển chờ mở ra là sửa thực nhận, Nhập kho; đã nhập vẫn Sửa được thực nhận (T748) */}
+              {!khoaSua && !khoaDc && (
+                <button
+                  type="button"
+                  className="xp-btn-sua"
+                  onClick={batSua}
+                >
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M2.66667 13.3333H5.33333L12.3333 6.33333C12.5084 6.15824 12.6473 5.95037 12.7421 5.72159C12.8368 5.49282 12.8856 5.24762 12.8856 5C12.8856 4.75238 12.8368 4.50718 12.7421 4.27841C12.6473 4.04963 12.5084 3.84176 12.3333 3.66667C12.1582 3.49157 11.9504 3.35268 11.7216 3.25792C11.4928 3.16315 11.2476 3.11438 11 3.11438C10.7524 3.11438 10.5072 3.16315 10.2784 3.25792C10.0496 3.35268 9.84176 3.49157 9.66667 3.66667L2.66667 10.6667V13.3333Z" />
+                    <path d="M9 4.33333L11.6667 7" />
+                  </svg>
+                  <span>{hdDienTu ? 'Sửa' : 'Sửa (Ctrl+E)'}</span>   {/* form bán hàng lập tay bỏ chữ phím tắt trên nút (T785) */}
+                </button>
+              )}
               <Dropdown
-                btnClass="xp-btn-outline"
-                align="start"
-                width={220}
+                btnClass="xp-btn-outline xp-btn-ic"
+                align="end"
+                title="Thêm thao tác"
+                width={240}
                 label={
-                  <>
-                    <span>Tiện ích</span>
-                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M3.5 5.5L7 9L10.5 5.5" />
-                    </svg>
-                  </>
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                    <circle cx="8" cy="3" r="1.4" />
+                    <circle cx="8" cy="8" r="1.4" />
+                    <circle cx="8" cy="13" r="1.4" />
+                  </svg>
                 }
               >
                 {dong => (
@@ -1377,56 +1420,14 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
                         {hienTk ? 'Cột tài khoản: Đang hiện' : 'Cột tài khoản: Đang ẩn'}
                       </MenuItem>
                     )}
-                    {/* Đã xuất HĐĐT (T785): tải PDF, XML hoá đơn; Xoá chứng từ mờ */}
+                    {/* Đã xuất HĐĐT (T785): tải PDF, XML hoá đơn */}
                     {hdDaXuat && <>
                       <MenuItem icon="doc" onClick={() => { dong(); toast(`Đã tải PDF hoá đơn số ${hdDaXuat.so}`) }}>Tải PDF hoá đơn</MenuItem>
                       <MenuItem icon="doc" onClick={() => { dong(); toast(`Đã tải XML hoá đơn số ${hdDaXuat.so}`) }}>Tải XML hoá đơn</MenuItem>
-                      <MenuItem icon="trash" lock onClick={() => toast('Chứng từ đã xuất HĐĐT, không xoá được. Lập hoá đơn điều chỉnh, thay thế ở menu Hoá đơn điện tử')}>Xoá chứng từ</MenuItem>
                     </>}
-                    {row && !khoaSua && (
-                      <MenuItem icon="trash" danger onClick={thuXoa}>
-                        Xoá chứng từ
-                      </MenuItem>
-                    )}
                   </>
                 )}
               </Dropdown>
-              {/* Bỏ nút Ghi sổ, Bỏ ghi sổ ở chân form, mọi phiếu (T746) */}
-              {!anIn && (
-                <button type="button" className="xp-btn-in" onClick={moIn}>
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M4 12H2.66667C2.31304 12 1.97391 11.8595 1.72386 11.6095C1.47381 11.3594 1.33333 11.0203 1.33333 10.6667V7.33333C1.33333 6.97971 1.47381 6.64057 1.72386 6.39052C1.97391 6.14048 2.31304 6 2.66667 6H13.3333C13.687 6 14.0261 6.14048 14.2761 6.39052C14.5262 6.64057 14.6667 6.97971 14.6667 7.33333V10.6667C14.6667 11.0203 14.5262 11.3594 14.2761 11.6095C14.0261 11.8595 13.687 12 13.3333 12H12" />
-                    <path d="M4 6V2C4 1.82319 4.07024 1.65362 4.19526 1.5286C4.32029 1.40357 4.48986 1.33333 4.66667 1.33333H11.3333C11.5101 1.33333 11.6797 1.40357 11.8047 1.5286C11.9298 1.65362 12 1.82319 12 2V6" />
-                    <path d="M4.66667 9.33333H11.3333C11.7015 9.33333 12 9.63181 12 10V14C12 14.3682 11.7015 14.6667 11.3333 14.6667H4.66667C4.29848 14.6667 4 14.3682 4 14V10C4 9.63181 4.29848 9.33333 4.66667 9.33333Z" />
-                  </svg>
-                  <span>In phiếu</span>
-                </button>
-              )}
-              {chanThem}
-            </div>
-            <div className="xp-footer-phai">
-              {hdDaXuat && <span className="ct-hd-khoa" title="Chứng từ đã xuất hoá đơn điện tử không sửa, không xoá. Muốn đổi tiền, hàng, người mua thì lập hoá đơn điều chỉnh hoặc thay thế ở menu Hoá đơn điện tử">
-                <Icon n="lock" className="ic sm" />Đã xuất HĐĐT · không sửa được</span>}
-              {/* Huỷ bán sửa, xoá ở hoá đơn thay thế; hoá đơn thay thế, điều chỉnh dự thảo có nút Phát hành (T787) */}
-              {laHuyBan && row?._hdTt ? <span className="ct-hd-khoa"><Icon n="lock" className="ic sm" />Sửa hoặc xoá ở hoá đơn thay thế
-                <Link className="ds-link-so" to={`${path}/${(row._hdTt as CtLq).id}`}>{(row._hdTt as CtLq).so}</Link></span> : null}
-              {laHdMoi && row && !hdDaXuat && (
-                <button type="button" className="xp-btn-outline" onClick={phatHanhNhap}><Icon n="receipt" className="ic sm" /><span>Phát hành</span></button>
-              )}
-              {/* Phiếu nhập điều chuyển chờ mở ra là sửa thực nhận, Nhập kho; đã nhập vẫn Sửa được thực nhận (T748) */}
-              {!khoaSua && !khoaDc && (
-                <button
-                  type="button"
-                  className="xp-btn-sua"
-                  onClick={batSua}
-                >
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M2.66667 13.3333H5.33333L12.3333 6.33333C12.5084 6.15824 12.6473 5.95037 12.7421 5.72159C12.8368 5.49282 12.8856 5.24762 12.8856 5C12.8856 4.75238 12.8368 4.50718 12.7421 4.27841C12.6473 4.04963 12.5084 3.84176 12.3333 3.66667C12.1582 3.49157 11.9504 3.35268 11.7216 3.25792C11.4928 3.16315 11.2476 3.11438 11 3.11438C10.7524 3.11438 10.5072 3.16315 10.2784 3.25792C10.0496 3.35268 9.84176 3.49157 9.66667 3.66667L2.66667 10.6667V13.3333Z" />
-                    <path d="M9 4.33333L11.6667 7" />
-                  </svg>
-                  <span>{hdDienTu ? 'Sửa' : 'Sửa (Ctrl+E)'}</span>   {/* form bán hàng lập tay bỏ chữ phím tắt trên nút (T785) */}
-                </button>
-              )}
             </div>
             {hopCot && (
               <HopCotPhieu dsDau={dsDau} dsChan={dsChan} dsChung={dsChung} ds={cfg.dongPos ? COT_BHB.filter(([k]) => !boCotBan.includes(k) && (giamGtgt ? k !== 'ts' && k !== 'thue' : k !== 'giamThue')) : laKk ? COT_KK : laSx ? cotSx(sx!) : laDcn ? cotDcn(dcn!) : cotTuyChon(cfg, { coNhomHhdv: nhom === 'mua' && nhanKemHd && s.goi === 'PR', coKho: Boolean(bo.kho) && !khoDau && !laDc && !khoGon, giaVon, coLo: nhom === 'mua' && s.goi === 'PR', coCk: Boolean(bo.ck), coKm: kieu !== 'khong', coLy: Boolean(oLy), coNhapKho: truocThue, coXuatKho: nhom === 'mua' && traLai, coGiamThue: giamGtgt, coCpMua: cpCo }).filter(([k]) => !anDc.includes(k) && !(coLyTuyChon && k === 'ly') && !(anKmTam && k === 'km'))}
