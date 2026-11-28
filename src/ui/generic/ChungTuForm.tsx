@@ -1076,7 +1076,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
   const hienDau = (k: string) => !anCot.includes(`dau:${k}`)
   // Phiếu thu, chi tiền (2.1.1) không có ô Mã số thuế; chuyển quỹ cũng không (T168)
   const coMst = nhom !== 'cq' && !(laTien && sc.code === '2.1.1')
-  const coHanTt = Boolean(bo.tt) && s.goi === 'PR'   // gói Standard, Plus ẩn hạn thanh toán (T180)
+  const coHanTt = false   // hạn thanh toán ẩn ở mọi gói: Standard, Plus từ T180, Pro bỏ ở T965 (dữ liệu _hanTt vẫn giữ)
   const hienChan = (k: string) => !anCot.includes(`chan:${k}`)
   const muaBan = nhom === 'mua' || nhom === 'ban'
   const nhanNguoi = nhom === 'cq' ? 'Người thực hiện' : laTien || muaBan ? 'Người giao dịch' : 'Người giao / nhận'   // mua, bán ghi Người giao dịch (T90)

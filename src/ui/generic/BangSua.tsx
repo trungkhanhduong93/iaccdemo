@@ -11,12 +11,16 @@ import { money } from '../format'
 import { OLoc, dangLoc, dsGiaTri, khopLoc, type GiaTriLoc, type KieuLoc, type LocCot } from '../LocCot'
 import { OSoGo } from '../OSoGo'
 import { ThKeo, type DoRong } from '../Table'
-import { NHOM_HHDV, type Dong } from './gen'
+import { type Dong } from './gen'
+import { DM_NHOM_HHDV_MUA } from './KeKhaiHoaDon'
 import { tkKhoCua } from './tk-mua'
 import { ThemHangLoat, type HangChon } from './ThemHangLoat'
 import { quyDoiTuDanhMuc } from '../../modules/danh-muc/QuyDoiDvt'
 import { chiTietTheoTk } from '../../modules/danh-muc/he-thong-tk'
 import { COT_CHI_TIET, chuanChiTiet, dsChiTiet } from '../../modules/tien/dinh-khoan-pro'
+
+/** Nhóm HHDV mua vào hiển thị theo Mã 1 đến 5, mặc định nhóm 1; phiếu cũ lưu tên đầy đủ thì đổi về mã theo thứ tự (T965) */
+const maNhomHhdv = (v?: string) => /^[1-5]$/.test(v ?? '') ? v! : String(['HHDV dùng riêng', 'HHDV không đủ', 'HHDV dùng chung', 'HHDV dùng cho dự án', 'HHDV không tổng hợp'].findIndex(t => (v ?? '').startsWith(t)) + 1 || 1)
 
 export const DS_DOI_TUONG = Array.from(new Set([
   ...KHACH.map(x => x.ten),
@@ -336,7 +340,7 @@ export function BangSua({
     ['ck', 'Tiền CK', ckCot, d => money(d.ck || 0), d => d.ck || 0], ['truocThue', 'Tiền trước thuế', truocThueCot, d => money(tienSauCk(d)), tienSauCk],
     ['ts', 'Thuế suất', tsCot, d => nhanThueDong(d)], ['thue', 'Tiền thuế', thueCot, d => money(d.thue), d => d.thue || 0],
     ['giamThue', 'Giảm thuế GTGT', giamCot, d => money(giamDong(d)), giamDong],
-    ['nhomHhdv', 'Nhóm HHDV mua vào', nhomCot, d => d.nhomHhdv || NHOM_HHDV[0]],
+    ['nhomHhdv', 'Nhóm HHDV mua vào', nhomCot, d => maNhomHhdv(d.nhomHhdv)],
     ['cpMua', 'Chi phí mua hàng', cpCot, d => money(d.cpMua || 0), d => d.cpMua || 0],
     ['gtnk', nhanGt, gtnkCot, d => money(tienSauCk(d) + (d.cpMua || 0) + (gtnkCoThue ? d.thue || 0 : 0)), d => tienSauCk(d) + (d.cpMua || 0) + (gtnkCoThue ? d.thue || 0 : 0)],
     ['tongTien', 'Tổng tiền', tongTienCot, d => money(tienSauCk(d) + (d.thue || 0)), d => tienSauCk(d) + (d.thue || 0)],
@@ -397,7 +401,7 @@ export function BangSua({
               {tsCot && <ThKeo k="ts" className="num" w={75} doRong={doRong}>Thuế suất</ThKeo>}
               {thueCot && <ThKeo k="thue" className="num" w={110} doRong={doRong}>Tiền thuế</ThKeo>}
               {giamCot && <ThKeo k="giamThue" className="num" w={130} doRong={doRong}>Giảm thuế GTGT</ThKeo>}
-              {nhomCot && <ThKeo k="nhomHhdv" w={240} doRong={doRong}>Nhóm HHDV mua vào</ThKeo>}
+              {nhomCot && <ThKeo k="nhomHhdv" w={130} doRong={doRong}>Nhóm HHDV mua vào</ThKeo>}
               {cpCot && <ThKeo k="cpMua" className="num" w={130} doRong={doRong}>Chi phí mua hàng</ThKeo>}
               {gtnkCot && <ThKeo k="gtnk" className="num" w={130} doRong={doRong}>{nhanGt}</ThKeo>}
               {tongTienCot && <ThKeo k="tongTien" className="num" w={120} doRong={doRong}>Tổng tiền</ThKeo>}
@@ -439,7 +443,7 @@ export function BangSua({
                 {tsCot && <td className="num">{nhanThueDong(d)}</td>}
                 {thueCot && <td className="num">{money(d.thue)}</td>}
                 {giamCot && <td className="num">{money(giamDong(d))}</td>}
-                {nhomCot && <td>{d.nhomHhdv || NHOM_HHDV[0]}</td>}
+                {nhomCot && <td>{maNhomHhdv(d.nhomHhdv)}</td>}
                 {cpCot && <td className="num">{money(d.cpMua || 0)}</td>}
                 {gtnkCot && <td className="num">{money((d.tien || 0) - (d.ck || 0) + (d.cpMua || 0) + (gtnkCoThue ? d.thue || 0 : 0))}</td>}
                 {tongTienCot && <td className="num">{money((d.tien || 0) - (d.ck || 0) + (d.thue || 0))}</td>}
@@ -511,7 +515,7 @@ export function BangSua({
               {tsCot && <ThKeo k="ts" className="num" w={80} doRong={doRong}>Thuế suất</ThKeo>}
               {thueCot && <ThKeo k="thue" className="num" w={110} doRong={doRong}>Tiền thuế</ThKeo>}
               {giamCot && <ThKeo k="giamThue" className="num" w={130} doRong={doRong}>Giảm thuế GTGT</ThKeo>}
-              {nhomCot && <ThKeo k="nhomHhdv" w={240} doRong={doRong}>Nhóm HHDV mua vào</ThKeo>}
+              {nhomCot && <ThKeo k="nhomHhdv" w={130} doRong={doRong}>Nhóm HHDV mua vào</ThKeo>}
               {cpCot && <ThKeo k="cpMua" className="num" w={130} doRong={doRong}>Chi phí mua hàng</ThKeo>}
               {gtnkCot && <ThKeo k="gtnk" className="num" w={130} doRong={doRong}>{nhanGt}</ThKeo>}
               {tongTienCot && <ThKeo k="tongTien" className="num" w={120} doRong={doRong}>Tổng tiền</ThKeo>}
@@ -707,10 +711,10 @@ export function BangSua({
                   </td>
                 )}
                 {giamCot && <td className="num">{money(giamDong(d))}</td>}
-                {nhomCot && (chiDongCo ? <td>{d.nhomHhdv || NHOM_HHDV[0]}</td> :
+                {nhomCot && (chiDongCo ? <td>{maNhomHhdv(d.nhomHhdv)}</td> :
                   <td>
-                    <Select className="inp sm" value={d.nhomHhdv || NHOM_HHDV[0]} aria-label="Nhóm HHDV mua vào" onChange={e => capNhat(i, { nhomHhdv: e.target.value })}
-                      ds={NHOM_HHDV.map(v => ({ v, t: v }))} />
+                    <ChonDanhMuc dm="nhomHhdvMua" nhan="nhóm HHDV mua vào" className="inp sm" chiMa khongThem trong="Chọn" value={maNhomHhdv(d.nhomHhdv)} onChange={v => capNhat(i, { nhomHhdv: v || '1' })}
+                      ds={DM_NHOM_HHDV_MUA.map(n => ({ v: n.ma, t: `${n.ma} - ${n.ten}` }))} />
                   </td>
                 )}
                 {cpCot && (
