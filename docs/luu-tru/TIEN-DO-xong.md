@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T963 | Dữ liệu mẫu: Phố Mây Thảo Điền không có phiếu kiểm kê tháng 9, màn Chi phí NVL tháng 9 hiện cảnh báo chưa kiểm kê cuối tháng (T945) | Trum | 28/11/2026 | 2026-11-28-trum-kiem-ke-thang-9-mau.md |
 | T957 | `python tools/kiem_tra.py --nhanh` đỏ sẵn trên main: sửa mục T870 (truyền sẵn Kho, Mặt hàng), T233 (ô tích Ẩn cột tài khoản thay nút), bộ chọn tiêu đề màn Dashboard nhà hàng và Hệ thống tài khoản | Trum | 28/11/2026 | 2026-11-28-trum-kiem-tra-do-san.md |
 | T933 | `tools/kiem_tra.py` mục T870/T871 Thẻ kho chờ bảng quá 8 giây: làm cùng T957 | Trum | 28/11/2026 | 2026-11-28-trum-kiem-tra-do-san.md |
 | T961 | Phiếu mua hàng, hoá đơn mua hạch toán theo dòng: cột Tk thanh toán, Tk kho, Tk thuế (Pro), Đối tượng LQ của chi phí mua hàng, 10.1.1 ghi trả ngay một lần theo số phiếu mua và phiếu chi, thuế suất theo hàng | dinhlanphuongipacc | 28/11/2026 | [2026-11-28-dinhlanphuongipacc-phieu-mua-hach-toan-theo-dong](../nhat-ky/2026-11-28-dinhlanphuongipacc-phieu-mua-hach-toan-theo-dong.md) |

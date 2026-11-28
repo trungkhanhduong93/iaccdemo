@@ -333,7 +333,8 @@ export function chungTu(cfg: VoucherCfg, seed: string): Row[] {
       const nguon = cfg.nguon && cfg.nguon !== 'tay' && r() < 0.75 ? cfg.nguon : 'tay'
       const g = gioPhieu(so)
       // Phiếu kiểm kê mẫu (T124): các cửa hàng lần lượt có phiếu để cửa hàng nào cũng thấy phiếu trong tháng; kho, ghi chú theo cửa hàng của phiếu
-      const cnKk = cfg.kiemKe ? CUA_HANG[i % CUA_HANG.length] : undefined
+      // Tháng 9 cửa hàng cuối không có phiếu, để màn Chi phí NVL hiện cảnh báo chưa kiểm kê cuối tháng (T963)
+      const cnKk = cfg.kiemKe ? CUA_HANG[i % (d.getMonth() === 8 ? CUA_HANG.length - 1 : CUA_HANG.length)] : undefined
       const khoKk = cnKk ? cnKk.kho[Math.floor(i / CUA_HANG.length) % cnKk.kho.length] : ''
       const dgKk = cnKk ? `${i % 4 === 0 ? 'Kiểm kê cuối tháng' : 'Kiểm kê đột xuất'} ${khoKk}` : ''
       rows.push({
