@@ -58,6 +58,7 @@ export interface BangSuaProps {
   coCpMua?: boolean            // phiếu mua hàng: cột Chi phí mua hàng trước Giá trị nhập kho, cộng vào giá trị nhập kho (T757)
   chiDongCo?: boolean          // trả lại hàng mua lập từ phiếu mua (T816): không thêm hàng, chỉ sửa số lượng (tối đa slMax của dòng), xoá dòng
   tkMua?: { khongKho?: boolean; tkCpGoiY?: string; dsTk?: { v: string; t: string }[] }   // phiếu mua, hoá đơn mua: cột chỉ xem Tk kho cuối dòng; Tk thanh toán, Tk thuế ở đầu phiếu (T964)
+  dienGiaiMoi?: string   // hoá đơn mua không qua kho: Diễn giải của dòng thêm mới ăn theo lý do nghiệp vụ (T964)
   anTkBen?: 'no' | 'co'   // bán hàng Pro: ẩn cột Tk công nợ/thanh toán của dòng vì đã ở đầu phiếu (T964), chỉ còn cột tài khoản bên kia
   onTongCp?: (tong: number) => void  // phiếu mua hàng: gõ chi phí mua hàng ở dòng thì báo tổng mới cho ô ở dải đáy
 }
@@ -104,6 +105,7 @@ export function BangSua({
   tkTheoLy,
   tkMua,
   anTkBen,
+  dienGiaiMoi,
   coKho = false,
   coCk = false,
   coLo = false,
@@ -274,7 +276,7 @@ export function BangSua({
       hsd: '',
     } : {
       ma: '',
-      ten: cfg.dienGiai?.[0] ?? 'Nội dung chứng từ',
+      ten: dienGiaiMoi ?? cfg.dienGiai?.[0] ?? 'Nội dung chứng từ',
       dvt: '',
       sl: 1,
       gia: 1_000_000,

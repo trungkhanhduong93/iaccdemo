@@ -258,6 +258,8 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
   const [goiYVe] = useState(() => Boolean((loc.state as { goiYVeTrangChu?: boolean } | null)?.goiYVeTrangChu))
   const [hoiVe, setHoiVe] = useState<{ moMoi: boolean; idMoi: string } | null>(null)
   const [lyDo, setLyDo] = useState(() => row?._lyDo ? String(row._lyDo) : lyGoc(dienGiai))
+  // Hoá đơn mua mới: dòng đầu có sẵn Diễn giải theo lý do mặc định (T964)
+  useEffect(() => { if (moi && cfg.khongKho && lyDo) setDsDong(ds => ds.map(d => d.ten ? d : { ...d, ten: lyDo })) }, [dongGoc])
   const canDt = LY_CAN_DOI_TUONG.includes(lyDo)   // lý do bắt buộc chọn đối tượng (T330)
   // Phiếu chuyển quỹ: quỹ đi và quỹ đến. Rút tiền ngân hàng thì đi từ tài khoản về quỹ tiền mặt
   const quyTm = `Quỹ tiền mặt ${CUA_HANG.find(c => c.ten === cuaHang)?.ngan ?? CUA_HANG[0].ngan}`
@@ -399,7 +401,8 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
     if (khoaLyDtStandard) {
       setDsDong(ds => ds.map(d => ({ ...d, ly: v })))
     }
-    if (cfg.khongKho) setDsDong(ds => ds.map(d => d.tkCp ? { ...d, tkCp: '' } : d))   // đổi lý do thì Tk chi phí các dòng theo gợi ý mới (T964)
+    // Hoá đơn mua không qua kho: đổi lý do thì Tk chi phí các dòng theo gợi ý mới, Diễn giải dòng còn trống hoặc đang là lý do cũ ăn theo lý do mới (T964)
+    if (cfg.khongKho) setDsDong(ds => ds.map(d => ({ ...d, ...(d.tkCp ? { tkCp: '' } : {}), ...(!d.ten || d.ten === lyDo ? { ten: v } : {}) })))
   }
   // Ô đối tượng chọn từ danh mục theo loại phiếu, thêm mới được ngay tại form (T65)
   const dmDt = laTien ? 'doiTuong' : cfg.doiTuong ?? 'doiTuong'
@@ -1872,6 +1875,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
               coTk={(hienTk && !laMuaTk) || proTk}   // phiếu mua dùng 3 cột Tk thanh toán, Tk kho, Tk thuế thay cột TK Nợ/Có chung
               dsTk={dsTkPro}
               nhanTk={nhanTkDong}
+              dienGiaiMoi={cfg.khongKho ? lyDo || undefined : undefined}   // dòng thêm mới ăn theo lý do nghiệp vụ (T964)
               tkMua={laMuaTk && hienTk ? { khongKho: cfg.khongKho, tkCpGoiY, dsTk: dsTkPhieu } : undefined}   // theo nút Hiện, Ẩn cột tài khoản; Tk thanh toán, Tk thuế ở đầu phiếu (T964)
               anTkBen={banTkPhieu && coTkPhieu ? 'no' : undefined}   // bán: Tk công nợ lên đầu phiếu, dòng chỉ còn tài khoản doanh thu
               tkTheoLy={coTkTheoLy ? (proTk ? tkTheoLyPro : (ly => tkTheoLyDo(loaiPhieuTien, ly))) : undefined}
