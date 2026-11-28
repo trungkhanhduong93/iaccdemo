@@ -1170,8 +1170,10 @@ export function CatalogPanel({
                           onDoi={v => { doiO(tr.k, v); setErrors(err => ({ ...err, [tr.k]: '' })) }} />
                       )
                     ) : tr.kieu === 'chonNhieu' ? (
-                      <ChonNhieu ds={tr.ds ?? []} maDs={tr.maDs} giaTri={String(formVal[tr.k] ?? '')} nhan={tr.nhan} goiY={tr.goiY}
-                        onDoi={v => { doiO(tr.k, v); setErrors(err => ({ ...err, [tr.k]: '' })) }} />
+                      <fieldset className="pn-fs" disabled={isChiDoc}>
+                        <ChonNhieu ds={tr.ds ?? []} maDs={tr.maDs} giaTri={String(formVal[tr.k] ?? '')} nhan={tr.nhan} goiY={tr.goiY}
+                          onDoi={v => { doiO(tr.k, v); setErrors(err => ({ ...err, [tr.k]: '' })) }} />
+                      </fieldset>
                     ) : tr.kieu === 'chonTim' ? (
                       // Ô chọn có tìm, mỗi dòng tên và mã; ô đã chọn hiện "mã · tên" (T151), có maDs thì "Tên (MÃ)" (T154)
                       <ChonCoTim nhan={tr.nhan} value={String(formVal[tr.k] ?? '')}

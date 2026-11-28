@@ -217,6 +217,22 @@ export const CONG_VIEC = [
 // lý do kho XK01.., NK01... Giữ thêm Chi phí chờ phân bổ (phiếu chi sinh thẻ chi phí phân bổ) và 3 lý do kho.
 // Lý do chi tính là chi phí (Sổ chi phí, Chi phí trong tháng) theo đề xuất PhuongXT duyệt; trả nợ, nhà cung cấp, tạm ứng, vay, nộp thuế, TSCĐ, đầu tư không tính
 const LY_LA_CHI_PHI = ['CHI01', 'CHI03', 'CHI04', 'CHI06', 'CHI07', 'CHI08', 'CHI09', 'CHI12', 'CHI13', 'CHI14', 'CHI15', 'CHI18', 'CHI19', 'CHI20', 'CHI21', 'CHI22', 'CHI24', 'CHI25', 'CHI26', 'CHI27', 'CHI29', 'CHI30', 'CHI31']
+/** Các nghiệp vụ (màn chứng từ) mà lý do được dùng; ô Dùng cho nghiệp vụ chọn một hoặc nhiều, lưu dạng "A, B", chọn hết hoặc để trống thì hiểu là Tất cả */
+export const DS_DUNG_CHO = ['Thu tiền', 'Chi tiền', 'Nhập mua', 'Hoá đơn mua hàng', 'Nhập kho', 'Xuất kho']
+/** Danh sách nghiệp vụ trong cột Dùng cho của một lý do */
+export function dsDungCho(dung: unknown): string[] {
+  const s = String(dung ?? '').trim()
+  return !s || s === 'Tất cả' ? DS_DUNG_CHO : s.split(',').map(x => x.trim()).filter(Boolean)
+}
+/** Lý do có dùng cho nghiệp vụ này không (vd 'Chi tiền') */
+export function dungCho(dung: unknown, loai: string): boolean {
+  return dsDungCho(dung).includes(loai)
+}
+/** Nghiệp vụ chính của lý do, dùng chọn nhóm lý do mặc định: Chi tiền, Thu tiền, Nhập kho, Xuất kho theo thứ tự ưu tiên */
+export function dungChinh(dung: unknown): string {
+  const ds = dsDungCho(dung)
+  return ['Chi tiền', 'Thu tiền', 'Nhập kho', 'Xuất kho'].find(x => ds.includes(x)) ?? ds[0] ?? ''
+}
 /** Nhóm lý do nghiệp vụ (T473): 6 nhóm chi phí hợp lý của Sổ S2c-HKD (TT152, mục a đến f), mã tự đặt NLD01 đến NLD06; dung: nhóm dành cho thu hay chi như Dùng cho của lý do, 6 nhóm này là chi; lý do là chi phí lưu tên nhóm */
 export const NHOM_LY_DO = [
   { ma: 'NLD01', dung: 'Chi tiền', ten: 'Chi phí nguyên liệu, vật liệu, nhiên liệu, năng lượng, hàng hoá sử dụng vào sản xuất, kinh doanh' },
@@ -243,7 +259,8 @@ export function nhomLyTuDong(ten: string): string {
   return NHOM_LY_DO.find(n => n.ma === ma)!.ten
 }
 /** Nhóm mặc định của lý do: chi phí (tích Chi phí trong kỳ hoặc phân bổ nhiều kỳ) tự xếp vào 6 nhóm chi phí; chi tiền còn lại, thu, nhập kho, xuất kho vào nhóm riêng */
-export function nhomMacDinh(ten: string, dung: string, laChiPhi: boolean): string {
+export function nhomMacDinh(ten: string, dungGoc: string, laChiPhi: boolean): string {
+  const dung = dungChinh(dungGoc)
   if (dung === 'Chi tiền' && laChiPhi) return nhomLyTuDong(ten)
   const ma = dung === 'Chi tiền' ? 'NLD07' : dung === 'Thu tiền' ? 'NLD08' : dung === 'Nhập kho' ? 'NLD09' : dung === 'Xuất kho' ? 'NLD10' : ''
   return NHOM_LY_DO.find(n => n.ma === ma)?.ten ?? ''
@@ -251,7 +268,7 @@ export function nhomMacDinh(ten: string, dung: string, laChiPhi: boolean): strin
 /** Các nhóm chọn được cho một lý do: chi phí chọn trong 6 nhóm chi phí (NLD01 đến NLD06), loại khác chọn nhóm cùng Dùng cho */
 export function dsNhomChoLyDo(v: Record<string, any>): string[] {
   const tich = (x: unknown) => x === 1 || x === true || x === '1'
-  const dung = String(v.dung ?? '')
+  const dung = dungChinh(v.dung)
   if (dung === 'Chi tiền') return NHOM_LY_DO.filter(n => tich(v.chiPhi) || tich(v.phanBo) ? n.ma <= 'NLD06' : n.ma === 'NLD07').map(n => n.ten)
   return NHOM_LY_DO.filter(n => n.dung === dung).map(n => n.ten)
 }
@@ -327,9 +344,9 @@ export const LY_DO = [
 /** Tên lý do thu, chi bắt buộc chọn đối tượng: Thu nợ, Đi vay, Thanh toán công nợ nhà cung cấp, Cho vay; lý do khác để trống được (T330) */
 export const LY_CAN_DOI_TUONG = LY_DO.filter(x => ['THU02', 'THU10', 'CHI02', 'CHI34'].includes(x.ma)).map(x => x.ten)
 /** Tên lý do chi tiền được tích là chi phí: báo cáo chi phí (Sổ chi phí, Chi phí trong tháng) chỉ lấy các lý do này (T231) */
-export const LY_CHI_PHI = LY_DO.filter(x => x.dung === 'Chi tiền' && x.chiPhi).map(x => x.ten)
+export const LY_CHI_PHI = LY_DO.filter(x => dungCho(x.dung, 'Chi tiền') && x.chiPhi).map(x => x.ten)
 /** Tên lý do chi tích Chi phí phân bổ nhiều kỳ: Sổ chi phí không lấy phiếu chi, lấy số phân bổ từng tháng của thẻ chi phí (T700) */
-export const LY_PHAN_BO_TEN = LY_DO.filter(x => x.dung === 'Chi tiền' && x.phanBo).map(x => x.ten)
+export const LY_PHAN_BO_TEN = LY_DO.filter(x => dungCho(x.dung, 'Chi tiền') && x.phanBo).map(x => x.ten)
 /** Lý do nghiệp vụ kèm phần đã sửa trong phiên của đơn vị: Là chi phí, Chi phí phân bổ nhiều kỳ, nhóm lý do (T700) */
 export function ganLyDo<R extends { ma?: unknown }>(r: R, s: Pick<Session, 'donVi' | 'lyDoGhiDe'>): R {
   const g = s.lyDoGhiDe?.[s.donVi]?.[String(r.ma)]

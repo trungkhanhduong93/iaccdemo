@@ -7,7 +7,7 @@ import { duongDan } from '../../app/registry'
 import { cuaHangHienTai, useSession } from '../../app/session'
 import { docSoTien, money } from '../format'
 import { goSoVN, docSoVN } from '../OSoGo'
-import { CUA_HANG, HOM_NAY, KHACH, LY_DO, NCC, NHAN_VIEN, TK_NGAN_HANG } from '../../data/mock'
+import { CUA_HANG, HOM_NAY, KHACH, LY_DO, NCC, NHAN_VIEN, TK_NGAN_HANG, dungCho } from '../../data/mock'
 import { layChiNhanhNho } from '../ChonCuaHangTruoc'
 import { soKeTiep, suaPhieu, themPhieu, ghiNhatKy } from '../generic/daXoa'
 import { MAN_THU_CHI, QUY_TIEN, TEN_CT_TT, TIEN_TO_CT_TT } from '../generic/ChungTuForm'
@@ -608,7 +608,7 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
   // Lý do thu, chi lấy từ danh mục Lý do nghiệp vụ, gồm cả lý do vừa thêm trong phiên (như web)
   const dsLyDoOptions = useMemo(() => {
     const dung = isChi ? 'Chi tiền' : 'Thu tiền'
-    const ds = [...LY_DO.filter(l => l.dung === dung).map(l => ({ ma: String(l.ma ?? ''), ten: l.ten })), ...lyDaThem.filter(l => l.dung === dung).map(l => ({ ma: String(l.ma ?? ''), ten: String(l.ten ?? '').trim() }))]
+    const ds = [...LY_DO.filter(l => dungCho(l.dung, dung)).map(l => ({ ma: String(l.ma ?? ''), ten: l.ten })), ...lyDaThem.filter(l => dungCho(l.dung, dung)).map(l => ({ ma: String(l.ma ?? ''), ten: String(l.ten ?? '').trim() }))]
     const daCo = new Set<string>()
     return ds.filter(l => l.ten && !daCo.has(l.ten) && daCo.add(l.ten)).map(l => ({ k: l.ten, ten: l.ten, ma: l.ma }))
   }, [isChi, lyDaThem])

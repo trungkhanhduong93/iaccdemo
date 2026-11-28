@@ -2,7 +2,7 @@
 // Lấy theo bảng DM_ tương ứng trong CSDL kế toán iPOS (schema-dm.md)
 import { DON_VI_TINH, TEN_DVT, TEN_NHOM_HANG, TEN_NHOM_DOI_TUONG, TEN_NHOM_MUC_CP, TEN_NHOM_KHO, TEN_MUC_CHI_PHI, TEN_CONG_VIEC_17, NHOM_HANG, TEN_THUONG_HIEU, DS_THUONG_HIEU,
   DS_HANG_HOA_12, dienGiaiQd, maDvt, maHang, maKho, DS_CHUNG_TU_TIEN, DS_MUC_CHI_PHI_16, DS_CONG_VIEC_17, DS_QUY_TIEN_112 } from './data'
-import { CUA_HANG, KHACH, KHO, NCC, NHAN_VIEN, NHOM_LY_DO, dsNhomChoLyDo, nhomMacDinh } from '../../data/mock'
+import { CUA_HANG, DS_DUNG_CHO, KHACH, KHO, NCC, NHAN_VIEN, NHOM_LY_DO, dsNhomChoLyDo, dungCho, nhomMacDinh } from '../../data/mock'
 import { NGANH_NGHE_CON, timNganhNghe } from './nganh-nghe'
 import { DN_AN_UONG, NGANH_NGHE_DN, timNganhNgheDn } from './nganh-nghe-dn'
 import { cauHinhGiamVat, type CauHinhGiamVat } from '../ban-hang/giam-thue'
@@ -744,32 +744,33 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
 
   // 1.16 Lý do (chưa có bảng DM_ trong schema, chờ đối chiếu)
   '1.16': {
-    chiSua: ['chiPhi', 'phanBo', 'nhomCp', 'tk', 'tkTraTruoc'],   // lý do có sẵn không sửa, chỉ tích Là chi phí (T334), Chi phí phân bổ nhiều kỳ (T700) và chọn lại nhóm lý do (T473)
-    chiSuaKhi: v => v.nguon === 'FABi',      // chỉ lý do nguồn FABi bị khoá; lý do thủ công sửa được hết (T708)
+    // Sửa được mọi ô trừ Mã, Nguồn; Tên chỉ khoá khi nguồn FABi (ô khoá bằng chiDoc ở từng trường; _sua khác 0 là đang sửa dòng có sẵn)
     moi: () => ({ nguon: 'Thủ công' }),
     // Mã đã tạo không xoá, chỉ tắt Đang sử dụng (T940); trước đây lý do thủ công xoá được (T708)
     khoi: [
       {
         ten: 'Thông tin chung',
         truong: [
-          { k: 'ma', nhan: 'Mã lý do', kieu: 'chu', batBuoc: true },
-          { k: 'ten', nhan: 'Lý do nghiệp vụ', kieu: 'chu', batBuoc: true, caHang: true },
+          { k: 'ma', nhan: 'Mã lý do', kieu: 'chu', batBuoc: true, chiDoc: v => v._sua !== 0 && v._sua !== undefined },
+          { k: 'ten', nhan: 'Lý do nghiệp vụ', kieu: 'chu', batBuoc: true, caHang: true, chiDoc: v => v._sua !== 0 && v._sua !== undefined && v.nguon === 'FABi' },
           // Lý do là chi phí thuộc một nhóm lý do (T473): tích Là chi phí thì tự xếp theo tên lý do, chọn lại được nhóm dành cho chi
           { k: 'nhomCp', nhan: 'Nhóm lý do nghiệp vụ', kieu: 'chon', batBuoc: true, caHang: true, dsTheoForm: dsNhomChoLyDo,
             chuThich: 'Tự xếp theo tên lý do, chọn lại được' },
           // cùng chữ với danh sách lý do (LY_DO); gói Free chỉ lý do thu, chi (T144)
-          { k: 'dung', nhan: 'Dùng cho nghiệp vụ', kieu: 'chon', ds: ['Thu tiền', 'Chi tiền'], batBuoc: true, goi: ['S'] },
-          { k: 'dung', nhan: 'Dùng cho nghiệp vụ', kieu: 'chon', ds: ['Thu tiền', 'Chi tiền', 'Nhập kho', 'Xuất kho'], batBuoc: true, goi: ['PL', 'PR'] },
+          // chọn một hoặc nhiều nghiệp vụ (màn chứng từ), lưu "A, B"
+          { k: 'dung', nhan: 'Dùng cho nghiệp vụ', kieu: 'chonNhieu', ds: ['Thu tiền', 'Chi tiền'], batBuoc: true, goi: ['S'], goiY: '(Chọn dùng cho nghiệp vụ)',
+            chiDoc: v => v._sua !== 0 && v._sua !== undefined },   // gói Standard: lý do có sẵn không đổi Dùng cho khi sửa
+          { k: 'dung', nhan: 'Dùng cho nghiệp vụ', kieu: 'chonNhieu', ds: DS_DUNG_CHO, batBuoc: true, goi: ['PL', 'PR'], goiY: '(Chọn dùng cho nghiệp vụ)' },
           // Tài khoản của lý do, chỉ gói Pro, đứng ngay sau Dùng cho nghiệp vụ; chỉ lấy tài khoản chi tiết (QD119)
           { k: 'tk', nhan: 'Tài khoản', kieu: 'chon', goi: ['PR'] },
           // Nguồn tự ghi, không sửa: FABi khi đồng bộ, Thủ công khi thêm trên IACC (T708)
           { k: 'nguon', nhan: 'Nguồn', kieu: 'chu', chiDoc: true },
           // Lý do chi tiền là chi phí thì báo cáo chi phí lấy lên (T231)
-          { k: 'chiPhi', nhan: 'Chi phí trong kỳ', kieu: 'tich', caHang: true, hien: v => v.dung === 'Chi tiền' },
+          { k: 'chiPhi', nhan: 'Chi phí trong kỳ', kieu: 'tich', caHang: true, hien: v => dungCho(v.dung, 'Chi tiền') },
           // Chi phí phân bổ nhiều kỳ: phiếu chi lý do này gợi ý tạo thẻ chi phí; chỉ chọn một trong hai tích với Là chi phí, bỏ cả hai được (T700)
-          { k: 'phanBo', nhan: 'Chi phí phân bổ nhiều kỳ', kieu: 'tich', caHang: false, lop: 'pn-ld-ngang-nhan', hien: v => v.dung === 'Chi tiền' },
+          { k: 'phanBo', nhan: 'Chi phí phân bổ nhiều kỳ', kieu: 'tich', caHang: false, lop: 'pn-ld-ngang-nhan', hien: v => dungCho(v.dung, 'Chi tiền') },
           // Tài khoản chi phí trả trước, chỉ gói Pro: phiếu chi lý do này hạch toán Nợ tài khoản này; khi phân bổ mới Nợ tài khoản chi phí của lý do (ô Tài khoản), Có tài khoản này
-          { k: 'tkTraTruoc', nhan: 'Tài khoản chi phí trả trước', kieu: 'chon', batBuoc: true, goi: ['PR'], hien: v => v.dung === 'Chi tiền' && laTich(v.phanBo) },
+          { k: 'tkTraTruoc', nhan: 'Tài khoản chi phí trả trước', kieu: 'chon', batBuoc: true, goi: ['PR'], hien: v => dungCho(v.dung, 'Chi tiền') && laTich(v.phanBo) },
         ],
       },
       {
@@ -785,7 +786,7 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
       if (k !== 'chiPhi' && k !== 'phanBo' && k !== 'ten' && k !== 'dung') return {}
       const dung = String(v.dung ?? '')
       let ra: Record<string, unknown> = {}
-      if (dung !== 'Chi tiền') ra = { phanBo: 0, tkTraTruoc: '' }
+      if (!dungCho(dung, 'Chi tiền')) ra = { phanBo: 0, tkTraTruoc: '' }
       else if (k === 'chiPhi' && laTich(v.chiPhi)) ra = { phanBo: 0, tkTraTruoc: '' }
       else if (k === 'phanBo') ra = laTich(v.phanBo) ? { chiPhi: 0, tkTraTruoc: v.tkTraTruoc || '242' } : { tkTraTruoc: '' }
       const ghep = { ...v, ...ra }

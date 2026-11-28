@@ -1,7 +1,7 @@
 // Kho lưu trữ danh mục dùng chung giữa CatalogScreen, ChonDanhMuc và mobile (T347)
 import { useSyncExternalStore } from 'react'
 import type { Row, ScreenDef } from '../../modules/types'
-import { CCDC_HANG, HANG, KHACH, KHO, LY_DO, NCC, NHAN_VIEN, NVL, ganLyDo } from '../../data/mock'
+import { CCDC_HANG, HANG, KHACH, KHO, LY_DO, NCC, NHAN_VIEN, NVL, ganLyDo, dungCho } from '../../data/mock'
 import type { Session } from '../../app/session'
 import { DON_VI_TINH, DS_CONG_VIEC_17, DS_MUC_CHI_PHI_16, DS_QUY_TIEN_112, NHOM_HANG, NHOM_DOI_TUONG } from '../../modules/danh-muc/data'
 import { TRUONG_DM, type CauHinhDM } from '../../modules/danh-muc/truong-dm'
@@ -108,7 +108,7 @@ export function useAddedCatalogRows(dm: string): Row[] {
 
 function tichLyChi(ten: string | undefined, s: Pick<Session, 'donVi' | 'lyDoGhiDe'>, k: 'chiPhi' | 'phanBo'): boolean {
   if (!ten) return false
-  const r = getAllCatalogRows('1.16').find(x => (x.ten === ten || x.ma === ten) && x.dung === 'Chi tiền')
+  const r = getAllCatalogRows('1.16').find(x => (x.ten === ten || x.ma === ten) && dungCho(x.dung, 'Chi tiền'))
   const v = r ? ganLyDo(r, s)[k] : undefined
   return v === 1 || v === true || v === '1'
 }

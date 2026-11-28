@@ -11,7 +11,7 @@ import { taoXdlBanTay } from '../../modules/ban-hang/xdl-ban-tay'
 import { cauHinhHddt, hdCua, khachTheoTen, kyHieuDung, kyHieuTheoCh, laKhachCty, phatHanhHd, thieuKhach } from '../../modules/ban-hang/hddt'
 import { KENH_BAN } from '../../modules/bao-cao/tt152'
 import { type Goi, kieuGhiSoDv } from '../../app/plan'
-import { CCDC_HANG, CUA_HANG, HANG, HOM_NAY, KHACH, KHO, LY_CAN_DOI_TUONG, LY_DO, NCC, NHAN_VIEN, NVL, MA_LY_CHO_PHAN_BO, TK_NGAN_HANG } from '../../data/mock'
+import { CCDC_HANG, CUA_HANG, HANG, HOM_NAY, KHACH, KHO, LY_CAN_DOI_TUONG, LY_DO, NCC, NHAN_VIEN, NVL, MA_LY_CHO_PHAN_BO, TK_NGAN_HANG, dungCho } from '../../data/mock'
 import { LY_HD_MUA, boO, nhomCua, theoLoai } from '../generic/nhom'
 import { DS_DOI_TUONG } from '../generic/BangSua'
 import { ctTtCon, ghiNhatKy, soKeTiep, suaPhieu, themPhieu, soDaTra, dsTtCon, ttTienTheoTra, type PhieuTt } from '../generic/daXoa'
@@ -1022,8 +1022,8 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
   // Lý do thu chi
   const dsLyDo = useMemo(() => {
     const dungMuc = nhom === 'thu' || nhom === 'nhthu' ? 'Thu tiền' : 'Chi tiền'
-    const base = LY_DO.filter(x => x.dung === dungMuc).map(x => x.ten)
-    const them = addedLy.filter(x => !x.dung || x.dung === dungMuc).map(x => String(x.ten ?? '')).filter(Boolean)
+    const base = LY_DO.filter(x => dungCho(x.dung, dungMuc)).map(x => x.ten)
+    const them = addedLy.filter(x => !x.dung || dungCho(x.dung, dungMuc)).map(x => String(x.ten ?? '')).filter(Boolean)
     return [...base, ...them]
   }, [nhom, addedLy])
 
@@ -1077,7 +1077,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
   const [nhanVien, setNhanVien] = useState(() => String(gocData?._nhanVien ?? (row?.so ? nguoiTaoMau(row.so) : NHAN_VIEN[0].ten)))
   const [moChonNv, setMoChonNv] = useState(false)
   // Xuất huỷ (T928, như web T914): Lý do huỷ lấy từ lý do Xuất kho
-  const dsLyHuy = useMemo(() => LY_DO.filter(x => x.dung === 'Xuất kho').map(x => x.ten), [])
+  const dsLyHuy = useMemo(() => LY_DO.filter(x => dungCho(x.dung, 'Xuất kho')).map(x => x.ten), [])
   const [lyHuy, setLyHuy] = useState(() => String(gocData?._lyDo ?? dsLyHuy[0] ?? ''))
   const [moChonLyHuy, setMoChonLyHuy] = useState(false)
 
@@ -1089,7 +1089,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
   // Lý do nghiệp vụ của Hoá đơn mua hàng (T826, như web T821): lý do chi bỏ các lý do chỉ là chuyển tiền, thêm lý do chi mới trong phiên.
   // Phiếu mới lấy theo ?ly= (mã lý do), không có thì đoán từ diễn giải
   const dsLyHd = useMemo(() => {
-    const them = addedLy.filter(x => !x.dung || x.dung === 'Chi tiền').map(x => String(x.ten ?? '')).filter(t => t && !LY_HD_MUA.includes(t))
+    const them = addedLy.filter(x => !x.dung || dungCho(x.dung, 'Chi tiền') || dungCho(x.dung, 'Hoá đơn mua hàng')).map(x => String(x.ten ?? '')).filter(t => t && !LY_HD_MUA.includes(t))
     return [...LY_HD_MUA, ...them]
   }, [addedLy])
   const [lyHd, setLyHd] = useState(() => {

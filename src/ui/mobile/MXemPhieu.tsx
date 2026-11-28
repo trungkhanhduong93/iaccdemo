@@ -17,7 +17,7 @@ import { rowTuPhieuXdl, useDsPhieuXdl } from '../../modules/kho/xuat-dinh-luong'
 import { SX, TT_SX } from '../../modules/kho/san-xuat'
 import { DCN } from '../../modules/kho/dieu-chuyen'
 import { MAN_DC } from '../../modules/kho/dieu-chinh'
-import { CUA_HANG, KHOAN_MUC, LY_DO, TK_NGAN_HANG, daKhoaSo, khoaSoDenCua } from '../../data/mock'
+import { CUA_HANG, KHOAN_MUC, LY_DO, TK_NGAN_HANG, daKhoaSo, khoaSoDenCua, dungCho } from '../../data/mock'
 import { apKhoPhieu, ctTtCon, dsDcCon, dsTraCon, dsTtCon, MAN_TRA_MUA, ghiNhatKy, soDaTra, soKeTiep, suaPhieu, themPhieu, ttThamChieu, xoaPhieu } from '../generic/daXoa'
 import { MAN_THU_CHI, TEN_CT_TT, TIEN_TO_CT_TT, lyDoKhongXoaTheCuaPhieu, theCuaPhieu, xoaTheCuaPhieu, type TraTu } from '../generic/ChungTuForm'
 import { MLichSu } from './MLichSu'
@@ -1189,7 +1189,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
                   {laHuy && (
                     <div className="m-pb-dong">
                       <span className="n">Lý do huỷ</span>
-                      <span className="g">{String(row._lyDo || LY_DO.find(x => x.dung === 'Xuất kho')?.ten || '')}</span>
+                      <span className="g">{String(row._lyDo || LY_DO.find(x => dungCho(x.dung, 'Xuất kho'))?.ten || '')}</span>
                     </div>
                   )}
                   {/* Nhập kho, Xuất huỷ: có Người thực hiện (T824, T927, như web T818) */}

@@ -5,7 +5,7 @@ import { kyMacDinh, useSession } from '../../app/session'
 import { fold, money } from '../format'
 import { tenMan } from '../../app/registry'
 import { TRUONG_DM } from '../../modules/danh-muc/truong-dm'
-import { LY_DO } from '../../data/mock'
+import { LY_DO, dungCho } from '../../data/mock'
 import { MDanhSach, type ChipItem } from './MDanhSach'
 import { MFormDm } from './MFormDm'
 import { Icon } from '../Icon'
@@ -389,7 +389,7 @@ export const MDanhMuc: FC<ScreenProps> = ({ sc }) => {
                   ? `Hàng hoá áp dụng: ${r.hangAd || 'Tất cả hàng hoá'}`
                   : laLyDo
                   ? [`Nguồn: ${r.nguon === 'FABi' ? 'FABi' : 'Thủ công'}`,   // T708
-                      r.dung === 'Chi tiền' && (laCo(r.phanBo) ? 'Chi phí phân bổ nhiều kỳ' : laCo(r.chiPhi) ? 'Chi phí trong kỳ' : '')].filter(Boolean).join(' · ')   // T700
+                      dungCho(r.dung, 'Chi tiền') && (laCo(r.phanBo) ? 'Chi phí phân bổ nhiều kỳ' : laCo(r.chiPhi) ? 'Chi phí trong kỳ' : '')].filter(Boolean).join(' · ')   // T700
                   : laHangHoa
                   ? `Đơn vị tính chính: ${r.dvt || 'Cái'}`
                   : (r.nhom ? `Nhóm: ${r.nhom}` : r.dvt ? `ĐVT: ${r.dvt}` : (r.mst ? `MST: ${r.mst}` : ''))}
@@ -690,7 +690,7 @@ export const MDanhMuc: FC<ScreenProps> = ({ sc }) => {
                   <span className="m-xp-nhan">Nguồn:</span>
                   <span className="m-xp-tri">{xemLyDo.nguon === 'FABi' ? 'FABi' : 'Thủ công'}</span>
                 </div>
-                {xemLyDo.dung === 'Chi tiền' && (
+                {dungCho(xemLyDo.dung, 'Chi tiền') && (
                   <div className="m-xp-dong-tt">
                     <span className="m-xp-nhan">Chi phí trong kỳ:</span>
                     <span className="m-xp-tri dam">
@@ -698,7 +698,7 @@ export const MDanhMuc: FC<ScreenProps> = ({ sc }) => {
                     </span>
                   </div>
                 )}
-                {xemLyDo.dung === 'Chi tiền' && (
+                {dungCho(xemLyDo.dung, 'Chi tiền') && (
                   <div className="m-xp-dong-tt">
                     <span className="m-xp-nhan">Chi phí phân bổ nhiều kỳ:</span>
                     <span className="m-xp-tri dam">

@@ -4,6 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 28/11/2026
 
+- T964: Danh mục lý do nghiệp vụ: ô Dùng cho nghiệp vụ chọn một hoặc nhiều (Thu tiền, Chi tiền, Nhập mua, Hoá đơn mua hàng, Nhập kho, Xuất kho; gói Standard chỉ Thu, Chi); sửa lý do được mọi ô trừ Mã, Nguồn, Tên (khi nguồn FABi); gói Standard không đổi Dùng cho khi sửa.
 - T961: Gói Pro, Phiếu mua hàng, Hoá đơn mua hàng: thêm cột Tk thanh toán, Tk kho, Tk thuế, hạch toán theo từng dòng hàng; Chi phí mua hàng có ô Đối tượng LQ (trống là NCC tự vận chuyển); Chứng từ tổng hợp ghi phiếu mua trả ngay một lần theo số phiếu mua và phiếu chi, xếp ngày mới nhất lên đầu; thuế suất theo hàng hoá, bỏ cột Số lô, Hạn dùng.
 - T960: dashboard nhà hàng Plus, Pro: tooltip biểu đồ hiện lại chấm màu, bám đúng con trỏ; tooltip Chi phí NVL và Hao hụt có thêm số tiền.
 - T959: dashboard nhà hàng Plus, Pro: tooltip biểu đồ cùng kiểu gói Standard, biểu đồ 13 tháng thấp gọn hơn, biểu đồ Chi phí NVL cao bằng cột số bên trái, hộp nguồn hao hụt hiện ngay dưới dấu ?; ba khối Doanh thu theo kênh, Cơ cấu chi phí, Tiền và ngân hàng xếp vành khuyên trái, bảng phải.

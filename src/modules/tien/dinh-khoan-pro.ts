@@ -1,6 +1,6 @@
 // Phiếu thu, chi bản Pro: tài khoản Nợ, Có của dòng và chi tiết đi kèm tài khoản (đối tượng, công việc, thành phẩm, vật tư hàng hoá).
 // Nợ, Có lấy từ danh mục Quỹ tiền (1.12), Lý do nghiệp vụ (1.16), Đối tượng (1.5); người dùng chọn lại được trên dòng.
-import { CONG_VIEC, ganLyDo } from '../../data/mock'
+import { CONG_VIEC, ganLyDo, dungCho } from '../../data/mock'
 import type { Session } from '../../app/session'
 import type { Row } from '../types'
 import { fold } from '../../ui/format'
@@ -27,7 +27,7 @@ export function tkCongNoDoiTuong(ten: string): string {
  *  thu nợ khách, thu tiền bán hàng, đi vay; trả tiền nhà cung cấp, đặt cọc trước cho nhà cung cấp, trả nợ vay */
 const MA_LY_THEO_DT = ['THU02', 'THU04', 'THU10', 'CHI02', 'CHI16', 'CHI23', 'CHI32']
 function lyTheoDoiTuong(ly: { ma?: unknown; ten?: unknown; dung?: unknown }): boolean {
-  return MA_LY_THEO_DT.includes(chu(ly.ma)) || (ly.dung === 'Chi tiền' && fold(chu(ly.ten)).includes('dat coc'))
+  return MA_LY_THEO_DT.includes(chu(ly.ma)) || (dungCho(ly.dung, 'Chi tiền') && fold(chu(ly.ten)).includes('dat coc'))
 }
 
 interface DauVao { loai: string; ly: string; doiTuong: string; quy: string; s: Pick<Session, 'donVi' | 'lyDoGhiDe'> }
