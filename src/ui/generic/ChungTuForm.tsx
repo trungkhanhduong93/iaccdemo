@@ -833,11 +833,13 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
       // Hoá đơn mua hàng (T822): mọi dòng chờ phân bổ là hàng loại Công cụ dụng cụ thì thẻ mặc định loại CCDC,
       // mang Mã, Tên, ĐVT, Số lượng sang thẻ; người dùng vẫn đổi được loại thẻ khác (đổi loại thì mã sinh lại theo loại mới)
       const theCcdc = dongCho.every(d => laMaCcdc(d.ma))
+      // Hoá đơn mua hàng (T964): số tiền của thẻ là thành tiền đã trừ giảm giá; thuế GTGT khấu trừ không tính vào thẻ, thuế theo doanh thu thì cộng cả tiền thuế
+      const tienThe = (d: Dong) => cfg.khongKho ? (d.tien || 0) - (d.ck || 0) + (gtgtTyLe(s) ? d.thue || 0 : 0) : d.tien
       setHoiThe({ moMoi, idMoi: idPhieu, tu: {
         ...(theCcdc ? { loai: 'Công cụ dụng cụ' } : {}),
         dong: dongCho.map(d => theCcdc
-          ? { ma: d.ma, ten: d.ten, dvt: d.dvt, gt: String(d.tien), sl: d.sl || 1, _maTay: true }
-          : { ten: d.ten, gt: String(d.tien), sl: 1 }),
+          ? { ma: d.ma, ten: d.ten, dvt: d.dvt, gt: String(tienThe(d)), sl: d.sl || 1, _maTay: true }
+          : { ten: d.ten, gt: String(tienThe(d)), sl: 1 }),
         soCt, ngayCt, ghiChuCt: ghiChu, ngay: ngayCt, ngayPb: ngayCt, _goc: `${path}/${idPhieu}`,
       } })
       return
@@ -1984,6 +1986,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
           nut={{ ten: 'Mở màn tạo thẻ', onClick: () => { const h = hoiThe; setHoiThe(null); nav('/app/ccdc/8-1-1?moi=the', { state: { tuPhieu: h.tu } }) } }} nutPhu={null}
           onDong={() => { const h = hoiThe; setHoiThe(null); sauLuu(h.moMoi, h.idMoi) }}>
           <p className="tb-mota">Phần mềm mở màn Tạo thẻ chi phí phân bổ, điền sẵn số trên. Bạn sửa lại được.</p>
+          {cfg.khongKho && <p className="tb-mota">{gtgtTyLe(s) ? 'Số tiền là thành tiền đã trừ giảm giá, cộng cả tiền thuế GTGT vì đơn vị tính thuế theo doanh thu.' : 'Số tiền là thành tiền đã trừ giảm giá, không gồm thuế GTGT vì thuế được khấu trừ.'}</p>}
         </ThongBao>)(hoiThe.tu.dong as { ten?: string; gt: string }[])
       )}
       {hoiKhongSua && row && (
