@@ -4678,18 +4678,26 @@ def kiem_tra_t233_may_tinh():
                 btn.first.click()
                 pg.wait_for_timeout(300)
 
-        # 1. Mở #/app/tien/2-1-1/moi?loai=chi, bật Cột tài khoản
+        def doc_o_tk(dong, ten_cot, th_list):
+            if ten_cot not in th_list:
+                return ''
+            o = dong.locator('td').nth(th_list.index(ten_cot))
+            inp = o.locator('input')
+            if inp.count() > 0:
+                return inp.first.input_value().strip()
+            sel = o.locator('button.sel')
+            return sel.first.inner_text().strip() if sel.count() > 0 else o.inner_text().strip()
+
+        # 1. Mở #/app/tien/2-1-1/moi?loai=chi; T961 mặc định hiện cột tài khoản, có ô tích "Ẩn cột tài khoản"
         pg.goto(URL + '?goi=PR&p=chi#/app/tien/2-1-1/moi?loai=chi')
         pg.wait_for_timeout(600)
         chon_cn_neu_hoi()
 
-        btn_tk = pg.locator('.btn-tk-toggle')
-        if btn_tk.count() == 0:
-            loi.append('T233: Phiếu chi mới không tìm thấy nút bật cột tài khoản (.btn-tk-toggle)')
-        else:
-            if 'on' not in (btn_tk.first.get_attribute('class') or ''):
-                btn_tk.first.click()
-                pg.wait_for_timeout(200)
+        chk_an_tk = pg.locator('input.bat-tat')
+        if chk_an_tk.count() == 0:
+            loi.append('T233: Phiếu chi mới không tìm thấy ô tích "Ẩn cột tài khoản" (input.bat-tat)')
+        elif chk_an_tk.first.is_checked():
+            loi.append('T233: Phiếu chi mới ô "Ẩn cột tài khoản" mặc định đang bật')
 
         th_texts = pg.locator('.bang-sua thead th').all_inner_texts()
         if 'TK Nợ' not in th_texts or 'TK Có' not in th_texts:
@@ -4710,19 +4718,20 @@ def kiem_tra_t233_may_tinh():
             loi.append(f'T233: Phiếu chi mới sau khi thêm dòng chỉ có {rows.count()} dòng')
         else:
             dong_moi = rows.last
-            inp_no = dong_moi.locator('input[placeholder="TK Nợ"]') if dong_moi.locator('input[placeholder="TK Nợ"]').count() > 0 else dong_moi.locator('input.code').nth(0)
-            inp_co = dong_moi.locator('input[placeholder="TK Có"]') if dong_moi.locator('input[placeholder="TK Có"]').count() > 0 else dong_moi.locator('input.code').nth(1)
-            val_no = inp_no.input_value().strip() if inp_no.count() > 0 else ''
-            val_co = inp_co.input_value().strip() if inp_co.count() > 0 else ''
+            val_no = doc_o_tk(dong_moi, 'TK Nợ', th_texts)
+            val_co = doc_o_tk(dong_moi, 'TK Có', th_texts)
             if val_co != '1111':
                 loi.append(f'T233: Phiếu chi mới dòng mới có TK Có "{val_co}", kỳ vọng "1111"')
             if not val_no:
                 loi.append('T233: Phiếu chi mới dòng mới có TK Nợ rỗng')
 
-            # 3. Đổi lý do dòng mới sang "Thanh toán tiền lương": TK Nợ dòng đó thành 334
-            sel_ly = dong_moi.locator('button.sel').first
+            # 3. Đổi lý do sang "Thanh toán tiền lương" (ở cột Lý do nếu có, hoặc đầu phiếu theo T948): TK Nợ dòng mới thành 334
+            if 'Lý do' in th_texts:
+                sel_ly = dong_moi.locator('td').nth(th_texts.index('Lý do')).locator('button.sel')
+            else:
+                sel_ly = pg.locator('div:has(> label:has-text("Lý do")) button.sel').first
             if sel_ly.count() == 0:
-                loi.append('T233: Phiếu chi mới không tìm thấy ô chọn lý do dòng mới')
+                loi.append('T233: Phiếu chi mới không tìm thấy ô chọn lý do')
             else:
                 sel_ly.click()
                 pg.wait_for_timeout(200)
@@ -4732,19 +4741,15 @@ def kiem_tra_t233_may_tinh():
                 else:
                     opt_luong.first.click()
                     pg.wait_for_timeout(200)
-                    val_no_sau = inp_no.input_value().strip() if inp_no.count() > 0 else ''
+                    val_no_sau = doc_o_tk(dong_moi, 'TK Nợ', th_texts)
                     if val_no_sau != '334':
                         loi.append(f'T233: Phiếu chi mới sau khi đổi lý do sang "Thanh toán tiền lương", TK Nợ là "{val_no_sau}", kỳ vọng "334"')
 
-        # 4. Mở #/app/tien/2-1-1/moi?loai=thu, thêm dòng: TK Nợ 1111
+        # 4. Mở #/app/tien/2-1-1/moi?loai=thu, thêm dòng: TK Nợ 1111 (cột TK mặc định hiện sẵn)
         pg.goto(URL + '?goi=PR&p=thu#/app/tien/2-1-1/moi?loai=thu')
         pg.wait_for_timeout(600)
         chon_cn_neu_hoi()
-
-        btn_tk = pg.locator('.btn-tk-toggle')
-        if btn_tk.count() > 0 and 'on' not in (btn_tk.first.get_attribute('class') or ''):
-            btn_tk.first.click()
-            pg.wait_for_timeout(200)
+        th_thu = pg.locator('.bang-sua thead th').all_inner_texts()
 
         btn_them = pg.locator('button:has-text("Thêm dòng")')
         if btn_them.count() == 0:
@@ -4758,20 +4763,14 @@ def kiem_tra_t233_may_tinh():
             loi.append(f'T233: Phiếu thu mới sau khi thêm dòng chỉ có {rows.count()} dòng')
         else:
             dong_moi = rows.last
-            inp_no = dong_moi.locator('input[placeholder="TK Nợ"]') if dong_moi.locator('input[placeholder="TK Nợ"]').count() > 0 else dong_moi.locator('input.code').nth(0)
-            val_no = inp_no.input_value().strip() if inp_no.count() > 0 else ''
+            val_no = doc_o_tk(dong_moi, 'TK Nợ', th_thu)
             if val_no != '1111':
                 loi.append(f'T233: Phiếu thu mới dòng mới có TK Nợ "{val_no}", kỳ vọng "1111"')
 
-        # 5. Mở #/app/ban-hang/3-1-2/moi, bật Cột tài khoản: tiêu đề vẫn có "TK công nợ (131)" như cũ
+        # 5. Mở #/app/ban-hang/3-1-2/moi: cột tài khoản mặc định hiện sẵn, tiêu đề vẫn có "TK công nợ (131)"
         pg.goto(URL + '?goi=PR&p=bh#/app/ban-hang/3-1-2/moi')
         pg.wait_for_timeout(600)
         chon_cn_neu_hoi()
-
-        btn_tk = pg.locator('.btn-tk-toggle')
-        if btn_tk.count() > 0 and 'on' not in (btn_tk.first.get_attribute('class') or ''):
-            btn_tk.first.click()
-            pg.wait_for_timeout(200)
 
         th_texts = pg.locator('.bang-sua thead th').all_inner_texts()
         if not any('TK công nợ (131)' in t for t in th_texts):
@@ -5580,8 +5579,8 @@ def kiem_tra_t870_the_kho():
             pg.wait_for_selector('.auth-box')
             pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien(goi))})")
 
-            # Mở Thẻ kho máy tính, chế độ Bảng dữ liệu
-            pg.goto(f"{URL}?goi={goi}&p=t871#/app/kho/5-2-1?ma=&kho=&ky=")
+            # Mở Thẻ kho máy tính, truyền sẵn Kho và Mặt hàng hợp lệ (T923 bắt buộc chọn mới dựng bảng)
+            pg.goto(f"{URL}?goi={goi}&p=t871#/app/kho/5-2-1?ma=NVL001&kho=Kho%20t%E1%BB%95ng&ky=9")
             pg.wait_for_selector('.bc-ban-du-lieu table.tbl', timeout=8000)
             pg.wait_for_timeout(300)
 
@@ -5744,7 +5743,8 @@ def main():
             nonlocal dem
             dem += 1
             pg.wait_for_timeout(60)
-            ok = pg.locator('.main h1, .fsf h1').count() > 0
+            # Dashboard nhà hàng Plus/Pro (T956) dùng .dnh .bbt-tt-nhanh, Hệ thống TK dùng .dm-bang .ds-toolbar-figma thay cho h1
+            ok = pg.locator('.main h1, .fsf h1, .dnh .bbt-tt-nhanh, .dm-bang .ds-toolbar-figma').count() > 0
             do_tran = """['.main', '.fsf-b', '.mtabs-in'].filter(q => { const e = document.querySelector(q); return e && e.scrollWidth > e.clientWidth + 2 })"""
             tran = pg.evaluate(do_tran)
             # Màn báo cáo mới vẽ có thể lố 3px vài trăm ms rồi tự hết (T684, BAY.md): đo lại mỗi 100ms, hết 1 giây còn tràn mới báo

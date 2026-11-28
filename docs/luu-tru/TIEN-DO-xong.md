@@ -4,6 +4,8 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T957 | `python tools/kiem_tra.py --nhanh` đỏ sẵn trên main: sửa mục T870 (truyền sẵn Kho, Mặt hàng), T233 (ô tích Ẩn cột tài khoản thay nút), bộ chọn tiêu đề màn Dashboard nhà hàng và Hệ thống tài khoản | Trum | 28/11/2026 | 2026-11-28-trum-kiem-tra-do-san.md |
+| T933 | `tools/kiem_tra.py` mục T870/T871 Thẻ kho chờ bảng quá 8 giây: làm cùng T957 | Trum | 28/11/2026 | 2026-11-28-trum-kiem-tra-do-san.md |
 | T961 | Phiếu mua hàng, hoá đơn mua hạch toán theo dòng: cột Tk thanh toán, Tk kho, Tk thuế (Pro), Đối tượng LQ của chi phí mua hàng, 10.1.1 ghi trả ngay một lần theo số phiếu mua và phiếu chi, thuế suất theo hàng | dinhlanphuongipacc | 28/11/2026 | [2026-11-28-dinhlanphuongipacc-phieu-mua-hach-toan-theo-dong](../nhat-ky/2026-11-28-dinhlanphuongipacc-phieu-mua-hach-toan-theo-dong.md) |
 | T960 | Tooltip dashboard nhà hàng Plus, Pro: hiện lại chấm màu (biến --dnh-* mất khi gắn ra body), tooltip Chi phí NVL và Hao hụt thêm số tiền như gói Standard | Trum | Xong | Chấm màu hiện lại, tooltip bám đúng con trỏ khi trang zoom 0.9, tooltip NVL và hao hụt có số tiền, hộp nguồn hao hụt cùng khung ll-tip |
 | T959 | Tooltip biểu đồ dashboard nhà hàng Plus, Pro theo kiểu tooltip gói Standard: tiêu đề Tháng m/yyyy, biên ở góc phải, dòng lãi tô màu | Trum | Xong | Tooltip dùng lớp ll-tip của Standard; biểu đồ NVL cao đúng bằng cột trái; 2 biểu đồ 13 tháng thấp xuống h 220; hộp hao hụt mọc ngay dưới dấu ? |
