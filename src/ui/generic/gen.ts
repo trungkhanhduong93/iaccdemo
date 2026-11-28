@@ -55,6 +55,8 @@ export interface Dong {
   ptPhiDv?: number
   phiDv?: number
   phiVc?: number                // phí vận chuyển của dòng, bảng Hàng bán gõ tay (T758)
+  slMua?: number               // phiếu mua qua sơ chế (MSC): số lượng mua từ nhà cung cấp; sl là số lượng sau sơ chế
+  giaMua?: number              // phiếu mua qua sơ chế: đơn giá mua; tien = slMua × giaMua, gia = (tien − ck) / sl là đơn giá nhập kho
   slMax?: number                // hàng bán trả lại lập từ chứng từ bán (T815): số lượng tối đa, bằng số lượng trên chứng từ bán
   kho?: string
   tkNo?: string
@@ -290,6 +292,12 @@ export function dongCua(cfg: VoucherCfg, id: string): Dong[] {
       extra.tonTt = sl
       extra.tonHt = Math.max(0, sl - lech)
       extra.ghiChu = lech < 0 ? 'Hao hụt khi sơ chế' : lech > 0 ? 'Nhập chưa ghi phiếu' : ''
+    }
+    if (cfg.prefix === 'MSC') {
+      // Mua qua sơ chế: mua theo số lượng, đơn giá của nhà cung cấp; sau sơ chế hao hụt nên số lượng nhập kho ít hơn, đơn giá nhập kho cao hơn
+      const slMua = Math.round(sl * 1.25), tienMua = slMua * h.gia
+      out.push({ ma: h.ma, ten: h.ten, dvt: h.dvt, sl, slMua, giaMua: h.gia, gia: Math.round(tienMua / sl), tien: tienMua, ts, thue: Math.round(tienMua * ts / 100), ...extra })
+      continue
     }
     out.push({ ma: h.ma, ten: h.ten, dvt: h.dvt, sl, gia: h.gia, tien, ts, thue: Math.round(tien * ts / 100), ...extra })
   }

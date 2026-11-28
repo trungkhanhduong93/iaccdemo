@@ -28,7 +28,7 @@ function dongKho(nguon: NguonPhieu[], thang: number, cn?: string, loc?: Record<s
     .flatMap(r => (n.ds ? (r._dong as Dong[] | undefined) ?? [] : dongCua(n.cfg, `${n.seed}-${r.id}`)).map((x): DongKho => ({
       d: Number(String(r.ngay).slice(0, 2)), ngay: r.ngay, so: r.so, loai: n.loai,
       kho: String(r._kho || CUA_HANG.find(c => c.ten === r.cn)?.kho[0] || ''), doiTuong: r.doiTuong,
-      ma: x.ma, ten: x.ten, dvt: x.dvt, sl: x.sl, gia: x.gia, tien: x.tien, _di: `${n.di}/${r.id}`,
+      ma: x.ma, ten: x.ten, dvt: x.dvt, sl: x.sl, gia: x.gia, tien: x.slMua !== undefined ? x.tien - (x.ck ?? 0) : x.tien, _di: `${n.di}/${r.id}`,
     }))))
     .filter(x => quaLocDong(f, x))
     .sort((a, b) => a.d - b.d || a.so.localeCompare(b.so))
