@@ -138,7 +138,7 @@ export function gomButToan(s: SPhien): DongButToan[] {
     if (dsRieng.length) {
       dsRieng.forEach((d, i) => out.push(...capDong({ ...goc, ghiChu: d.ghiChu || goc.ghiChu }, `${mod.key}-${ma}-${r.id}-${i}`, String(d.tkNo), String(d.tkCo), Number(d.tien) || 0, chiTietDong(d))))
     } else {
-      const bt = tinhButToan(cfgR, ds, Number(r.tong ?? r.tien) || 0, 0, Number(r.thue) || 0, goc.doiTuong, String(r.cn ?? ''), s.cheDo, mod.key === 'mua-hang' ? 'mua' : 'ban', undefined, mod.key === 'mua-hang' && ['MSC', 'TLN', 'CPM', 'BSHD'].includes(cfgR.prefix) ? tkPhieuMua(r, (r._httt as 'congno' | 'tienmat' | 'chuyenkhoan' | undefined) ?? 'congno', String(r._quy ?? '')) : tkPhieuSua(r))   // T965: phiếu mua phụ mặc định theo hình thức thanh toán
+      const bt = tinhButToan(cfgR, ds, Number(r.tong ?? r.tien) || 0, 0, Number(r.thue) || 0, goc.doiTuong, String(r.cn ?? ''), s.cheDo, mod.key === 'mua-hang' ? 'mua' : 'ban', undefined, mod.key === 'mua-hang' && ['MSC', 'TLN', 'CPM', 'BSHD'].includes(cfgR.prefix) ? tkPhieuMua(r, (r._httt as 'congno' | 'tienmat' | 'chuyenkhoan' | undefined) ?? 'congno', String(r._quy ?? '')) : tkPhieuSua(r))   // T966: phiếu mua phụ mặc định theo hình thức thanh toán
       for (let i = 0; i + 1 < bt.length; i += 2) out.push(...capDong(goc, `${mod.key}-${ma}-${r.id}-${i / 2}`, bt[i].so, bt[i + 1].so, bt[i].tien))
     }
     // Phiếu chi có hoá đơn: mỗi dòng kê khai thêm cặp thuế, Nợ TK thuế, Có tài khoản Có của dòng chi tiết

@@ -19,7 +19,7 @@ import { quyDoiTuDanhMuc } from '../../modules/danh-muc/QuyDoiDvt'
 import { chiTietTheoTk } from '../../modules/danh-muc/he-thong-tk'
 import { COT_CHI_TIET, chuanChiTiet, dsChiTiet } from '../../modules/tien/dinh-khoan-pro'
 
-/** Nhóm HHDV mua vào hiển thị theo Mã 1 đến 5, mặc định nhóm 1; phiếu cũ lưu tên đầy đủ thì đổi về mã theo thứ tự (T965) */
+/** Nhóm HHDV mua vào hiển thị theo Mã 1 đến 5, mặc định nhóm 1; phiếu cũ lưu tên đầy đủ thì đổi về mã theo thứ tự (T966) */
 const maNhomHhdv = (v?: string) => /^[1-5]$/.test(v ?? '') ? v! : String(['HHDV dùng riêng', 'HHDV không đủ', 'HHDV dùng chung', 'HHDV dùng cho dự án', 'HHDV không tổng hợp'].findIndex(t => (v ?? '').startsWith(t)) + 1 || 1)
 
 export const DS_DOI_TUONG = Array.from(new Set([

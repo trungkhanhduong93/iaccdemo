@@ -1,4 +1,4 @@
-# TK công nợ, TK thuế lên đầu phiếu Mua qua sơ chế, Trả lại, Chi phí mua hàng, Bổ sung hoá đơn (T965)
+# TK công nợ, TK thuế lên đầu phiếu Mua qua sơ chế, Trả lại, Chi phí mua hàng, Bổ sung hoá đơn (T966)
 
 - Ngày: 28/11/2026
 - Người: dinhlanphuongipacc, agent: Claude Code

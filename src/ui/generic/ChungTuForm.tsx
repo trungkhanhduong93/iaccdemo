@@ -361,7 +361,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
   // Tài khoản cấp phiếu mua, bán (T964): Tk công nợ/thanh toán và Tk thuế hiện ở đầu phiếu (cột dưới Ngày chứng từ), gói Pro, user sửa được.
   // Ô trống nghĩa là theo mặc định (đổi theo hình thức thanh toán); lưu vào phiếu ở _tkTt, _tkThue
   const banTkPhieu = nhom === 'ban' && Boolean(cfg.noCo?.some(([n, c]) => /^(131|111|112)/.test(n) || /^(131|111|112)/.test(c)))
-  const muaPhuTk = mod.key === 'mua-hang' && ['MSC', 'TLN', 'CPM', 'BSHD'].includes(cfg.prefix)   // T965: mua qua sơ chế, trả lại, chi phí mua hàng, bổ sung hoá đơn: bút toán theo mẫu, TK cấp phiếu ở đầu phiếu
+  const muaPhuTk = mod.key === 'mua-hang' && ['MSC', 'TLN', 'CPM', 'BSHD'].includes(cfg.prefix)   // T966: mua qua sơ chế, trả lại, chi phí mua hàng, bổ sung hoá đơn: bút toán theo mẫu, TK cấp phiếu ở đầu phiếu
   const coTkPhieu = coTkGoi && ((mod.key === 'mua-hang' && (cfg.prefix === 'MH' || cfg.prefix === 'HDM')) || muaPhuTk || banTkPhieu)
   const [tkTtSua, setTkTtSua] = useState(String(row?._tkTt ?? ''))
   const [tkThueSua, setTkThueSua] = useState(String(row?._tkThue ?? ''))
@@ -1076,7 +1076,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
   const hienDau = (k: string) => !anCot.includes(`dau:${k}`)
   // Phiếu thu, chi tiền (2.1.1) không có ô Mã số thuế; chuyển quỹ cũng không (T168)
   const coMst = nhom !== 'cq' && !(laTien && sc.code === '2.1.1')
-  const coHanTt = false   // hạn thanh toán ẩn ở mọi gói: Standard, Plus từ T180, Pro bỏ ở T965 (dữ liệu _hanTt vẫn giữ)
+  const coHanTt = false   // hạn thanh toán ẩn ở mọi gói: Standard, Plus từ T180, Pro bỏ ở T966 (dữ liệu _hanTt vẫn giữ)
   const hienChan = (k: string) => !anCot.includes(`chan:${k}`)
   const muaBan = nhom === 'mua' || nhom === 'ban'
   const nhanNguoi = nhom === 'cq' ? 'Người thực hiện' : laTien || muaBan ? 'Người giao dịch' : 'Người giao / nhận'   // mua, bán ghi Người giao dịch (T90)
@@ -2000,7 +2000,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
                 cn={cuaHang}
                 tkDoiUng={tkDoiUng}
                 tkThue={coTkPhieu ? tkThueSua || undefined : undefined}
-                tkTtSua={coTkPhieu ? tkTtSua || (muaPhuTk ? macDinhTt : undefined) : undefined}   // T965: phiếu mua phụ luôn thay công nợ, tiền theo hình thức thanh toán
+                tkTtSua={coTkPhieu ? tkTtSua || (muaPhuTk ? macDinhTt : undefined) : undefined}   // T966: phiếu mua phụ luôn thay công nợ, tiền theo hình thức thanh toán
                 dongHt={butToanMuaDong}
               />
             </div>
@@ -2320,7 +2320,7 @@ export function layButToan(
       if (/^(131|331|111|112)\d*$/.test(coFinal)) coFinal = tkTtSua
     }
     if (tkThue) {
-      if (/^(3331|1331)/.test(noFinal)) noFinal = tkThue   // 1331: phiếu mua phụ (T965)
+      if (/^(3331|1331)/.test(noFinal)) noFinal = tkThue   // 1331: phiếu mua phụ (T966)
       if (/^(3331|1331)/.test(coFinal)) coFinal = tkThue
     }
 
