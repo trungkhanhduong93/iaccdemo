@@ -36,10 +36,10 @@ import { MAN_DC, phieuDieuChinh, type LoaiDc } from '../../modules/kho/dieu-chin
 import { BangSanXuat, OThamChieuSx, cotSx } from '../../modules/kho/BangSanXuat'
 import { SX, TT_SX, dongNhapTuXuat, type DongSx } from '../../modules/kho/san-xuat'
 import { BangDieuChuyen, DauDieuChuyen, cotDcn } from '../../modules/kho/BangDieuChuyen'
-import { DCN, dongNhapDc, type DongDcn } from '../../modules/kho/dieu-chuyen'
+import { DCN, cnCuaKho, dongNhapDc, type DongDcn } from '../../modules/kho/dieu-chuyen'
 import { BangSua, DS_DOI_TUONG, HopCotPhieu, cotTuyChon } from './BangSua'
 import { HopGiaTriMacDinh } from './HopGiaTriMacDinh'
-import { macDinhCuaHang, TRUONG_MAC_DINH } from './giaTriMacDinh'
+import { macDinhCuaHang, maMacDinh, TRUONG_MAC_DINH } from './giaTriMacDinh'
 import { ApDauBang } from './ApDauBang'
 import { KeKhaiHoaDon, dongBoKk, tyLe as tyLeThue, type DongKkHd } from './KeKhaiHoaDon'
 import { OChiPhiMua } from './ChiPhiMuaHang'
@@ -150,10 +150,49 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
   const cuaHang = r0?.cn ? String(r0.cn) : cnChon?.ten ?? ''   // hoá đơn thay thế, điều chỉnh theo cửa hàng của chứng từ gốc (T787)
   const canChonCn = moi && !cnChon && !lapHd
   // Giá trị mặc định theo cửa hàng (T955): chỉ đọc một lần lúc khởi tạo phiếu mới, không áp lại khi đổi cửa hàng giữa chừng
-  const coMacDinh = s.goi === 'PR' && Boolean(sc.code && TRUONG_MAC_DINH[sc.code])
+  const maMd = sc.code || sc.slug ? maMacDinh(sc.code || sc.slug, loai?.k) : ''
+  const coMacDinh = s.goi === 'PR' && Boolean(maMd && TRUONG_MAC_DINH[maMd])
   const cnId = CUA_HANG.find(c => c.ten === cuaHang)?.id ?? ''
-  const [md, setMd] = useState(() => (moi && !traTu && coMacDinh && cnId ? macDinhCuaHang(s.donVi, sc.code!, cnId) : {}))
-  const coGtDaDat = coMacDinh && Boolean(cnId) && Object.values(macDinhCuaHang(s.donVi, sc.code!, cnId)).some(Boolean)
+  const [md, setMd] = useState(() => (moi && !traTu && coMacDinh && cnId ? macDinhCuaHang(s.donVi, maMd, cnId) : {}))
+  const coGtDaDat = coMacDinh && Boolean(cnId) && Object.values(macDinhCuaHang(s.donVi, maMd, cnId)).some(Boolean)
+
+  const laTien = mod.key === 'tien'
+  const dsDt = laTien ? DS_DOI_TUONG : cfg.doiTuong === 'ncc' ? NCC.map(x => x.ten) : cfg.doiTuong === 'kh' ? KHACH.map(x => x.ten)
+    : cfg.doiTuong === 'nv' ? NHAN_VIEN.map(x => x.ten) : cfg.doiTuong === 'cn' ? CUA_HANG.map(x => x.ten) : DS_DOI_TUONG
+  // Lý do thu, chi ở đầu phiếu (danh mục 1.16): phân hệ tiền, Hoá đơn mua hàng không qua kho (Lý do nghiệp vụ, T821)
+  const oLy = mod.key === 'tien' || cfg.khongKho ? bo.a.find(o => o.k === 'ly') : undefined
+  // Lý do huỷ (T914): danh mục Lý do nghiệp vụ, Dùng cho Xuất kho; mặc định lý do đầu (Xuất huỷ hàng hỏng)
+  const dsLyHuy = laHuy ? LY_DO.filter(x => x.dung === 'Xuất kho').map(x => x.ten) : []
+  const dsLy = laHuy ? dsLyHuy : (oLy?.ds ?? [])
+
+  /** Lọc giá trị mặc định đầu phiếu theo danh sách chọn hợp lệ của cửa hàng và loại chứng từ (T962) */
+  function locMacDinhDau(m: Record<string, string>, cnTen: string, htttCoSan: 'congno' | 'tienmat' | 'chuyenkhoan') {
+    const ch = CUA_HANG.find(c => c.ten === cnTen)
+    const dsKho = ch?.kho ?? KHO
+    const h = m['dau:httt']
+    const httt: 'congno' | 'tienmat' | 'chuyenkhoan' | undefined = h === 'congno' || h === 'tienmat' || h === 'chuyenkhoan' ? h : undefined
+    const htttHieuLuc = nv?.ttTien === 'da' ? 'tienmat' : (httt ?? htttCoSan)
+    const quyTmCn = `Quỹ tiền mặt ${ch?.ngan ?? CUA_HANG[0].ngan}`
+    const dsQuyCn = nhom === 'thu' || nhom === 'chi' || (bo.tt && htttHieuLuc === 'tienmat') ? [quyTmCn]
+      : nhom === 'nhthu' || nhom === 'nhchi' || (bo.tt && htttHieuLuc === 'chuyenkhoan') ? QUY_TIEN.slice(CUA_HANG.length) : []
+    const dtRaw = m['dau:ncc'] || m['dau:kh'] || m['dau:dt'] || ''
+    const doiTuong = cfg.doiTuong !== 'none' && dtRaw && dsDt.includes(dtRaw) ? dtRaw : undefined
+    const kho = m['dau:kho'] && dsKho.includes(m['dau:kho']) ? m['dau:kho'] : undefined
+    const khoHieuLuc = kho ?? (dsKho.length === 1 ? dsKho[0] : '')
+    const khoNhan = m['dau:khoNhan'] && CUA_HANG.some(c => c.kho.includes(m['dau:khoNhan'])) && m['dau:khoNhan'] !== khoHieuLuc ? m['dau:khoNhan'] : undefined
+    const cnNhan = m['dau:cnNhan'] && CUA_HANG.some(c => c.ten === m['dau:cnNhan'])
+      ? m['dau:cnNhan']
+      : dcn === 'xdc' && khoNhan ? cnCuaKho(khoNhan) || undefined : undefined
+    const dienGiai = m['dau:dienGiai'] || undefined
+    const nguoiGiao = m['dau:nguoiGiao'] && NHAN_VIEN.some(n => n.ten === m['dau:nguoiGiao']) ? m['dau:nguoiGiao'] : undefined
+    const nhanVien = m['dau:nv'] && NHAN_VIEN.some(n => n.ten === m['dau:nv']) ? m['dau:nv'] : undefined
+    const lyDo = m['dau:ly'] && dsLy.includes(m['dau:ly']) ? m['dau:ly'] : undefined
+    const quy = m['dau:tknh'] && dsQuyCn.includes(m['dau:tknh']) ? m['dau:tknh'] : undefined
+    const tuQuy = m['dau:tuQuy'] && QUY_TIEN.includes(m['dau:tuQuy']) ? m['dau:tuQuy'] : undefined
+    const denQuy = m['dau:denQuy'] && QUY_TIEN.includes(m['dau:denQuy']) && m['dau:denQuy'] !== tuQuy ? m['dau:denQuy'] : undefined
+    return { httt, doiTuong, kho, khoNhan, cnNhan, dienGiai, nguoiGiao, nhanVien, lyDo, quy, tuQuy, denQuy }
+  }
+  const mdDau = locMacDinhDau(md, cuaHang, (r0?._httt as 'congno' | 'tienmat' | 'chuyenkhoan' | undefined) ?? traTu?.httt ?? (nv?.ttTien === 'da' ? 'tienmat' : 'congno'))
 
   const path = duongDan(mod, sc)
   const dongForm = useDong(path)
@@ -168,9 +207,8 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
   const coTkGoi = kieu === 'noco'
 
   // Trạng thái thanh toán cho mua/bán
-  const htttMd = md['dau:httt'] === 'congno' || md['dau:httt'] === 'tienmat' || md['dau:httt'] === 'chuyenkhoan' ? md['dau:httt'] : undefined
   const [hinhThucTt, setHinhThucTt] = useState<'congno' | 'tienmat' | 'chuyenkhoan'>(
-    (r0?._httt as 'congno' | 'tienmat' | 'chuyenkhoan' | undefined) ?? traTu?.httt ?? (nv?.ttTien === 'da' ? 'tienmat' : htttMd ?? 'congno')
+    (r0?._httt as 'congno' | 'tienmat' | 'chuyenkhoan' | undefined) ?? traTu?.httt ?? (nv?.ttTien === 'da' ? 'tienmat' : mdDau.httt ?? 'congno')
   )
   // Bán hàng bỏ ô Phương thức: phương thức thanh toán suy ra từ hình thức thu tiền (tiền mặt, chuyển khoản); xuất HĐĐT dùng _httt
   const pttt = hinhThucTt === 'chuyenkhoan' ? (DS_PTTT.find(p => p.ma === 'CK')?.ten ?? 'Chuyển khoản, QR') : (DS_PTTT.find(p => p.ma === 'TM')?.ten ?? 'Tiền mặt')
@@ -199,7 +237,6 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
     setDvVc(String(row?._dvVc ?? ''))
   }, [dongGoc])
 
-  const laTien = mod.key === 'tien'
   // Cập nhật TK nợ/có trên dòng theo hình thức thanh toán
   const tkDoiUng = hinhThucTt === 'tienmat' ? '1111' : hinhThucTt === 'chuyenkhoan' ? '1121' : (nhom === 'mua' ? '331' : '131')
   const nhanTkDong: [string, string] = laTien
@@ -217,12 +254,11 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
   })
   const [soCt, setSoCt] = useState(row?.so ? String(row.so) : lapHd ? soCtMoi(rows ?? [], TIEN_TO_CT[loaiCt]) : soKeTiep(`${mod.key}/${sc.slug}`, `${cfg.prefix}2610-`))
   // Thêm mới có ?dt=tên đối tượng (vd Thanh toán ngay ở báo cáo công nợ, T304) thì điền sẵn đối tượng đó
-  const [doiTuong, setDoiTuong] = useState(r0?.doiTuong ? String(r0.doiTuong) : traTu?.doiTuong || (moi && sp.get('dt')) || md['dau:ncc'] || (cfg.doiTuong === 'ncc' ? NCC[0].ten : cfg.doiTuong === 'kh' ? KHACH[0].ten : ''))
-  const [dienGiai, setDienGiai] = useState(r0?.dienGiai ? String(r0.dienGiai) : traTu ? nhanTra : (md['dau:dienGiai'] || cfg.dienGiai[0]))
-  const nguoiGiaoMd = md['dau:nguoiGiao'] && NHAN_VIEN.some(n => n.ten === md['dau:nguoiGiao']) ? md['dau:nguoiGiao'] : undefined
-  const [nguoiGiao, setNguoiGiao] = useState(luuCu('nguoiGiao') ?? nguoiGiaoMd ?? nv?.nguoi ?? NHAN_VIEN[0].ten)
+  const [doiTuong, setDoiTuong] = useState(r0?.doiTuong ? String(r0.doiTuong) : traTu?.doiTuong || (moi && sp.get('dt')) || mdDau.doiTuong || (cfg.doiTuong === 'ncc' ? NCC[0].ten : cfg.doiTuong === 'kh' ? KHACH[0].ten : ''))
+  const [dienGiai, setDienGiai] = useState(r0?.dienGiai ? String(r0.dienGiai) : traTu ? nhanTra : (mdDau.dienGiai || cfg.dienGiai[0]))
+  const [nguoiGiao, setNguoiGiao] = useState(luuCu('nguoiGiao') ?? mdDau.nguoiGiao ?? nv?.nguoi ?? NHAN_VIEN[0].ten)
   // Nhập kho (T818): phiếu mẫu lấy người tạo làm Người thực hiện, khớp cột danh sách
-  const [nhanVien, setNhanVien] = useState(luuCu('nhanVien') ?? (laNk && r0?.so ? nguoiTaoMau(r0.so) : NHAN_VIEN[0].ten))
+  const [nhanVien, setNhanVien] = useState(luuCu('nhanVien') ?? (laNk && r0?.so ? nguoiTaoMau(r0.so) : mdDau.nhanVien ?? NHAN_VIEN[0].ten))
   const [diaChi, setDiaChi] = useState(luuCu('diaChi') ?? traTu?.diaChi ?? nv?.dc ?? '45 Lê Thánh Tôn, Bến Nghé, Quận 1, TP.HCM')
   const [mst, setMst] = useState(luuCu('mst') ?? traTu?.mst ?? nv?.mst ?? '0319880101')
   // Phiếu chi tiền mặt có hoá đơn: tích Có hoá đơn thì đầu phiếu hiện Số hoá đơn, Ký hiệu, Ngày hoá đơn và có tab Kê khai hoá đơn
@@ -246,13 +282,9 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
     setNgayHd(c => (r0?._hd || r0?._khachHd ? c : dmy(HOM_NAY)))
     setKyHieuHd(c => (r0?._khachHd ? c : kyHieuTheoCh(s, cuaHang)))
   }, [hdDienTu])   // eslint-disable-line react-hooks/exhaustive-deps
-  // Lý do thu, chi ở đầu phiếu (danh mục 1.16): phân hệ tiền, Hoá đơn mua hàng không qua kho (Lý do nghiệp vụ, T821)
-  const oLy = mod.key === 'tien' || cfg.khongKho ? bo.a.find(o => o.k === 'ly') : undefined
-  // Lý do mặc định khi thêm mới: theo mã lý do trên đường dẫn (?ly=mã lý do Chi phí chờ phân bổ, vd mở từ sơ đồ Chi phí phân bổ), không có thì đoán từ diễn giải
+  // Lý do mặc định khi thêm mới: theo mã lý do trên đường dẫn (?ly=mã lý do Chi phí chờ phân bổ, vd mở từ sơ đồ Chi phí phân bổ), không có thì lấy mặc định cửa hàng hoặc đoán từ diễn giải
   const lyUrl = moi ? LY_DO.find(x => x.ma === sp.get('ly'))?.ten : undefined
-  // Lý do huỷ (T914): danh mục Lý do nghiệp vụ, Dùng cho Xuất kho; mặc định lý do đầu (Xuất huỷ hàng hỏng)
-  const dsLyHuy = laHuy ? LY_DO.filter(x => x.dung === 'Xuất kho').map(x => x.ten) : []
-  const lyGoc = (dg: string) => laHuy ? dsLyHuy[0] ?? '' : lyUrl && oLy?.ds?.includes(lyUrl) ? lyUrl : lyMacDinh(oLy?.ds ?? [], dg)
+  const lyGoc = (dg: string, lyMd = mdDau.lyDo) => laHuy ? (lyMd ?? dsLyHuy[0] ?? '') : lyUrl && oLy?.ds?.includes(lyUrl) ? lyUrl : (lyMd ?? lyMacDinh(oLy?.ds ?? [], dg))
   const [hoiThe, setHoiThe] = useState<{ moMoi: boolean; idMoi: string; tu: Record<string, unknown> } | null>(null)
   // Lập phiếu từ gợi ý sau khi tạo quỹ ở trang chủ: lưu xong hỏi quay lại trang chủ làm tiếp (T250)
   const [goiYVe] = useState(() => Boolean((loc.state as { goiYVeTrangChu?: boolean } | null)?.goiYVeTrangChu))
@@ -265,15 +297,17 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
   const quyTm = `Quỹ tiền mặt ${CUA_HANG.find(c => c.ten === cuaHang)?.ngan ?? CUA_HANG[0].ngan}`
   const rut = fold(dienGiai).includes('rut tien')
   // Phiếu đã lưu Từ quỹ, Đến quỹ thì mở lại đúng quỹ đã chọn (T779)
-  const [tuQuy, setTuQuy] = useState(() => row?._tuQuy ? String(row._tuQuy) : rut ? QUY_TIEN[CUA_HANG.length] : quyTm)
-  const [denQuy, setDenQuy] = useState(() => row?._denQuy ? String(row._denQuy) : rut ? quyTm : QUY_TIEN[CUA_HANG.length])
+  const [tuQuy, setTuQuy] = useState(() => row?._tuQuy ? String(row._tuQuy) : mdDau.tuQuy ?? (rut ? QUY_TIEN[CUA_HANG.length] : quyTm))
+  const [denQuy, setDenQuy] = useState(() => {
+    if (row?._denQuy) return String(row._denQuy)
+    if (mdDau.denQuy) return mdDau.denQuy
+    const g = rut ? quyTm : QUY_TIEN[CUA_HANG.length]
+    return g === tuQuy ? '' : g
+  })
   function chonTuQuy(q: string) {
     setTuQuy(q)
     if (q === denQuy) setDenQuy('')   // T916: đổi Từ quỹ trùng Đến quỹ thì xoá Đến quỹ
   }
-  useEffect(() => {
-    setLyDo(row?._lyDo ? String(row._lyDo) : lyGoc(row?.dienGiai ? String(row.dienGiai) : cfg.dienGiai[0]))
-  }, [loai?.k, row?.id])
   // Thu chi tiền mặt và ngân hàng (T346)
   const laThuChiTien = laTien && (loai?.k === 'thu' || loai?.k === 'chi' || loai?.k === 'bc' || loai?.k === 'unc')
   const khoaLyDtStandard = tcNhuStandard(s.goi) && laThuChiTien   // gói Plus như Standard (T733)
@@ -389,11 +423,10 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
   }, [dongGoc, doiTuong])
   // Chọn lý do: diễn giải và lý do mọi dòng theo lý do, vẫn sửa lại được
   // Mọi phiếu không có ô Diễn giải ở đầu phiếu, Ghi chú chép sang diễn giải (T77, T78). Phiếu có ô lý do: Ghi chú mặc định theo lý do; phiếu khác: mặc định là diễn giải
-  const ghiChuGoc = () => r0?._ghiChu ? String(r0._ghiChu) : traTu ? nhanTra : !oLy ? (r0?.dienGiai ? String(r0.dienGiai) : cfg.dienGiai[0]) : r0?._lyDo ? String(r0._lyDo) : lyGoc(r0?.dienGiai ? String(r0.dienGiai) : cfg.dienGiai[0])
-  const [ghiChu, setGhiChu] = useState(ghiChuGoc)
+  const ghiChuGoc = (lyMd = mdDau.lyDo) => r0?._ghiChu ? String(r0._ghiChu) : traTu ? nhanTra : !oLy ? (r0?.dienGiai ? String(r0.dienGiai) : cfg.dienGiai[0]) : r0?._lyDo ? String(r0._lyDo) : lyGoc(r0?.dienGiai ? String(r0.dienGiai) : cfg.dienGiai[0], lyMd)
+  const [ghiChu, setGhiChu] = useState(() => ghiChuGoc())
   // Kênh bán của chứng từ bán hàng lập tay (T785), bắt buộc: sau này là điều kiện lên kê khai thuế
   const [kenh, setKenh] = useState(String(r0?.kenh ?? (hdDienTu && moi ? KENH_BAN[0] : '')))
-  useEffect(() => { setGhiChu(ghiChuGoc()) }, [loai?.k, row?.id])
   function chonLyDo(v: string) {
     setLyDo(v)
     setDienGiai(v)
@@ -406,8 +439,6 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
   }
   // Ô đối tượng chọn từ danh mục theo loại phiếu, thêm mới được ngay tại form (T65)
   const dmDt = laTien ? 'doiTuong' : cfg.doiTuong ?? 'doiTuong'
-  const dsDt = laTien ? DS_DOI_TUONG : cfg.doiTuong === 'ncc' ? NCC.map(x => x.ten) : cfg.doiTuong === 'kh' ? KHACH.map(x => x.ten)
-    : cfg.doiTuong === 'nv' ? NHAN_VIEN.map(x => x.ten) : cfg.doiTuong === 'cn' ? CUA_HANG.map(x => x.ten) : DS_DOI_TUONG
   // Chọn đối tượng từ danh mục thì điền mã số thuế
   function chonDoiTuong(v: string) {
     setDoiTuong(v)
@@ -424,8 +455,19 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
   // Mua, bán trả tiền ngay (T78): tiền mặt chọn quỹ tiền mặt, chuyển khoản chọn quỹ ngân hàng
   const dsQuy = nhom === 'thu' || nhom === 'chi' || (bo.tt && hinhThucTt === 'tienmat') ? [quyTm]
     : nhom === 'nhthu' || nhom === 'nhchi' || (bo.tt && hinhThucTt === 'chuyenkhoan') ? QUY_TIEN.slice(CUA_HANG.length) : []
-  const [quy, setQuy] = useState(() => r0?._quy ? String(r0._quy) : dsQuy.includes(quyTm) ? quyTm : dsQuy[0] ?? '')
-  useEffect(() => { setQuy(row?._quy ? String(row._quy) : dsQuy.includes(quyTm) ? quyTm : dsQuy[0] ?? '') }, [loai?.k, row?.id])
+  const [quy, setQuy] = useState(() => r0?._quy ? String(r0._quy) : mdDau.quy ?? (dsQuy.includes(quyTm) ? quyTm : dsQuy[0] ?? ''))
+  // Đổi loại phiếu hoặc chứng từ sau khi mở: nạp lại mặc định cửa hàng mới và reset lyDo, ghiChu, quy (T962: không chạy ở lần render đầu để giữ md)
+  const daKhoiTaoLoai = useRef(false)
+  useEffect(() => {
+    if (!daKhoiTaoLoai.current) { daKhoiTaoLoai.current = true; return }
+    const mMoi = moi && !traTu && coMacDinh && cnId ? macDinhCuaHang(s.donVi, maMd, cnId) : {}
+    setMd(mMoi)
+    const dMoi = locMacDinhDau(mMoi, cuaHang, nv?.ttTien === 'da' ? 'tienmat' : 'congno')
+    const dgMoi = row?.dienGiai ? String(row.dienGiai) : dMoi.dienGiai || cfg.dienGiai[0]
+    setLyDo(row?._lyDo ? String(row._lyDo) : lyGoc(dgMoi, dMoi.lyDo))
+    setGhiChu(ghiChuGoc(dMoi.lyDo))
+    setQuy(row?._quy ? String(row._quy) : dMoi.quy ?? (dsQuy.includes(quyTm) ? quyTm : dsQuy[0] ?? ''))
+  }, [loai?.k, row?.id])
   useEffect(() => { if (!dsQuy.includes(quy)) setQuy(dsQuy[0] ?? '') }, [hinhThucTt])
   // Pro, phiếu thu chi: đổi quỹ, lý do, đối tượng thì Nợ, Có của mọi dòng tính lại, người dùng chọn lại được trên dòng (phiếu đã lưu giữ nguyên tới khi đổi)
   const tkLanDau = useRef(true)
@@ -444,16 +486,15 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
   const dsKhoCn = CUA_HANG.find(c => c.ten === cuaHang)?.kho ?? KHO
   const khoMotCn = dsKhoCn.length === 1 ? dsKhoCn[0] : ''
   const khoDau = bo.kho === 'dong' && (nhom === 'mua' || nhom === 'ban')   // Pro dùng chung bố cục kho đầu phiếu của Plus (T953)
-  const khoMd = md['dau:kho'] && dsKhoCn.includes(md['dau:kho']) ? md['dau:kho'] : ''
-  const [kho, setKho] = useState(() => luuCu('kho') || (moi ? traTu?.kho || khoMd || khoMotCn : dongGoc.find(d => d.kho)?.kho ?? dsKhoCn[0] ?? ''))
+  const [kho, setKho] = useState(() => luuCu('kho') || (moi ? traTu?.kho || mdDau.kho || khoMotCn : dongGoc.find(d => d.kho)?.kho ?? dsKhoCn[0] ?? ''))
   useEffect(() => {
     if (khoDau || khoGon) setDsDong(ds => ds.map(d => ({ ...d, kho })))
   }, [dongGoc, kho, khoDau, khoGon])
   // Phiếu nhập sản xuất (T152): chọn phiếu xuất cùng loại đang chờ nhập, lấy kho và dòng kế hoạch theo phiếu xuất, công thức
   const [thamChieuSx, setThamChieuSx] = useState({ id: String(row?._thamChieuId ?? ''), so: String(row?._thamChieu ?? '') })
   // Điều chuyển (T155): cửa hàng, kho nhận của phiếu xuất, chuyển kho; phiếu nhập giữ cửa hàng, kho xuất theo phiếu tham chiếu
-  const [khoNhan, setKhoNhan] = useState(String(row?._khoNhan ?? ''))
-  const [cnNhan, setCnNhan] = useState(String(row?._cnNhan ?? ''))
+  const [khoNhan, setKhoNhan] = useState(String(row?._khoNhan ?? mdDau.khoNhan ?? ''))
+  const [cnNhan, setCnNhan] = useState(String(row?._cnNhan ?? mdDau.cnNhan ?? ''))
   const [nguonDc, setNguonDc] = useState({ cn: String(row?._cnXuat ?? ''), kho: String(row?._khoXuat ?? '') })
   function chonThamChieuSx(px: Row) {
     setThamChieuSx({ id: String(px.id), so: String(px.so) })
@@ -973,17 +1014,29 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
   // Áp giá trị mặc định sau khi chọn cửa hàng từ màn "Tất cả cửa hàng" (T955)
   function apMacDinhCn(cnIdMoi: string) {
     if (!moi || traTu || !coMacDinh) return
-    const m = macDinhCuaHang(s.donVi, sc.code!, cnIdMoi)
+    const m = macDinhCuaHang(s.donVi, maMd, cnIdMoi)
     setMd(m)
-    const dsKhoMoi = CUA_HANG.find(c => c.id === cnIdMoi)?.kho ?? []
-    if (!luuCu('kho') && m['dau:kho'] && dsKhoMoi.includes(m['dau:kho'])) setKho(m['dau:kho'])
-    if (!sp.get('dt') && m['dau:ncc']) setDoiTuong(m['dau:ncc'])
-    const httt = m['dau:httt']
-    if (nv?.ttTien !== 'da' && (httt === 'congno' || httt === 'tienmat' || httt === 'chuyenkhoan')) setHinhThucTt(httt)
-    if (m['dau:dienGiai']) setDienGiai(m['dau:dienGiai'])
-    if (luuCu('nguoiGiao') === undefined && m['dau:nguoiGiao'] && NHAN_VIEN.some(n => n.ten === m['dau:nguoiGiao'])) {
-      setNguoiGiao(m['dau:nguoiGiao'])
+    const cnTenMoi = CUA_HANG.find(c => c.id === cnIdMoi)?.ten ?? ''
+    const d = locMacDinhDau(m, cnTenMoi, hinhThucTt)
+    if (!luuCu('kho') && d.kho) setKho(d.kho)
+    if (!sp.get('dt') && d.doiTuong) {
+      setDoiTuong(d.doiTuong)
+      const dt = [...KHACH, ...NCC].find(x => x.ten === d.doiTuong)
+      if (dt) setMst(dt.mst)
+      if (hdDienTu) { setKhachHd(khachTheoTen(d.doiTuong, d.nguoiGiao ?? nguoiGiao)); setKhongLayHd(!laKhachCty(d.doiTuong)) }
     }
+    if (nv?.ttTien !== 'da' && d.httt) setHinhThucTt(d.httt)
+    if (d.dienGiai) setDienGiai(d.dienGiai)
+    if (luuCu('nguoiGiao') === undefined && d.nguoiGiao) setNguoiGiao(d.nguoiGiao)
+    if (luuCu('nhanVien') === undefined && !(laNk && r0?.so) && d.nhanVien) setNhanVien(d.nhanVien)
+    if (!(lyUrl && oLy?.ds?.includes(lyUrl)) && d.lyDo) setLyDo(d.lyDo)
+    if (d.quy) setQuy(d.quy)
+    const tuQuySau = d.tuQuy ?? tuQuy
+    if (d.tuQuy) setTuQuy(d.tuQuy)
+    if (d.denQuy && d.denQuy !== tuQuySau) setDenQuy(d.denQuy)
+    else if (d.tuQuy && d.tuQuy === denQuy) setDenQuy('')
+    if (d.khoNhan) setKhoNhan(d.khoNhan)
+    if (d.cnNhan) setCnNhan(d.cnNhan)
   }
 
   // Đang xem tất cả cửa hàng thì phải chọn một cửa hàng trước khi lập chứng từ mới
@@ -1252,8 +1305,8 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
               <HopCotPhieu dsDau={dsDau} dsChan={dsChan} dsChung={dsChung} ds={cfg.dongPos ? COT_BHB.filter(([k]) => !boCotBan.includes(k) && (giamGtgt ? k !== 'ts' && k !== 'thue' : k !== 'giamThue')) : laKk ? COT_KK : laSx ? cotSx(sx!) : laDcn ? cotDcn(dcn!) : cotTuyChon(cfg, { coNhomHhdv: nhom === 'mua' && nhanKemHd && s.goi === 'PR', coKho: Boolean(bo.kho) && !khoDau && !laDc && !khoGon, giaVon, coLo: nhom === 'mua' && s.goi === 'PR', coCk: Boolean(bo.ck), coKm: kieu !== 'khong', coLy: Boolean(oLy), coNhapKho: truocThue, coXuatKho: nhom === 'mua' && traLai, coGiamThue: giamGtgt, coCpMua: cpCo }).filter(([k]) => !anDc.includes(k) && !(coLyTuyChon && k === 'ly') && !(anKmTam && k === 'km'))}
                 an={anCot} onDoi={doiAnCot} onDong={() => setHopCot(false)} />
             )}
-            {hopGt && sc.code && (
-              <HopGiaTriMacDinh ma={sc.code} tenPhieu={tenPhieu} anTruong={anTruongMd} onDong={() => setHopGt(false)} />
+            {hopGt && maMd && (
+              <HopGiaTriMacDinh ma={maMd} tenPhieu={tenPhieu} anTruong={anTruongMd} onDong={() => setHopGt(false)} />
             )}
             {laHdMoi ? <>   {/* hoá đơn thay thế, điều chỉnh: Lưu dự thảo, Lưu và phát hành, không ghi chữ phím tắt (T787) */}
               <button type="button" className="xp-btn-outline" onClick={() => luu(false)} data-hd="luu">Lưu dự thảo</button>
@@ -1378,8 +1431,8 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
               <HopCotPhieu dsDau={dsDau} dsChan={dsChan} dsChung={dsChung} ds={cfg.dongPos ? COT_BHB.filter(([k]) => !boCotBan.includes(k) && (giamGtgt ? k !== 'ts' && k !== 'thue' : k !== 'giamThue')) : laKk ? COT_KK : laSx ? cotSx(sx!) : laDcn ? cotDcn(dcn!) : cotTuyChon(cfg, { coNhomHhdv: nhom === 'mua' && nhanKemHd && s.goi === 'PR', coKho: Boolean(bo.kho) && !khoDau && !laDc && !khoGon, giaVon, coLo: nhom === 'mua' && s.goi === 'PR', coCk: Boolean(bo.ck), coKm: kieu !== 'khong', coLy: Boolean(oLy), coNhapKho: truocThue, coXuatKho: nhom === 'mua' && traLai, coGiamThue: giamGtgt, coCpMua: cpCo }).filter(([k]) => !anDc.includes(k) && !(coLyTuyChon && k === 'ly') && !(anKmTam && k === 'km'))}
                 an={anCot} onDoi={doiAnCot} onDong={() => setHopCot(false)} />
             )}
-            {hopGt && sc.code && (
-              <HopGiaTriMacDinh ma={sc.code} tenPhieu={tenPhieu} anTruong={anTruongMd} onDong={() => setHopGt(false)} />
+            {hopGt && maMd && (
+              <HopGiaTriMacDinh ma={maMd} tenPhieu={tenPhieu} anTruong={anTruongMd} onDong={() => setHopGt(false)} />
             )}
             {hopTt && row && (
               <HopThanhToan tieuDe={`${tenThanhToan} cho ${soCt}`} chiTt={chiTt} conLai={conLai} quyTm={quyTm} ngay0={ngayCt} dg0={dgTt}
@@ -1866,7 +1919,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
             <BangTraNoNcc ncc={doiTuong} ds={dsTraNo} chon={traNo} onChange={setTraNo} cheDo={dangSua ? 'sua' : 'xem'} />
           )}
           {tab === 'ct' && cfg.dongPos && (
-            <BangHangBan dong={dsDong} onChange={doiDong} cheDo={dangSua ? 'sua' : 'xem'} tyLe={Boolean(giamGtgt)} giamThue={giamThueHang} an={[...anCot, ...boCotBan]} choAm={loaiCt === 'HDDIEUCHINH'} ngay={ngayCt} chiDongCo={traBan} />
+            <BangHangBan dong={dsDong} onChange={doiDong} cheDo={dangSua ? 'sua' : 'xem'} tyLe={Boolean(giamGtgt)} giamThue={giamThueHang} an={[...anCot, ...boCotBan]} choAm={loaiCt === 'HDDIEUCHINH'} ngay={ngayCt} chiDongCo={traBan} tsMacDinh={macDinhDong?.ts} />
           )}
           {tab === 'ct' && !cfg.dongPos && !laKk && !laSx && !laDcn && !hienTraNo && (
             <BangSua

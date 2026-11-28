@@ -87,17 +87,22 @@ export function HopGiaTriMacDinh(p: { ma: string; tenPhieu: string; anTruong?: s
       const next = { ...prev }
       for (const id of chon) {
         const moi: Record<string, string> = { ...(prev[chId] ?? {}) }
-        // Kho đổi theo vị trí kho của cửa hàng nhận (T955)
+        // Đổi ô chọn theo cửa hàng nhận (T962): giá trị hợp lệ thì giữ; không có mà theoCn thì đổi theo vị trí; còn lại bỏ ô
         for (const tr of truong) {
-          if (tr.k !== 'kho' || !tr.ds) continue
+          if (!tr.ds) continue
           const khoa = `${tr.nhom}:${tr.k}`
-          if (!moi[khoa]) continue
-          const dsSrc = tr.ds(chId)
+          const val = moi[khoa]
+          if (!val) continue
           const dsDst = tr.ds(id)
-          const idx = dsSrc.findIndex(([v]) => v === moi[khoa])
-          const khoMoi = dsDst[idx]?.[0] ?? dsDst[0]?.[0]
-          if (khoMoi) moi[khoa] = khoMoi
-          else delete moi[khoa]
+          if (dsDst.some(([v]) => v === val)) continue
+          if (tr.theoCn) {
+            const idx = tr.ds(chId).findIndex(([v]) => v === val)
+            const moiVal = (idx >= 0 ? dsDst[idx]?.[0] : undefined) ?? dsDst[0]?.[0]
+            if (moiVal) moi[khoa] = moiVal
+            else delete moi[khoa]
+          } else {
+            delete moi[khoa]
+          }
         }
         if (Object.keys(moi).length > 0) next[id] = moi
         else delete next[id]

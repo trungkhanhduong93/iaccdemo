@@ -53,8 +53,8 @@ export function theoChieu(ds: Dong[], dau: 1 | -1, cu: Dong[] = []): Dong[] {
 }
 
 /** Dòng mới từ một mặt hàng trong danh mục */
-export function dongTuHang(h: (typeof HANG)[number], sl = 1): Dong {
-  return tinhDong({ ma: h.ma, ten: h.ten, dvt: h.dvt, sl, gia: h.gia, tien: 0, ts: h.ts, thue: 0, pt: 0, giam: 0, ptCk: 0, ck: 0, ptPhiDv: 0, phiDv: 0 })
+export function dongTuHang(h: (typeof HANG)[number], sl = 1, tsMacDinh?: number): Dong {
+  return tinhDong({ ma: h.ma, ten: h.ten, dvt: h.dvt, sl, gia: h.gia, tien: 0, ts: h.ts ?? tsMacDinh, thue: 0, pt: 0, giam: 0, ptCk: 0, ck: 0, ptPhiDv: 0, phiDv: 0 })
 }
 
 type KieuAp = 'pt' | 'tien'
@@ -150,7 +150,7 @@ export const COT_BHB: [string, string][] = [
   ['dtTruocThue', 'Doanh thu tính thuế'], ['ts', 'Thuế suất'], ['thue', 'Tiền thuế'], ['giaVon', 'Giá vốn'], ['tienVon', 'Tiền vốn'], ['tonKho', 'Theo dõi tồn kho'],
 ]
 
-export function BangHangBan({ dong, onChange, cheDo, tyLe, giamThue, an = [], choAm, ngay, chiDongCo }: {
+export function BangHangBan({ dong, onChange, cheDo, tyLe, giamThue, an = [], choAm, ngay, chiDongCo, tsMacDinh }: {
   dong: Dong[]
   chiDongCo?: boolean                    // hàng bán trả lại lập từ chứng từ bán (T815): không thêm hàng, chỉ sửa số lượng (tối đa slMax của dòng), xoá dòng
   ngay?: string                          // ngày chứng từ: lấy đơn giá vốn bình quân của tháng đó; tháng chưa tính giá vốn thì cột trống
@@ -160,18 +160,19 @@ export function BangHangBan({ dong, onChange, cheDo, tyLe, giamThue, an = [], ch
   tyLe: boolean                          // GTGT theo % doanh thu: bỏ Thuế suất, Tiền thuế; hiện Giảm thuế GTGT
   giamThue?: (dt: number, ma?: string) => number   // T754: theo % GTGT và ô Giảm thuế theo quy định của hàng
   an?: string[]                          // mã cột ẩn qua Tuỳ chỉnh giao diện (T758)
+  tsMacDinh?: number                     // thuế suất mặc định theo cửa hàng khi hàng chưa có thuế suất (T962)
 }) {
   const sua = cheDo === 'sua' && Boolean(onChange)
   const dat = (i: number, p: Partial<Dong>) => onChange?.(dong.map((d, j) => (j === i ? tinhDong(d, p) : d)))
   const chonHang = (i: number, ma: string) => {
     const h = HANG.find(x => x.ma === ma)
     if (!h) { dat(i, { ma }); return }
-    dat(i, { ma: h.ma, ten: h.ten, dvt: h.dvt, gia: h.gia, ts: h.ts })
+    dat(i, { ma: h.ma, ten: h.ten, dvt: h.dvt, gia: h.gia, ts: h.ts ?? tsMacDinh })
   }
-  const them = () => onChange?.([...dong, dongTuHang(HANG[0])])
+  const them = () => onChange?.([...dong, dongTuHang(HANG[0], 1, tsMacDinh)])
   // Thêm hàng loạt như phiếu mua hàng (T790): tích nhiều hàng, mỗi hàng một dòng số lượng 1, giá bán theo danh mục
   const [moHangLoat, setMoHangLoat] = useState(false)
-  const themHangLoat = (ma: string[]) => onChange?.([...dong, ...ma.flatMap(m => { const h = HANG.find(x => x.ma === m); return h ? [dongTuHang(h)] : [] })])
+  const themHangLoat = (ma: string[]) => onChange?.([...dong, ...ma.flatMap(m => { const h = HANG.find(x => x.ma === m); return h ? [dongTuHang(h, 1, tsMacDinh)] : [] })])
   const xoa = (i: number) => onChange?.(dong.filter((_, j) => j !== i))
   const tonKho = (ma: string) => Boolean(HANG.find(h => h.ma === ma)?.tonKho)
   const gt = (d: Dong) => (tyLe && giamThue ? giamThue(dtDong(d), d.ma) : 0)

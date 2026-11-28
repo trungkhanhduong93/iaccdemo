@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T962 | Gói Pro web: Giá trị mặc định chứng từ mở rộng từ Phiếu mua hàng sang Tiền (thu, chi, báo có, UNC, chuyển quỹ đặt riêng từng loại), Mua hàng, Bán hàng, Kho (trừ điều chỉnh); chép sang cửa hàng khác đổi kho, quỹ theo cửa hàng nhận | Trum | 28/11/2026 | `docs/nhat-ky/2026-11-28-trum-gia-tri-mac-dinh-moi-chung-tu.md` |
 | T963 | Dữ liệu mẫu: Phố Mây Thảo Điền không có phiếu kiểm kê tháng 9, màn Chi phí NVL tháng 9 hiện cảnh báo chưa kiểm kê cuối tháng (T945) | Trum | 28/11/2026 | 2026-11-28-trum-kiem-ke-thang-9-mau.md |
 | T957 | `python tools/kiem_tra.py --nhanh` đỏ sẵn trên main: sửa mục T870 (truyền sẵn Kho, Mặt hàng), T233 (ô tích Ẩn cột tài khoản thay nút), bộ chọn tiêu đề màn Dashboard nhà hàng và Hệ thống tài khoản | Trum | 28/11/2026 | 2026-11-28-trum-kiem-tra-do-san.md |
 | T933 | `tools/kiem_tra.py` mục T870/T871 Thẻ kho chờ bảng quá 8 giây: làm cùng T957 | Trum | 28/11/2026 | 2026-11-28-trum-kiem-tra-do-san.md |
