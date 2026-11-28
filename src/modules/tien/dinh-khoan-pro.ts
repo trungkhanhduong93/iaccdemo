@@ -18,6 +18,12 @@ export function tkQuyCua(quy: string): string {
   return chu(r?.tkQuy) || tkCuaQuy(quy)
 }
 
+/** Tài khoản chi phí gợi ý của lý do nghiệp vụ (danh mục 1.16) cho hoá đơn mua không qua kho; lý do chưa khai tài khoản thì 6422 (T964) */
+export function tkChiPhiCuaLy(ly: string, s: Pick<Session, 'donVi' | 'lyDoGhiDe'>): string {
+  const r = getAllCatalogRows('1.16').find(x => chu(x.ten) === ly)
+  return chu(r ? ganLyDo(r, s).tk : '') || '6422'
+}
+
 /** Tài khoản công nợ khai ở danh mục Đối tượng (TK công nợ); đối tượng chưa khai thì rỗng */
 export function tkCongNoDoiTuong(ten: string): string {
   return chu(getAllCatalogRows('1.5').find(x => chu(x.ten) === ten)?.tkCn)

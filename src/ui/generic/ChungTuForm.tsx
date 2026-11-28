@@ -7,7 +7,7 @@ import { cuaHangHienTai, useSession, cheDoHienTai, ngayDauNam, truocDauNam, donV
 import { coGiamThue, giamThueHang } from '../../modules/ban-hang/giam-thue'
 import { ApDauBangBan, BangHangBan, COT_BHB, dongTuHang, dtDong, theoChieu } from '../../modules/ban-hang/BangHangBan'
 import { kieuGhiSo, type Goi, kieuGhiSoDv, tcNhuStandard } from '../../app/plan'
-import { bosungDinhKhoan, chuanChiTiet, dinhKhoanThuChi, loiDinhKhoan, tkQuyCua } from '../../modules/tien/dinh-khoan-pro'
+import { bosungDinhKhoan, tkChiPhiCuaLy, chuanChiTiet, dinhKhoanThuChi, loiDinhKhoan, tkQuyCua } from '../../modules/tien/dinh-khoan-pro'
 import { heThongTk, locTkChiTiet } from '../../modules/danh-muc/he-thong-tk'
 import { CHE_DO, type CheDo } from '../../app/che-do'
 import { tkTheoCheDo } from '../../modules/tong-hop/so-cai'
@@ -399,6 +399,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
     if (khoaLyDtStandard) {
       setDsDong(ds => ds.map(d => ({ ...d, ly: v })))
     }
+    if (cfg.khongKho) setDsDong(ds => ds.map(d => d.tkCp ? { ...d, tkCp: '' } : d))   // đổi lý do thì Tk chi phí các dòng theo gợi ý mới (T964)
   }
   // Ô đối tượng chọn từ danh mục theo loại phiếu, thêm mới được ngay tại form (T65)
   const dmDt = laTien ? 'doiTuong' : cfg.doiTuong ?? 'doiTuong'
@@ -1122,7 +1123,8 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
   const tkTtHien = tkTtSua || macDinhTt
   const tkThueHien = tkThueSua || macDinhThue
   const tkTtMua = tkTtHien
-  const butToanMuaDong = laMuaTk ? butToanMua(dsDong, tkTtMua, { khongKho: cfg.khongKho, dvVc: cpCo ? dvVc : '', soMua: soCt, soTt: ctTtCon(row)?.so, thanhToanNgay: hinhThucTt !== 'congno', tkThue: tkThueHien }) : undefined
+  const tkCpGoiY = cfg.khongKho ? tkChiPhiCuaLy(lyDo, s) : undefined   // hoá đơn mua không qua kho: Tk chi phí gợi ý theo lý do nghiệp vụ (T964)
+  const butToanMuaDong = laMuaTk ? butToanMua(dsDong, tkTtMua, { khongKho: cfg.khongKho, dvVc: cpCo ? dvVc : '', soMua: soCt, soTt: ctTtCon(row)?.so, thanhToanNgay: hinhThucTt !== 'congno', tkThue: tkThueHien, tkCpGoiY }) : undefined
   const laPhieuChi = laTien && (loai?.k === 'chi' || loai?.k === 'unc')
   const laPhieuThu = laTien && (loai?.k === 'thu' || loai?.k === 'bc')
   const iconDau = (laPhieuChi || laPhieuThu) ? (
@@ -1870,7 +1872,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn, c
               coTk={(hienTk && !laMuaTk) || proTk}   // phiếu mua dùng 3 cột Tk thanh toán, Tk kho, Tk thuế thay cột TK Nợ/Có chung
               dsTk={dsTkPro}
               nhanTk={nhanTkDong}
-              tkMua={laMuaTk && hienTk ? { khongKho: cfg.khongKho } : undefined}   // theo nút Hiện, Ẩn cột tài khoản; Tk thanh toán, Tk thuế ở đầu phiếu (T964)
+              tkMua={laMuaTk && hienTk ? { khongKho: cfg.khongKho, tkCpGoiY, dsTk: dsTkPhieu } : undefined}   // theo nút Hiện, Ẩn cột tài khoản; Tk thanh toán, Tk thuế ở đầu phiếu (T964)
               anTkBen={banTkPhieu && coTkPhieu ? 'no' : undefined}   // bán: Tk công nợ lên đầu phiếu, dòng chỉ còn tài khoản doanh thu
               tkTheoLy={coTkTheoLy ? (proTk ? tkTheoLyPro : (ly => tkTheoLyDo(loaiPhieuTien, ly))) : undefined}
               coKho={Boolean(bo.kho) && !khoDau && !laDc && !khoGon}   // phiếu điều chỉnh, nhập khác, xuất huỷ: kho ở đầu phiếu (T126, T737, T741)

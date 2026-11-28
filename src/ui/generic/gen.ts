@@ -71,6 +71,7 @@ export interface Dong {
   dt?: string
   ly?: string                  // lý do thu, chi của dòng phiếu tiền (T49)
   km?: string
+  tkCp?: string                // hoá đơn mua không qua kho: Tk chi phí user sửa ở dòng, trống thì gợi ý theo lý do nghiệp vụ (T964)
   cv?: string
   lo?: string
   hsd?: string

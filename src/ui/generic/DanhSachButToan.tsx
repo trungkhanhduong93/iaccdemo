@@ -8,7 +8,7 @@ import { Select } from '../Dropdown'
 import type { Col, ModuleDef, Row, ScreenDef, ScreenProps } from '../../modules/types'
 import { MODULES, tenMan } from '../../app/registry'
 import { useSession } from '../../app/session'
-import { bosungDinhKhoan } from '../../modules/tien/dinh-khoan-pro'
+import { bosungDinhKhoan, tkChiPhiCuaLy } from '../../modules/tien/dinh-khoan-pro'
 import { Note } from '../Page'
 import { Table } from '../Table'
 import { heThongTk, locTkChiTiet } from '../../modules/danh-muc/he-thong-tk'
@@ -124,7 +124,7 @@ export function gomButToan(s: SPhien): DongButToan[] {
       const httt = (r._httt as 'congno' | 'tienmat' | 'chuyenkhoan' | undefined) ?? 'congno'
       const ctTt = r._ctTt as { id?: string; so?: string } | undefined
       const tkPhieu = tkPhieuMua(r, httt, String(r._quy ?? ''))   // Tk thanh toán, Tk thuế user đã sửa ở đầu phiếu (T964)
-      const bt = butToanMua(ds, tkPhieu.tt, { khongKho: cfgR.khongKho, dvVc: String(r._dvVc ?? ''), soMua: goc.so, soTt: ctTt?.so, soChuaCo: goc.so, thanhToanNgay: httt !== 'congno', tkThue: tkPhieu.thue })
+      const bt = butToanMua(ds, tkPhieu.tt, { khongKho: cfgR.khongKho, dvVc: String(r._dvVc ?? ''), soMua: goc.so, soTt: ctTt?.so, soChuaCo: goc.so, thanhToanNgay: httt !== 'congno', tkThue: tkPhieu.thue, tkCpGoiY: cfgR.khongKho ? tkChiPhiCuaLy(String(r._lyDo ?? ''), s) : undefined })
       const tt = ctTt?.id ? thongTinTt.get(ctTt.id) : undefined
       const gocTt = tt ? { ngay: tt.ngay, loaiCt: tt.loaiCt, dienGiai: tt.dienGiai, ghiChu: tt.ghiChu, to: tt.to } : {}
       bt.forEach((b, i) => {

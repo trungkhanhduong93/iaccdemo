@@ -32,9 +32,10 @@ export function tkPhieuMua(r: Record<string, unknown> | undefined, httt: HinhThu
   }
 }
 
-/** Tk kho của dòng: theo hàng hoá trong danh mục. Hoá đơn mua không qua kho (khongKho) ghi thẳng chi phí 6422 */
-export function tkKhoCua(d: Dong, khongKho?: boolean): string {
-  if (khongKho) return '6422'
+/** Tk kho của dòng: theo hàng hoá trong danh mục. Hoá đơn mua không qua kho (khongKho) ghi thẳng chi phí: Tk chi phí user sửa ở dòng,
+ *  trống thì theo gợi ý của lý do nghiệp vụ (tkCpGoiY), chưa có thì 6422 (T964) */
+export function tkKhoCua(d: Dong, khongKho?: boolean, tkCpGoiY?: string): string {
+  if (khongKho) return d.tkCp || tkCpGoiY || '6422'
   return (NVL as { ma: string; tkKho?: string }[]).find(h => h.ma === d.ma)?.tkKho || (CCDC_HANG.some(h => h.ma === d.ma) ? '153' : '152')
 }
 
@@ -48,19 +49,19 @@ const TK_CO_VAN_CHUYEN = '331'
  *  Chi phí mua hàng (vận chuyển) theo dòng: Nợ Tk kho; nhà cung cấp tự vận chuyển thì Có Tk thanh toán,
  *  có đơn vị vận chuyển khác thì Có 331 ghi cho đơn vị đó.
  *  Số chứng từ: Nợ Tk kho theo số phiếu mua; khi thanh toán luôn, các bên còn lại theo số chứng từ thanh toán (soTt) */
-export function butToanMua(dong: Dong[], tkTt: string, o: { khongKho?: boolean; dvVc?: string; soMua: string; soTt?: string; soChuaCo?: string; thanhToanNgay: boolean; tkThue?: string }): DongButToan[] {
+export function butToanMua(dong: Dong[], tkTt: string, o: { khongKho?: boolean; dvVc?: string; soMua: string; soTt?: string; soChuaCo?: string; thanhToanNgay: boolean; tkThue?: string; tkCpGoiY?: string }): DongButToan[] {
   const tkThue = o.tkThue || MAC_DINH_NHAP_MUA.tkThue
   const ra: DongButToan[] = []
   const soKhac = o.thanhToanNgay ? (o.soTt || o.soChuaCo || 'Số cấp khi lưu') : o.soMua
   dong.forEach(d => {
     const ten = d.ten || d.ma || 'Hàng'
     const tien = (d.tien || 0) - (d.ck || 0)
-    if (tien > 0) ra.push({ no: tkKhoCua(d, o.khongKho), co: tkTt, dg: ten, tien, soNo: o.soMua, soCo: soKhac })
+    if (tien > 0) ra.push({ no: tkKhoCua(d, o.khongKho, o.tkCpGoiY), co: tkTt, dg: ten, tien, soNo: o.soMua, soCo: soKhac })
     if ((d.thue || 0) > 0) ra.push({ no: tkThue, co: tkTt, dg: ten, tien: d.thue, soNo: soKhac, soCo: soKhac, thue: true })
     if ((d.cpMua || 0) > 0) {
       const khac = Boolean(o.dvVc)
       ra.push({
-        no: tkKhoCua(d, o.khongKho), co: khac ? TK_CO_VAN_CHUYEN : tkTt, dg: ten, tien: d.cpMua!,
+        no: tkKhoCua(d, o.khongKho, o.tkCpGoiY), co: khac ? TK_CO_VAN_CHUYEN : tkTt, dg: ten, tien: d.cpMua!,
         soNo: o.soMua, soCo: khac ? o.soMua : soKhac, ...(khac ? { dt: o.dvVc } : {}),
       })
     }
